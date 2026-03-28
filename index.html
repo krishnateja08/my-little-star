@@ -91,11 +91,13 @@ body.bedtime .story-banner{background:linear-gradient(135deg,#2a2044,#1a2a44);}
 .story-desc{font-size:.72rem;color:var(--text3);}
 
 /* TABS */
-.tabs{display:flex;gap:5px;padding:10px 12px 0;flex-wrap:wrap;justify-content:center;}
-.tab{flex:1 1 auto;border:none;padding:8px 10px;border-radius:50px;cursor:pointer;
-  font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:700;transition:all .2s;
+.tabs{display:flex;gap:4px;padding:10px 8px 0;flex-wrap:wrap;justify-content:center;}
+.tab{flex:1 1 auto;border:none;padding:6px 4px 5px;border-radius:16px;cursor:pointer;
+  font-family:'Baloo 2',cursive;font-weight:700;transition:all .2s;
   background:var(--cardbg);color:var(--text5);box-shadow:0 2px 8px var(--shadow2);
-  text-align:center;min-width:0;white-space:nowrap;}
+  text-align:center;min-width:0;display:flex;flex-direction:column;align-items:center;gap:1px;}
+.tab .tab-icon{font-size:1.4rem;line-height:1;display:block;}
+.tab .tab-label{font-size:.55rem;line-height:1;display:block;letter-spacing:.3px;}
 .tab.active{color:#fff;transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.14);}
 .tab[data-t="morning"].active {background:linear-gradient(135deg,#ffb830,#ff8c69);}
 .tab[data-t="learning"].active{background:linear-gradient(135deg,#a78bfa,#4fa3e0);}
@@ -104,6 +106,57 @@ body.bedtime .story-banner{background:linear-gradient(135deg,#2a2044,#1a2a44);}
 .tab[data-t="create"].active  {background:linear-gradient(135deg,#ff6b9d,#a78bfa);}
 .tab[data-t="stories"].active {background:linear-gradient(135deg,#1a1a2e,#4a3a6e);}
 .tab[data-t="parent"].active  {background:linear-gradient(135deg,#333,#555);}
+@media(min-width:481px){.tab .tab-icon{font-size:1.6rem;}.tab .tab-label{font-size:.62rem;}.tab{padding:8px 6px 6px;border-radius:18px;}}
+@media(min-width:769px){.tab .tab-icon{font-size:1.8rem;}.tab .tab-label{font-size:.68rem;}.tab{padding:10px 8px 7px;border-radius:20px;gap:2px;}}
+
+/* DAILY PHYSICAL ACTIVITY BANNER */
+.phys-banner{display:flex;align-items:center;gap:10px;margin:8px 12px 0;padding:12px 16px;
+  border-radius:16px;background:linear-gradient(135deg,#fff0e0,#ffe8d0);cursor:pointer;
+  box-shadow:0 4px 14px rgba(255,140,105,.12);border-left:4px solid var(--coral);transition:all .2s;}
+body.bedtime .phys-banner{background:linear-gradient(135deg,#2e2a1e,#2a2a3e);}
+.phys-banner:active{transform:scale(.98);}
+.phys-banner-anim{width:50px;height:50px;flex-shrink:0;}
+.phys-banner-anim svg{width:100%;height:100%;}
+.phys-banner-info{flex:1;}
+.phys-banner-title{font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;color:var(--coral);}
+.phys-banner-desc{font-size:.7rem;color:var(--text3);}
+.phys-banner-go{font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--coral),var(--sun));padding:5px 14px;border-radius:50px;
+  flex-shrink:0;border:none;cursor:pointer;}
+
+/* WEATHER PICKER */
+.weather-bar{display:none;margin:8px 12px 0;padding:10px 16px;border-radius:16px;
+  background:linear-gradient(135deg,#e0f4ff,#fff5e0);box-shadow:0 4px 14px rgba(79,163,224,.1);
+  text-align:center;transition:all .2s;}
+body.bedtime .weather-bar{background:linear-gradient(135deg,#1a2a3e,#2a2a3e);}
+.weather-bar.show{display:block;}
+.weather-q{font-family:'Baloo 2',cursive;font-size:.82rem;color:var(--text2);margin-bottom:8px;}
+.weather-opts{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.weather-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 12px;
+  border:3px solid transparent;border-radius:16px;background:var(--inputbg);cursor:pointer;
+  transition:all .2s;min-width:58px;}
+.weather-btn:active{transform:scale(.9);}
+.weather-btn.selected{border-color:var(--blue);background:#e0f0ff;transform:scale(1.05);}
+body.bedtime .weather-btn.selected{background:#1a2a4e;}
+.weather-emoji{font-size:1.8rem;}
+.weather-label{font-size:.6rem;font-weight:700;color:var(--text4);}
+.weather-done{font-size:.75rem;color:var(--green);font-weight:700;margin-top:6px;}
+
+/* PHONICS GAME */
+.phonics-prompt{text-align:center;margin-bottom:14px;}
+.phonics-sound-btn{display:inline-flex;align-items:center;gap:8px;padding:16px 28px;
+  border-radius:20px;background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;
+  font-family:'Baloo 2',cursive;font-size:1.2rem;font-weight:700;border:none;cursor:pointer;
+  box-shadow:0 6px 20px rgba(167,139,250,.4);transition:all .2s;}
+.phonics-sound-btn:active{transform:scale(.93);}
+.phonics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.phonics-letter{aspect-ratio:1;border-radius:16px;border:3px solid var(--border);
+  background:var(--inputbg);display:flex;align-items:center;justify-content:center;
+  font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;color:var(--text);
+  cursor:pointer;transition:all .2s;}
+.phonics-letter:active{transform:scale(.9);}
+.phonics-letter.correct{border-color:var(--green);background:#e8fff0;color:var(--green);}
+.phonics-letter.wrong{border-color:var(--pink);background:#ffe8f0;animation:shake .3s;}
 
 /* BEDTIME STORIES */
 .stories-list{display:flex;flex-direction:column;gap:10px;}
@@ -1030,13 +1083,30 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
 </div>
 
 <div class="tabs">
-  <button class="tab active" data-t="morning"  onclick="switchTab('morning')">🌅 Morning</button>
-  <button class="tab"        data-t="learning" onclick="switchTab('learning')">📚 Learn</button>
-  <button class="tab"        data-t="games"    onclick="switchTab('games')">🎮 Games</button>
-  <button class="tab"        data-t="create"   onclick="switchTab('create')">🎨 Create</button>
-  <button class="tab"        data-t="evening"  onclick="switchTab('evening')">🌙 Evening</button>
-  <button class="tab"        data-t="stories"  onclick="switchTab('stories')">📖 Stories</button>
-  <button class="tab"        data-t="parent"   onclick="switchTab('parent')">👨‍👩‍👧 Parent</button>
+  <button class="tab active" data-t="morning"  onclick="switchTab('morning')"><span class="tab-icon">🌅</span><span class="tab-label">Morning</span></button>
+  <button class="tab"        data-t="learning" onclick="switchTab('learning')"><span class="tab-icon">📚</span><span class="tab-label">Learn</span></button>
+  <button class="tab"        data-t="games"    onclick="switchTab('games')"><span class="tab-icon">🎮</span><span class="tab-label">Games</span></button>
+  <button class="tab"        data-t="create"   onclick="switchTab('create')"><span class="tab-icon">🎨</span><span class="tab-label">Create</span></button>
+  <button class="tab"        data-t="evening"  onclick="switchTab('evening')"><span class="tab-icon">🌙</span><span class="tab-label">Evening</span></button>
+  <button class="tab"        data-t="stories"  onclick="switchTab('stories')"><span class="tab-icon">📖</span><span class="tab-label">Stories</span></button>
+  <button class="tab"        data-t="parent"   onclick="switchTab('parent')"><span class="tab-icon">👨‍👩‍👧</span><span class="tab-label">Parent</span></button>
+</div>
+
+<!-- Weather Picker (#2) -->
+<div class="weather-bar" id="weatherBar">
+  <div class="weather-q">🌤️ What's the weather today?</div>
+  <div class="weather-opts" id="weatherOpts"></div>
+  <div class="weather-done" id="weatherDone"></div>
+</div>
+
+<!-- Daily Physical Activity Banner -->
+<div class="phys-banner" id="physBanner" style="display:none" onclick="openPhysActivity()">
+  <div class="phys-banner-anim" id="physBannerAnim"></div>
+  <div class="phys-banner-info">
+    <div class="phys-banner-title" id="physBannerTitle">💪 Today's Exercise</div>
+    <div class="phys-banner-desc" id="physBannerDesc">Tap to start!</div>
+  </div>
+  <button class="phys-banner-go">Let's Go!</button>
 </div>
 
 <div class="subj-row" id="subjRow">
@@ -1706,6 +1776,7 @@ const GAMES = [
   {id:'memoryFlip',week:1, emoji:'🧠', title:'Memory Flip Cards!',      desc:'Flip cards to find matching pairs!',                 cat:'brain'},
   {id:'findLetter',week:2, emoji:'🔤', title:'Find the Letter!',        desc:'Find all the target letters hidden in the grid!',    cat:'letters'},
   {id:'animalSound',week:1,emoji:'🐶', title:'Animal Sounds Match!',    desc:'Listen to the sound and tap the right animal!',      cat:'brain'},
+  {id:'phonicsMatch',week:1,emoji:'🗣️',title:'Phonics Sound Match!',    desc:'Hear the letter sound and tap the right letter!',    cat:'letters'},
 ];
 
 // ══════════════════════════════════════
@@ -1980,7 +2051,7 @@ function renderGame(g){
   renderHist();updateProg();renderWbar();renderChallenge();
   const fns={numMatch:buildNumMatch,wordBuild:buildWordBuild,countGame:buildCountGame,
     colourMix:buildColourMix,shapeTap:buildShapeTap,memoryFlip:buildMemoryFlip,
-    findLetter:buildFindLetter,animalSound:buildAnimalSound};
+    findLetter:buildFindLetter,animalSound:buildAnimalSound,phonicsMatch:buildPhonicsMatch};
   (fns[g.id]||buildCountGame)();
   // Append skip button after game panel
   const area=document.getElementById('area');
@@ -2691,6 +2762,9 @@ function switchTab(t){
   document.getElementById('starPath').style.display=isSpecial?'none':'block';
   document.getElementById('sparkCard').style.display=isSpecial?'none':'flex';
   document.getElementById('qcFab').style.display=(t==='create'||t==='parent'||t==='stories')?'none':'flex';
+  document.getElementById('weatherBar').classList.toggle('show',t==='morning');
+  document.getElementById('physBanner').style.display='none';
+  if(t==='morning'||t==='evening')renderPhysBanner();
 
   fetchNext();
 }
@@ -3330,13 +3404,142 @@ function pickFriendEmoji(e){
 }
 
 // ══════════════════════════════════════
+//  PHONICS GAME — hear sound, tap letter
+// ══════════════════════════════════════
+const PHONICS=[
+  {letter:'A',sound:'aah, like in Apple'},
+  {letter:'B',sound:'buh, like in Ball'},
+  {letter:'C',sound:'kuh, like in Cat'},
+  {letter:'D',sound:'duh, like in Dog'},
+  {letter:'E',sound:'eh, like in Egg'},
+  {letter:'F',sound:'fuh, like in Fish'},
+  {letter:'G',sound:'guh, like in Goat'},
+  {letter:'H',sound:'huh, like in Hat'},
+  {letter:'I',sound:'ih, like in Igloo'},
+  {letter:'J',sound:'juh, like in Jump'},
+  {letter:'K',sound:'kuh, like in Kite'},
+  {letter:'L',sound:'luh, like in Lion'},
+  {letter:'M',sound:'mmm, like in Moon'},
+  {letter:'N',sound:'nnn, like in Nose'},
+  {letter:'O',sound:'oh, like in Orange'},
+  {letter:'P',sound:'puh, like in Pig'},
+  {letter:'R',sound:'rrr, like in Rain'},
+  {letter:'S',sound:'sss, like in Sun'},
+  {letter:'T',sound:'tuh, like in Tree'},
+];
+let phScore=0,phRound=0,phTarget;
+function buildPhonicsMatch(){phScore=0;phRound=0;nextPhonicsRound();}
+function nextPhonicsRound(){
+  const totalRounds=diffLevel===1?4:diffLevel===2?5:6;
+  phRound++;
+  if(phRound>totalRounds){endGame(phScore,totalRounds,'phonicsMatch');return;}
+  const showCount=diffLevel===1?4:diffLevel===2?5:6;
+  const shuffled=[...PHONICS].sort(()=>Math.random()-.5).slice(0,showCount);
+  phTarget=shuffled[Math.floor(Math.random()*shuffled.length)];
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🗣️ Phonics Sound Match!</div>
+      <div class="game-inst">Round ${phRound}/${totalRounds} · Score: ${phScore} ⭐</div>
+      <div class="phonics-prompt">
+        <button class="phonics-sound-btn" onclick="speakText('${phTarget.sound}')">
+          🔊 Tap to hear the sound!
+        </button>
+      </div>
+      <div class="phonics-grid">${shuffled.map(p=>
+        `<div class="phonics-letter" onclick="checkPhonics(this,'${p.letter}','${phTarget.letter}')">${p.letter}</div>`
+      ).join('')}</div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  setTimeout(()=>speakText(phTarget.sound),500);
+}
+function checkPhonics(el,chosen,target){
+  document.querySelectorAll('.phonics-letter').forEach(l=>l.onclick=null);
+  if(chosen===target){
+    el.classList.add('correct');phScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Correct! '+target+' says "'+phTarget.sound.split(',')[0]+'"!';
+    mascotPraise();
+  } else {
+    el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.phonics-letter').forEach(l=>{if(l.textContent===target)l.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ That was '+chosen+'! The answer is '+target+'.';
+    mascotHint();
+  }
+  setTimeout(nextPhonicsRound,1500);
+}
+
+// ══════════════════════════════════════
+//  WEATHER PICKER
+// ══════════════════════════════════════
+const WEATHERS=[
+  {emoji:'☀️',label:'Sunny',msg:'Beautiful sunny day! ☀️'},
+  {emoji:'⛅',label:'Cloudy',msg:'Clouds in the sky today! ⛅'},
+  {emoji:'🌧️',label:'Rainy',msg:'Rainy day — perfect for indoor fun! 🌧️'},
+  {emoji:'⛈️',label:'Stormy',msg:'Big storm! Stay safe and cozy! ⛈️'},
+  {emoji:'❄️',label:'Cold',msg:'Brr, it\'s chilly! Wrap up warm! ❄️'},
+  {emoji:'🌈',label:'Rainbow',msg:'A rainbow day — how magical! 🌈'},
+];
+let todayWeather=localStorage.getItem('c_weather_'+todayKey())||'';
+
+function renderWeather(){
+  if(todayWeather){
+    document.getElementById('weatherDone').textContent='✅ Today: '+todayWeather;
+    document.getElementById('weatherOpts').innerHTML=WEATHERS.map(w=>
+      `<div class="weather-btn ${w.label===todayWeather?'selected':''}" style="pointer-events:none">
+        <span class="weather-emoji">${w.emoji}</span><span class="weather-label">${w.label}</span>
+      </div>`
+    ).join('');
+    return;
+  }
+  document.getElementById('weatherOpts').innerHTML=WEATHERS.map(w=>
+    `<div class="weather-btn" onclick="pickWeather('${w.label}','${w.msg.replace(/'/g,"\\'")}')">
+      <span class="weather-emoji">${w.emoji}</span><span class="weather-label">${w.label}</span>
+    </div>`
+  ).join('');
+  document.getElementById('weatherDone').textContent='';
+}
+function pickWeather(label,msg){
+  todayWeather=label;
+  localStorage.setItem('c_weather_'+todayKey(),label);
+  playCorrect();mascotSay(msg);
+  // Save weather history
+  const hist=JSON.parse(localStorage.getItem('c_weather_hist')||'[]');
+  hist.push({date:todayKey(),weather:label});
+  if(hist.length>60)hist.shift();
+  localStorage.setItem('c_weather_hist',JSON.stringify(hist));
+  renderWeather();
+}
+
+// ══════════════════════════════════════
+//  PHYSICAL ACTIVITY BANNER (always visible)
+// ══════════════════════════════════════
+function renderPhysBanner(){
+  const pa=getPhysicalActivity();
+  const banner=document.getElementById('physBanner');
+  if(!pa||done.some(d=>PHYSICAL_ACTS.some(p=>p.title===d.title))){
+    banner.style.display='none';return;
+  }
+  banner.style.display='flex';
+  document.getElementById('physBannerTitle').textContent='💪 '+pa.title;
+  document.getElementById('physBannerDesc').textContent=pa.desc.substring(0,50)+'...';
+  // Show mini animation
+  document.getElementById('physBannerAnim').innerHTML=pa.svg.replace(/viewBox="0 0 90 120"/,'viewBox="0 0 90 120" style="width:50px;height:50px"');
+}
+function openPhysActivity(){
+  const pa=getPhysicalActivity();
+  if(!pa)return;
+  playClick();
+  showPhysicalAct(pa);
+}
+
+// ══════════════════════════════════════
 //  BOOT
 // ══════════════════════════════════════
 setupHeader();showSpill();renderWbar();renderFact();renderStory();renderChallenge();applyRewards();
-renderStarPath();renderSpark();
+renderStarPath();renderSpark();renderWeather();renderPhysBanner();
 document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===tab));
 document.getElementById('subjRow').classList.toggle('show',tab==='learning');
 document.getElementById('gameRow').classList.toggle('show',tab==='games');
+document.getElementById('weatherBar').classList.toggle('show',tab==='morning');
 document.getElementById('timerBar').classList.add('show');
 
 // Morning tune + feelings check-in
