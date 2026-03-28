@@ -109,6 +109,21 @@ body.bedtime .story-banner{background:linear-gradient(135deg,#2a2044,#1a2a44);}
 @media(min-width:481px){.tab .tab-icon{font-size:1.6rem;}.tab .tab-label{font-size:.62rem;}.tab{padding:8px 6px 6px;border-radius:18px;}}
 @media(min-width:769px){.tab .tab-icon{font-size:1.8rem;}.tab .tab-label{font-size:.68rem;}.tab{padding:10px 8px 7px;border-radius:20px;gap:2px;}}
 
+/* TODAY IS... TEACHING BAR */
+.today-bar{margin:8px 12px 0;padding:12px 16px;border-radius:16px;
+  background:linear-gradient(135deg,#e8f5ff,#f0e8ff,#fff5e8);
+  box-shadow:0 4px 14px rgba(167,139,250,.1);cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;gap:12px;}
+body.bedtime .today-bar{background:linear-gradient(135deg,#1a2a3e,#2a1a3e,#2a2a1e);}
+.today-bar:active{transform:scale(.98);}
+.today-clock{width:48px;height:48px;flex-shrink:0;position:relative;}
+.today-clock svg{width:100%;height:100%;}
+.today-info{flex:1;min-width:0;}
+.today-day{font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;color:var(--purple);line-height:1.2;}
+.today-date{font-size:.78rem;color:var(--text2);font-weight:600;}
+.today-time{font-family:'Baloo 2',cursive;font-size:.72rem;color:var(--text4);margin-top:1px;}
+.today-speak{font-size:1.1rem;flex-shrink:0;opacity:.5;}
+
 /* DAILY PHYSICAL ACTIVITY BANNER */
 .phys-banner{display:flex;align-items:center;gap:10px;margin:8px 12px 0;padding:12px 16px;
   border-radius:16px;background:linear-gradient(135deg,#fff0e0,#ffe8d0);cursor:pointer;
@@ -273,6 +288,7 @@ body.bedtime .weather-btn.selected{background:#1a2a4e;}
 .gp[data-g="shapes"].active {background:linear-gradient(135deg,#4ecdc4,#56cf81);}
 .gp[data-g="creative"].active{background:linear-gradient(135deg,#ff6b9d,#a78bfa);}
 .gp[data-g="brain"].active  {background:linear-gradient(135deg,#4fa3e0,#56cf81);}
+.gp[data-g="time"].active   {background:linear-gradient(135deg,#ffb830,#a78bfa);}
 .sp{flex-shrink:0;border:none;padding:5px 13px;border-radius:50px;cursor:pointer;
   font-family:'Baloo 2',cursive;font-size:.76rem;font-weight:700;background:#f0f0f0;color:var(--text4);transition:all .2s;}
 .sp.active{color:#fff;}
@@ -1124,6 +1140,18 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   <button class="gp"        data-g="shapes"   onclick="switchGameCat('shapes')">🔺 Shapes</button>
   <button class="gp"        data-g="creative" onclick="switchGameCat('creative')">🎨 Creative</button>
   <button class="gp"        data-g="brain"    onclick="switchGameCat('brain')">🧠 Brain</button>
+  <button class="gp"        data-g="time"     onclick="switchGameCat('time')">🕐 Time</button>
+</div>
+
+<!-- Today is... Teaching Bar -->
+<div class="today-bar" id="todayBar" onclick="speakToday()">
+  <div class="today-clock" id="todayClock"></div>
+  <div class="today-info">
+    <div class="today-day" id="todayDay">Today is...</div>
+    <div class="today-date" id="todayDate">Loading...</div>
+    <div class="today-time" id="todayTime">🕐 --:--</div>
+  </div>
+  <span class="today-speak">🔊</span>
 </div>
 
 <div class="wbar" id="wbar"></div>
@@ -1595,6 +1623,16 @@ const CUR = {
     {w:6,subj:'maths',emoji:'💰',title:'Learn Coins',desc:'What does ₹1 and ₹2 look like? Count 5 coins!',learn:'₹1 is worth ONE rupee. 5 coins of ₹1 = ₹5!',why:'Financial literacy starts with recognising coins.',steps:['Find coins at home','Pick out all ₹1 coins','Count 5 of them: that\'s ₹5!','Try ₹2 coins!'],stars:4,tag:'🔢 Maths'},
     {w:7,subj:'maths',emoji:'➗',title:'Share Equally',desc:'Share 6 biscuits between 2 people!',learn:'Sharing equally is the beginning of division!',why:'Division through sharing is natural learning.',steps:['Get 6 small objects','Make 2 piles','Keep moving until equal','Count each pile!'],stars:4,tag:'🔢 Maths'},
     {w:8,subj:'maths',emoji:'🔢',title:'Number Patterns',desc:'2, 4, 6, __ ? Count by 2s!',learn:'Skip counting is counting by jumping over numbers.',why:'Pattern recognition is essential for higher maths.',steps:['Say: 2,4,6,8 — what comes next?','Clap every 2 counts to 10','Try 5,10,15 — what comes next?','Jump on every 5th number!'],stars:4,tag:'🔢 Maths'},
+    // DAYS, WEEKS, MONTHS & TIME
+    {w:1,subj:'maths',emoji:'📅',title:'Days of the Week',desc:'Monday, Tuesday, Wednesday... learn all 7 days!',learn:'There are 7 days in a week. They always come in the same order! The week starts with Monday and ends with Sunday.',why:'Knowing days helps children understand routines and plan ahead.',steps:['Say all 7 days with Mummy','Clap on each day as you say it','Which day is today?','What day comes after today?'],stars:3,tag:'🔢 Maths'},
+    {w:2,subj:'maths',emoji:'📆',title:'Yesterday, Today, Tomorrow',desc:'Today is the day we are in right now!',learn:'Yesterday already happened. Today is NOW. Tomorrow has not come yet! These are the 3 most important time words.',why:'Understanding time sequence builds planning skills.',steps:['What day is TODAY?','What day was YESTERDAY?','What day will TOMORROW be?','What did you do yesterday?'],stars:3,tag:'🔢 Maths'},
+    {w:3,subj:'maths',emoji:'🗓️',title:'12 Months of the Year',desc:'January, February, March... learn all 12 months!',learn:'There are 12 months in a year. January is the first month and December is the last. Your birthday is in one of these months!',why:'Months help children understand seasons, birthdays, and festivals.',steps:['Say the first 6 months with Mummy','Now say the next 6 months','Which month is your birthday in?','Which month are we in right now?'],stars:4,tag:'🔢 Maths'},
+    {w:3,subj:'maths',emoji:'🎂',title:'My Birthday Month',desc:'Learn which month YOUR birthday is in!',learn:'Everyone has a special birthday month! There are 12 months. Some months have 30 days, some have 31, and February has 28!',why:'Personalising months makes them memorable.',steps:['Ask Mummy: Which month is my birthday?','Count the months from January to your birthday','How many months until your birthday?','Draw a birthday cake and write the month!'],stars:3,tag:'🔢 Maths'},
+    {w:4,subj:'maths',emoji:'🌸',title:'Seasons of the Year',desc:'Spring, Summer, Autumn, Winter — 4 seasons!',learn:'There are 4 seasons. Spring is when flowers grow. Summer is hot. Autumn leaves fall. Winter is cold! Each season lasts about 3 months.',why:'Seasons connect months to nature and weather.',steps:['Name the 4 seasons','Which season are we in now?','What happens to trees in each season?','Draw your favourite season!'],stars:3,tag:'🔢 Maths'},
+    {w:4,subj:'maths',emoji:'⏰',title:'Morning, Afternoon & Night',desc:'When do we eat breakfast? When do we sleep?',learn:'Morning is when the sun rises. Afternoon is the middle of the day. Evening is when the sun sets. Night is dark and we sleep!',why:'Understanding time of day builds daily routine awareness.',steps:['When do you wake up? Morning!','When do you eat lunch? Afternoon!','When does it get dark? Evening!','When do you sleep? Night!'],stars:2,tag:'🔢 Maths'},
+    {w:5,subj:'maths',emoji:'🕐',title:'Reading a Clock — Hours',desc:'The short hand shows the hour! Where is it pointing?',learn:'A clock has 2 hands. The SHORT hand shows the HOUR. When it points to 3, it is 3 o\'clock. When it points to 9, it is 9 o\'clock!',why:'Clock reading is an essential daily life skill.',steps:['Find a clock at home','Point to the SHORT hand — that shows the hour','What number is it pointing to?','That is the time! Say it: "It is __ o\'clock!"'],stars:4,tag:'🔢 Maths'},
+    {w:6,subj:'maths',emoji:'🕧',title:'Half Past — 30 Minutes',desc:'When the long hand is at 6, it is half past!',learn:'The LONG hand shows minutes. When it points to 12 it is exactly o\'clock. When it points to 6 it is HALF PAST — that means 30 minutes have gone by!',why:'Half past is the next step after learning o\'clock.',steps:['Find a clock — where is the long hand?','If it points to 12 → "o\'clock"','If it points to 6 → "half past"','Practice: "half past 2", "half past 7"!'],stars:4,tag:'🔢 Maths'},
+    {w:7,subj:'maths',emoji:'📅',title:'Weeks in a Month',desc:'A month has about 4 weeks. A week has 7 days!',learn:'1 week = 7 days. 1 month = about 4 weeks (28-31 days). 1 year = 12 months = 52 weeks = 365 days! That is a LOT of days!',why:'Understanding week-month-year builds number sense for time.',steps:['Count to 7 — that is one week!','How many weeks until next month?','Count 4 fingers — that is 4 weeks in a month','12 months make 1 whole year!'],stars:4,tag:'🔢 Maths'},
     // ART
     {w:1,subj:'art',emoji:'🎨',title:'Primary Colours',desc:'Red, Yellow and Blue — you cannot make these from other colours!',learn:'Mix them to make NEW colours! Red+Blue=Purple!',why:'Colour theory is the foundation of visual art.',steps:['Get red, yellow and blue paint','Paint 3 circles, one each colour','Mix red + yellow — what colour?','Mix blue + yellow?'],stars:3,tag:'🎨 Art'},
     {w:2,subj:'art',emoji:'✏️',title:'Shapes into Pictures',desc:'Turn a circle into a sun, a triangle into a tree!',learn:'All drawings start with basic shapes!',why:'Shape-to-picture thinking is how artists see.',steps:['Draw a big circle','Add rays — it\'s a sun!','Draw triangle on rectangle','Add a door — it\'s a house!'],stars:3,tag:'🎨 Art'},
@@ -1777,6 +1815,8 @@ const GAMES = [
   {id:'findLetter',week:2, emoji:'🔤', title:'Find the Letter!',        desc:'Find all the target letters hidden in the grid!',    cat:'letters'},
   {id:'animalSound',week:1,emoji:'🐶', title:'Animal Sounds Match!',    desc:'Listen to the sound and tap the right animal!',      cat:'brain'},
   {id:'phonicsMatch',week:1,emoji:'🗣️',title:'Phonics Sound Match!',    desc:'Hear the letter sound and tap the right letter!',    cat:'letters'},
+  {id:'daysOrder',   week:1,emoji:'📅',title:'Days of the Week!',       desc:'Put the days in the right order!',                   cat:'time'},
+  {id:'clockGame',   week:2,emoji:'🕐',title:'What Time Is It?',        desc:'Look at the clock and pick the right time!',         cat:'time'},
 ];
 
 // ══════════════════════════════════════
@@ -1905,8 +1945,8 @@ function showActivityPicker(pool){
     const isGame=tab==='games';
     const catColors={maths:'linear-gradient(135deg,#ffb830,#ff8c69)',letters:'linear-gradient(135deg,#a78bfa,#4fa3e0)',
       shapes:'linear-gradient(135deg,#4ecdc4,#56cf81)',creative:'linear-gradient(135deg,#ff6b9d,#a78bfa)',
-      brain:'linear-gradient(135deg,#4fa3e0,#56cf81)'};
-    const catNames={maths:'🔢 Maths',letters:'🔤 Letters',shapes:'🔺 Shapes',creative:'🎨 Creative',brain:'🧠 Brain'};
+      brain:'linear-gradient(135deg,#4fa3e0,#56cf81)',time:'linear-gradient(135deg,#ffb830,#a78bfa)'};
+    const catNames={maths:'🔢 Maths',letters:'🔤 Letters',shapes:'🔺 Shapes',creative:'🎨 Creative',brain:'🧠 Brain',time:'🕐 Time'};
     const tagBg=SC[a.subj]||'linear-gradient(135deg,#56cf81,#4ecdc4)';
     const tagHtml=a.tag?`<span class="pi-tag" style="background:${tagBg}">${a.tag}</span>`:
       (isGame&&a.cat)?`<span class="pi-tag" style="background:${catColors[a.cat]||'linear-gradient(135deg,#ff6b9d,#ffb830)'}">${catNames[a.cat]||'🎮 Game'}</span>`:'';
@@ -2051,7 +2091,8 @@ function renderGame(g){
   renderHist();updateProg();renderWbar();renderChallenge();
   const fns={numMatch:buildNumMatch,wordBuild:buildWordBuild,countGame:buildCountGame,
     colourMix:buildColourMix,shapeTap:buildShapeTap,memoryFlip:buildMemoryFlip,
-    findLetter:buildFindLetter,animalSound:buildAnimalSound,phonicsMatch:buildPhonicsMatch};
+    findLetter:buildFindLetter,animalSound:buildAnimalSound,phonicsMatch:buildPhonicsMatch,
+    daysOrder:buildDaysOrder,clockGame:buildClockGame};
   (fns[g.id]||buildCountGame)();
   // Append skip button after game panel
   const area=document.getElementById('area');
@@ -2763,6 +2804,7 @@ function switchTab(t){
   document.getElementById('sparkCard').style.display=isSpecial?'none':'flex';
   document.getElementById('qcFab').style.display=(t==='create'||t==='parent'||t==='stories')?'none':'flex';
   document.getElementById('weatherBar').classList.toggle('show',t==='morning');
+  document.getElementById('todayBar').style.display=isSpecial?'none':'flex';
   document.getElementById('physBanner').style.display='none';
   if(t==='morning'||t==='evening')renderPhysBanner();
 
@@ -3532,10 +3574,202 @@ function openPhysActivity(){
 }
 
 // ══════════════════════════════════════
+//  DAYS OF THE WEEK GAME
+// ══════════════════════════════════════
+const DAYS_FULL=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const MONTHS_FULL=['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+let dayScore=0,dayRound=0;
+function buildDaysOrder(){dayScore=0;dayRound=0;nextDayRound();}
+function nextDayRound(){
+  dayRound++;
+  if(dayRound>5){endGame(dayScore,5,'daysOrder');return;}
+  // Mix of question types
+  const types=['whatDay','nextDay','whatMonth','nextMonth','howMany'];
+  const type=types[(dayRound-1)%types.length];
+  let question,answer,opts;
+
+  if(type==='whatDay'){
+    const idx=Math.floor(Math.random()*7);
+    question=`Day number ${idx+1} of the week is...?`;
+    answer=DAYS_FULL[idx];
+    opts=[answer,...DAYS_FULL.filter(d=>d!==answer).sort(()=>Math.random()-.5).slice(0,2)].sort(()=>Math.random()-.5);
+  } else if(type==='nextDay'){
+    const idx=Math.floor(Math.random()*7);
+    question=`What comes AFTER ${DAYS_FULL[idx]}?`;
+    answer=DAYS_FULL[(idx+1)%7];
+    opts=[answer,...DAYS_FULL.filter(d=>d!==answer).sort(()=>Math.random()-.5).slice(0,2)].sort(()=>Math.random()-.5);
+  } else if(type==='whatMonth'){
+    const idx=Math.floor(Math.random()*12);
+    question=`Month number ${idx+1} is...?`;
+    answer=MONTHS_FULL[idx];
+    opts=[answer,...MONTHS_FULL.filter(m=>m!==answer).sort(()=>Math.random()-.5).slice(0,2)].sort(()=>Math.random()-.5);
+  } else if(type==='nextMonth'){
+    const idx=Math.floor(Math.random()*12);
+    question=`What month comes AFTER ${MONTHS_FULL[idx]}?`;
+    answer=MONTHS_FULL[(idx+1)%12];
+    opts=[answer,...MONTHS_FULL.filter(m=>m!==answer).sort(()=>Math.random()-.5).slice(0,2)].sort(()=>Math.random()-.5);
+  } else {
+    const q=[{q:'How many days in a week?',a:'7',wrong:['5','10']},{q:'How many months in a year?',a:'12',wrong:['10','7']},{q:'How many seasons in a year?',a:'4',wrong:['3','6']}];
+    const pick=q[Math.floor(Math.random()*q.length)];
+    question=pick.q;answer=pick.a;
+    opts=[answer,...pick.wrong].sort(()=>Math.random()-.5);
+  }
+
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">📅 Days & Months!</div>
+      <div class="game-inst">Round ${dayRound}/5 · Score: ${dayScore} ⭐</div>
+      <div class="count-q" style="margin:14px 0">${question}</div>
+      <div class="count-opts" style="grid-template-columns:1fr">${opts.map(o=>
+        `<div class="copt" onclick="checkDayAnswer(this,'${o}','${answer}')">${o}</div>`
+      ).join('')}</div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText(question);
+}
+function checkDayAnswer(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');dayScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Correct! '+answer+'!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ The answer is '+answer+'!';mascotHint();}
+  setTimeout(nextDayRound,1500);
+}
+
+// ══════════════════════════════════════
+//  CLOCK READING GAME
+// ══════════════════════════════════════
+let clkScore=0,clkRound=0;
+function buildClockGame(){clkScore=0;clkRound=0;nextClockRound();}
+function nextClockRound(){
+  const totalRounds=diffLevel===1?4:5;
+  clkRound++;
+  if(clkRound>totalRounds){endGame(clkScore,totalRounds,'clockGame');return;}
+
+  // Generate a random hour, and maybe half-past for higher difficulty
+  const hour=Math.floor(Math.random()*12)+1;
+  const isHalf=diffLevel>=2&&Math.random()>.5;
+  const minute=isHalf?30:0;
+  const timeStr=isHalf?`Half past ${hour}`:`${hour} o'clock`;
+
+  // Draw clock SVG
+  const hourAngle=(hour%12)*30+(minute*.5)-90;
+  const minuteAngle=minute*6-90;
+  const hx=50+Math.cos(hourAngle*Math.PI/180)*18;
+  const hy=50+Math.sin(hourAngle*Math.PI/180)*18;
+  const mx=50+Math.cos(minuteAngle*Math.PI/180)*26;
+  const my=50+Math.sin(minuteAngle*Math.PI/180)*26;
+  let nums='';
+  for(let i=1;i<=12;i++){
+    const a=(i*30-90)*Math.PI/180;
+    nums+=`<text x="${50+Math.cos(a)*35}" y="${50+Math.sin(a)*35+4}" text-anchor="middle" font-size="8" font-weight="700" fill="var(--text)">${i}</text>`;
+  }
+  const clockSvg=`<svg viewBox="0 0 100 100" style="width:140px;height:140px;display:block;margin:10px auto">
+    <circle cx="50" cy="50" r="44" fill="var(--inputbg)" stroke="var(--purple)" stroke-width="3"/>
+    <circle cx="50" cy="50" r="40" fill="none" stroke="var(--border)" stroke-width="1"/>
+    ${nums}
+    <line x1="50" y1="50" x2="${hx}" y2="${hy}" stroke="var(--pink)" stroke-width="4" stroke-linecap="round"/>
+    <line x1="50" y1="50" x2="${mx}" y2="${my}" stroke="var(--blue)" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="50" cy="50" r="3" fill="var(--purple)"/>
+  </svg>`;
+
+  // Generate wrong options
+  const wrongOpts=[];
+  while(wrongOpts.length<2){
+    const wh=Math.floor(Math.random()*12)+1;
+    const wHalf=diffLevel>=2&&Math.random()>.5;
+    const wStr=wHalf?`Half past ${wh}`:`${wh} o'clock`;
+    if(wStr!==timeStr&&!wrongOpts.includes(wStr))wrongOpts.push(wStr);
+  }
+  const opts=[timeStr,...wrongOpts].sort(()=>Math.random()-.5);
+
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🕐 What Time Is It?</div>
+      <div class="game-inst">Round ${clkRound}/${totalRounds} · Score: ${clkScore} ⭐</div>
+      <div style="text-align:center;font-size:.85rem;color:var(--text3);margin-bottom:4px">Look at the clock! 🔍</div>
+      ${clockSvg}
+      <div style="text-align:center;font-size:.72rem;color:var(--text5);margin-bottom:10px">
+        <span style="color:var(--pink)">●</span> Short = Hour &nbsp; <span style="color:var(--blue)">●</span> Long = Minutes
+      </div>
+      <div class="count-opts">${opts.map(o=>
+        `<div class="copt" style="font-size:1rem" onclick="checkClockAnswer(this,'${o.replace(/'/g,"\\'")}','${timeStr.replace(/'/g,"\\'")}')">${o}</div>`
+      ).join('')}</div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('What time does the clock show?');
+}
+function checkClockAnswer(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');clkScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Correct! It is '+answer+'!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ The answer is '+answer+'!';mascotHint();}
+  setTimeout(nextClockRound,1500);
+}
+
+// ══════════════════════════════════════
+//  TODAY IS... TEACHING BAR
+// ══════════════════════════════════════
+function renderTodayBar(){
+  const now=new Date();
+  const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const dayName=dayNames[now.getDay()];
+  const monthName=monthNames[now.getMonth()];
+  const date=now.getDate();
+  const hours=now.getHours();
+  const mins=now.getMinutes();
+  const h12=hours%12||12;
+  const ampm=hours<12?'morning':'afternoon';
+  const timeStr=`${h12}:${mins.toString().padStart(2,'0')} ${ampm}`;
+
+  document.getElementById('todayDay').textContent=`Today is ${dayName}!`;
+  document.getElementById('todayDate').textContent=`${date} ${monthName} — Week ${getWeek().week}`;
+  document.getElementById('todayTime').textContent=`🕐 ${timeStr}`;
+
+  // Draw mini analog clock
+  const hourAngle=(h12*30+(mins*.5))-90;
+  const minAngle=(mins*6)-90;
+  const hx=18+Math.cos(hourAngle*Math.PI/180)*8;
+  const hy=18+Math.sin(hourAngle*Math.PI/180)*8;
+  const mx=18+Math.cos(minAngle*Math.PI/180)*12;
+  const my=18+Math.sin(minAngle*Math.PI/180)*12;
+  let ticks='';
+  for(let i=0;i<12;i++){
+    const a=(i*30)*Math.PI/180;
+    ticks+=`<circle cx="${18+Math.cos(a)*15}" cy="${18+Math.sin(a)*15}" r="1" fill="var(--text5)"/>`;
+  }
+  document.getElementById('todayClock').innerHTML=`<svg viewBox="0 0 36 36">
+    <circle cx="18" cy="18" r="17" fill="var(--inputbg)" stroke="var(--purple)" stroke-width="1.5"/>
+    ${ticks}
+    <line x1="18" y1="18" x2="${hx}" y2="${hy}" stroke="var(--pink)" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="18" y1="18" x2="${mx}" y2="${my}" stroke="var(--blue)" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="18" cy="18" r="1.5" fill="var(--purple)"/>
+  </svg>`;
+}
+
+function speakToday(){
+  const now=new Date();
+  const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const h=now.getHours()%12||12;
+  const m=now.getMinutes();
+  const text=`Today is ${dayNames[now.getDay()]}, ${monthNames[now.getMonth()]} ${now.getDate()}. The time is ${h} ${m>0?'and '+m+' minutes':'o clock'}. It is week ${getWeek().week} of our learning journey!`;
+  speakText(text);
+}
+
+// Update clock every minute
+setInterval(renderTodayBar,60000);
+
+// ══════════════════════════════════════
 //  BOOT
 // ══════════════════════════════════════
 setupHeader();showSpill();renderWbar();renderFact();renderStory();renderChallenge();applyRewards();
-renderStarPath();renderSpark();renderWeather();renderPhysBanner();
+renderStarPath();renderSpark();renderWeather();renderPhysBanner();renderTodayBar();
 document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===tab));
 document.getElementById('subjRow').classList.toggle('show',tab==='learning');
 document.getElementById('gameRow').classList.toggle('show',tab==='games');
