@@ -173,6 +173,91 @@ body.bedtime .weather-btn.selected{background:#1a2a4e;}
 .phonics-letter.correct{border-color:var(--green);background:#e8fff0;color:var(--green);}
 .phonics-letter.wrong{border-color:var(--pink);background:#ffe8f0;animation:shake .3s;}
 
+/* BREATHING ANIMATION (#1a) */
+.breathe-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;margin:14px 0;}
+.breathe-circle{width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle,rgba(167,139,250,.3),rgba(78,205,196,.2));
+  border:3px solid var(--purple);display:flex;align-items:center;justify-content:center;
+  font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;color:var(--purple);
+  transition:all .3s;}
+.breathe-circle.inhale{transform:scale(1.4);background:radial-gradient(circle,rgba(86,207,129,.3),rgba(78,205,196,.2));border-color:var(--green);}
+.breathe-circle.hold{transform:scale(1.4);border-color:var(--sun);color:var(--sun);}
+.breathe-circle.exhale{transform:scale(1);border-color:var(--pink);color:var(--pink);}
+.breathe-count{font-family:'Baloo 2',cursive;font-size:.85rem;color:var(--text3);}
+.breathe-btn{border:none;padding:12px 28px;border-radius:50px;font-family:'Baloo 2',cursive;
+  font-size:.92rem;font-weight:700;cursor:pointer;color:#fff;
+  background:linear-gradient(135deg,var(--purple),var(--mint));margin-top:6px;}
+
+/* BEAT THE TIMER (#2a) */
+.btt-card{background:linear-gradient(135deg,#fff5e0,#ffe0f0);border-radius:16px;
+  margin:8px 12px 0;padding:12px 16px;display:flex;align-items:center;gap:10px;
+  box-shadow:0 4px 14px rgba(255,140,105,.12);cursor:pointer;border-left:4px solid var(--coral);}
+body.bedtime .btt-card{background:linear-gradient(135deg,#2a2a3e,#2e1a2e);}
+.btt-card:active{transform:scale(.98);}
+.btt-emoji{font-size:1.6rem;}
+.btt-info{flex:1;}
+.btt-title{font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--coral);}
+.btt-desc{font-size:.68rem;color:var(--text3);}
+.btt-timer{font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;color:var(--coral);flex-shrink:0;}
+.btt-popup{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998;
+  display:flex;align-items:center;justify-content:center;padding:20px;}
+.btt-popup-card{background:var(--cardbg);border-radius:24px;padding:24px;text-align:center;
+  max-width:340px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:pop .4s cubic-bezier(.68,-.55,.27,1.55);}
+.btt-bar{width:100%;height:14px;background:#f0f0f0;border-radius:50px;overflow:hidden;margin:12px 0;}
+body.bedtime .btt-bar{background:#333355;}
+.btt-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--green),var(--sun));transition:width .3s;}
+.btt-time{font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;color:var(--coral);}
+
+/* SIMON SAYS */
+.simon-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0;max-width:260px;margin-left:auto;margin-right:auto;}
+.simon-btn{aspect-ratio:1;border-radius:18px;border:3px solid transparent;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:700;color:var(--text2);
+  transition:all .2s;background:var(--inputbg);}
+.simon-btn .sb-emoji{font-size:2rem;}
+.simon-btn:active{transform:scale(.9);}
+.simon-btn.flash{border-color:var(--sun);background:#fff5e0;transform:scale(1.08);box-shadow:0 0 20px rgba(255,184,48,.4);}
+.simon-btn.correct{border-color:var(--green);background:#e8fff0;}
+.simon-btn.wrong{border-color:var(--pink);background:#ffe8f0;animation:shake .3s;}
+.simon-inst{text-align:center;padding:12px;background:linear-gradient(135deg,var(--purple),var(--blue));
+  border-radius:14px;color:#fff;font-family:'Baloo 2',cursive;font-size:.92rem;font-weight:700;
+  margin-bottom:10px;min-height:48px;}
+
+/* NATURE SCAVENGER HUNT */
+.hunt-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;}
+.hunt-item{padding:14px;border-radius:16px;background:var(--inputbg);border:3px solid var(--border);
+  text-align:center;cursor:pointer;transition:all .2s;}
+.hunt-item:active{transform:scale(.95);}
+.hunt-item.found{border-color:var(--green);background:#e8fff0;}
+.hunt-item .hi-emoji{font-size:1.8rem;display:block;margin-bottom:4px;}
+.hunt-item .hi-text{font-size:.78rem;color:var(--text2);font-weight:600;}
+.hunt-item .hi-check{font-size:.7rem;color:var(--green);font-weight:700;margin-top:3px;}
+
+/* WEATHER SUGGESTIONS */
+.weather-suggest{margin-top:8px;padding:8px 12px;border-radius:12px;
+  background:rgba(79,163,224,.08);border-left:3px solid var(--blue);
+  font-size:.78rem;color:var(--text2);}
+.weather-suggest strong{color:var(--blue);}
+
+/* STORY QUESTIONS */
+.sq-box{background:rgba(255,184,48,.08);border-radius:14px;padding:12px 16px;margin-top:12px;
+  border:2px dashed rgba(255,184,48,.3);position:relative;z-index:2;}
+.sq-label{font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:700;color:var(--sun);
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.sq-text{font-size:.88rem;color:rgba(255,255,255,.75);line-height:1.5;}
+
+/* CREATIVE GALLERY */
+.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;}
+.gallery-thumb{aspect-ratio:4/3;border-radius:12px;overflow:hidden;border:2px solid var(--border);
+  cursor:pointer;transition:all .2s;background:var(--inputbg);}
+.gallery-thumb:active{transform:scale(.95);}
+.gallery-thumb img{width:100%;height:100%;object-fit:cover;}
+.gallery-date{font-size:.58rem;color:var(--text5);text-align:center;margin-top:2px;}
+.gallery-empty{grid-column:1/-1;text-align:center;padding:20px;color:var(--text5);font-size:.82rem;}
+.gallery-view{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9998;
+  display:flex;align-items:center;justify-content:center;padding:20px;cursor:pointer;}
+.gallery-view img{max-width:100%;max-height:80vh;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.5);}
+
 /* BEDTIME STORIES */
 .stories-list{display:flex;flex-direction:column;gap:10px;}
 .story-card-item{display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;
@@ -1211,6 +1296,21 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   <span class="spark-done" id="sparkDone"></span>
 </div>
 
+<!-- Beat the Timer (#2a) -->
+<div class="btt-card" id="bttCard" style="display:none" onclick="startBeatTimer()">
+  <span class="btt-emoji">⏱️</span>
+  <div class="btt-info">
+    <div class="btt-title" id="bttTitle">⏱️ Beat the Timer!</div>
+    <div class="btt-desc" id="bttDesc">Can you do it before time runs out?</div>
+  </div>
+  <span class="btt-timer">GO!</span>
+</div>
+
+<!-- Beat timer popup (injected by JS) -->
+<div id="bttOverlay"></div>
+<!-- Gallery viewer (injected by JS) -->
+<div id="galleryView"></div>
+
 <div class="prog" id="progBar">
   <span class="pl">Today</span>
   <div class="pb"><div class="pf" id="pf" style="width:0%"></div></div>
@@ -1612,6 +1712,11 @@ const CUR = {
     {w:2,emoji:'🧹',title:'I Cleaned My Toys!',desc:'Put all toys back in their box. Tap "I did it!" when done!',learn:'Cleaning up shows you are responsible and grown up!',why:'Real actions build real habits.',steps:['Look at your room','Pick up every toy','Put each one away neatly','Tap "I did it!" below!'],stars:3,realLife:true},
     {w:4,emoji:'🍽️',title:'I Helped Cook Today!',desc:'Help Mummy in the kitchen — stir, wash, or set the table!',learn:'Cooking is science + maths + creativity all in one!',why:'Kitchen helpers become confident cooks.',steps:['Ask Mummy what you can help with','Wash vegetables or stir gently','Set the plates out','Tap "I did it!" when done!'],stars:3,realLife:true},
     {w:6,emoji:'🌱',title:'I Watered a Plant!',desc:'Give water to a real plant and watch it grow over days!',learn:'Plants need water, light and love — just like you!',why:'Caring for nature builds empathy.',steps:['Find a plant that needs water','Fill a small cup','Pour gently at the roots','Tap "I did it!" below!'],stars:2,realLife:true},
+    // NATURE HUNT & EMPATHY
+    {w:1,emoji:'🌿',title:'Nature Spy — Find 5 Things!',desc:'Go outside and find 5 things from nature!',learn:'Being a nature spy means looking carefully at the world around you. Scientists call this observation!',why:'Outdoor observation builds curiosity and connects screen learning to the real world.',steps:['Find something CRUNCHY (a leaf?)','Find something SMOOTH (a pebble?)','Find something YELLOW (a flower?)','Find something TINY and something BIG!','Tap "I did it!" when you found all 5!'],stars:4,realLife:true},
+    {w:3,emoji:'🤗',title:'Give 3 Hugs Today!',desc:'Hug Mummy, Daddy or a friend — hugs make everyone happy!',learn:'Hugs release a special chemical in your brain called oxytocin that makes you feel safe and loved!',why:'Physical affection builds emotional security and empathy.',steps:['Give Mummy a big hug','Find someone else to hug','One more hug for anyone you love!','Tap "I did it!" — you are a hug champion!'],stars:2,realLife:true},
+    {w:5,emoji:'🧹',title:'Help Pick Up 3 Things!',desc:'Look around and pick up 3 things that are not in the right place!',learn:'Helping without being asked is called being PROACTIVE. It is a superpower!',why:'Volunteering to help builds responsibility and kindness.',steps:['Look around the room carefully','Find 3 things that belong somewhere else','Put each one in its right place','Tap "I did it!" — you are so helpful!'],stars:3,realLife:true},
+    {w:7,emoji:'💌',title:'Say Something Nice!',desc:'Tell someone one nice thing about them today!',learn:'Kind words make people feel wonderful inside. Scientists say kindness is contagious!',why:'Expressing appreciation builds social-emotional intelligence.',steps:['Think of someone you love','Think of one nice thing about them','Tell them: "I love you because..."','Tap "I did it!" — you spread happiness!'],stars:3,realLife:true},
   ],
   evening:[
     {w:1,emoji:'🧸',title:'Tidy Up All Toys',desc:'Every toy goes back in its right place before dinner!',learn:'Having an organised space helps your brain feel calm and ready.',why:'Routine tidying builds responsibility.',steps:['Look around the room','Pick up each toy','Put it in the right box','Floor clear? Great!'],stars:2},
@@ -1840,6 +1945,7 @@ const GAMES = [
   {id:'phonicsMatch',week:1,emoji:'🗣️',title:'Phonics Sound Match!',    desc:'Hear the letter sound and tap the right letter!',    cat:'letters'},
   {id:'daysOrder',   week:1,emoji:'📅',title:'Days of the Week!',       desc:'Put the days in the right order!',                   cat:'time'},
   {id:'clockGame',   week:2,emoji:'🕐',title:'What Time Is It?',        desc:'Look at the clock and pick the right time!',         cat:'time'},
+  {id:'simonSays',   week:1,emoji:'🎯',title:'Simon Says!',             desc:'Watch, remember, and repeat the pattern!',           cat:'brain'},
 ];
 
 // ══════════════════════════════════════
@@ -2060,6 +2166,15 @@ function showAct(a){
       ? `<div class="showme-row"><button class="showme-btn" id="showMeBtn" onclick="showMeDone()">📸 Show me — Done!</button></div>`
       : '';
 
+  // Breathing animation for calm/breathing activities
+  const isBreathing=a.title.toLowerCase().includes('breath')||a.title.toLowerCase().includes('calm');
+  const breatheHTML=isBreathing?`
+    <div class="breathe-wrap">
+      <div class="breathe-circle" id="breatheCircle"><span id="breatheLabel">Ready?</span></div>
+      <div class="breathe-count" id="breatheCount">Tap Start to begin</div>
+      <button class="breathe-btn" onclick="startBreathing()">🧘 Start Breathing Exercise</button>
+    </div>`:'';
+
   document.getElementById('area').innerHTML=`
     <div class="acard" id="ac">
       <div class="wtag">Week ${week} · ${tab.charAt(0).toUpperCase()+tab.slice(1)}</div>
@@ -2069,6 +2184,7 @@ function showAct(a){
       <div class="atitle">${a.title}</div>
       <div class="adesc">${a.desc}</div>
       ${lb}
+      ${breatheHTML}
       <div class="awhy">🌟 <strong>Why this helps:</strong> ${a.why}</div>
       <div class="asteps"><h4>📋 Step by Step</h4>${steps}</div>
       ${showMeBtn}
@@ -2115,7 +2231,7 @@ function renderGame(g){
   const fns={numMatch:buildNumMatch,wordBuild:buildWordBuild,countGame:buildCountGame,
     colourMix:buildColourMix,shapeTap:buildShapeTap,memoryFlip:buildMemoryFlip,
     findLetter:buildFindLetter,animalSound:buildAnimalSound,phonicsMatch:buildPhonicsMatch,
-    daysOrder:buildDaysOrder,clockGame:buildClockGame};
+    daysOrder:buildDaysOrder,clockGame:buildClockGame,simonSays:buildSimonSays};
   (fns[g.id]||buildCountGame)();
   // Append skip button after game panel
   const area=document.getElementById('area');
@@ -2523,6 +2639,10 @@ function renderCreativeZone(){
         <button class="create-tool" onclick="clearCanvas()">🗑️ Clear</button>
         <button class="create-tool" onclick="saveArtwork()" style="background:linear-gradient(135deg,var(--green),var(--mint));color:#fff">💾 Save</button>
       </div>
+      <div style="margin-top:14px">
+        <div style="font-family:'Baloo 2',cursive;font-size:.88rem;font-weight:700;color:var(--text3);margin-bottom:6px">🖼️ My Gallery</div>
+        <div class="gallery-grid">${renderGallery()}</div>
+      </div>
     </div>`;
   document.getElementById('hist').innerHTML='';
 
@@ -2601,7 +2721,8 @@ function saveArtwork(){
     link.download='my-little-star-art-'+Date.now()+'.png';
     link.href=drawCanvas.toDataURL('image/png');
     link.click();
-    playStar();mascotSay('Your art is saved! 🎨');
+    // Also save to gallery
+    saveToGallery();
   }catch(e){mascotSay('Oops! Try again!');}
 }
 
@@ -2828,6 +2949,8 @@ function switchTab(t){
   document.getElementById('storyBanner').style.display=isSpecial?'none':'flex';
   document.getElementById('starPath').style.display=isSpecial?'none':'block';
   document.getElementById('sparkCard').style.display=isSpecial?'none':'flex';
+  document.getElementById('bttCard').style.display='none';
+  if(!isSpecial)renderBtt();
   document.getElementById('qcFab').style.display=(t==='create'||t==='parent'||t==='stories')?'none':'flex';
   document.getElementById('weatherBar').classList.toggle('show',t==='morning');
   document.getElementById('todayBar').style.display=isSpecial?'none':'flex';
@@ -2892,6 +3015,7 @@ function openParentTab(){
   document.getElementById('storyBanner').style.display='none';
   document.getElementById('starPath').style.display='none';
   document.getElementById('sparkCard').style.display='none';
+  document.getElementById('bttCard').style.display='none';
   document.getElementById('qcFab').style.display='none';
   document.getElementById('weatherBar').classList.remove('show');
   document.getElementById('todayBar').style.display='none';
@@ -3177,6 +3301,7 @@ function renderStoryReader(){
       <div class="sr-moral-tag"><span>💛 ${s.moral}</span></div>
       <div class="sr-page">
         <div class="sr-page-text ${isParent?'parent-mode':''}">${page}</div>
+        ${getStoryQuestion(currentStoryIdx,currentPage)}
         <div class="sr-page-num">Page ${currentPage+1} of ${s.pages.length}</div>
       </div>
       <div class="sr-nav">
@@ -3612,8 +3737,18 @@ const WEATHERS=[
 let todayWeather=localStorage.getItem('c_weather_'+todayKey())||'';
 
 function renderWeather(){
+  const suggestions={
+    Sunny:'☀️ Go outside and play! Try counting clouds or finding shapes in them.',
+    Cloudy:'⛅ Draw the clouds you see! Are they fluffy or flat?',
+    Rainy:'🌧️ Perfect day for indoor crafts! Try making a paper boat and float it in a bowl.',
+    Stormy:'⛈️ Stay cozy inside! Build a blanket fort and read a story.',
+    Cold:'❄️ Wear warm clothes! Try breathing out — can you see your breath?',
+    Rainbow:'🌈 Go outside and look for the rainbow! Can you name all 7 colours?',
+  };
   if(todayWeather){
-    document.getElementById('weatherDone').textContent='✅ Today: '+todayWeather;
+    const suggest=suggestions[todayWeather]||'';
+    document.getElementById('weatherDone').innerHTML='✅ Today: '+todayWeather+
+      (suggest?`<div class="weather-suggest"><strong>💡 Activity idea:</strong> ${suggest}</div>`:'');
     document.getElementById('weatherOpts').innerHTML=WEATHERS.map(w=>
       `<div class="weather-btn ${w.label===todayWeather?'selected':''}" style="pointer-events:none">
         <span class="weather-emoji">${w.emoji}</span><span class="weather-label">${w.label}</span>
@@ -3855,10 +3990,291 @@ function speakToday(){
 setInterval(renderTodayBar,60000);
 
 // ══════════════════════════════════════
+//  STORY COMPREHENSION QUESTIONS (#4a)
+// ══════════════════════════════════════
+const STORY_QUESTIONS=[
+  // Questions per story — shown on pages 1,3,5 (every other page)
+  ['How do you think Tiku feels?','What will the rabbit do?','Would you keep going if you were tired?','What can we learn from Tiku?'],
+  ['Why is Sitara scared?','What would YOU do if you were scared?','How do the children feel when they see Sitara?','What does being brave mean?'],
+  ['Why is Sunny sad?','What does Sunny need to grow?','How do you think Sunny feels now?','Is it okay to grow slowly?'],
+  ['Why does nobody want to play with Ellie?','What happened to the ball?','How did the animals help each other?','Do you like sharing your toys?'],
+  ['How does Raja feel about the rain?','What did Mummy tell him?','What appeared after the rain?','What good thing happened to you after a sad day?'],
+  ['What did Leo do by accident?','Why is saying sorry hard sometimes?','How did Bunny feel after Leo said sorry?','When was the last time you said sorry?'],
+  ['Why is Busy Bee tired?','Who helped her?','What did she learn?','Do YOU take breaks when you are tired?'],
+  ['Why is Freddy sad?','What could nobody else do?','How did Freddy save the day?','What are YOU good at?'],
+  ['Why is the Moon worried?','What happened after she disappeared?','Did she come back?','Do you like how the Moon changes shape?'],
+  ['What did Meera give the shopkeeper?','How did people feel after getting paintings?','What happened to the whole street?','Can you do something kind today?'],
+  ['Why do the big dogs laugh at Tommy?','What did Tommy hear?','Why was being small actually good?','When has being different helped you?'],
+  ['What are Priya\'s 3 magic words?','What happened to the new girl?','How did Priya help her?','Can you use all 3 magic words today?'],
+  ['What does the mango tree give Arjun?','What did Arjun make for Mummy?','Why is time the best gift?','Who do you spend the most time with?'],
+  ['Why is Nemo lost?','Who helps Nemo find the way?','How does Nemo feel when she gets home?','What would YOU do if you got lost?'],
+  ['What does Buttons wish for?','Was being real better?','Why did Anu miss her teddy?','Do you have a favourite toy? What makes it special?'],
+];
+
+function getStoryQuestion(storyIdx,pageIdx){
+  // Show questions on pages 1, 3, 5 (0-indexed)
+  if(pageIdx%2===0)return ''; // even pages = no question
+  const qs=STORY_QUESTIONS[storyIdx];
+  if(!qs)return '';
+  const qIdx=Math.floor(pageIdx/2);
+  if(qIdx>=qs.length)return '';
+  return `<div class="sq-box">
+    <div class="sq-label">💬 Think about it!</div>
+    <div class="sq-text">${qs[qIdx]}</div>
+  </div>`;
+}
+
+// ══════════════════════════════════════
+//  BREATHING ANIMATION (#1a)
+// ══════════════════════════════════════
+let breatheInterval,breatheRunning=false;
+function startBreathing(){
+  if(breatheRunning)return;
+  breatheRunning=true;
+  const circle=document.getElementById('breatheCircle');
+  const label=document.getElementById('breatheLabel');
+  const count=document.getElementById('breatheCount');
+  if(!circle)return;
+  let cycle=0,phase='inhale',tick=0;
+  const totalCycles=5;
+
+  breatheInterval=setInterval(()=>{
+    tick++;
+    if(phase==='inhale'){
+      circle.className='breathe-circle inhale';
+      label.textContent='Breathe IN...';
+      count.textContent=`${5-tick}`;
+      if(tick>=4){tick=0;phase='hold';}
+    } else if(phase==='hold'){
+      circle.className='breathe-circle hold';
+      label.textContent='Hold...';
+      count.textContent=`${4-tick}`;
+      if(tick>=3){tick=0;phase='exhale';}
+    } else {
+      circle.className='breathe-circle exhale';
+      label.textContent='Breathe OUT...';
+      count.textContent=`${5-tick}`;
+      if(tick>=4){tick=0;phase='inhale';cycle++;
+        if(cycle>=totalCycles){stopBreathing();mascotSay('Great breathing! You feel calm now 🧘');return;}
+      }
+    }
+  },1000);
+  speakText('Breathe in slowly. Hold. And breathe out.');
+}
+function stopBreathing(){
+  clearInterval(breatheInterval);breatheRunning=false;
+  const circle=document.getElementById('breatheCircle');
+  if(circle){circle.className='breathe-circle';
+    document.getElementById('breatheLabel').textContent='Done! 🧘';
+    document.getElementById('breatheCount').textContent='Cycle: ✅';}
+}
+
+// ══════════════════════════════════════
+//  BEAT THE TIMER (#2a)
+// ══════════════════════════════════════
+const BTT_CHALLENGES=[
+  {task:'Put on your shoes!',emoji:'👟',seconds:30},
+  {task:'Tidy 5 toys off the floor!',emoji:'🧸',seconds:45},
+  {task:'Brush your teeth!',emoji:'🪥',seconds:60},
+  {task:'Put your plate in the sink!',emoji:'🍽️',seconds:20},
+  {task:'Get your school bag ready!',emoji:'🎒',seconds:40},
+  {task:'Drink a glass of water!',emoji:'💧',seconds:15},
+  {task:'Make your bed!',emoji:'🛏️',seconds:45},
+  {task:'Wash your hands with soap!',emoji:'🧼',seconds:30},
+];
+let bttDoneToday=localStorage.getItem('c_btt_'+todayKey())==='1';
+let bttInterval;
+
+function renderBtt(){
+  const card=document.getElementById('bttCard');
+  if(bttDoneToday){card.style.display='none';return;}
+  const ch=BTT_CHALLENGES[getWeek().day%BTT_CHALLENGES.length];
+  card.style.display='flex';
+  document.getElementById('bttTitle').textContent='⏱️ '+ch.task;
+  document.getElementById('bttDesc').textContent='Can you do it in '+ch.seconds+' seconds?';
+}
+
+function startBeatTimer(){
+  if(bttDoneToday)return;
+  const ch=BTT_CHALLENGES[getWeek().day%BTT_CHALLENGES.length];
+  let remaining=ch.seconds;
+  playClick();
+
+  document.getElementById('bttOverlay').innerHTML=`
+    <div class="btt-popup">
+      <div class="btt-popup-card">
+        <div style="font-size:2.4rem;margin-bottom:6px">${ch.emoji}</div>
+        <div class="game-title">${ch.task}</div>
+        <div class="btt-time" id="bttTime">${remaining}s</div>
+        <div class="btt-bar"><div class="btt-fill" id="bttFill" style="width:100%"></div></div>
+        <div class="game-feedback" id="bttMsg">GO GO GO! 🏃</div>
+        <button class="done-btn" id="bttDoneBtn" onclick="completeBtt()">✅ I did it!</button>
+        <button class="skip-btn" onclick="cancelBtt()" style="margin-top:6px">← Cancel</button>
+      </div>
+    </div>`;
+
+  mascotSay('Ready? GO! '+ch.task,2000);
+  bttInterval=setInterval(()=>{
+    remaining--;
+    const pct=(remaining/ch.seconds)*100;
+    document.getElementById('bttTime').textContent=remaining+'s';
+    document.getElementById('bttFill').style.width=pct+'%';
+    if(pct<30)document.getElementById('bttFill').style.background='linear-gradient(90deg,var(--pink),var(--coral))';
+    if(remaining<=0){
+      clearInterval(bttInterval);
+      document.getElementById('bttMsg').textContent='⏰ Time\'s up! Did you finish?';
+      document.getElementById('bttTime').textContent='0s';
+    }
+  },1000);
+}
+function completeBtt(){
+  clearInterval(bttInterval);
+  bttDoneToday=true;localStorage.setItem('c_btt_'+todayKey(),'1');
+  stars+=2;totalStarsEver+=2;
+  localStorage.setItem('cs_'+todayKey(),stars);
+  localStorage.setItem('c_total_stars',totalStarsEver);
+  showSpill();playStar();burst();
+  mascotPraise();
+  document.getElementById('bttOverlay').innerHTML='';
+  renderBtt();
+}
+function cancelBtt(){
+  clearInterval(bttInterval);
+  document.getElementById('bttOverlay').innerHTML='';
+}
+
+// ══════════════════════════════════════
+//  SIMON SAYS GAME (#2b)
+// ══════════════════════════════════════
+const SIMON_ACTIONS=[
+  {emoji:'👃',label:'Touch nose'},{emoji:'👏',label:'Clap hands'},
+  {emoji:'🙌',label:'Hands up'},{emoji:'🦶',label:'Stomp feet'},
+  {emoji:'💃',label:'Spin around'},{emoji:'👋',label:'Wave hello'},
+  {emoji:'🤷',label:'Shrug'},{emoji:'🙈',label:'Cover eyes'},
+];
+let simonSeq=[],simonStep=0,simonScore3=0,simonRound3=0,simonLock=false;
+
+function buildSimonSays(){simonScore3=0;simonRound3=0;nextSimonRound();}
+function nextSimonRound(){
+  simonRound3++;
+  const totalRounds=diffLevel===1?3:diffLevel===2?4:5;
+  if(simonRound3>totalRounds){endGame(simonScore3,totalRounds,'simonSays');return;}
+
+  // Sequence length grows with round
+  const seqLen=Math.min(simonRound3+1,5);
+  const pool=[...SIMON_ACTIONS].sort(()=>Math.random()-.5);
+  simonSeq=pool.slice(0,seqLen);
+  simonStep=0;simonLock=true;
+
+  const grid=pool.slice(0,4);
+  // Make sure all sequence items are in the grid
+  simonSeq.forEach(s=>{if(!grid.find(g=>g.label===s.label)){grid.pop();grid.push(s);}});
+  grid.sort(()=>Math.random()-.5);
+
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🎯 Simon Says!</div>
+      <div class="game-inst">Round ${simonRound3}/${totalRounds} · Score: ${simonScore3} ⭐</div>
+      <div class="simon-inst" id="simonInst">Watch carefully! 👀</div>
+      <div class="simon-grid">${grid.map((a,i)=>
+        `<div class="simon-btn" id="sb${i}" data-label="${a.label}" onclick="tapSimon(${i},'${a.label}')">
+          <span class="sb-emoji">${a.emoji}</span>${a.label}
+        </div>`
+      ).join('')}</div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+
+  // Show sequence animation
+  showSimonSequence(grid);
+}
+
+function showSimonSequence(grid){
+  const inst=document.getElementById('simonInst');
+  let i=0;
+  function flashNext(){
+    if(i>=simonSeq.length){
+      inst.textContent='Your turn! Tap in order! 👆';
+      simonLock=false;
+      speakText('Your turn! Tap in order!');
+      return;
+    }
+    const action=simonSeq[i];
+    inst.textContent=`${i+1}. ${action.emoji} ${action.label}`;
+    speakText(action.label);
+    // Flash the matching button
+    const btnIdx=grid.findIndex(g=>g.label===action.label);
+    if(btnIdx>=0){
+      const btn=document.getElementById('sb'+btnIdx);
+      btn.classList.add('flash');
+      setTimeout(()=>btn.classList.remove('flash'),600);
+    }
+    i++;
+    setTimeout(flashNext,1200);
+  }
+  setTimeout(flashNext,800);
+}
+
+function tapSimon(idx,label){
+  if(simonLock)return;
+  playClick();
+  const expected=simonSeq[simonStep].label;
+  const el=document.getElementById('sb'+idx);
+  if(label===expected){
+    el.classList.add('correct');simonStep++;
+    if(simonStep>=simonSeq.length){
+      simonScore3++;adaptDifficulty(true);playCorrect();
+      document.getElementById('gfb').textContent='✅ Perfect sequence!';mascotPraise();
+      simonLock=true;setTimeout(nextSimonRound,1500);
+    }
+  } else {
+    el.classList.add('wrong');adaptDifficulty(false);playWrong();
+    document.getElementById('gfb').textContent='❌ Wrong order! The next was: '+expected;
+    mascotHint();simonLock=true;setTimeout(nextSimonRound,1500);
+  }
+}
+
+// ══════════════════════════════════════
+//  CREATIVE GALLERY (#5)
+// ══════════════════════════════════════
+let gallery=JSON.parse(localStorage.getItem('c_gallery')||'[]');
+
+function saveToGallery(){
+  if(!drawCanvas)return;
+  try{
+    const thumb=drawCanvas.toDataURL('image/png',0.4); // low quality for storage
+    gallery.push({date:todayKey(),data:thumb});
+    if(gallery.length>20)gallery.shift(); // keep last 20
+    localStorage.setItem('c_gallery',JSON.stringify(gallery));
+    playStar();mascotSay('Saved to your gallery! 🖼️');
+    showToast('🖼️ Saved to Gallery!');
+  }catch(e){mascotSay('Oops! Try again.');}
+}
+
+function renderGallery(){
+  if(!gallery.length) return '<div class="gallery-empty">🖼️ No artworks yet! Draw something and tap 💾 Save!</div>';
+  return gallery.slice().reverse().map((g,i)=>
+    `<div>
+      <div class="gallery-thumb" onclick="viewGalleryItem(${gallery.length-1-i})">
+        <img src="${g.data}" alt="Artwork" loading="lazy">
+      </div>
+      <div class="gallery-date">${g.date}</div>
+    </div>`
+  ).join('');
+}
+
+function viewGalleryItem(idx){
+  if(!gallery[idx])return;
+  document.getElementById('galleryView').innerHTML=`
+    <div class="gallery-view" onclick="this.parentElement.innerHTML=''">
+      <img src="${gallery[idx].data}" alt="Artwork">
+    </div>`;
+}
+
+// ══════════════════════════════════════
 //  BOOT
 // ══════════════════════════════════════
 setupHeader();showSpill();renderWbar();renderFact();renderStory();renderChallenge();applyRewards();
-renderStarPath();renderSpark();renderWeather();renderPhysBanner();renderTodayBar();
+renderStarPath();renderSpark();renderWeather();renderPhysBanner();renderTodayBar();renderBtt();
 document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===tab));
 document.getElementById('subjRow').classList.toggle('show',tab==='learning');
 document.getElementById('gameRow').classList.toggle('show',tab==='games');
