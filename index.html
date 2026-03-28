@@ -102,7 +102,69 @@ body.bedtime .story-banner{background:linear-gradient(135deg,#2a2044,#1a2a44);}
 .tab[data-t="games"].active   {background:linear-gradient(135deg,#ff6b9d,#ffb830);}
 .tab[data-t="evening"].active {background:linear-gradient(135deg,#4ecdc4,#56cf81);}
 .tab[data-t="create"].active  {background:linear-gradient(135deg,#ff6b9d,#a78bfa);}
+.tab[data-t="stories"].active {background:linear-gradient(135deg,#1a1a2e,#4a3a6e);}
 .tab[data-t="parent"].active  {background:linear-gradient(135deg,#333,#555);}
+
+/* BEDTIME STORIES */
+.stories-list{display:flex;flex-direction:column;gap:10px;}
+.story-card-item{display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;
+  background:linear-gradient(135deg,#1a1a2e,#16213e);cursor:pointer;transition:all .2s;
+  box-shadow:0 6px 20px rgba(26,26,46,.3);}
+.story-card-item:active{transform:scale(.98);}
+.sci-emoji{font-size:2.2rem;flex-shrink:0;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3));}
+.sci-info{flex:1;min-width:0;}
+.sci-title{font-family:'Baloo 2',cursive;font-size:.92rem;font-weight:700;color:#fff;}
+.sci-moral{font-size:.7rem;color:rgba(255,255,255,.5);margin-top:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sci-dur{font-size:.65rem;color:rgba(255,255,255,.35);flex-shrink:0;font-weight:700;}
+.sci-heard{display:inline-block;background:rgba(86,207,129,.3);color:#56cf81;font-size:.58rem;
+  font-weight:700;padding:2px 7px;border-radius:50px;margin-left:6px;}
+
+/* STORY READER */
+.story-reader{background:linear-gradient(180deg,#1a1a2e 0%,#16213e 40%,#0f1628 100%);
+  border-radius:var(--r);padding:24px 20px;margin-bottom:12px;position:relative;overflow:hidden;
+  box-shadow:0 16px 48px rgba(26,26,46,.5);min-height:420px;}
+.story-reader::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;
+  border-radius:50%;background:radial-gradient(circle,rgba(255,184,48,.08),transparent 70%);}
+.story-reader::after{content:'';position:absolute;bottom:-30px;left:-30px;width:100px;height:100px;
+  border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.06),transparent 70%);}
+.sr-back{border:none;background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);border-radius:50px;
+  padding:6px 14px;font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:700;cursor:pointer;
+  transition:all .2s;position:relative;z-index:2;}
+.sr-back:active{transform:scale(.93);background:rgba(255,255,255,.2);}
+.sr-emoji{font-size:3.6rem;display:block;text-align:center;margin:12px 0 8px;position:relative;z-index:2;
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,.4));animation:factbob 3s ease-in-out infinite;}
+.sr-title{font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;color:#fff;
+  text-align:center;margin-bottom:4px;position:relative;z-index:2;
+  text-shadow:0 2px 8px rgba(0,0,0,.3);}
+.sr-moral-tag{text-align:center;margin-bottom:14px;position:relative;z-index:2;}
+.sr-moral-tag span{background:linear-gradient(135deg,#a78bfa,#4ecdc4);color:#fff;
+  font-family:'Baloo 2',cursive;font-size:.65rem;font-weight:700;padding:3px 12px;
+  border-radius:50px;text-transform:uppercase;letter-spacing:.5px;}
+.sr-page{position:relative;z-index:2;min-height:160px;}
+.sr-page-text{font-size:.92rem;color:rgba(255,255,255,.82);line-height:1.7;text-align:center;
+  padding:16px;background:rgba(255,255,255,.04);border-radius:16px;border:1px solid rgba(255,255,255,.06);}
+.sr-page-num{text-align:center;font-family:'Baloo 2',cursive;font-size:.72rem;
+  color:rgba(255,255,255,.3);margin-top:10px;}
+.sr-nav{display:flex;gap:10px;margin-top:14px;position:relative;z-index:2;}
+.sr-nav button{flex:1;padding:12px;border:none;border-radius:14px;font-family:'Baloo 2',cursive;
+  font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.sr-nav button:active{transform:scale(.96);}
+.sr-prev{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);}
+.sr-next{background:linear-gradient(135deg,#a78bfa,#4ecdc4);color:#fff;
+  box-shadow:0 4px 14px rgba(167,139,250,.3);}
+.sr-listen{width:100%;padding:12px;border:2px solid rgba(167,139,250,.3);border-radius:14px;
+  background:rgba(167,139,250,.1);color:#a78bfa;font-family:'Baloo 2',cursive;
+  font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;margin-top:10px;
+  position:relative;z-index:2;}
+.sr-listen:active{transform:scale(.97);background:rgba(167,139,250,.2);}
+.sr-listen.playing{background:rgba(255,107,157,.15);border-color:rgba(255,107,157,.3);color:#ff6b9d;}
+
+/* Stars decoration in reader */
+.sr-stars{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1;}
+.sr-star{position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;
+  animation:twinkle 3s ease-in-out infinite;}
+@keyframes twinkle{0%,100%{opacity:.2}50%{opacity:.8}}
 
 /* SUBJECT PILLS */
 .subj-row{display:none;gap:6px;padding:8px 12px 0;overflow-x:auto;scrollbar-width:none;}
@@ -791,6 +853,7 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   <button class="tab"        data-t="games"    onclick="switchTab('games')">🎮 Games</button>
   <button class="tab"        data-t="create"   onclick="switchTab('create')">🎨 Create</button>
   <button class="tab"        data-t="evening"  onclick="switchTab('evening')">🌙 Evening</button>
+  <button class="tab"        data-t="stories"  onclick="switchTab('stories')">📖 Stories</button>
   <button class="tab"        data-t="parent"   onclick="switchTab('parent')">👨‍👩‍👧 Parent</button>
 </div>
 
@@ -1485,6 +1548,7 @@ async function fetchNext(forceAct){
   // Special tabs
   if(tab==='create'){renderCreativeZone();busy=false;return;}
   if(tab==='parent'){renderParentDash();busy=false;return;}
+  if(tab==='stories'){renderStories();busy=false;return;}
 
   showLoad();renderHist();updateProg();renderWbar();renderChallenge();
   await new Promise(r=>setTimeout(r,400));
@@ -2373,7 +2437,7 @@ function showCongrats(){
   mascotSay('You\'re a superstar! 🌟',4000);
 }
 function switchToNext(){
-  const o=['morning','learning','games','create','evening'];
+  const o=['morning','learning','games','create','evening','stories'];
   switchTab(o[(o.indexOf(tab)+1)%o.length]);
 }
 function parentReset(){
@@ -2398,7 +2462,7 @@ function switchTab(t){
   document.getElementById('subjRow').classList.toggle('show',t==='learning');
 
   // Show/hide elements based on tab
-  const isSpecial=t==='create'||t==='parent';
+  const isSpecial=t==='create'||t==='parent'||t==='stories';
   document.getElementById('progBar').style.display=isSpecial?'none':'flex';
   document.getElementById('factCard').style.display=isSpecial?'none':'block';
   document.getElementById('timerBar').classList.toggle('show',!isSpecial);
@@ -2468,6 +2532,256 @@ function renderFact(){
       <div class="fact-body">${fact.body}</div>
       <div class="fact-q"><strong>💬 Talk about it:</strong> ${fact.q}</div>
     </div>`;
+}
+
+// ══════════════════════════════════════
+//  BEDTIME STORIES — Age 5
+// ══════════════════════════════════════
+const BEDTIME_STORIES=[
+{emoji:'🐢',title:'The Little Turtle Who Never Gave Up',moral:'Never give up — slow and steady wins!',
+pages:['Once upon a time, there was a little turtle named Tiku. All the other animals could run fast, but Tiku was very, very slow.',
+'One day, the animals had a big race. "You cannot win!" laughed the rabbit. But Tiku smiled and said, "I will try my best."',
+'The rabbit ran super fast and then sat down for a nap. "I have plenty of time," he yawned.',
+'Tiku kept walking. Step by step. Slowly but surely. He never stopped, not even once.',
+'When the rabbit woke up, Tiku was almost at the finish line! The rabbit ran as fast as he could, but it was too late.',
+'"I did it!" cheered Tiku. All the animals clapped. From that day, everyone knew — it does not matter how slow you are, as long as you never give up.']},
+
+{emoji:'⭐',title:'The Star Who Was Afraid of the Dark',moral:'Being brave means trying even when you are scared.',
+pages:['High up in the sky, there was a little star named Sitara. Every night, all the stars would shine brightly. But Sitara was afraid of the dark.',
+'"What if something scary is hiding down there?" she whispered to the Moon.',
+'The Moon smiled gently. "Dear Sitara, the children on Earth are waiting for your light. Without you, they cannot see the way."',
+'Sitara took a deep breath. She closed her eyes, counted to three, and started to glow. First a tiny flicker, then brighter and brighter!',
+'Down on Earth, a little girl looked up and said, "Look Mummy! That star is the brightest of all!"',
+'Sitara heard this and her heart felt warm and happy. She learned that being brave does not mean you are not scared — it means you try anyway.']},
+
+{emoji:'🌻',title:'Sunny the Sunflower',moral:'Everyone grows at their own pace — and that is perfectly okay.',
+pages:['In a beautiful garden, all the flowers were blooming. Roses were red, lilies were white, but one little seed was still underground.',
+'"When will I grow?" asked the little seed named Sunny. "All the other flowers are already so tall and pretty!"',
+'"Be patient," said the wise old tree. "You need sunshine, water, and time. Everyone grows differently."',
+'Days passed. Sunny drank water and soaked up sunshine. Slowly, a tiny green shoot popped out of the soil!',
+'Weeks later, Sunny grew taller and taller. She grew past the roses, past the lilies, higher than all the other flowers!',
+'When she finally opened her big golden face, the whole garden gasped. "You are the tallest and most beautiful flower!" they said. Sunny smiled, knowing that good things take time.']},
+
+{emoji:'🐘',title:'Ellie Learns to Share',moral:'Sharing makes everyone happy — including you!',
+pages:['Ellie the elephant had the most wonderful toy collection in the whole jungle. Blocks, balls, dolls — everything!',
+'But Ellie never shared. "These are MY toys!" she would say whenever anyone asked to play.',
+'One day, Ellie brought her favourite ball to the river. But it rolled into the water! "Oh no!" she cried.',
+'The monkeys tried to help, but the ball floated too far. The crocodile tried, but his arms were too short. Nobody could reach it alone.',
+'Then all the animals worked together! The giraffe stretched, the monkey climbed on top, and they got the ball back!',
+'"Thank you, friends!" said Ellie. She realized something important. "Would you all like to play with my toys? It is more fun together!" And from that day on, Ellie shared everything, and she was happier than ever.']},
+
+{emoji:'🌈',title:'Raja and the Rainbow',moral:'After every difficult time, something beautiful is waiting.',
+pages:['Little Raja woke up excited. "Today is the school trip to the park!" he shouted. But when he looked outside, it was raining heavily.',
+'"The trip is cancelled," said Mummy sadly. Raja felt tears in his eyes. He had been waiting for this day all week.',
+'Raja sat by the window, watching the raindrops. "I hate the rain," he mumbled.',
+'"The rain will stop," said Mummy. "And when it does, something magical might happen." Raja did not believe her.',
+'He drew pictures, read books, and played inside all morning. Then suddenly, the sun peeped through the clouds!',
+'"Raja, come quickly!" called Mummy. He ran outside and there it was — the most beautiful rainbow stretching across the whole sky! "You see?" smiled Mummy. "After every storm, there is always something beautiful waiting." Raja never forgot that.']},
+
+{emoji:'🦁',title:'The Little Lion Who Said Sorry',moral:'Saying sorry when you are wrong makes you brave, not weak.',
+pages:['Leo was a little lion cub who loved to play. But sometimes, he played too rough.',
+'One day, while running around, Leo accidentally knocked over his friend Bunny and her tower of blocks. CRASH! The blocks went everywhere.',
+'Bunny started to cry. "My tower! I spent all morning building it!"',
+'Leo felt bad inside, but saying sorry felt so hard. "It was an accident," he mumbled and walked away.',
+'But that night, Leo could not sleep. His tummy felt funny. He kept thinking about Bunny crying.',
+'The next morning, Leo went to Bunny. "I am really sorry I broke your tower. Can I help you build an even bigger one?" Bunny smiled and hugged him. They built the tallest tower ever. Leo learned that saying sorry is not weakness — it is the bravest thing you can do.']},
+
+{emoji:'🐝',title:'Busy Bee and the Lazy Afternoon',moral:'It is important to work hard, but also important to rest.',
+pages:['Busy Bee was always working. Buzz buzz buzz! She collected honey from morning until night, never stopping.',
+'"Come play with us!" called the butterflies. "No time!" said Busy Bee. "Come rest!" said the ladybug. "No time!"',
+'One hot afternoon, Busy Bee felt dizzy. Her wings were tired. She could not fly anymore and fell onto a soft flower.',
+'The ladybug found her. "Oh Busy Bee! You have been working too hard. Everyone needs rest."',
+'The ladybug brought her cool water and the butterflies fanned her with their wings. Slowly, Busy Bee felt better.',
+'"I understand now," said Busy Bee. "Working hard is important, but so is resting and playing with friends." From then on, Busy Bee worked hard AND took time to rest and play every single day.']},
+
+{emoji:'🐸',title:'Freddy the Frog Finds His Talent',moral:'Everyone is special at something — you just have to discover it!',
+pages:['Freddy the frog was sad. The birds could sing beautifully. The cheetah could run fast. The monkey could climb tall trees. But Freddy could not do any of those things.',
+'"I am not special at anything," he sighed, sitting by the pond.',
+'One hot day, the forest animals were very thirsty, but the only water was across a wide, deep pond. Nobody could cross it!',
+'The birds could not carry water. The cheetah was afraid of deep water. The monkey could not swim.',
+'Then Freddy jumped in. SPLASH! He swam across easily, back and forth, carrying water on a big leaf for everyone!',
+'"Freddy, you are amazing!" cheered all the animals. "You are the best swimmer in the whole forest!" Freddy finally understood — everyone has a special talent. He just had to find his!']},
+
+{emoji:'🌙',title:'Why the Moon Changes Shape',moral:'Change is natural and beautiful — do not be afraid of it.',
+pages:['Long ago, the Moon was always round and full. She lit up the whole night sky and was very proud.',
+'But one night, a tiny piece of the Moon seemed to disappear! "Oh no!" cried the Moon. "What is happening to me?"',
+'"Do not worry," said the wise owl. "You are just changing. It happens to everyone."',
+'Each night, the Moon got a little smaller. She became a half moon, then a thin crescent, then she disappeared completely! The Moon was very scared.',
+'But then, something wonderful happened. Slowly, night by night, she started to grow back! Bigger and bigger until she was full and round again!',
+'"You see?" hooted the owl. "Change is not something to fear. You always come back, and each shape you make is beautiful." The Moon smiled and lit up the sky, never afraid of changing again.']},
+
+{emoji:'🎨',title:'The Girl Who Painted Kindness',moral:'Small acts of kindness can change the whole world around you.',
+pages:['Meera loved to paint. One grey morning, she noticed everyone on her street looked sad and grumpy.',
+'"I know what to do!" said Meera. She painted a bright yellow sun on a piece of paper and gave it to the grumpy shopkeeper. He looked at it and smiled for the first time that day.',
+'Then she painted a red rose for the lonely old grandmother next door. "Oh, how beautiful!" the grandmother said, her eyes sparkling.',
+'Meera painted a green tree for the bus driver, a blue butterfly for the postman, and a rainbow for the crying baby.',
+'By evening, something magical had happened. Everyone on the street was smiling! The shopkeeper gave Meera free sweets. The grandmother told her a wonderful story. The whole street felt warm and happy.',
+'"How did you do that?" asked Mummy. "I just shared small bits of colour," said Meera. "And they turned into big bits of happiness!" She learned that tiny acts of kindness can brighten the whole world.']},
+
+{emoji:'🐕',title:'Tommy the Brave Puppy',moral:'True courage is helping others even when you feel small.',
+pages:['Tommy was the smallest puppy in the whole neighbourhood. The big dogs always laughed at him. "You are too small to do anything!" they said.',
+'Tommy tried to be helpful, but he was too small to fetch the newspaper, too small to guard the house, too small to pull the cart.',
+'One rainy night, Tommy heard a tiny sound. "Mew! Mew!" A little kitten was stuck in a drain pipe, and the water was rising!',
+'The big dogs looked at the pipe. "We are too big to fit inside!" they said. But Tommy was just the right size!',
+'He squeezed into the dark pipe. It was scary and wet, but he could hear the kitten crying. He grabbed the kitten gently and pulled her out to safety.',
+'"Tommy, you are a HERO!" barked all the big dogs. The kitten licked his face. Tommy wagged his tail and learned that being small is not a weakness — sometimes, being small is exactly what the world needs.']},
+
+{emoji:'🦋',title:'Priya and the Magic Words',moral:'Please, Thank You, and Sorry are the most powerful words in the world.',
+pages:['Priya knew three magic words. Not "abracadabra" — even more powerful! Her magic words were: PLEASE, THANK YOU, and SORRY.',
+'When she wanted something, she said "Please." And people always smiled and helped her happily.',
+'When someone gave her something or did something nice, she said "Thank you." And it made them feel wonderful inside.',
+'When she made a mistake, she said "Sorry." And it made the hurt go away like magic.',
+'One day, a new girl came to school. She was shy and scared. Nobody talked to her. But Priya walked up and said, "Hello! Would you PLEASE like to play with me?"',
+'The new girl smiled the biggest smile ever. "THANK YOU!" she said. And just like that, they became best friends. Priya knew her three magic words were the most powerful words in the whole world.']},
+
+{emoji:'🌳',title:'The Giving Tree of Nani\'s Garden',moral:'The best gift you can give is your time and love.',
+pages:['In Nani\'s garden stood a mango tree. It was old and wise, with thick branches and sweet fruit.',
+'Every day, little Arjun would sit under the tree. The tree would give him shade from the hot sun, and sweet mangoes to eat.',
+'One day, Arjun came crying. "I have no gift for Mummy\'s birthday!" The tree whispered in the wind, "Pick my most beautiful flowers."',
+'Arjun made a garland of flowers and gave it to Mummy. She hugged him tight. "This is the best gift ever because you made it with love!"',
+'Years passed, and Arjun grew bigger. But he still visited the old tree every day, now bringing water for its roots.',
+'"Thank you for always giving," said Arjun. The tree rustled happily. It had learned that the joy of giving is the greatest happiness. And Arjun learned that the best gift is your time and love.']},
+
+{emoji:'🐟',title:'Nemo the Fish Who Found Her Way Home',moral:'Home is where your family is — and you can always find your way back.',
+pages:['Nemo was a little orange fish who lived in a beautiful coral reef with her family. One day, she swam too far, chasing a pretty butterfly fish.',
+'When she turned around, everything looked different! "Where am I?" she cried. She could not find her coral reef anywhere.',
+'Nemo was scared. But she remembered what Papa fish always said: "When you are lost, stay calm and think."',
+'She asked a friendly sea turtle for help. "Follow the warm current," said the turtle. She asked a dolphin. "Look for the colourful corals," she said.',
+'Nemo followed the warm current and looked for colours. Slowly, the water started to look familiar. She could see orange and pink corals!',
+'"NEMO!" shouted Papa fish and Mummy fish, swimming towards her. "I found my way home!" said Nemo, hugging them tight. She learned that no matter how far you go, love will always guide you home.']},
+
+{emoji:'🧸',title:'The Teddy Bear Who Wanted to Be Real',moral:'You are loved exactly as you are — you do not need to be anything different.',
+pages:['Buttons was a soft teddy bear who belonged to a little girl named Anu. Every night, Anu hugged him tight and whispered, "I love you, Buttons."',
+'But Buttons wished he could be a real bear. "If I were real, I could hug her back. I could play with her. I could talk to her."',
+'One night, a magical firefly landed on his nose. "I can make you real for one day," she said. And POOF! Buttons became a real bear cub!',
+'He was so excited! He tried to hug Anu, but his real paws were too rough. He tried to sleep on her bed, but he was too heavy. He tried to fit in her arms, but he was too big.',
+'That night, Anu cried. "Where is my Buttons? I miss my teddy bear. He was perfect just the way he was."',
+'Buttons understood. He asked the firefly to change him back. When Anu found him on her pillow the next morning, she squeezed him tight. "Never leave me, Buttons!" And Buttons was happy. He learned that being loved exactly as you are is the most wonderful thing in the world.']},
+];
+
+let storiesHeard=JSON.parse(localStorage.getItem('c_stories_heard')||'[]');
+let currentStoryIdx=0,currentPage=0,storyPlaying=false;
+
+function renderStories(){
+  document.getElementById('hist').innerHTML='';
+  document.getElementById('area').innerHTML=`
+    <div style="padding:4px 0">
+      <div style="text-align:center;margin-bottom:14px">
+        <span style="font-size:2.4rem;display:block;margin-bottom:4px">📖</span>
+        <div style="font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:var(--text)">Bedtime Stories</div>
+        <div style="font-size:.78rem;color:var(--text4)">Tap a story to read & listen. Sweet dreams! 🌙</div>
+      </div>
+      <div class="stories-list">
+        ${BEDTIME_STORIES.map((s,i)=>{
+          const heard=storiesHeard.includes(i);
+          return `<div class="story-card-item" onclick="openStory(${i})">
+            <span class="sci-emoji">${s.emoji}</span>
+            <div class="sci-info">
+              <div class="sci-title">${s.title}${heard?'<span class="sci-heard">✓ Heard</span>':''}</div>
+              <div class="sci-moral">💛 ${s.moral}</div>
+            </div>
+            <span class="sci-dur">${s.pages.length} pg</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+function openStory(idx){
+  playClick();
+  currentStoryIdx=idx;currentPage=0;storyPlaying=false;
+  speechSynthesis.cancel();
+  // Mark as heard
+  if(!storiesHeard.includes(idx)){storiesHeard.push(idx);localStorage.setItem('c_stories_heard',JSON.stringify(storiesHeard));}
+  renderStoryReader();
+}
+
+function renderStoryReader(){
+  const s=BEDTIME_STORIES[currentStoryIdx];
+  const page=s.pages[currentPage];
+  const isFirst=currentPage===0;
+  const isLast=currentPage===s.pages.length-1;
+
+  // Generate twinkling stars background
+  let starsHTML='';
+  for(let i=0;i<20;i++){
+    starsHTML+=`<div class="sr-star" style="top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*3}s;opacity:${Math.random()*.5+.1}"></div>`;
+  }
+
+  document.getElementById('area').innerHTML=`
+    <div class="story-reader">
+      <div class="sr-stars">${starsHTML}</div>
+      <button class="sr-back" onclick="backToStories()">← All Stories</button>
+      <span class="sr-emoji">${s.emoji}</span>
+      <div class="sr-title">${s.title}</div>
+      <div class="sr-moral-tag"><span>💛 ${s.moral}</span></div>
+      <div class="sr-page">
+        <div class="sr-page-text">${page}</div>
+        <div class="sr-page-num">Page ${currentPage+1} of ${s.pages.length}</div>
+      </div>
+      <div class="sr-nav">
+        ${!isFirst?'<button class="sr-prev" onclick="storyPrev()">← Back</button>':''}
+        ${!isLast?'<button class="sr-next" onclick="storyNext()">Next →</button>':'<button class="sr-next" onclick="backToStories()" style="background:linear-gradient(135deg,#56cf81,#4ecdc4)">✅ The End!</button>'}
+      </div>
+      <button class="sr-listen ${storyPlaying?'playing':''}" id="storyListenBtn" onclick="toggleStoryAudio()">
+        ${storyPlaying?'⏸️ Pause Reading':'🔊 Read This Page Aloud'}
+      </button>
+      <button class="sr-listen" onclick="readFullStory()" style="margin-top:6px;border-color:rgba(255,184,48,.3);color:var(--sun);background:rgba(255,184,48,.08)">
+        📖 Read Entire Story Aloud
+      </button>
+    </div>`;
+  document.getElementById('hist').innerHTML='';
+}
+
+function storyNext(){
+  const s=BEDTIME_STORIES[currentStoryIdx];
+  if(currentPage<s.pages.length-1){currentPage++;storyPlaying=false;speechSynthesis.cancel();playClick();renderStoryReader();}
+}
+function storyPrev(){
+  if(currentPage>0){currentPage--;storyPlaying=false;speechSynthesis.cancel();playClick();renderStoryReader();}
+}
+function backToStories(){
+  speechSynthesis.cancel();storyPlaying=false;playClick();renderStories();
+}
+
+function toggleStoryAudio(){
+  if(storyPlaying){speechSynthesis.cancel();storyPlaying=false;renderStoryReader();return;}
+  const s=BEDTIME_STORIES[currentStoryIdx];
+  const page=s.pages[currentPage];
+  storyPlaying=true;renderStoryReader();
+
+  // Read current page
+  if(!soundOn||!('speechSynthesis' in window)){storyPlaying=false;return;}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(page);
+  u.rate=.82;u.pitch=1.25;u.volume=1.0;
+  const voices=speechSynthesis.getVoices();
+  let pick=null;
+  if(selectedVoiceName) pick=voices.find(v=>v.name===selectedVoiceName);
+  if(!pick) pick=voices.find(v=>v.name.includes('Female')||v.name.includes('Samantha')||v.name.includes('Google UK English Female'));
+  if(pick)u.voice=pick;
+  u.onend=()=>{storyPlaying=false;const btn=document.getElementById('storyListenBtn');if(btn){btn.classList.remove('playing');btn.textContent='🔊 Read This Page Aloud';}};
+  speechSynthesis.speak(u);
+}
+
+function readFullStory(){
+  const s=BEDTIME_STORIES[currentStoryIdx];
+  // Build full story text with pauses between pages
+  const fullText=s.title+'. . . '+s.pages.join('. . . ')+'. . . The end. . . The lesson of this story is: '+s.moral;
+  storyPlaying=true;renderStoryReader();
+  mascotSay('Story time! 📖🌙',2000);
+
+  if(!soundOn||!('speechSynthesis' in window)){storyPlaying=false;return;}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(fullText);
+  u.rate=.78;u.pitch=1.2;u.volume=1.0;
+  const voices=speechSynthesis.getVoices();
+  let pick=null;
+  if(selectedVoiceName) pick=voices.find(v=>v.name===selectedVoiceName);
+  if(!pick) pick=voices.find(v=>v.name.includes('Female')||v.name.includes('Samantha')||v.name.includes('Google UK English Female'));
+  if(pick)u.voice=pick;
+  u.onend=()=>{storyPlaying=false;renderStoryReader();mascotSay('What a lovely story! 🌟',3000);};
+  speechSynthesis.speak(u);
 }
 
 // ══════════════════════════════════════
