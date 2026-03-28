@@ -1428,6 +1428,11 @@ function playBedtime(){playTone(262,.4);setTimeout(()=>playTone(330,.4),400);set
 //  VOICE — Lady Voice with picker
 // ══════════════════════════════════════
 let selectedVoiceName=localStorage.getItem('c_voiceName')||'';
+// Force clear old Samantha default
+if(!selectedVoiceName||selectedVoiceName.includes('Samantha')){
+  selectedVoiceName='Google US English';
+  localStorage.setItem('c_voiceName','Google US English');
+}
 
 // Blocked novelty/joke voices — not suitable for kids learning
 const BLOCKED_VOICES=['albert','bad news','bahh','bells','boing','bubbles','cellos',
