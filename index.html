@@ -1429,29 +1429,40 @@ function playBedtime(){playTone(262,.4);setTimeout(()=>playTone(330,.4),400);set
 // ══════════════════════════════════════
 let selectedVoiceName=localStorage.getItem('c_voiceName')||'';
 
+// Blocked novelty/joke voices — not suitable for kids learning
+const BLOCKED_VOICES=['albert','bad news','bahh','bells','boing','bubbles','cellos',
+  'eddy','flo','fred','grandma','jester','junior','kathy','martha','organ','ralph',
+  'rishi','rocko','sandy','shelley','superstar'];
+
+function isBlockedVoice(name){
+  const n=name.toLowerCase();
+  return BLOCKED_VOICES.some(b=>n.includes(b));
+}
+
 function speakText(text){
   if(!soundOn||!('speechSynthesis' in window))return;
   speechSynthesis.cancel();
   const u=new SpeechSynthesisUtterance(text);
   u.rate=.85;u.pitch=1.3;u.volume=.9;
   const voices=speechSynthesis.getVoices();
-  // Use saved voice preference, or fallback to default female
+  // Use saved voice preference, or fallback to Karen
   let pick=null;
   if(selectedVoiceName) pick=voices.find(v=>v.name===selectedVoiceName);
-  if(!pick) pick=voices.find(v=>v.name.includes('Female')||v.name.includes('Samantha')||v.name.includes('Google UK English Female'));
+  if(!pick) pick=voices.find(v=>v.name.includes('Karen'));
+  if(!pick) pick=voices.find(v=>v.name.includes('Google UK English Female'));
+  if(!pick) pick=voices.find(v=>(v.name.includes('Female')||v.lang.startsWith('en'))&&!isBlockedVoice(v.name));
   if(pick)u.voice=pick;
   speechSynthesis.speak(u);
 }
 
 function getEnglishVoices(){
-  return speechSynthesis.getVoices().filter(v=>v.lang.startsWith('en'));
+  return speechSynthesis.getVoices().filter(v=>v.lang.startsWith('en')&&!isBlockedVoice(v.name));
 }
 
 function selectVoice(name){
   selectedVoiceName=name;
   localStorage.setItem('c_voiceName',name);
   speakText('Hello little star! I will be your learning buddy!');
-  // Re-render voice list to show active state
   const list=document.getElementById('voiceList');
   if(list) list.innerHTML=buildVoiceListHTML();
 }
@@ -3401,7 +3412,9 @@ function toggleStoryAudio(){
   const voices=speechSynthesis.getVoices();
   let pick=null;
   if(selectedVoiceName) pick=voices.find(v=>v.name===selectedVoiceName);
-  if(!pick) pick=voices.find(v=>v.name.includes('Female')||v.name.includes('Samantha')||v.name.includes('Google UK English Female'));
+  if(!pick) pick=voices.find(v=>v.name.includes('Karen'));
+  if(!pick) pick=voices.find(v=>v.name.includes('Google UK English Female'));
+  if(!pick) pick=voices.find(v=>(v.name.includes('Female')||v.lang.startsWith('en'))&&!isBlockedVoice(v.name));
   if(pick)u.voice=pick;
   u.onend=()=>{storyPlaying=false;const btn=document.getElementById('storyListenBtn');if(btn){btn.classList.remove('playing');btn.textContent='🔊 Read This Page Aloud';}};
   speechSynthesis.speak(u);
@@ -3421,7 +3434,9 @@ function readFullStory(){
   const voices=speechSynthesis.getVoices();
   let pick=null;
   if(selectedVoiceName) pick=voices.find(v=>v.name===selectedVoiceName);
-  if(!pick) pick=voices.find(v=>v.name.includes('Female')||v.name.includes('Samantha')||v.name.includes('Google UK English Female'));
+  if(!pick) pick=voices.find(v=>v.name.includes('Karen'));
+  if(!pick) pick=voices.find(v=>v.name.includes('Google UK English Female'));
+  if(!pick) pick=voices.find(v=>(v.name.includes('Female')||v.lang.startsWith('en'))&&!isBlockedVoice(v.name));
   if(pick)u.voice=pick;
   u.onend=()=>{storyPlaying=false;renderStoryReader();mascotSay('What a lovely story! 🌟',3000);};
   speechSynthesis.speak(u);
