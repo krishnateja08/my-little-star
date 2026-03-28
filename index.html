@@ -1,0 +1,2483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌟 My Little Star — Smart Learning Coach</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pink:#ff6b9d;--sun:#ffb830;--mint:#4ecdc4;--purple:#a78bfa;
+  --green:#56cf81;--blue:#4fa3e0;--coral:#ff8c69;
+  --bg:#fff8f0;--card:#fff;--r:22px;
+  --text:#222;--text2:#666;--text3:#888;--text4:#aaa;--text5:#bbb;--text6:#ccc;--text7:#ddd;
+  --shadow:rgba(0,0,0,.09);--shadow2:rgba(0,0,0,.06);
+  --cardbg:#fff;--inputbg:#f8f8ff;--border:#eee;--learnbg1:#f0f7ff;--learnbg2:#e8f5e9;
+}
+
+/* BEDTIME MODE */
+body.bedtime{
+  --bg:#1a1a2e;--card:#222244;--cardbg:#222244;--text:#e0d4ff;--text2:#b8a9d4;
+  --text3:#9988bb;--text4:#776699;--text5:#665588;--text6:#554477;--text7:#443366;
+  --shadow:rgba(0,0,0,.3);--shadow2:rgba(0,0,0,.2);--border:#333355;
+  --inputbg:#2a2a4e;--learnbg1:#1e1e3a;--learnbg2:#1e2e2a;
+}
+body.bedtime{background:var(--bg);background-image:radial-gradient(circle at 30% 20%,#2a1a4e44,transparent 50%),radial-gradient(circle at 70% 80%,#1a2e4e44,transparent 50%);}
+body.bedtime *{transition:background .8s,color .8s,border-color .8s;}
+body.bedtime header{background:linear-gradient(135deg,#2a1a4e,#1a2e4e,#16213e);box-shadow:0 8px 30px rgba(42,26,78,.5);}
+body.bedtime .acard,body.bedtime .game-panel,body.bedtime .loadcard{background:var(--cardbg);box-shadow:0 12px 36px var(--shadow);}
+body.bedtime .acard::before,body.bedtime .game-panel::before{background:linear-gradient(90deg,#a78bfa55,#4ecdc455,#a78bfa55);}
+body.bedtime .tab{background:var(--cardbg);color:var(--text5);}
+body.bedtime .prog{background:var(--cardbg);}
+body.bedtime .wd{background:var(--cardbg);}
+body.bedtime .fact-card{box-shadow:0 8px 28px rgba(0,0,0,.5);}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;
+  min-height:100dvh;overflow-x:hidden;-webkit-text-size-adjust:100%;
+  background-image:radial-gradient(circle at 10% 10%,#ffe0f044,transparent 40%),
+  radial-gradient(circle at 90% 90%,#d4f1ff44,transparent 40%);
+  transition:background .6s;}
+img,canvas,svg{max-width:100%;height:auto;}
+
+/* HEADER */
+header{background:linear-gradient(135deg,#ff6b9d,#ffb830,#4ecdc4);
+  padding:16px 16px 24px;border-radius:0 0 36px 36px;text-align:center;
+  box-shadow:0 8px 30px rgba(255,107,157,.3);position:relative;overflow:hidden;}
+header::before{content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='5' fill='%23fff' fill-opacity='.07'/%3E%3C/svg%3E");}
+.mascot-wrap{position:relative;display:inline-block;cursor:pointer;}
+.mascot{font-size:2.6rem;animation:float 3s ease-in-out infinite;display:block;transition:transform .3s;}
+.mascot-hat{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:1.4rem;z-index:2;
+  animation:float 3s ease-in-out infinite;pointer-events:none;}
+.mascot-wrap:active .mascot{transform:scale(1.3);}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+
+/* SPEECH BUBBLE */
+.speech-bubble{position:absolute;top:-38px;left:50%;transform:translateX(-50%);
+  background:#fff;color:#333;font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:700;
+  padding:4px 12px;border-radius:12px;white-space:nowrap;
+  box-shadow:0 4px 12px rgba(0,0,0,.12);opacity:0;transition:all .3s;pointer-events:none;z-index:10;}
+.speech-bubble::after{content:'';position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);
+  border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid #fff;}
+.speech-bubble.show{opacity:1;top:-44px;}
+
+header h1{font-family:'Baloo 2',cursive;font-size:1.6rem;color:#fff;text-shadow:2px 3px 0 rgba(0,0,0,.12);position:relative;}
+.hsub{color:rgba(255,255,255,.9);font-size:.82rem;position:relative;margin-top:2px;}
+.dbadge{display:inline-block;background:rgba(255,255,255,.22);border-radius:50px;
+  padding:3px 14px;font-family:'Baloo 2',cursive;font-size:.8rem;color:#fff;margin-top:6px;position:relative;}
+
+/* SOUND TOGGLE */
+.sound-toggle{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.22);
+  border:none;border-radius:50%;width:36px;height:36px;font-size:1.1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;z-index:10;transition:all .2s;}
+.sound-toggle:active{transform:scale(.9);}
+
+/* BEDTIME TOGGLE */
+.bedtime-toggle{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.22);
+  border:none;border-radius:50%;width:36px;height:36px;font-size:1.1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;z-index:10;transition:all .2s;}
+.bedtime-toggle:active{transform:scale(.9);}
+
+/* STORY BANNER */
+.story-banner{background:linear-gradient(135deg,#fff5d4,#ffe0f0);border-radius:16px;
+  margin:10px 12px 0;padding:12px 16px;display:flex;align-items:center;gap:10px;
+  box-shadow:0 4px 14px rgba(255,184,48,.15);cursor:pointer;transition:all .2s;}
+.story-banner:active{transform:scale(.98);}
+body.bedtime .story-banner{background:linear-gradient(135deg,#2a2044,#1a2a44);}
+.story-emoji{font-size:1.6rem;}
+.story-text{flex:1;}
+.story-title{font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--pink);}
+.story-desc{font-size:.72rem;color:var(--text3);}
+
+/* TABS */
+.tabs{display:flex;gap:6px;padding:10px 12px 0;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;border:none;padding:8px 14px;border-radius:50px;cursor:pointer;
+  font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;transition:all .2s;
+  background:var(--cardbg);color:var(--text5);box-shadow:0 2px 8px var(--shadow2);}
+.tab.active{color:#fff;transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.14);}
+.tab[data-t="morning"].active {background:linear-gradient(135deg,#ffb830,#ff8c69);}
+.tab[data-t="learning"].active{background:linear-gradient(135deg,#a78bfa,#4fa3e0);}
+.tab[data-t="games"].active   {background:linear-gradient(135deg,#ff6b9d,#ffb830);}
+.tab[data-t="evening"].active {background:linear-gradient(135deg,#4ecdc4,#56cf81);}
+.tab[data-t="create"].active  {background:linear-gradient(135deg,#ff6b9d,#a78bfa);}
+.tab[data-t="parent"].active  {background:linear-gradient(135deg,#333,#555);}
+
+/* SUBJECT PILLS */
+.subj-row{display:none;gap:6px;padding:8px 12px 0;overflow-x:auto;scrollbar-width:none;}
+.subj-row::-webkit-scrollbar{display:none;}
+.subj-row.show{display:flex;}
+.sp{flex-shrink:0;border:none;padding:5px 13px;border-radius:50px;cursor:pointer;
+  font-family:'Baloo 2',cursive;font-size:.76rem;font-weight:700;background:#f0f0f0;color:var(--text4);transition:all .2s;}
+.sp.active{color:#fff;}
+.sp[data-s="all"].active    {background:linear-gradient(135deg,#ff6b9d,#ffb830);}
+.sp[data-s="abc"].active    {background:linear-gradient(135deg,#ff6b9d,#a78bfa);}
+.sp[data-s="maths"].active  {background:linear-gradient(135deg,#ffb830,#ff8c69);}
+.sp[data-s="art"].active    {background:linear-gradient(135deg,#4ecdc4,#56cf81);}
+.sp[data-s="science"].active{background:linear-gradient(135deg,#4fa3e0,#a78bfa);}
+
+/* PROGRESS */
+.prog{background:var(--cardbg);border-radius:var(--r);padding:11px 15px;
+  margin:10px 12px 0;box-shadow:0 4px 14px var(--shadow2);display:flex;align-items:center;gap:10px;}
+.pl{font-size:.72rem;color:var(--text5);font-weight:700;text-transform:uppercase;letter-spacing:1px;flex-shrink:0;}
+.pb{flex:1;height:11px;background:#f0f0f0;border-radius:50px;overflow:hidden;}
+body.bedtime .pb{background:#333355;}
+.pf{height:100%;border-radius:50px;background:linear-gradient(90deg,#ff6b9d,#ffb830);transition:width .6s cubic-bezier(.68,-.55,.27,1.55);}
+.pc{font-family:'Baloo 2',cursive;font-size:.8rem;color:var(--text5);flex-shrink:0;}
+
+/* FOCUS TIMER */
+.timer-bar{display:none;margin:8px 12px 0;background:var(--cardbg);border-radius:var(--r);padding:10px 15px;
+  box-shadow:0 4px 14px var(--shadow2);align-items:center;gap:10px;}
+.timer-bar.show{display:flex;}
+.timer-circle{width:40px;height:40px;position:relative;flex-shrink:0;}
+.timer-circle svg{width:100%;height:100%;transform:rotate(-90deg);}
+.timer-circle circle{fill:none;stroke-width:4;}
+.timer-bg{stroke:#f0f0f0;}
+body.bedtime .timer-bg{stroke:#333355;}
+.timer-fg{stroke:var(--green);stroke-linecap:round;transition:stroke-dashoffset .5s;}
+.timer-text{font-family:'Baloo 2',cursive;font-size:.85rem;color:var(--text2);flex:1;}
+.timer-btn{border:none;padding:6px 14px;border-radius:50px;font-family:'Baloo 2',cursive;
+  font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.timer-start{background:linear-gradient(135deg,var(--green),var(--mint));color:#fff;}
+.timer-stop{background:linear-gradient(135deg,var(--pink),var(--coral));color:#fff;}
+
+/* WEEKLY CHALLENGE */
+.challenge-bar{background:linear-gradient(135deg,#a78bfa22,#4ecdc422);border-radius:16px;
+  margin:8px 12px 0;padding:10px 15px;display:flex;align-items:center;gap:10px;border:1.5px dashed var(--purple);}
+body.bedtime .challenge-bar{background:linear-gradient(135deg,#a78bfa11,#4ecdc411);border-color:#665588;}
+.challenge-emoji{font-size:1.4rem;}
+.challenge-info{flex:1;}
+.challenge-title{font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:700;color:var(--purple);}
+.challenge-prog{font-size:.68rem;color:var(--text3);margin-top:2px;}
+.challenge-badge{font-size:1.2rem;flex-shrink:0;}
+
+/* WEEK BAR */
+.wbar{display:flex;gap:5px;padding:8px 12px 0;overflow-x:auto;scrollbar-width:none;}
+.wbar::-webkit-scrollbar{display:none;}
+.wd{flex-shrink:0;width:42px;border-radius:12px;padding:6px 3px;text-align:center;background:var(--cardbg);box-shadow:0 2px 8px var(--shadow2);}
+.wd.today{background:linear-gradient(135deg,#ff6b9d,#ffb830);color:#fff;}
+.wd.hasdone{background:linear-gradient(135deg,#56cf81,#4ecdc4);color:#fff;}
+.wd .wdn{font-size:.58rem;font-weight:700;text-transform:uppercase;opacity:.7;}
+.wd .wdd{font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800;line-height:1.1;}
+.wd .wds{font-size:.75rem;}
+
+/* MAIN */
+.main{padding:10px 12px 110px;}
+
+/* ACTIVITY CARD */
+.acard{background:var(--cardbg);border-radius:var(--r);padding:20px 16px;margin-bottom:12px;
+  box-shadow:0 12px 36px var(--shadow);position:relative;overflow:hidden;transition:all .4s;}
+.acard::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,var(--pink),var(--sun),var(--mint));}
+.wtag{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text7);margin-bottom:5px;}
+.stag{display:inline-block;padding:3px 11px;border-radius:50px;font-size:.7rem;font-weight:700;color:#fff;margin-bottom:8px;}
+.aemoji{font-size:3.4rem;display:block;margin:6px 0;animation:wiggle 2.5s ease-in-out infinite;}
+@keyframes wiggle{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.atitle{font-family:'Baloo 2',cursive;font-size:1.35rem;font-weight:800;color:var(--text);margin-bottom:4px;line-height:1.2;}
+.adesc{font-size:.9rem;color:var(--text2);line-height:1.5;margin-bottom:11px;}
+.alearn{background:linear-gradient(135deg,var(--learnbg1),var(--learnbg2));border-radius:13px;padding:11px 13px;margin-bottom:11px;border-left:3px solid var(--blue);}
+.alearn h4{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--blue);margin-bottom:5px;}
+.alearn p{font-size:.86rem;color:var(--text2);line-height:1.5;}
+.awhy{background:linear-gradient(135deg,#fff5d4,#ffe0f0);border-radius:13px;padding:10px 13px;margin-bottom:11px;font-size:.82rem;color:var(--text3);border-left:3px solid var(--sun);}
+body.bedtime .awhy{background:linear-gradient(135deg,#2a2a44,#2a1a3e);}
+.awhy strong{color:var(--pink);}
+.asteps{background:var(--inputbg);border-radius:13px;padding:12px;margin-bottom:15px;}
+.asteps h4{font-size:.72rem;color:var(--text5);margin-bottom:7px;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.step{display:flex;align-items:flex-start;gap:7px;margin-bottom:5px;font-size:.86rem;color:var(--text2);}
+.snum{background:var(--purple);color:#fff;border-radius:50%;width:19px;height:19px;
+  display:flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:700;flex-shrink:0;margin-top:1px;}
+
+/* LISTEN BUTTON */
+.listen-btn{display:inline-flex;align-items:center;gap:5px;border:none;padding:6px 14px;
+  border-radius:50px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;
+  font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:700;cursor:pointer;margin-bottom:10px;
+  transition:all .2s;box-shadow:0 3px 10px rgba(79,163,224,.3);}
+.listen-btn:active{transform:scale(.93);}
+
+/* SHOW ME BUTTON */
+.showme-row{display:flex;gap:8px;margin-bottom:12px;}
+.showme-btn{flex:1;padding:10px;border:2px dashed var(--mint);border-radius:14px;
+  background:linear-gradient(135deg,#e8fff0,#f0f7ff);color:var(--mint);text-align:center;
+  font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;}
+body.bedtime .showme-btn{background:linear-gradient(135deg,#1a2e2a,#1a2a3e);border-color:var(--mint);}
+.showme-btn:active{transform:scale(.95);background:var(--mint);color:#fff;}
+.showme-btn.done{background:var(--green);color:#fff;border-color:var(--green);}
+
+.done-btn{width:100%;padding:14px;border:none;border-radius:14px;
+  background:linear-gradient(135deg,#56cf81,#4ecdc4);color:#fff;
+  font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:700;cursor:pointer;
+  transition:all .2s;box-shadow:0 6px 18px rgba(86,207,129,.4);}
+.done-btn:hover{transform:translateY(-2px);}
+.done-btn:active{transform:scale(.97);}
+
+/* ══ GAME PANEL ══ */
+.game-panel{background:var(--cardbg);border-radius:var(--r);padding:20px 16px;margin-bottom:12px;
+  box-shadow:0 12px 36px var(--shadow);position:relative;overflow:hidden;}
+.game-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,#ff6b9d,#ffb830,#a78bfa);}
+.game-title{font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:var(--text);margin-bottom:4px;}
+.game-inst{font-size:.88rem;color:var(--text3);margin-bottom:14px;line-height:1.4;}
+/* Number Match */
+.num-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.num-card{aspect-ratio:1;border-radius:14px;border:3px solid var(--border);background:var(--inputbg);
+  display:flex;align-items:center;justify-content:center;font-size:1.6rem;cursor:pointer;
+  transition:all .2s;font-family:'Baloo 2',cursive;font-weight:800;color:var(--text);}
+.num-card:active{transform:scale(.93);}
+.num-card.selected{border-color:var(--purple);background:#f0e8ff;}
+.num-card.matched{border-color:var(--green);background:#e8fff0;animation:matched .4s ease;}
+.num-card.wrong{border-color:var(--pink);background:#ffe8f0;animation:shake .3s ease;}
+@keyframes matched{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+/* Letter Trace */
+.trace-area{text-align:center;margin-bottom:14px;}
+.trace-letter{font-family:'Baloo 2',cursive;font-size:8rem;font-weight:800;
+  color:#f0f0f0;line-height:1;text-shadow:2px 3px 0 #e8e8e8;position:relative;display:inline-block;}
+.trace-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+canvas.trace-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;border-radius:14px;}
+.trace-wrap{position:relative;width:160px;height:160px;margin:0 auto;
+  border:3px dashed #e0d4ff;border-radius:20px;background:var(--inputbg);}
+/* Word Build */
+.letters-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:12px;}
+.letter-tile{width:44px;height:50px;border-radius:12px;background:linear-gradient(135deg,#a78bfa,#4fa3e0);
+  color:#fff;font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  box-shadow:0 4px 12px rgba(167,139,250,.4);transition:all .2s;user-select:none;}
+.letter-tile:active{transform:scale(.9);}
+.letter-tile.used{background:#eee;color:#ccc;box-shadow:none;pointer-events:none;}
+.word-display{font-family:'Baloo 2',cursive;font-size:2.4rem;font-weight:800;
+  text-align:center;color:var(--text);min-height:54px;letter-spacing:6px;margin-bottom:8px;}
+.word-hint{text-align:center;font-size:.85rem;color:var(--text4);margin-bottom:12px;}
+/* Counting Game */
+.count-display{text-align:center;font-size:4rem;margin:10px 0;min-height:80px;}
+.count-q{font-family:'Baloo 2',cursive;font-size:1.1rem;color:var(--text2);text-align:center;margin-bottom:10px;}
+.count-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.copt{padding:14px;border:3px solid var(--border);border-radius:14px;background:var(--inputbg);
+  font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;text-align:center;
+  cursor:pointer;transition:all .2s;color:var(--text);}
+.copt:active{transform:scale(.95);}
+.copt.correct{border-color:var(--green);background:#e8fff0;}
+.copt.wrong{border-color:var(--pink);background:#ffe8f0;}
+/* Colour Mix */
+.colour-mix{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+.colour-blob{width:70px;height:70px;border-radius:50%;cursor:pointer;transition:all .2s;
+  border:3px solid rgba(0,0,0,.08);box-shadow:0 4px 14px rgba(0,0,0,.15);}
+.colour-blob:hover{transform:scale(1.08);}
+.mix-plus{font-size:1.8rem;color:var(--text6);}
+.mix-result{width:90px;height:90px;border-radius:50%;border:3px solid rgba(0,0,0,.08);
+  box-shadow:0 4px 14px rgba(0,0,0,.15);transition:background .5s;}
+.mix-q{text-align:center;font-family:'Baloo 2',cursive;font-size:1rem;color:var(--text2);margin-bottom:8px;}
+/* Shape Tap */
+.shape-area{text-align:center;margin-bottom:14px;}
+.shape-q{font-family:'Baloo 2',cursive;font-size:1.1rem;color:var(--text);margin-bottom:10px;}
+.shape-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+.shape-item{width:70px;height:70px;display:flex;align-items:center;justify-content:center;
+  font-size:2.8rem;cursor:pointer;border-radius:14px;background:var(--inputbg);
+  border:3px solid var(--border);transition:all .2s;}
+.shape-item:active{transform:scale(.9);}
+.shape-item.correct{border-color:var(--green);background:#e8fff0;}
+.shape-item.wrong  {border-color:var(--pink);background:#ffe8f0;}
+
+/* MEMORY FLIP */
+.memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.mem-card{aspect-ratio:1;border-radius:14px;border:3px solid var(--border);background:linear-gradient(135deg,var(--purple),var(--blue));
+  display:flex;align-items:center;justify-content:center;font-size:2rem;cursor:pointer;
+  transition:all .3s;color:#fff;font-family:'Baloo 2',cursive;}
+.mem-card.flipped{background:var(--inputbg);border-color:var(--sun);}
+.mem-card.matched{background:#e8fff0;border-color:var(--green);pointer-events:none;}
+
+/* FIND LETTER */
+.letter-search-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px;}
+.ls-cell{aspect-ratio:1;border-radius:10px;background:var(--inputbg);border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',cursive;
+  font-size:1.3rem;font-weight:800;cursor:pointer;transition:all .2s;color:var(--text);}
+.ls-cell:active{transform:scale(.9);}
+.ls-cell.correct{background:#e8fff0;border-color:var(--green);color:var(--green);}
+.ls-cell.wrong{background:#ffe8f0;border-color:var(--pink);animation:shake .3s;}
+
+/* ANIMAL SOUNDS */
+.animal-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
+.animal-card{padding:16px;border-radius:16px;background:var(--inputbg);border:3px solid var(--border);
+  text-align:center;cursor:pointer;transition:all .2s;}
+.animal-card:active{transform:scale(.95);}
+.animal-card .anim-emoji{font-size:2.4rem;display:block;margin-bottom:4px;}
+.animal-card .anim-name{font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;color:var(--text2);}
+.animal-card.correct{border-color:var(--green);background:#e8fff0;}
+.animal-card.wrong{border-color:var(--pink);background:#ffe8f0;}
+.sound-prompt{text-align:center;padding:16px;background:linear-gradient(135deg,var(--sun),var(--coral));
+  border-radius:16px;color:#fff;margin-bottom:12px;cursor:pointer;transition:all .2s;}
+.sound-prompt:active{transform:scale(.97);}
+.sound-prompt .sp-icon{font-size:2rem;display:block;margin-bottom:4px;}
+.sound-prompt .sp-text{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;}
+
+/* Game score */
+.game-score{text-align:center;font-family:'Baloo 2',cursive;font-size:1rem;color:var(--purple);margin-bottom:10px;}
+.game-feedback{text-align:center;font-family:'Baloo 2',cursive;font-size:1.1rem;
+  min-height:28px;margin-bottom:10px;color:var(--green);}
+.game-next-btn{width:100%;padding:13px;border:none;border-radius:14px;
+  background:linear-gradient(135deg,#ff6b9d,#a78bfa);color:#fff;
+  font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.game-next-btn:active{transform:scale(.97);}
+.game-done-btn{width:100%;padding:13px;border:none;border-radius:14px;margin-top:8px;
+  background:linear-gradient(135deg,#56cf81,#4ecdc4);color:#fff;
+  font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.game-done-btn:active{transform:scale(.97);}
+
+/* CREATIVE ZONE */
+.create-panel{background:var(--cardbg);border-radius:var(--r);padding:20px 16px;margin-bottom:12px;
+  box-shadow:0 12px 36px var(--shadow);position:relative;overflow:hidden;}
+.create-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,#ff6b9d,#a78bfa,#4ecdc4);}
+.create-canvas-wrap{position:relative;width:100%;aspect-ratio:4/3;border-radius:14px;
+  border:3px dashed var(--border);overflow:hidden;margin-bottom:12px;background:#fff;touch-action:none;}
+.create-canvas-wrap canvas{width:100%;height:100%;cursor:crosshair;}
+.color-palette{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:10px;}
+.color-dot{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;
+  transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+.color-dot.active{border-color:#333;transform:scale(1.15);}
+.brush-sizes{display:flex;gap:8px;justify-content:center;align-items:center;margin-bottom:10px;}
+.brush-size{width:28px;height:28px;border-radius:50%;background:var(--inputbg);border:2px solid var(--border);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.brush-size.active{border-color:var(--purple);background:#f0e8ff;}
+.brush-dot{border-radius:50%;background:#333;}
+.create-tools{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;}
+.create-tool{padding:8px 14px;border:none;border-radius:50px;font-family:'Baloo 2',cursive;
+  font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s;
+  background:var(--inputbg);color:var(--text3);}
+.create-tool:active{transform:scale(.93);}
+.sticker-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:10px;}
+.sticker-btn{font-size:1.6rem;cursor:pointer;padding:4px;border:2px solid transparent;
+  border-radius:10px;transition:all .2s;}
+.sticker-btn:active{transform:scale(1.3);}
+.sticker-btn.active{border-color:var(--purple);background:#f0e8ff;}
+
+/* PARENT DASHBOARD */
+.parent-dash{background:var(--cardbg);border-radius:var(--r);padding:20px 16px;margin-bottom:12px;
+  box-shadow:0 12px 36px var(--shadow);}
+.parent-dash h3{font-family:'Baloo 2',cursive;font-size:1.2rem;color:var(--text);margin-bottom:12px;}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.dash-stat{background:var(--inputbg);border-radius:14px;padding:14px;text-align:center;}
+.dash-stat .ds-num{font-family:'Baloo 2',cursive;font-size:1.8rem;font-weight:800;color:var(--purple);}
+.dash-stat .ds-label{font-size:.72rem;color:var(--text4);font-weight:700;text-transform:uppercase;}
+.dash-section{margin-bottom:14px;}
+.dash-section h4{font-family:'Baloo 2',cursive;font-size:.9rem;color:var(--text3);margin-bottom:8px;}
+.skill-bar{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.skill-label{font-size:.78rem;font-weight:700;color:var(--text3);width:70px;flex-shrink:0;}
+.skill-track{flex:1;height:8px;background:#f0f0f0;border-radius:50px;overflow:hidden;}
+body.bedtime .skill-track{background:#333355;}
+.skill-fill{height:100%;border-radius:50px;transition:width .6s;}
+.skill-stars{font-size:.72rem;color:var(--text4);flex-shrink:0;width:50px;text-align:right;}
+.streak-row{display:flex;gap:4px;margin-top:8px;}
+.streak-dot{width:28px;height:28px;border-radius:50%;background:var(--inputbg);
+  display:flex;align-items:center;justify-content:center;font-size:.8rem;}
+.streak-dot.active{background:linear-gradient(135deg,var(--green),var(--mint));color:#fff;}
+
+/* UNLOCKABLES SHOP */
+.shop-panel{background:var(--cardbg);border-radius:var(--r);padding:20px 16px;margin-bottom:12px;
+  box-shadow:0 12px 36px var(--shadow);position:relative;overflow:hidden;}
+.shop-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,var(--sun),var(--pink),var(--purple));}
+.shop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.shop-item{background:var(--inputbg);border-radius:14px;padding:12px 8px;text-align:center;
+  cursor:pointer;transition:all .2s;border:2px solid transparent;}
+.shop-item:active{transform:scale(.95);}
+.shop-item.locked{opacity:.5;}
+.shop-item.owned{border-color:var(--green);opacity:1;}
+.shop-emoji{font-size:2rem;display:block;margin-bottom:4px;}
+.shop-cost{font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:700;color:var(--sun);}
+.shop-name{font-size:.65rem;color:var(--text4);margin-top:2px;}
+
+/* LOAD */
+.loadcard{background:var(--cardbg);border-radius:var(--r);padding:26px 16px;
+  text-align:center;box-shadow:0 12px 36px var(--shadow2);margin-bottom:12px;}
+.spin{font-size:2.2rem;animation:spin 1s linear infinite;display:block;margin-bottom:9px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ltxt{font-family:'Baloo 2',cursive;color:var(--text5);font-size:.92rem;}
+
+/* HISTORY */
+.hlabel{font-family:'Baloo 2',cursive;font-size:.92rem;color:var(--text6);margin-bottom:7px;}
+.hitem{background:var(--cardbg);border-radius:13px;padding:9px 13px;margin-bottom:6px;
+  display:flex;align-items:center;gap:9px;box-shadow:0 2px 8px var(--shadow2);opacity:.65;}
+.hitem .he{font-size:1.3rem;}
+.hitem .hn{font-size:.84rem;font-weight:700;color:var(--text5);text-decoration:line-through;flex:1;}
+.hitem .hs{font-size:.8rem;color:var(--text6);}
+.undo-btn{border:1.5px solid #ffd6e7;background:#fff0f5;color:#ff6b9d;border-radius:8px;
+  padding:4px 10px;font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:700;
+  cursor:pointer;flex-shrink:0;transition:all .2s;}
+.undo-btn:active{transform:scale(.93);background:#ffd6e7;}
+
+/* CONGRATS */
+.congrats{background:linear-gradient(135deg,#ffb830,#ff6b9d);border-radius:var(--r);
+  padding:22px;text-align:center;color:#fff;margin-bottom:12px;display:none;
+  animation:pop .5s cubic-bezier(.68,-.55,.27,1.55);box-shadow:0 12px 36px rgba(255,107,157,.35);}
+@keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+.congrats h2{font-family:'Baloo 2',cursive;font-size:1.5rem;}
+.congrats p{font-size:.86rem;opacity:.9;margin-top:5px;}
+.nbtn{margin-top:11px;padding:9px 22px;border:2px solid #fff;background:transparent;
+  color:#fff;border-radius:50px;font-family:'Baloo 2',cursive;font-size:.9rem;
+  cursor:pointer;font-weight:700;transition:all .2s;}
+.nbtn:hover{background:#fff;color:#ff6b9d;}
+
+/* DID YOU KNOW */
+.fact-card{border-radius:var(--r);padding:16px 18px;margin:10px 12px 0;
+  background:linear-gradient(135deg,#1a1a2e,#16213e);
+  box-shadow:0 8px 28px rgba(26,26,46,.35);position:relative;overflow:hidden;}
+.fact-card::before{content:'';position:absolute;top:-30px;right:-30px;
+  width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle,rgba(167,139,250,.25),transparent 70%);}
+.fact-card::after{content:'';position:absolute;bottom:-20px;left:-20px;
+  width:80px;height:80px;border-radius:50%;
+  background:radial-gradient(circle,rgba(78,205,196,.2),transparent 70%);}
+.fact-top{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.fact-badge{background:linear-gradient(135deg,#a78bfa,#4ecdc4);color:#fff;
+  font-family:'Baloo 2',cursive;font-size:.68rem;font-weight:700;
+  padding:3px 10px;border-radius:50px;text-transform:uppercase;letter-spacing:1px;}
+.fact-day{font-size:.7rem;color:rgba(255,255,255,.4);margin-left:auto;font-weight:600;}
+.fact-emoji{font-size:2.4rem;display:block;margin-bottom:6px;
+  animation:factbob 3s ease-in-out infinite;}
+@keyframes factbob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-4px) rotate(2deg)}}
+.fact-title{font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:800;
+  color:#fff;margin-bottom:5px;position:relative;}
+.fact-body{font-size:.86rem;color:rgba(255,255,255,.75);line-height:1.55;
+  position:relative;margin-bottom:10px;}
+.fact-body strong{color:#ffb830;}
+.fact-q{background:rgba(255,255,255,.08);border-radius:12px;padding:10px 12px;
+  font-size:.82rem;color:rgba(255,255,255,.6);border-left:3px solid #a78bfa;
+  font-style:italic;position:relative;}
+.fact-q strong{color:#a78bfa;font-style:normal;}
+
+/* TOAST + PILL */
+.toast{position:fixed;top:16px;right:16px;background:linear-gradient(135deg,#ffb830,#ff6b9d);
+  color:#fff;padding:8px 16px;border-radius:50px;font-family:'Baloo 2',cursive;
+  font-size:.9rem;font-weight:700;box-shadow:0 6px 22px rgba(255,107,157,.4);
+  transform:translateX(200px);transition:transform .4s cubic-bezier(.68,-.55,.27,1.55);z-index:9999;}
+.toast.show{transform:translateX(0);}
+.spill{position:fixed;bottom:16px;right:16px;background:linear-gradient(135deg,#ffb830,#ff6b9d);
+  color:#fff;padding:10px 16px;border-radius:50px;font-family:'Baloo 2',cursive;
+  font-size:.95rem;font-weight:700;box-shadow:0 6px 22px rgba(255,184,48,.4);z-index:100;
+  cursor:pointer;transition:all .2s;}
+.spill:active{transform:scale(.93);}
+
+/* SKIP BUTTON */
+.skip-btn{width:100%;padding:11px;border:2px solid var(--border);border-radius:14px;
+  background:transparent;color:var(--text4);font-family:'Baloo 2',cursive;font-size:.9rem;
+  font-weight:700;cursor:pointer;transition:all .2s;margin-top:6px;}
+.skip-btn:active{transform:scale(.97);background:var(--border);color:var(--text3);}
+
+/* ACTIVITY PICKER */
+.picker-panel{background:var(--cardbg);border-radius:var(--r);padding:16px;margin-bottom:12px;
+  box-shadow:0 12px 36px var(--shadow);}
+.picker-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.picker-title{font-family:'Baloo 2',cursive;font-size:1.15rem;font-weight:800;color:var(--text);flex:1;}
+.picker-random{border:none;padding:8px 16px;border-radius:50px;font-family:'Baloo 2',cursive;
+  font-size:.78rem;font-weight:700;cursor:pointer;color:#fff;
+  background:linear-gradient(135deg,var(--pink),var(--sun));transition:all .2s;
+  box-shadow:0 4px 12px rgba(255,107,157,.3);}
+.picker-random:active{transform:scale(.93);}
+.picker-list{display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto;
+  scrollbar-width:thin;padding-right:4px;}
+.picker-item{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;
+  background:var(--inputbg);border:2px solid transparent;cursor:pointer;transition:all .2s;}
+.picker-item:active{transform:scale(.98);border-color:var(--purple);}
+.picker-item.done-item{opacity:.4;pointer-events:none;text-decoration:line-through;}
+.pi-emoji{font-size:1.8rem;flex-shrink:0;}
+.pi-info{flex:1;min-width:0;}
+.pi-title{font-family:'Baloo 2',cursive;font-size:.88rem;font-weight:700;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pi-desc{font-size:.72rem;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pi-stars{font-size:.72rem;color:var(--sun);font-weight:700;flex-shrink:0;}
+.pi-tag{font-size:.6rem;padding:2px 8px;border-radius:50px;color:#fff;font-weight:700;flex-shrink:0;}
+
+/* VOICE PICKER */
+.voice-list{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto;
+  margin-top:8px;scrollbar-width:thin;}
+.voice-item{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;
+  background:var(--inputbg);border:2px solid transparent;cursor:pointer;transition:all .2s;}
+.voice-item:active{transform:scale(.98);}
+.voice-item.active{border-color:var(--purple);background:#f0e8ff;}
+body.bedtime .voice-item.active{background:#2a2a4e;}
+.voice-name{font-size:.78rem;font-weight:700;color:var(--text);flex:1;}
+.voice-lang{font-size:.65rem;color:var(--text4);}
+.voice-test{border:none;padding:4px 12px;border-radius:50px;font-family:'Baloo 2',cursive;
+  font-size:.68rem;font-weight:700;cursor:pointer;color:#fff;
+  background:linear-gradient(135deg,var(--blue),var(--purple));flex-shrink:0;}
+
+/* PHYSICAL ACTIVITY CARD */
+.phys-card{background:linear-gradient(135deg,#fff0e0,#ffe8f0);border-radius:var(--r);
+  padding:20px 16px;margin-bottom:12px;box-shadow:0 12px 36px var(--shadow);position:relative;overflow:hidden;}
+body.bedtime .phys-card{background:linear-gradient(135deg,#2a2a3e,#2e1a2e);}
+.phys-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,var(--coral),var(--sun),var(--green));}
+.phys-badge{display:inline-block;padding:3px 11px;border-radius:50px;font-size:.7rem;
+  font-weight:700;color:#fff;background:linear-gradient(135deg,var(--coral),var(--sun));margin-bottom:8px;}
+
+/* STICK FIGURE ANIMATION AREA */
+.exercise-anim{width:100%;height:180px;position:relative;margin:10px 0 14px;display:flex;
+  align-items:center;justify-content:center;border-radius:16px;
+  background:linear-gradient(180deg,#fff8f0,#fff);overflow:hidden;}
+body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
+.exercise-anim svg{width:160px;height:160px;}
+
+/* Jumping Jacks */
+@keyframes jj-arms{0%,100%{d:path('M35 55 L20 40');} 50%{d:path('M35 55 L20 70');}}
+@keyframes jj-arms-r{0%,100%{d:path('M55 55 L70 40');} 50%{d:path('M55 55 L70 70');}}
+@keyframes jj-legs{0%,100%{d:path('M42 80 L30 110');} 50%{d:path('M42 80 L42 110');}}
+@keyframes jj-legs-r{0%,100%{d:path('M48 80 L60 110');} 50%{d:path('M48 80 L48 110');}}
+
+/* Stretch up */
+@keyframes stretch-arms{0%,100%{transform:rotate(0deg)} 50%{transform:rotate(-15deg)}}
+@keyframes stretch-body{0%,100%{transform:scaleY(1)} 50%{transform:scaleY(1.08)}}
+
+/* Squat */
+@keyframes squat-body{0%,100%{transform:translateY(0)} 50%{transform:translateY(12px)}}
+@keyframes squat-legs{0%,100%{d:path('M42 80 L35 110');} 50%{d:path('M42 80 L30 98');}}
+
+/* Run */
+@keyframes run-leg1{0%{transform:rotate(-20deg)} 50%{transform:rotate(20deg)} 100%{transform:rotate(-20deg)}}
+@keyframes run-leg2{0%{transform:rotate(20deg)} 50%{transform:rotate(-20deg)} 100%{transform:rotate(20deg)}}
+@keyframes run-arm1{0%{transform:rotate(20deg)} 50%{transform:rotate(-20deg)} 100%{transform:rotate(20deg)}}
+@keyframes run-bounce{0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)}}
+
+/* Toe touch */
+@keyframes toe-bend{0%,100%{transform:rotate(0deg)} 50%{transform:rotate(60deg)}}
+
+/* Star jump */
+@keyframes star-scale{0%,100%{transform:scale(1)} 50%{transform:scale(1.15)}}
+
+/* ══════════════════════════════════════
+   RESPONSIVE DESIGN
+   ══════════════════════════════════════ */
+
+/* Base: already mobile-first (designed for ~375px) */
+
+/* Very small phones (320px and below) */
+@media(max-width:340px){
+  header{padding:12px 10px 18px;border-radius:0 0 28px 28px;}
+  .mascot{font-size:2rem;}
+  header h1{font-size:1.3rem;}
+  .hsub{font-size:.72rem;}
+  .dbadge{font-size:.7rem;padding:2px 10px;}
+  .tabs{gap:4px;padding:8px 8px 0;}
+  .tab{padding:6px 10px;font-size:.72rem;}
+  .sp{padding:4px 10px;font-size:.68rem;}
+  .main{padding:8px 8px 100px;}
+  .acard,.game-panel,.create-panel,.parent-dash,.loadcard{padding:14px 12px;margin-bottom:10px;}
+  .atitle,.game-title{font-size:1.15rem;}
+  .aemoji{font-size:2.6rem;}
+  .adesc,.game-inst{font-size:.82rem;}
+  .done-btn,.game-next-btn,.game-done-btn{padding:11px;font-size:.95rem;}
+  .num-grid{grid-template-columns:repeat(4,1fr);gap:5px;}
+  .num-card{font-size:1.2rem;}
+  .count-display{font-size:2.8rem;}
+  .copt{padding:10px;font-size:1.2rem;}
+  .letter-tile{width:36px;height:42px;font-size:1.1rem;}
+  .word-display{font-size:1.8rem;letter-spacing:4px;}
+  .colour-blob{width:55px;height:55px;}
+  .mix-result{width:70px;height:70px;}
+  .shape-item{width:55px;height:55px;font-size:2.2rem;}
+  .memory-grid{grid-template-columns:repeat(3,1fr);gap:6px;}
+  .mem-card{font-size:1.4rem;}
+  .letter-search-grid{grid-template-columns:repeat(4,1fr);gap:4px;}
+  .ls-cell{font-size:1rem;}
+  .animal-grid{grid-template-columns:1fr 1fr;gap:6px;}
+  .animal-card{padding:10px;}
+  .animal-card .anim-emoji{font-size:1.8rem;}
+  .shop-grid{grid-template-columns:repeat(2,1fr);gap:6px;}
+  .dash-grid{grid-template-columns:1fr 1fr;gap:6px;}
+  .story-banner{padding:8px 12px;margin:8px 8px 0;}
+  .story-emoji{font-size:1.3rem;}
+  .story-title{font-size:.72rem;}
+  .story-desc{font-size:.65rem;}
+  .prog{margin:8px 8px 0;padding:8px 12px;}
+  .wbar{gap:3px;padding:6px 8px 0;}
+  .wd{width:36px;padding:4px 2px;}
+  .wd .wdn{font-size:.5rem;}
+  .wd .wdd{font-size:.8rem;}
+  .challenge-bar{margin:6px 8px 0;padding:8px 10px;}
+  .timer-bar{margin:6px 8px 0;padding:8px 10px;}
+  .fact-card{margin:8px 8px 0;padding:12px 14px;}
+  .fact-emoji{font-size:1.8rem;}
+  .fact-title{font-size:.9rem;}
+  .fact-body{font-size:.78rem;}
+  .spill{bottom:12px;right:12px;padding:8px 12px;font-size:.82rem;}
+  .toast{font-size:.78rem;padding:6px 12px;}
+  .speech-bubble{font-size:.65rem;padding:3px 8px;}
+  .sound-toggle,.bedtime-toggle{width:30px;height:30px;font-size:.9rem;}
+  .listen-btn{font-size:.68rem;padding:4px 10px;}
+  .color-palette{gap:4px;}
+  .color-dot{width:26px;height:26px;}
+  .brush-sizes{gap:5px;}
+  .brush-size{width:24px;height:24px;}
+  .sticker-btn{font-size:1.2rem;padding:2px;}
+  .create-tool{font-size:.7rem;padding:6px 10px;}
+}
+
+/* Standard phones (341px–480px) — default, minimal tweaks */
+@media(min-width:341px) and (max-width:480px){
+  .main{padding:10px 12px 110px;}
+  .memory-grid{grid-template-columns:repeat(4,1fr);gap:7px;}
+}
+
+/* Large phones / small tablets (481px–768px) */
+@media(min-width:481px){
+  body{max-width:560px;margin:0 auto;}
+  header{border-radius:0 0 40px 40px;}
+  .mascot{font-size:3rem;}
+  header h1{font-size:1.8rem;}
+  .tabs{padding:12px 16px 0;gap:8px;}
+  .tab{padding:10px 18px;font-size:.88rem;}
+  .main{padding:12px 16px 120px;}
+  .acard,.game-panel,.create-panel,.parent-dash{padding:24px 20px;border-radius:24px;}
+  .atitle,.game-title{font-size:1.5rem;}
+  .aemoji{font-size:4rem;}
+  .adesc{font-size:.95rem;}
+  .done-btn,.game-next-btn,.game-done-btn{padding:16px;font-size:1.15rem;border-radius:16px;}
+  .num-grid{gap:10px;}
+  .num-card{font-size:1.8rem;border-radius:16px;}
+  .count-display{font-size:5rem;}
+  .copt{padding:18px;font-size:1.8rem;border-radius:16px;}
+  .letter-tile{width:52px;height:58px;font-size:1.6rem;border-radius:14px;}
+  .word-display{font-size:2.8rem;}
+  .colour-blob{width:80px;height:80px;}
+  .mix-result{width:100px;height:100px;}
+  .shape-item{width:80px;height:80px;font-size:3.2rem;}
+  .memory-grid{gap:10px;}
+  .mem-card{font-size:2.4rem;border-radius:16px;}
+  .letter-search-grid{gap:8px;}
+  .ls-cell{font-size:1.5rem;border-radius:12px;}
+  .animal-grid{gap:12px;}
+  .animal-card{padding:20px;border-radius:18px;}
+  .animal-card .anim-emoji{font-size:2.8rem;}
+  .sound-prompt{padding:20px;border-radius:18px;}
+  .shop-grid{gap:10px;}
+  .shop-item{padding:16px 10px;border-radius:16px;}
+  .shop-emoji{font-size:2.4rem;}
+  .dash-grid{gap:12px;}
+  .dash-stat{padding:18px;border-radius:16px;}
+  .dash-stat .ds-num{font-size:2.2rem;}
+  .story-banner{margin:12px 16px 0;padding:14px 18px;border-radius:18px;}
+  .prog{margin:12px 16px 0;border-radius:24px;}
+  .wbar{padding:10px 16px 0;gap:7px;}
+  .wd{width:48px;border-radius:14px;padding:8px 4px;}
+  .wd .wdd{font-size:1.05rem;}
+  .challenge-bar{margin:10px 16px 0;border-radius:18px;padding:12px 18px;}
+  .timer-bar{margin:10px 16px 0;border-radius:18px;}
+  .fact-card{margin:12px 16px 0;border-radius:24px;padding:18px 22px;}
+  .fact-emoji{font-size:2.8rem;}
+  .fact-title{font-size:1.15rem;}
+  .color-dot{width:36px;height:36px;}
+  .create-canvas-wrap{border-radius:18px;}
+}
+
+/* Tablets (769px–1024px) */
+@media(min-width:769px){
+  body{max-width:680px;}
+  header{padding:20px 20px 30px;border-radius:0 0 48px 48px;}
+  .mascot{font-size:3.4rem;}
+  header h1{font-size:2rem;}
+  .hsub{font-size:.9rem;}
+  .tabs{gap:10px;padding:14px 20px 0;}
+  .tab{padding:11px 22px;font-size:.92rem;}
+  .main{padding:14px 20px 130px;}
+  .acard,.game-panel,.create-panel,.parent-dash{padding:28px 24px;margin-bottom:16px;}
+  .atitle,.game-title{font-size:1.65rem;}
+  .aemoji{font-size:4.5rem;}
+  .num-grid{grid-template-columns:repeat(4,1fr);gap:12px;}
+  .count-opts{gap:12px;}
+  .copt{padding:20px;font-size:2rem;}
+  .memory-grid{grid-template-columns:repeat(4,1fr);gap:12px;}
+  .letter-search-grid{grid-template-columns:repeat(5,1fr);gap:10px;}
+  .animal-grid{grid-template-columns:repeat(2,1fr);gap:14px;}
+  .shop-grid{grid-template-columns:repeat(3,1fr);gap:12px;}
+  .dash-grid{grid-template-columns:repeat(4,1fr);gap:12px;}
+  .dash-stat .ds-num{font-size:2.6rem;}
+  .color-palette{gap:8px;}
+  .color-dot{width:40px;height:40px;}
+  .sticker-btn{font-size:2rem;padding:6px;}
+  .create-tool{font-size:.85rem;padding:10px 18px;}
+  .wbar{gap:8px;padding:12px 20px 0;}
+  .wd{width:54px;padding:8px 4px;border-radius:16px;}
+  .fact-card{padding:22px 26px;}
+  .fact-title{font-size:1.2rem;}
+  .fact-body{font-size:.92rem;}
+}
+
+/* Desktop / large tablets (1025px+) */
+@media(min-width:1025px){
+  body{max-width:800px;}
+  header{padding:24px 24px 36px;border-radius:0 0 56px 56px;}
+  .mascot{font-size:3.8rem;}
+  header h1{font-size:2.2rem;}
+  .main{padding:16px 24px 140px;}
+  .acard,.game-panel,.create-panel,.parent-dash{padding:32px 28px;border-radius:28px;}
+  .atitle,.game-title{font-size:1.8rem;}
+  .done-btn,.game-next-btn,.game-done-btn{padding:18px;font-size:1.2rem;border-radius:18px;}
+  .num-card{border-radius:18px;}
+  .shape-item{width:90px;height:90px;font-size:3.6rem;border-radius:18px;}
+  .colour-blob{width:90px;height:90px;}
+  .mix-result{width:110px;height:110px;}
+  .animal-card{padding:24px;border-radius:20px;}
+  .animal-card .anim-emoji{font-size:3.2rem;}
+  .fact-card{border-radius:28px;padding:26px 30px;}
+}
+
+/* Landscape phone fix */
+@media(max-height:500px) and (orientation:landscape){
+  header{padding:8px 16px 14px;border-radius:0 0 24px 24px;}
+  .mascot{font-size:1.8rem;}
+  header h1{font-size:1.2rem;}
+  .hsub,.dbadge{display:none;}
+  .story-banner{display:none!important;}
+  .fact-card{display:none;}
+  .main{padding:6px 12px 80px;}
+  .aemoji{font-size:2rem;margin:2px 0;}
+  .spill{bottom:8px;right:8px;padding:6px 10px;font-size:.78rem;}
+}
+
+/* Touch-friendly tap targets (ensure min 44px) */
+@media(pointer:coarse){
+  .tab{min-height:44px;display:flex;align-items:center;justify-content:center;}
+  .sp{min-height:36px;display:flex;align-items:center;justify-content:center;}
+  .done-btn,.game-next-btn,.game-done-btn{min-height:48px;}
+  .copt{min-height:48px;}
+  .num-card{min-height:48px;}
+  .shape-item{min-width:56px;min-height:56px;}
+  .undo-btn{min-height:36px;}
+  .listen-btn{min-height:40px;}
+  .sound-toggle,.bedtime-toggle{min-width:40px;min-height:40px;}
+}
+
+/* Safe area for notched phones (iPhone X+) */
+@supports(padding:max(0px)){
+  header{padding-top:max(16px,env(safe-area-inset-top));}
+  .main{padding-bottom:max(110px,calc(110px + env(safe-area-inset-bottom)));}
+  .spill{bottom:max(16px,env(safe-area-inset-bottom));right:max(16px,env(safe-area-inset-right));}
+  .toast{top:max(16px,env(safe-area-inset-top));}
+}
+
+/* Reduce animations for users who prefer it */
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:0.01ms!important;transition-duration:0.01ms!important;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <button class="bedtime-toggle" id="bedtimeBtn" onclick="toggleBedtime()" title="Bedtime Mode">☀️</button>
+  <button class="sound-toggle" id="soundBtn" onclick="toggleSound()" title="Toggle Sound">🔊</button>
+  <div class="mascot-wrap" onclick="mascotTap()">
+    <div class="speech-bubble" id="speechBubble">Hello! 🌟</div>
+    <span class="mascot-hat" id="mascotHat" style="display:none"></span>
+    <span class="mascot" id="mascotEmoji">🧜‍♀️</span>
+  </div>
+  <h1>My Little Star ⭐</h1>
+  <div class="hsub" id="hsub">Ready to learn and play! 🌈</div>
+  <div class="dbadge" id="dbadge">Day 1 of 60</div>
+</header>
+
+<div class="story-banner" id="storyBanner" onclick="speakText(document.getElementById('storyDesc').textContent)">
+  <span class="story-emoji" id="storyEmoji">🌱</span>
+  <div class="story-text">
+    <div class="story-title" id="storyTitle">Today's Adventure</div>
+    <div class="story-desc" id="storyDesc">Loading today's story...</div>
+  </div>
+  <span style="font-size:1.2rem">🔊</span>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-t="morning"  onclick="switchTab('morning')">🌅 Morning</button>
+  <button class="tab"        data-t="learning" onclick="switchTab('learning')">📚 Learn</button>
+  <button class="tab"        data-t="games"    onclick="switchTab('games')">🎮 Games</button>
+  <button class="tab"        data-t="create"   onclick="switchTab('create')">🎨 Create</button>
+  <button class="tab"        data-t="evening"  onclick="switchTab('evening')">🌙 Evening</button>
+  <button class="tab"        data-t="parent"   onclick="switchTab('parent')">👨‍👩‍👧 Parent</button>
+</div>
+
+<div class="subj-row" id="subjRow">
+  <button class="sp active" data-s="all"     onclick="switchSubj('all')">🌈 All</button>
+  <button class="sp"        data-s="abc"     onclick="switchSubj('abc')">🔤 ABC</button>
+  <button class="sp"        data-s="maths"   onclick="switchSubj('maths')">🔢 Maths</button>
+  <button class="sp"        data-s="art"     onclick="switchSubj('art')">🎨 Art</button>
+  <button class="sp"        data-s="science" onclick="switchSubj('science')">🔬 Science</button>
+</div>
+
+<div class="wbar" id="wbar"></div>
+
+<!-- WEEKLY CHALLENGE -->
+<div class="challenge-bar" id="challengeBar">
+  <span class="challenge-emoji">🎯</span>
+  <div class="challenge-info">
+    <div class="challenge-title" id="challengeTitle">This week: Complete 5 activities!</div>
+    <div class="challenge-prog" id="challengeProg">0/5 done</div>
+  </div>
+  <span class="challenge-badge" id="challengeBadge">🔒</span>
+</div>
+
+<!-- FOCUS TIMER -->
+<div class="timer-bar" id="timerBar">
+  <div class="timer-circle">
+    <svg viewBox="0 0 40 40">
+      <circle class="timer-bg" cx="20" cy="20" r="17"/>
+      <circle class="timer-fg" id="timerFg" cx="20" cy="20" r="17" stroke-dasharray="106.8" stroke-dashoffset="0"/>
+    </svg>
+  </div>
+  <div class="timer-text" id="timerText">⏱️ Play for 5 minutes!</div>
+  <button class="timer-btn timer-start" id="timerBtn" onclick="toggleTimer()">▶ Start</button>
+</div>
+
+<div id="factCard"></div>
+
+<div class="prog" id="progBar">
+  <span class="pl">Today</span>
+  <div class="pb"><div class="pf" id="pf" style="width:0%"></div></div>
+  <span class="pc" id="pc">0 done</span>
+</div>
+
+<div class="main">
+  <div class="congrats" id="congrats">
+    <div style="font-size:2.6rem">🎉</div>
+    <h2>All Done Today!</h2>
+    <p id="cmsg">You are a SUPERSTAR!</p>
+    <button class="nbtn" onclick="switchToNext()">Try another session →</button>
+    <br><button onclick="parentReset()" style="margin-top:10px;background:none;border:1px dashed rgba(255,255,255,0.5);color:rgba(255,255,255,0.7);border-radius:50px;padding:6px 16px;font-size:.75rem;cursor:pointer;">🔄 Parent: Reset full 60-day journey</button>
+  </div>
+  <div id="area"></div>
+  <div id="hist"></div>
+</div>
+
+<div class="spill" id="spill" onclick="showShop()">⭐ 0 stars</div>
+<div class="toast" id="toast">⭐</div>
+
+<script>
+// ══════════════════════════════════════
+//  VOICE + SOUND SYSTEM (#1)
+// ══════════════════════════════════════
+let soundOn=localStorage.getItem('c_sound')!=='off';
+const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+
+function playTone(freq,dur,type='sine'){
+  if(!soundOn)return;
+  try{audioCtx.resume();}catch(e){}
+  const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type=type;o.frequency.value=freq;
+  g.gain.setValueAtTime(.15,audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);
+  o.connect(g);g.connect(audioCtx.destination);
+  o.start();o.stop(audioCtx.currentTime+dur);
+}
+function playCorrect(){playTone(523,.12);setTimeout(()=>playTone(659,.12),120);setTimeout(()=>playTone(784,.2),240);}
+function playWrong(){playTone(200,.3,'square');}
+function playStar(){playTone(880,.08);setTimeout(()=>playTone(1047,.08),80);setTimeout(()=>playTone(1319,.15),160);}
+function playClick(){playTone(440,.06);}
+function playBedtime(){playTone(262,.4);setTimeout(()=>playTone(330,.4),400);setTimeout(()=>playTone(294,.6),800);}
+
+// ══════════════════════════════════════
+//  VOICE — Lady Voice with picker
+// ══════════════════════════════════════
+let selectedVoiceName=localStorage.getItem('c_voiceName')||'';
+
+function speakText(text){
+  if(!soundOn||!('speechSynthesis' in window))return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate=.85;u.pitch=1.3;u.volume=.9;
+  const voices=speechSynthesis.getVoices();
+  // Use saved voice preference, or fallback to default female
+  let pick=null;
+  if(selectedVoiceName) pick=voices.find(v=>v.name===selectedVoiceName);
+  if(!pick) pick=voices.find(v=>v.name.includes('Female')||v.name.includes('Samantha')||v.name.includes('Google UK English Female'));
+  if(pick)u.voice=pick;
+  speechSynthesis.speak(u);
+}
+
+function getEnglishVoices(){
+  return speechSynthesis.getVoices().filter(v=>v.lang.startsWith('en'));
+}
+
+function selectVoice(name){
+  selectedVoiceName=name;
+  localStorage.setItem('c_voiceName',name);
+  speakText('Hello little star! I will be your learning buddy!');
+  // Re-render voice list to show active state
+  const list=document.getElementById('voiceList');
+  if(list) list.innerHTML=buildVoiceListHTML();
+}
+
+function buildVoiceListHTML(){
+  const voices=getEnglishVoices();
+  if(!voices.length) return '<div style="font-size:.78rem;color:var(--text4);padding:8px">Loading voices… Try switching tabs and coming back.</div>';
+  return voices.map(v=>{
+    const isActive=v.name===selectedVoiceName;
+    return `<div class="voice-item ${isActive?'active':''}" onclick="selectVoice('${v.name.replace(/'/g,"\\'")}')">
+      <div style="flex:1">
+        <div class="voice-name">${v.name}</div>
+        <div class="voice-lang">${v.lang} ${v.localService?'· Local':''}</div>
+      </div>
+      <button class="voice-test" onclick="event.stopPropagation();selectedVoiceName='${v.name.replace(/'/g,"\\'")}';speakText('Hello! I am ${v.name.split(' ')[0]}. I will read stories for you!')">▶ Test</button>
+    </div>`;
+  }).join('');
+}
+
+// Pre-load voices
+if(typeof speechSynthesis!=='undefined'){
+  speechSynthesis.onvoiceschanged=()=>{};
+  setTimeout(()=>speechSynthesis.getVoices(),50);
+}
+
+function toggleSound(){
+  soundOn=!soundOn;
+  localStorage.setItem('c_sound',soundOn?'on':'off');
+  document.getElementById('soundBtn').textContent=soundOn?'🔊':'🔇';
+  if(soundOn)playClick();
+}
+document.getElementById('soundBtn').textContent=soundOn?'🔊':'🔇';
+
+// ══════════════════════════════════════
+//  MASCOT SYSTEM — Context-Aware (#6)
+// ══════════════════════════════════════
+const GREETINGS=['Good morning, little star!','Hello, superstar!','Ready to learn?','Let\'s have fun today!','You\'re amazing!'];
+let gameStreak=0; // consecutive correct answers in current session
+
+let speechTimeout;
+function mascotSay(msg,duration=3000){
+  const bubble=document.getElementById('speechBubble');
+  bubble.textContent=msg;
+  bubble.classList.add('show');
+  speakText(msg);
+  clearTimeout(speechTimeout);
+  speechTimeout=setTimeout(()=>bubble.classList.remove('show'),duration);
+}
+function mascotTap(){
+  playClick();
+  // Context-aware tap responses
+  if(done.length>=5) mascotSay('Wow, '+done.length+' activities today! 🏆');
+  else if(stars>=15) mascotSay(stars+' stars! You\'re on fire! 🔥');
+  else mascotSay(GREETINGS[Math.floor(Math.random()*GREETINGS.length)]);
+}
+
+// Smart praise — reacts to streaks and milestones
+function mascotPraise(){
+  gameStreak++;
+  if(gameStreak===3) mascotSay('3 in a row! You\'re on fire! 🔥');
+  else if(gameStreak===5) mascotSay('5 streak! Unbelievable! 🌟');
+  else if(gameStreak>=7) mascotSay('UNSTOPPABLE! '+gameStreak+' in a row! 🏆');
+  else if(done.length===0) mascotSay('First one done! Great start! 🎉');
+  else if(done.length===4) mascotSay('5 activities! You\'re amazing!');
+  else{
+    const praise=['Great job!','You\'re so smart!','Amazing work!','Fantastic!','Superstar!','Wonderful!','Keep going!','Brilliant!','Nailed it!','Perfect!'];
+    mascotSay(praise[Math.floor(Math.random()*praise.length)]);
+  }
+}
+
+// Smart hint — reacts to wrong streak
+function mascotHint(){
+  gameStreak=0; // reset streak on wrong
+  const wrongCount=wrongStreak;
+  if(wrongCount>=3) mascotSay('Let\'s try something easier! 💪');
+  else if(wrongCount===2) mascotSay('Almost! Try one more time! 🤔');
+  else{
+    const hints=['Take your time!','You can do it!','Try again, you\'re close!','Think carefully...','Almost there!','Look more closely!'];
+    mascotSay(hints[Math.floor(Math.random()*hints.length)]);
+  }
+}
+
+// Greet on load
+setTimeout(()=>{
+  const h=new Date().getHours();
+  const resumed=localStorage.getItem('c_current');
+  if(resumed) mascotSay('Welcome back! Let\'s continue! 🌟');
+  else if(h<12)mascotSay('Good morning, little star! ☀️');
+  else if(h<17)mascotSay('Hello! Time to learn! 📚');
+  else mascotSay('Good evening! 🌙');
+},800);
+
+// ══════════════════════════════════════
+//  BEDTIME MODE (#10)
+// ══════════════════════════════════════
+let bedtimeMode=localStorage.getItem('c_bedtime')==='on';
+function toggleBedtime(){
+  bedtimeMode=!bedtimeMode;
+  localStorage.setItem('c_bedtime',bedtimeMode?'on':'off');
+  applyBedtime();
+  if(bedtimeMode){playBedtime();mascotSay('Time to rest... 🌙',4000);}
+  else playClick();
+}
+function applyBedtime(){
+  document.body.classList.toggle('bedtime',bedtimeMode);
+  document.getElementById('bedtimeBtn').textContent=bedtimeMode?'🌙':'☀️';
+  try{if(typeof applyRewards==='function')applyRewards();}catch(e){}
+}
+applyBedtime();
+
+// ══════════════════════════════════════
+//  DAILY STORY MODE (#3)
+// ══════════════════════════════════════
+const STORIES=[
+  {emoji:'🌱',title:'The Garden Helper',desc:'Today, our little star is helping the garden grow!',morning:'Get ready for a garden adventure!',learn:'Help count the flowers!',game:'Find colors for butterflies!'},
+  {emoji:'🚀',title:'Space Explorer',desc:'Blast off! Our star is exploring the galaxy today!',morning:'Put on your space suit!',learn:'Count the planets!',game:'Match the stars!'},
+  {emoji:'🐻',title:'Forest Friends',desc:'The forest animals need your help today!',morning:'Wake up the forest!',learn:'Learn animal sounds!',game:'Help the bear find honey!'},
+  {emoji:'🏰',title:'Castle Builder',desc:'Build the tallest castle in the kingdom!',morning:'Gather your tools!',learn:'Shape the building blocks!',game:'Solve the castle puzzle!'},
+  {emoji:'🌊',title:'Ocean Adventure',desc:'Dive deep into the ocean to find treasures!',morning:'Jump into the waves!',learn:'Count the fish!',game:'Match the sea creatures!'},
+  {emoji:'🎪',title:'Circus Star',desc:'The circus needs a new performer — that\'s you!',morning:'Practice your tricks!',learn:'Learn circus maths!',game:'Balance the balls!'},
+  {emoji:'🦕',title:'Dinosaur Discovery',desc:'Travel back in time to meet the dinosaurs!',morning:'Pack your explorer bag!',learn:'How big were they?',game:'Name the dinosaurs!'},
+];
+
+function renderStory(){
+  const {day:d}=getWeek();
+  const story=STORIES[(d-1)%STORIES.length];
+  document.getElementById('storyEmoji').textContent=story.emoji;
+  document.getElementById('storyTitle').textContent=story.title;
+  document.getElementById('storyDesc').textContent=story.desc;
+}
+
+// ══════════════════════════════════════
+//  FOCUS TIMER (#8)
+// ══════════════════════════════════════
+let timerRunning=false,timerInterval,timerSeconds=300,timerTotal=300;
+function toggleTimer(){
+  if(!timerRunning){
+    timerRunning=true;timerSeconds=timerTotal;
+    document.getElementById('timerBtn').textContent='⏸ Pause';
+    document.getElementById('timerBtn').className='timer-btn timer-stop';
+    playClick();
+    timerInterval=setInterval(()=>{
+      timerSeconds--;
+      const m=Math.floor(timerSeconds/60),s=timerSeconds%60;
+      document.getElementById('timerText').textContent=`⏱️ ${m}:${s.toString().padStart(2,'0')} left`;
+      const pct=(1-timerSeconds/timerTotal)*106.8;
+      document.getElementById('timerFg').style.strokeDashoffset=pct;
+      if(timerSeconds<=0){
+        clearInterval(timerInterval);timerRunning=false;
+        document.getElementById('timerText').textContent='⏱️ Time\'s up! Great focus!';
+        document.getElementById('timerBtn').textContent='▶ Restart';
+        document.getElementById('timerBtn').className='timer-btn timer-start';
+        mascotSay('Great job focusing! Time for a break! 🎉',4000);
+        playStar();
+      }
+    },1000);
+  } else {
+    clearInterval(timerInterval);timerRunning=false;
+    document.getElementById('timerBtn').textContent='▶ Resume';
+    document.getElementById('timerBtn').className='timer-btn timer-start';
+  }
+}
+
+// ══════════════════════════════════════
+//  WEEKLY CHALLENGE (#11)
+// ══════════════════════════════════════
+const CHALLENGES=[
+  {title:'Complete 5 activities!',target:5,type:'activities'},
+  {title:'Earn 20 stars!',target:20,type:'stars'},
+  {title:'Play 3 games!',target:3,type:'games'},
+  {title:'Learn 5 new words!',target:5,type:'activities'},
+  {title:'Help 3 times at home!',target:3,type:'activities'},
+];
+function renderChallenge(){
+  const {week:w}=getWeek();
+  const ch=CHALLENGES[(w-1)%CHALLENGES.length];
+  document.getElementById('challengeTitle').textContent='This week: '+ch.title;
+  const prog=ch.type==='stars'?stars:done.length;
+  const achieved=prog>=ch.target;
+  document.getElementById('challengeProg').textContent=`${Math.min(prog,ch.target)}/${ch.target} done`;
+  document.getElementById('challengeBadge').textContent=achieved?'🏆':'🔒';
+}
+
+// ══════════════════════════════════════
+//  ADAPTIVE DIFFICULTY (#4)
+// ══════════════════════════════════════
+let diffLevel=parseInt(localStorage.getItem('c_diff')||'1');
+let correctStreak=0,wrongStreak=0;
+function adaptDifficulty(correct){
+  if(correct){correctStreak++;wrongStreak=0;if(correctStreak>=3){diffLevel=Math.min(3,diffLevel+1);correctStreak=0;}}
+  else{wrongStreak++;correctStreak=0;if(wrongStreak>=2){diffLevel=Math.max(1,diffLevel-1);wrongStreak=0;}}
+  localStorage.setItem('c_diff',diffLevel);
+}
+function getDiffRange(){
+  if(diffLevel===1)return{min:1,max:5,wordLen:3};
+  if(diffLevel===2)return{min:1,max:10,wordLen:4};
+  return{min:1,max:15,wordLen:5};
+}
+
+// ══════════════════════════════════════
+//  UNLOCKABLES SHOP (#5) — Visual Rewards
+// ══════════════════════════════════════
+const SHOP_ITEMS=[
+  {id:'hat1',emoji:'🎩',name:'Top Hat',cost:20,type:'hat'},
+  {id:'crown',emoji:'👑',name:'Crown',cost:30,type:'hat'},
+  {id:'flower',emoji:'🌺',name:'Flower',cost:10,type:'hat'},
+  {id:'char_cat',emoji:'🐱',name:'Cat Buddy',cost:25,type:'character'},
+  {id:'char_bear',emoji:'🐻',name:'Bear Buddy',cost:35,type:'character'},
+  {id:'char_panda',emoji:'🐼',name:'Panda Pal',cost:40,type:'character'},
+  {id:'theme_ocean',emoji:'🌊',name:'Ocean Theme',cost:40,type:'theme',colors:{'--bg':'#e0f4ff','--pink':'#4fa3e0','--sun':'#56cf81'}},
+  {id:'theme_space',emoji:'🚀',name:'Space Theme',cost:50,type:'theme',colors:{'--bg':'#1a1a2e','--cardbg':'#222244','--text':'#e0d4ff','--text2':'#b8a9d4','--border':'#333355','--inputbg':'#2a2a4e'}},
+  {id:'theme_forest',emoji:'🌿',name:'Forest Theme',cost:45,type:'theme',colors:{'--bg':'#f0fff4','--pink':'#56cf81','--sun':'#4ecdc4'}},
+  {id:'rainbow',emoji:'🌈',name:'Rainbow Flair',cost:15,type:'hat'},
+  {id:'trophy',emoji:'🏆',name:'Trophy',cost:60,type:'hat'},
+];
+let owned=JSON.parse(localStorage.getItem('c_owned')||'[]');
+let activeHat=localStorage.getItem('c_activeHat')||'';
+let activeChar=localStorage.getItem('c_activeChar')||'';
+let activeTheme=localStorage.getItem('c_activeTheme')||'';
+let totalStarsEver=parseInt(localStorage.getItem('c_total_stars')||'0');
+
+function applyRewards(){
+  // Apply hat on mascot
+  const hatEl=document.getElementById('mascotHat');
+  if(hatEl){
+    if(activeHat){
+      const item=SHOP_ITEMS.find(i=>i.id===activeHat);
+      hatEl.textContent=item?item.emoji:'';
+      hatEl.style.display='block';
+    } else hatEl.style.display='none';
+  }
+  // Apply character swap
+  const mascotEl=document.getElementById('mascotEmoji');
+  if(mascotEl){
+    if(activeChar){
+      const item=SHOP_ITEMS.find(i=>i.id===activeChar);
+      mascotEl.textContent=item?item.emoji:'🧜‍♀️';
+    } else mascotEl.textContent='🧜‍♀️';
+  }
+  // Apply theme
+  const root=document.documentElement;
+  // Reset custom theme properties first
+  root.removeAttribute('style');
+  if(activeTheme&&!bedtimeMode){
+    const item=SHOP_ITEMS.find(i=>i.id===activeTheme);
+    if(item&&item.colors){
+      Object.entries(item.colors).forEach(([k,v])=>root.style.setProperty(k,v));
+    }
+  }
+}
+
+function showShop(){
+  playClick();
+  const el=document.getElementById('area');
+  el.innerHTML=`
+    <div class="shop-panel">
+      <div class="game-title">🎁 Star Shop</div>
+      <div class="game-inst">Spend your stars on cool rewards! Total earned: <strong>⭐ ${totalStarsEver}</strong></div>
+      <div style="font-size:.75rem;color:var(--text4);margin-bottom:12px">Tap an owned item to wear/apply it. Tap again to remove.</div>
+      <div class="shop-grid">${SHOP_ITEMS.map(item=>{
+        const isOwned=owned.includes(item.id);
+        const isActive=item.id===activeHat||item.id===activeChar||item.id===activeTheme;
+        const canBuy=totalStarsEver>=item.cost&&!isOwned;
+        const action=isOwned
+          ?`toggleReward('${item.id}','${item.type}')`
+          :canBuy?`buyItem('${item.id}',${item.cost})`:'';
+        return `<div class="shop-item ${isOwned?(isActive?'owned':'owned'):(canBuy?'':'locked')}" style="${isActive?'border-color:var(--sun);box-shadow:0 0 12px rgba(255,184,48,.4)':''}" onclick="${action}">
+          <span class="shop-emoji">${item.emoji}</span>
+          <div class="shop-cost">${isOwned?(isActive?'✨ Active':'✅ Owned'):'⭐ '+item.cost}</div>
+          <div class="shop-name">${item.name}</div>
+        </div>`;
+      }).join('')}</div>
+    </div>`;
+}
+function buyItem(id,cost){
+  if(owned.includes(id)||totalStarsEver<cost)return;
+  owned.push(id);localStorage.setItem('c_owned',JSON.stringify(owned));
+  playStar();mascotSay('New reward unlocked! 🎁');
+  // Auto-equip on purchase
+  const item=SHOP_ITEMS.find(i=>i.id===id);
+  if(item)toggleReward(id,item.type);
+  else showShop();
+}
+function toggleReward(id,type){
+  if(type==='hat'){
+    activeHat=activeHat===id?'':id;
+    localStorage.setItem('c_activeHat',activeHat);
+  } else if(type==='character'){
+    activeChar=activeChar===id?'':id;
+    localStorage.setItem('c_activeChar',activeChar);
+  } else if(type==='theme'){
+    activeTheme=activeTheme===id?'':id;
+    localStorage.setItem('c_activeTheme',activeTheme);
+  }
+  applyRewards();playClick();showShop();
+}
+
+// ══════════════════════════════════════
+//  CURRICULUM — 2 months, 4 subjects
+// ══════════════════════════════════════
+const CUR = {
+  morning:[
+    {w:1,emoji:'🪥',title:'Brush Teeth All By Myself',desc:'Brush every tooth — front, back and tongue for 2 minutes!',learn:'Good brushing removes germs called bacteria that can hurt your teeth.',why:'Builds independence and a lifelong healthy habit.',steps:['Put toothpaste on brush','Brush front teeth — count 10','Brush back teeth — count 10','Rinse and smile!'],stars:2},
+    {w:1,emoji:'👗',title:'Get Dressed Alone',desc:'Pick your clothes and put them on all by yourself!',learn:'Dressing yourself is called self-care. It is a very important life skill!',why:'Self-dressing builds fine motor skills and confidence.',steps:['Choose your outfit','Underwear first, then shirt','Then pants and socks','Shoes last — left and right!'],stars:3},
+    {w:1,emoji:'🥣',title:'Set the Breakfast Table',desc:'Put out bowls, spoons and cups before everyone sits.',learn:'Laying a table properly is called "table setting" — a real life skill!',why:'Responsibility tasks teach sequencing and teamwork.',steps:['Count how many people eat','Get that many bowls','Add a spoon for each','Pour water or juice!'],stars:2},
+    {w:1,emoji:'🙏',title:'Morning Gratitude',desc:'Think of 3 happy things before you start your day.',learn:'Being grateful means noticing the good things. It makes your brain happier!',why:'Gratitude builds emotional intelligence.',steps:['Sit quietly on your mat','Close your eyes','Think of 3 happy things','Tell Mummy what they are!'],stars:1},
+    {w:1,emoji:'🎒',title:'Pack My School Bag',desc:'Check everything is inside — books, pencils, water, lunch!',learn:'Checking a list before you leave is called being organised.',why:'Organisation skills start at age 4–5.',steps:['Open your bag wide','Books go in first','Pencil case next','Water and lunch box — zip up!'],stars:2},
+    {w:2,emoji:'🌸',title:'Water the Plants',desc:'Give each plant a small drink of water today.',learn:'Plants drink water through their roots. Without water they droop and die!',why:'Caring for living things builds empathy and responsibility.',steps:['Fill a small cup with water','Walk to each plant','Pour gently at the base','Feel the soil — wet now?'],stars:1},
+    {w:3,emoji:'🪴',title:'Morning Exercise',desc:'Do 5 jumps, 5 stretches and run in place for 20 seconds!',learn:'Exercise makes your heart beat faster, which sends more blood to your brain!',why:'Morning movement boosts brain power and focus all day.',steps:['Stand up tall and wide','Jump 5 times — count aloud!','Stretch arms to the sky','Run on the spot — count to 20!'],stars:2},
+    {w:3,emoji:'📅',title:'Check Today\'s Plan',desc:'Look at your activity chart and tell Mummy what you will do today!',learn:'Planning ahead is called time management — a skill adults use every day.',why:'Planning builds self-management and excitement for learning.',steps:['Look at today\'s activities','Read each one with Mummy','Pick your favourite one','Tell Mummy your plan for the day!'],stars:2},
+    {w:5,emoji:'🍱',title:'Pack My Own Lunch Box',desc:'Put a fruit, a snack and a drink in your lunch box!',learn:'Choosing healthy food yourself is called making good decisions.',why:'Choices and self-care build independence.',steps:['Open the fridge with Mummy','Choose one fruit','Choose one snack','Fill your water bottle!'],stars:3},
+    {w:5,emoji:'🧹',title:'Sweep My Room',desc:'Use a small broom to sweep the floor of your room.',learn:'Sweeping collects dust and tiny things we cannot even see!',why:'Chores build discipline and a sense of ownership.',steps:['Get the small broom','Start from one corner','Sweep to the middle','Collect it in the dustpan!'],stars:2},
+    {w:7,emoji:'⏰',title:'Wake Up Without Help',desc:'When the alarm rings — get up yourself! No calling Mummy!',learn:'Waking yourself shows you are becoming very responsible and grown up.',why:'Self-waking builds autonomy and morning responsibility.',steps:['Set a gentle alarm the night before','When it rings — get UP!','Wash your face with water','Get dressed all by yourself!'],stars:4},
+    {w:7,emoji:'📝',title:'Write My Daily To-Do',desc:'Draw or write 3 things you want to do today.',learn:'A to-do list helps you remember your plans and feel proud when you finish them!',why:'Planning skills are a superpower for life.',steps:['Get paper and pencil','Draw ☀️ at the top','Write or draw 3 plans','Tick each one when done!'],stars:3},
+    // REAL LIFE SKILLS MODE (#13)
+    {w:2,emoji:'🧹',title:'I Cleaned My Toys!',desc:'Put all toys back in their box. Tap "I did it!" when done!',learn:'Cleaning up shows you are responsible and grown up!',why:'Real actions build real habits.',steps:['Look at your room','Pick up every toy','Put each one away neatly','Tap "I did it!" below!'],stars:3,realLife:true},
+    {w:4,emoji:'🍽️',title:'I Helped Cook Today!',desc:'Help Mummy in the kitchen — stir, wash, or set the table!',learn:'Cooking is science + maths + creativity all in one!',why:'Kitchen helpers become confident cooks.',steps:['Ask Mummy what you can help with','Wash vegetables or stir gently','Set the plates out','Tap "I did it!" when done!'],stars:3,realLife:true},
+    {w:6,emoji:'🌱',title:'I Watered a Plant!',desc:'Give water to a real plant and watch it grow over days!',learn:'Plants need water, light and love — just like you!',why:'Caring for nature builds empathy.',steps:['Find a plant that needs water','Fill a small cup','Pour gently at the roots','Tap "I did it!" below!'],stars:2,realLife:true},
+  ],
+  evening:[
+    {w:1,emoji:'🧸',title:'Tidy Up All Toys',desc:'Every toy goes back in its right place before dinner!',learn:'Having an organised space helps your brain feel calm and ready.',why:'Routine tidying builds responsibility.',steps:['Look around the room','Pick up each toy','Put it in the right box','Floor clear? Great!'],stars:2},
+    {w:1,emoji:'📚',title:'Bedtime Story Retelling',desc:'After your story close the book and retell it yourself!',learn:'Retelling a story means remembering the beginning, middle and end.',why:'Retelling builds memory and spoken language.',steps:['Read or listen to a story','Close the book','Start: "Once upon a time…"','Remember all 3 parts!'],stars:3},
+    {w:1,emoji:'🌛',title:'Star Gazing Wonder',desc:'Count 5 stars and ask Mummy one big question about space!',learn:'Stars are giant balls of fire — like our Sun — just very very far away!',why:'Asking questions is the #1 sign of a self-learner.',steps:['Go to the window','Look up and find stars','Count 5 of them','Ask: "Why do stars twinkle?"'],stars:3},
+    {w:2,emoji:'🎭',title:'Feelings Check-In',desc:'Act out how your day felt using your face and body!',learn:'Naming your feelings is called emotional literacy — a superpower!',why:'Emotional vocabulary prevents big feelings later.',steps:['Think about your whole day','Show morning feeling with your face','Show afternoon feeling','Tell Mummy your best moment!'],stars:2},
+    {w:2,emoji:'🍽️',title:'Help Set Dinner Table',desc:'Put plates, forks and cups in the right spots!',learn:'Fork goes on the LEFT, knife on the RIGHT, cup on the top right!',why:'Helping at home builds belonging and contribution.',steps:['Count family members','Get plates — carry carefully!','Fork on left of each plate','Cup top right!'],stars:2},
+    {w:3,emoji:'💧',title:'Rinse My Plate',desc:'After dinner rinse your own plate under the tap.',learn:'Rinsing plates before washing makes cleaning much easier!',why:'Self-sufficiency after meals is a real life skill.',steps:['Carry plate carefully to sink','Turn on gentle water','Rinse all food off','Place in drying rack!'],stars:2},
+    {w:4,emoji:'🌙',title:'Prepare Tomorrow\'s Clothes',desc:'Choose and lay out tomorrow\'s outfit tonight!',learn:'Preparing the night before is called being proactive — thinking ahead!',why:'Preparation habits reduce morning stress.',steps:['Open your wardrobe','Pick tomorrow\'s outfit','Lay it on your chair','Shoes beside the chair too!'],stars:3},
+    {w:5,emoji:'📖',title:'Read One Page Alone',desc:'Try reading one page of a simple book all by yourself!',learn:'The more you read the easier it gets — every page makes you stronger!',why:'Independent reading is the biggest self-learning skill.',steps:['Pick a simple picture book','Open to the first page','Try to read each word slowly','Ask Mummy about tricky words'],stars:4},
+    {w:6,emoji:'🌿',title:'Evening Garden Check',desc:'Walk around the garden and notice what changed today.',learn:'Scientists call careful looking "observation" — the most important science skill!',why:'Daily observation builds scientific thinking.',steps:['Go to the garden','Look at each plant','Did anything grow or change?','Tell Mummy one interesting thing!'],stars:2},
+    {w:7,emoji:'🧘',title:'Calm Breathing Exercise',desc:'Breathe in 4, hold 4, out 4 — do this 5 times!',learn:'Slow breathing tells your brain "everything is safe" — it really works!',why:'Breathing regulation helps brain and sleep quality.',steps:['Sit on your mat','Breathe IN — count 1,2,3,4','Hold — count 1,2,3,4','Breathe OUT — count 1,2,3,4. Repeat 5 times!'],stars:3},
+    {w:8,emoji:'📓',title:'My Daily Journal Drawing',desc:'Draw the most exciting thing that happened today!',learn:'Keeping a journal is something many great people in history did every day!',why:'Journaling builds reflection and language development.',steps:['Get your notebook','Think: best thing today?','Draw it carefully!','Write one sentence about it with Mummy'],stars:3},
+  ],
+  learning:[
+    {w:1,subj:'abc',emoji:'🔤',title:'Learn Letter A',desc:'A is for Apple, Ant, Arrow — the FIRST letter!',learn:'A is a VOWEL — one of the 5 most important letters. It says "aah" like in Apple!',why:'Letters are the building blocks of all reading and writing.',steps:['Say "A" out loud 5 times','Trace A in the air with your finger','Write A on paper 3 times','Find 3 things starting with A!'],stars:3,tag:'🔤 ABC'},
+    {w:1,subj:'abc',emoji:'🐝',title:'Learn Letter B',desc:'B is for Ball, Bear, Butterfly and Bee!',learn:'B says "buh". Capital B looks like two bumps on a line.',why:'B is one of the most common first letters for children\'s words.',steps:['Say "B" out loud 5 times','Trace big B and small b','Write B three times neatly','Say 5 words starting with B!'],stars:3,tag:'🔤 ABC'},
+    {w:2,subj:'abc',emoji:'🐱',title:'Learn Letters C & D',desc:'C for Cat, Cake! D for Dog, Duck, Door!',learn:'C says "kuh" — it looks like a half circle! D says "duh".',why:'Learning letter pairs speeds up alphabet mastery.',steps:['Write C and D three times each','Say "Cat, Car, Cup" and "Dog, Door, Drum"','Draw a cat (C) and a dog (D)','Find things at home starting with C and D!'],stars:3,tag:'🔤 ABC'},
+    {w:3,subj:'abc',emoji:'🦒',title:'Learn Letters G, H & I',desc:'G for Goat! H for Hat, House! I for Ice cream!',learn:'G says "guh". H says "huh". I is a VOWEL!',why:'Vowels like I appear in every single English word.',steps:['Write G H I on paper','Say 2 words for each letter','Trace them in the air big!','Spot the letter I in a book'],stars:3,tag:'🔤 ABC'},
+    {w:4,subj:'abc',emoji:'🌙',title:'Learn Letters M, N & O',desc:'M for Moon, Monkey! N for Nose! O for Orange!',learn:'M sounds like humming! N sounds like "nnn". O is a VOWEL.',why:'M N O are three of the most used letters.',steps:['Hum "mmm" for M, "nnn" for N','Write M N O five times each','Say 3 words for each letter','O is a vowel — find 5 words with O!'],stars:3,tag:'🔤 ABC'},
+    {w:5,subj:'abc',emoji:'🌈',title:'Learn Letters S, T, U & V',desc:'S for Sun, Snake! T for Tree! U for Umbrella! V for Van!',learn:'S looks like a slithering snake! U is a VOWEL.',why:'S and T are two of the most common letters.',steps:['Write S T U V on paper','Wiggle like a snake for S!','Say 2 words for all 4 letters','Find each letter in a book!'],stars:4,tag:'🔤 ABC'},
+    {w:6,subj:'abc',emoji:'📖',title:'Read 3-Letter Words',desc:'Sound out: CAT, DOG, HAT, SUN, CUP, BIG, PIG!',learn:'Sounding out letters to make words is called PHONICS.',why:'Phonics is the most effective method for early reading.',steps:['Look at the word CAT','Sound out: C...A...T','Blend: "kuh-aah-tuh" = CAT!','Try DOG, HAT, SUN, CUP!'],stars:4,tag:'🔤 ABC'},
+    {w:7,subj:'abc',emoji:'🗣️',title:'Sight Words — Top 6',desc:'Learn by sight: THE, IS, A, AND, IN, IT',learn:'Sight words are so common we memorise them.',why:'Knowing sight words unlocks 50% of all reading.',steps:['Read each word: THE IS A AND IN IT','Cover one and try to remember','Make flash cards with Mummy!','Use each word in a sentence!'],stars:4,tag:'🔤 ABC'},
+    {w:8,subj:'abc',emoji:'✍️',title:'Write My First Sentence',desc:'Write: "I like cats." — capital letter, full stop!',learn:'A sentence needs: Capital letter, spaces, full stop.',why:'Writing sentences is the bridge from letters to stories.',steps:['Write the capital I first','Write each word with a space','Put a full stop at the end','Read it back out loud!'],stars:5,tag:'🔤 ABC'},
+    // MATHS
+    {w:1,subj:'maths',emoji:'🔢',title:'Count 1 to 10',desc:'Count out loud and show fingers for each number!',learn:'Each number has a name, a symbol AND a quantity!',why:'Finger counting links number symbols to real amounts.',steps:['Hold up 1 finger and say "ONE"','Add one more — "TWO"','Keep going to all 10!','Count backwards from 10!'],stars:2,tag:'🔢 Maths'},
+    {w:1,subj:'maths',emoji:'🍎',title:'Count Real Objects',desc:'Count 5 apples, 5 spoons, 5 toys — touch each one!',learn:'Touching and counting teaches "1-to-1 correspondence".',why:'Hands-on counting builds stronger number sense.',steps:['Collect 5 same objects','Line them up in a row','Touch each one and say its number','Try counting 10 objects!'],stars:3,tag:'🔢 Maths'},
+    {w:2,subj:'maths',emoji:'📐',title:'Shapes — Circle & Square',desc:'Find circles and squares all around the house!',learn:'A circle has NO corners. A square has 4 equal sides!',why:'Shape recognition connects geometry to everyday life.',steps:['Draw a circle — count corners: 0!','Draw a square — count corners: 4!','Find 3 circles at home','Find 3 squares at home!'],stars:3,tag:'🔢 Maths'},
+    {w:3,subj:'maths',emoji:'➕',title:'Adding With Objects',desc:'2 toys + 3 toys = 5 toys! The + sign means add!',learn:'Addition means putting groups together!',why:'Using objects first makes addition intuitive.',steps:['Put 2 toys on the left','Put 3 toys on the right','Push them all together and count!','Try 1+4, 2+2, 3+3!'],stars:3,tag:'🔢 Maths'},
+    {w:4,subj:'maths',emoji:'🔟',title:'Count to 20',desc:'Count all the way to 20 without stopping!',learn:'After 10 come the teen numbers!',why:'Counting to 20 fluently is a key milestone.',steps:['Count from 1 to 10 first','Continue: eleven, twelve…','All the way to twenty!','Count backwards from 20!'],stars:3,tag:'🔢 Maths'},
+    {w:5,subj:'maths',emoji:'🕐',title:'O\'Clock Times',desc:'Learn 3 o\'clock, 6 o\'clock — the long hand at 12!',learn:'The SHORT hand shows the HOUR.',why:'Clock reading connects numbers to daily life.',steps:['Find a clock at home','Point to the short hand','Point to the long hand','What time does it show?'],stars:4,tag:'🔢 Maths'},
+    {w:6,subj:'maths',emoji:'💰',title:'Learn Coins',desc:'What does ₹1 and ₹2 look like? Count 5 coins!',learn:'₹1 is worth ONE rupee. 5 coins of ₹1 = ₹5!',why:'Financial literacy starts with recognising coins.',steps:['Find coins at home','Pick out all ₹1 coins','Count 5 of them: that\'s ₹5!','Try ₹2 coins!'],stars:4,tag:'🔢 Maths'},
+    {w:7,subj:'maths',emoji:'➗',title:'Share Equally',desc:'Share 6 biscuits between 2 people!',learn:'Sharing equally is the beginning of division!',why:'Division through sharing is natural learning.',steps:['Get 6 small objects','Make 2 piles','Keep moving until equal','Count each pile!'],stars:4,tag:'🔢 Maths'},
+    {w:8,subj:'maths',emoji:'🔢',title:'Number Patterns',desc:'2, 4, 6, __ ? Count by 2s!',learn:'Skip counting is counting by jumping over numbers.',why:'Pattern recognition is essential for higher maths.',steps:['Say: 2,4,6,8 — what comes next?','Clap every 2 counts to 10','Try 5,10,15 — what comes next?','Jump on every 5th number!'],stars:4,tag:'🔢 Maths'},
+    // ART
+    {w:1,subj:'art',emoji:'🎨',title:'Primary Colours',desc:'Red, Yellow and Blue — you cannot make these from other colours!',learn:'Mix them to make NEW colours! Red+Blue=Purple!',why:'Colour theory is the foundation of visual art.',steps:['Get red, yellow and blue paint','Paint 3 circles, one each colour','Mix red + yellow — what colour?','Mix blue + yellow?'],stars:3,tag:'🎨 Art'},
+    {w:2,subj:'art',emoji:'✏️',title:'Shapes into Pictures',desc:'Turn a circle into a sun, a triangle into a tree!',learn:'All drawings start with basic shapes!',why:'Shape-to-picture thinking is how artists see.',steps:['Draw a big circle','Add rays — it\'s a sun!','Draw triangle on rectangle','Add a door — it\'s a house!'],stars:3,tag:'🎨 Art'},
+    {w:3,subj:'art',emoji:'🖌️',title:'Finger Painting',desc:'Use your fingers to paint clouds, grass and a rainbow!',learn:'Finger painting builds sensory awareness.',why:'Sensory art connects creativity to development.',steps:['Put newspaper on the table','Dip one finger in paint','Make dots, lines and swirls','Paint sky, land and rainbow!'],stars:3,tag:'🎨 Art'},
+    {w:5,subj:'art',emoji:'🏠',title:'Draw My House',desc:'Draw your home — roof, walls, door, windows, garden!',learn:'"Observation drawing" — looking carefully before you draw.',why:'Drawing from observation builds visual memory.',steps:['Look at your home carefully','Draw the big rectangle (walls)','Add triangle roof on top','Add windows, door and garden!'],stars:3,tag:'🎨 Art'},
+    {w:6,subj:'art',emoji:'🦋',title:'Symmetry Butterfly',desc:'Fold paper, paint one wing, press — both wings match!',learn:'Symmetry means both sides are mirror images!',why:'Symmetry connects art to maths and science.',steps:['Fold paper in half','Open and paint one side','Fold and press firmly','Open — two matching wings!'],stars:4,tag:'🎨 Art'},
+    {w:8,subj:'art',emoji:'🖼️',title:'My Self Portrait',desc:'Draw yourself — face, hair, eyes, nose, mouth, body!',learn:'A self-portrait is a picture of yourself!',why:'Self-portraits develop self-awareness.',steps:['Get a mirror and look at your face','Draw a circle for your face','Add eyes, nose, mouth carefully','Add hair, neck and body!'],stars:4,tag:'🎨 Art'},
+    // SCIENCE
+    {w:1,subj:'science',emoji:'🌱',title:'Seeds and Plants',desc:'How does a tiny seed grow into a big tree?',learn:'Every plant starts as a seed! It needs WATER, SOIL and SUNLIGHT.',why:'Plant science connects observation and biology.',steps:['Find a seed','Put it in wet cotton or soil','Place near a sunny window','Check every day!'],stars:3,tag:'🔬 Science'},
+    {w:2,subj:'science',emoji:'💧',title:'Water — 3 Forms',desc:'Water can be ice, liquid or steam — same thing, 3 forms!',learn:'Cold = ice (solid). Normal = water (liquid). Hot = steam (gas).',why:'States of matter is a key science concept.',steps:['Touch an ice cube — SOLID!','Feel tap water — LIQUID!','Watch steam from tea — GAS!','Draw all 3 forms!'],stars:3,tag:'🔬 Science'},
+    {w:3,subj:'science',emoji:'🦋',title:'Butterfly Life Cycle',desc:'Egg → Caterpillar → Cocoon → Butterfly!',learn:'4 stages called metamorphosis!',why:'Life cycles introduce transformation in science.',steps:['Draw a circle — the egg','Draw a wavy caterpillar','Draw a hanging cocoon','Draw a beautiful butterfly!'],stars:3,tag:'🔬 Science'},
+    {w:4,subj:'science',emoji:'🧲',title:'Magnets Are Magic!',desc:'Test what a magnet sticks to — make a list!',learn:'Magnets attract IRON and STEEL!',why:'Magnetism introduces the concept of forces.',steps:['Find a fridge magnet','Test: stick to a spoon?','Test: stick to paper?','Make a list!'],stars:4,tag:'🔬 Science'},
+    {w:5,subj:'science',emoji:'🌍',title:'Our Planet Earth',desc:'Earth is round! It has land, water, air — and us!',learn:'Earth is the 3rd planet from the Sun. 71% is water!',why:'Earth science builds global awareness.',steps:['Use a ball — that\'s Earth\'s shape!','Draw Earth: blue and green','More blue than green — why?','Ask: "How far is the Sun?"'],stars:3,tag:'🔬 Science'},
+    {w:6,subj:'science',emoji:'🔦',title:'Light and Shadow',desc:'Use a torch to make shadows!',learn:'Shadows form when something blocks light!',why:'Light and shadow introduces optics.',steps:['Darken the room, use a torch','Hold your hand in front','Move closer — shadow grows!','Make animal shadow shapes!'],stars:4,tag:'🔬 Science'},
+    {w:7,subj:'science',emoji:'🫁',title:'My Amazing Body',desc:'Learn about your heart, lungs, brain and bones!',learn:'Heart pumps blood. Lungs fill with air. Brain controls everything!',why:'Body science builds health awareness.',steps:['Feel your heartbeat!','Take a big breath!','Jump 10 times — heart faster?','Count fingers and toes!'],stars:3,tag:'🔬 Science'},
+    {w:8,subj:'science',emoji:'🌙',title:'Moon and Stars',desc:'The moon changes shape every night!',learn:'The Moon orbits Earth. We see different phases!',why:'Astronomy builds wonder and observation.',steps:['Look at the moon tonight','Draw what shape it is','Check in 3 days','Count stars you can see!'],stars:4,tag:'🔬 Science'},
+  ]
+};
+
+// ══════════════════════════════════════
+//  PHYSICAL ACTIVITIES — every 2 days
+// ══════════════════════════════════════
+const PHYSICAL_ACTS=[
+  {id:'pa_jj',emoji:'⭐',title:'Jumping Jacks!',desc:'Do 10 jumping jacks! Jump and spread your arms and legs like a star!',
+    why:'Jumping jacks improve coordination and get your heart pumping!',stars:3,
+    steps:['Stand straight with feet together','Jump and spread legs wide','Raise arms above your head at the same time','Jump back to start — that\'s 1! Do 10!'],
+    svg:`<svg viewBox="0 0 90 120" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="45" cy="22" r="12" fill="#ffb830" stroke="#e09520" stroke-width="2"/>
+      <line x1="45" y1="34" x2="45" y2="75" stroke="#ff6b9d" stroke-width="4" stroke-linecap="round"/>
+      <line x1="45" y1="50" x2="25" y2="35" stroke="#ff6b9d" stroke-width="3.5" stroke-linecap="round"><animate attributeName="x2" values="25;25;25" dur="0.8s" repeatCount="indefinite"/><animate attributeName="y2" values="35;65;35" dur="0.8s" repeatCount="indefinite"/></line>
+      <line x1="45" y1="50" x2="65" y2="35" stroke="#ff6b9d" stroke-width="3.5" stroke-linecap="round"><animate attributeName="x2" values="65;65;65" dur="0.8s" repeatCount="indefinite"/><animate attributeName="y2" values="35;65;35" dur="0.8s" repeatCount="indefinite"/></line>
+      <line x1="45" y1="75" x2="30" y2="110" stroke="#4fa3e0" stroke-width="3.5" stroke-linecap="round"><animate attributeName="x2" values="30;45;30" dur="0.8s" repeatCount="indefinite"/></line>
+      <line x1="45" y1="75" x2="60" y2="110" stroke="#4fa3e0" stroke-width="3.5" stroke-linecap="round"><animate attributeName="x2" values="60;45;60" dur="0.8s" repeatCount="indefinite"/></line>
+      <circle cx="40" cy="18" r="2" fill="#333"/><circle cx="50" cy="18" r="2" fill="#333"/>
+      <path d="M40 25 Q45 30 50 25" fill="none" stroke="#333" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>`},
+  {id:'pa_stretch',emoji:'🙆',title:'Stretch to the Sky!',desc:'Reach your arms as high as you can! Stretch like a tall giraffe!',
+    why:'Stretching makes your muscles flexible and helps you grow tall!',stars:2,
+    steps:['Stand up straight and tall','Raise both arms above your head','Stretch as HIGH as you can — on tippy toes!','Hold for 5 seconds, then relax. Do 5 times!'],
+    svg:`<svg viewBox="0 0 90 120" xmlns="http://www.w3.org/2000/svg">
+      <g><animateTransform attributeName="transform" type="translate" values="0 0;0 -4;0 0" dur="1.5s" repeatCount="indefinite"/>
+      <circle cx="45" cy="22" r="12" fill="#a78bfa" stroke="#8b6fd4" stroke-width="2"/>
+      <line x1="45" y1="34" x2="45" y2="78" stroke="#4ecdc4" stroke-width="4" stroke-linecap="round"/>
+      <line x1="45" y1="48" x2="30" y2="15" stroke="#4ecdc4" stroke-width="3.5" stroke-linecap="round"><animate attributeName="x2" values="30;28;30" dur="1.5s" repeatCount="indefinite"/><animate attributeName="y2" values="15;10;15" dur="1.5s" repeatCount="indefinite"/></line>
+      <line x1="45" y1="48" x2="60" y2="15" stroke="#4ecdc4" stroke-width="3.5" stroke-linecap="round"><animate attributeName="x2" values="60;62;60" dur="1.5s" repeatCount="indefinite"/><animate attributeName="y2" values="15;10;15" dur="1.5s" repeatCount="indefinite"/></line>
+      <line x1="45" y1="78" x2="35" y2="110" stroke="#56cf81" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="45" y1="78" x2="55" y2="110" stroke="#56cf81" stroke-width="3.5" stroke-linecap="round"/>
+      <circle cx="40" cy="18" r="2" fill="#333"/><circle cx="50" cy="18" r="2" fill="#333"/>
+      <path d="M40 25 Q45 30 50 25" fill="none" stroke="#333" stroke-width="1.5"/></g>
+    </svg>`},
+  {id:'pa_squat',emoji:'🏋️',title:'Silly Squats!',desc:'Bend your knees like you\'re sitting on an invisible chair! Do 8 squats!',
+    why:'Squats make your legs super strong — like a superhero!',stars:3,
+    steps:['Stand with feet apart','Bend your knees and push your bum back','Go as low as you can — like sitting down!','Stand back up! That\'s 1. Do 8!'],
+    svg:`<svg viewBox="0 0 90 120" xmlns="http://www.w3.org/2000/svg">
+      <g><animateTransform attributeName="transform" type="translate" values="0 0;0 12;0 0" dur="1.2s" repeatCount="indefinite"/>
+      <circle cx="45" cy="22" r="12" fill="#ff8c69" stroke="#d47050" stroke-width="2"/>
+      <line x1="45" y1="34" x2="45" y2="70" stroke="#ff6b9d" stroke-width="4" stroke-linecap="round"/>
+      <line x1="45" y1="48" x2="28" y2="58" stroke="#ff6b9d" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="45" y1="48" x2="62" y2="58" stroke="#ff6b9d" stroke-width="3.5" stroke-linecap="round"/></g>
+      <line x1="45" y1="82" x2="32" y2="110" stroke="#4fa3e0" stroke-width="3.5" stroke-linecap="round"><animate attributeName="y1" values="82;92;82" dur="1.2s" repeatCount="indefinite"/><animate attributeName="x2" values="32;28;32" dur="1.2s" repeatCount="indefinite"/></line>
+      <line x1="45" y1="82" x2="58" y2="110" stroke="#4fa3e0" stroke-width="3.5" stroke-linecap="round"><animate attributeName="y1" values="82;92;82" dur="1.2s" repeatCount="indefinite"/><animate attributeName="x2" values="58;62;58" dur="1.2s" repeatCount="indefinite"/></line>
+      <circle cx="40" cy="18" r="2" fill="#333"/><circle cx="50" cy="18" r="2" fill="#333"/>
+      <path d="M40 25 Q45 29 50 25" fill="none" stroke="#333" stroke-width="1.5"/>
+    </svg>`},
+  {id:'pa_run',emoji:'🏃',title:'Run on the Spot!',desc:'Run in place for 20 seconds as fast as you can! Ready, set, GO!',
+    why:'Running makes your heart strong and gives you tons of energy!',stars:3,
+    steps:['Stand in an open space','Lift your knees high — like marching!','Go faster and faster!','Count to 20 then stop. Rest and do it again!'],
+    svg:`<svg viewBox="0 0 90 120" xmlns="http://www.w3.org/2000/svg">
+      <g><animateTransform attributeName="transform" type="translate" values="0 0;0 -4;0 0" dur="0.4s" repeatCount="indefinite"/>
+      <circle cx="45" cy="22" r="12" fill="#56cf81" stroke="#40a868" stroke-width="2"/>
+      <line x1="45" y1="34" x2="45" y2="72" stroke="#ffb830" stroke-width="4" stroke-linecap="round"/>
+      <line x1="45" y1="48" x2="62" y2="55" stroke="#ffb830" stroke-width="3.5" stroke-linecap="round"><animate attributeName="x2" values="62;28;62" dur="0.5s" repeatCount="indefinite"/><animate attributeName="y2" values="55;55;55" dur="0.5s" repeatCount="indefinite"/></line>
+      <line x1="45" y1="48" x2="28" y2="55" stroke="#ffb830" stroke-width="3.5" stroke-linecap="round"><animate attributeName="x2" values="28;62;28" dur="0.5s" repeatCount="indefinite"/></line></g>
+      <line x1="45" y1="72" x2="32" y2="108" stroke="#a78bfa" stroke-width="3.5" stroke-linecap="round"><animate attributeName="x2" values="32;55;32" dur="0.5s" repeatCount="indefinite"/><animate attributeName="y2" values="108;95;108" dur="0.5s" repeatCount="indefinite"/></line>
+      <line x1="45" y1="72" x2="55" y2="95" stroke="#a78bfa" stroke-width="3.5" stroke-linecap="round"><animate attributeName="x2" values="55;32;55" dur="0.5s" repeatCount="indefinite"/><animate attributeName="y2" values="95;108;95" dur="0.5s" repeatCount="indefinite"/></line>
+      <circle cx="40" cy="18" r="2" fill="#333"/><circle cx="50" cy="18" r="2" fill="#333"/>
+      <path d="M40 25 Q45 30 50 25" fill="none" stroke="#333" stroke-width="1.5"/>
+    </svg>`},
+  {id:'pa_toe',emoji:'🤸',title:'Touch Your Toes!',desc:'Bend down and try to touch your toes! Keep legs straight!',
+    why:'Toe touches stretch your back and hamstrings — very important for growing bodies!',stars:2,
+    steps:['Stand up straight with feet together','Slowly bend forward from your waist','Reach down towards your toes','Hold for 5 seconds! Try 5 times!'],
+    svg:`<svg viewBox="0 0 90 120" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="45" cy="22" r="12" fill="#4ecdc4" stroke="#38a89c" stroke-width="2"><animate attributeName="cy" values="22;55;22" dur="2s" repeatCount="indefinite"/></circle>
+      <line x1="45" y1="34" x2="45" y2="72" stroke="#ff6b9d" stroke-width="4" stroke-linecap="round"><animate attributeName="y1" values="34;55;34" dur="2s" repeatCount="indefinite"/></line>
+      <line x1="45" y1="48" x2="30" y2="60" stroke="#ff6b9d" stroke-width="3.5" stroke-linecap="round"><animate attributeName="y2" values="60;95;60" dur="2s" repeatCount="indefinite"/><animate attributeName="y1" values="48;60;48" dur="2s" repeatCount="indefinite"/></line>
+      <line x1="45" y1="48" x2="60" y2="60" stroke="#ff6b9d" stroke-width="3.5" stroke-linecap="round"><animate attributeName="y2" values="60;95;60" dur="2s" repeatCount="indefinite"/><animate attributeName="y1" values="48;60;48" dur="2s" repeatCount="indefinite"/></line>
+      <line x1="45" y1="72" x2="35" y2="108" stroke="#a78bfa" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="45" y1="72" x2="55" y2="108" stroke="#a78bfa" stroke-width="3.5" stroke-linecap="round"/>
+      <circle cx="40" cy="18" r="2" fill="#333"><animate attributeName="cy" values="18;51;18" dur="2s" repeatCount="indefinite"/></circle>
+      <circle cx="50" cy="18" r="2" fill="#333"><animate attributeName="cy" values="18;51;18" dur="2s" repeatCount="indefinite"/></circle>
+    </svg>`},
+  {id:'pa_dance',emoji:'💃',title:'Dance Party!',desc:'Put on your favourite song and dance for 30 seconds! Shake your whole body!',
+    why:'Dancing improves balance, coordination and makes you super happy!',stars:3,
+    steps:['Pick your favourite song','Start moving your arms and legs','Shake your hips and spin around','Keep dancing for 30 seconds — don\'t stop!'],
+    svg:`<svg viewBox="0 0 90 120" xmlns="http://www.w3.org/2000/svg">
+      <g><animateTransform attributeName="transform" type="rotate" values="-3 45 60;3 45 60;-3 45 60" dur="0.6s" repeatCount="indefinite"/>
+      <circle cx="45" cy="22" r="12" fill="#ff6b9d" stroke="#d4507a" stroke-width="2"/>
+      <line x1="45" y1="34" x2="45" y2="72" stroke="#a78bfa" stroke-width="4" stroke-linecap="round"/>
+      <line x1="45" y1="48" x2="25" y2="38" stroke="#a78bfa" stroke-width="3.5" stroke-linecap="round"><animate attributeName="x2" values="25;65;25" dur="0.8s" repeatCount="indefinite"/><animate attributeName="y2" values="38;38;38" dur="0.8s" repeatCount="indefinite"/></line>
+      <line x1="45" y1="48" x2="65" y2="38" stroke="#a78bfa" stroke-width="3.5" stroke-linecap="round"><animate attributeName="x2" values="65;25;65" dur="0.8s" repeatCount="indefinite"/></line>
+      <line x1="45" y1="72" x2="33" y2="108" stroke="#4ecdc4" stroke-width="3.5" stroke-linecap="round"><animate attributeName="x2" values="33;50;33" dur="0.6s" repeatCount="indefinite"/></line>
+      <line x1="45" y1="72" x2="57" y2="108" stroke="#4ecdc4" stroke-width="3.5" stroke-linecap="round"><animate attributeName="x2" values="57;40;57" dur="0.6s" repeatCount="indefinite"/></line></g>
+      <circle cx="40" cy="18" r="2" fill="#333"/><circle cx="50" cy="18" r="2" fill="#333"/>
+      <path d="M38 25 Q45 31 52 25" fill="none" stroke="#333" stroke-width="1.5"/>
+      <text x="12" y="50" font-size="10" opacity=".4"><animate attributeName="opacity" values=".2;.6;.2" dur="0.8s" repeatCount="indefinite"/>♪</text>
+      <text x="68" y="35" font-size="10" opacity=".4"><animate attributeName="opacity" values=".6;.2;.6" dur="0.8s" repeatCount="indefinite"/>♫</text>
+    </svg>`},
+  {id:'pa_balance',emoji:'🦩',title:'Flamingo Balance!',desc:'Stand on one leg like a flamingo! Hold for 10 seconds, then switch!',
+    why:'Balance training helps your brain coordinate with your body!',stars:3,
+    steps:['Stand on your right leg','Spread your arms out for balance','Hold for 10 seconds!','Switch to left leg. Who can do longer?'],
+    svg:`<svg viewBox="0 0 90 120" xmlns="http://www.w3.org/2000/svg">
+      <g><animateTransform attributeName="transform" type="rotate" values="-2 45 60;2 45 60;-2 45 60" dur="2s" repeatCount="indefinite"/>
+      <circle cx="45" cy="22" r="12" fill="#ffb830" stroke="#d49520" stroke-width="2"/>
+      <line x1="45" y1="34" x2="45" y2="75" stroke="#ff8c69" stroke-width="4" stroke-linecap="round"/>
+      <line x1="45" y1="48" x2="22" y2="42" stroke="#ff8c69" stroke-width="3.5" stroke-linecap="round"><animate attributeName="y2" values="42;38;42" dur="2s" repeatCount="indefinite"/></line>
+      <line x1="45" y1="48" x2="68" y2="42" stroke="#ff8c69" stroke-width="3.5" stroke-linecap="round"><animate attributeName="y2" values="42;38;42" dur="2s" repeatCount="indefinite"/></line>
+      <line x1="45" y1="75" x2="45" y2="110" stroke="#56cf81" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="45" y1="75" x2="60" y2="68" stroke="#56cf81" stroke-width="3.5" stroke-linecap="round"><animate attributeName="x2" values="60;58;60" dur="1.5s" repeatCount="indefinite"/></line></g>
+      <circle cx="40" cy="18" r="2" fill="#333"/><circle cx="50" cy="18" r="2" fill="#333"/>
+      <path d="M40 25 Q45 29 50 25" fill="none" stroke="#333" stroke-width="1.5"/>
+    </svg>`},
+  {id:'pa_bear',emoji:'🐻',title:'Bear Crawl!',desc:'Get on all fours and walk like a bear across the room and back!',
+    why:'Crawling builds arm strength and full-body coordination!',stars:3,
+    steps:['Get down on hands and feet (not knees!)','Keep your bum up in the air','Walk forward: right hand + left foot together','Crawl across the room and back!'],
+    svg:`<svg viewBox="0 0 90 120" xmlns="http://www.w3.org/2000/svg">
+      <g><animateTransform attributeName="transform" type="translate" values="0 0;3 0;0 0" dur="0.6s" repeatCount="indefinite"/>
+      <circle cx="30" cy="48" r="10" fill="#ffb830" stroke="#d49520" stroke-width="2"/>
+      <line x1="30" y1="58" x2="65" y2="62" stroke="#ff8c69" stroke-width="5" stroke-linecap="round"/>
+      <line x1="30" y1="58" x2="18" y2="90" stroke="#4ecdc4" stroke-width="3.5" stroke-linecap="round"><animate attributeName="x2" values="18;28;18" dur="0.6s" repeatCount="indefinite"/></line>
+      <line x1="35" y1="58" x2="38" y2="90" stroke="#4ecdc4" stroke-width="3.5" stroke-linecap="round"><animate attributeName="x2" values="38;28;38" dur="0.6s" repeatCount="indefinite"/></line>
+      <line x1="58" y1="62" x2="50" y2="90" stroke="#a78bfa" stroke-width="3.5" stroke-linecap="round"><animate attributeName="x2" values="50;60;50" dur="0.6s" repeatCount="indefinite"/></line>
+      <line x1="65" y1="62" x2="70" y2="90" stroke="#a78bfa" stroke-width="3.5" stroke-linecap="round"><animate attributeName="x2" values="70;60;70" dur="0.6s" repeatCount="indefinite"/></line></g>
+      <circle cx="26" cy="45" r="1.8" fill="#333"/><circle cx="33" cy="45" r="1.8" fill="#333"/>
+      <path d="M26 50 Q30 53 33 50" fill="none" stroke="#333" stroke-width="1.2"/>
+    </svg>`},
+];
+
+function getPhysicalActivity(){
+  const {day:d}=getWeek();
+  if(d%2!==0) return null; // only even days
+  const physDoneToday=done.some(x=>x.title&&x.title.startsWith('🏃'));
+  if(physDoneToday) return null;
+  return PHYSICAL_ACTS[(Math.floor(d/2)-1)%PHYSICAL_ACTS.length];
+}
+
+function showPhysicalAct(pa){
+  current={...pa,emoji:'🏃',tag:null,subj:null,realLife:true};
+  // Build full speech for listen button
+  const paFullSpeech=[pa.title,pa.desc,'Why this helps: '+pa.why,'How to do it:',
+    ...pa.steps.map((s,i)=>'Step '+(i+1)+': '+s)].join('. ');
+  window._lastSpeech=paFullSpeech;
+  const steps=pa.steps.map((s,i)=>`<div class="step"><div class="snum">${i+1}</div><span>${s}</span></div>`).join('');
+  document.getElementById('area').innerHTML=`
+    <div class="phys-card" id="ac">
+      <span class="phys-badge">🏃 Physical Activity Day!</span>
+      <button class="listen-btn" onclick="speakText(window._lastSpeech)" style="margin-top:8px">🔊 Tap to hear everything</button>
+      <div class="atitle" style="color:var(--coral)">${pa.emoji} ${pa.title}</div>
+      <div class="adesc">${pa.desc}</div>
+      <div class="exercise-anim">${pa.svg}</div>
+      <div class="awhy">💪 <strong>Why this helps:</strong> ${pa.why}</div>
+      <div class="asteps"><h4>📋 How to do it</h4>${steps}</div>
+      <div class="showme-row"><button class="showme-btn" id="showMeBtn" onclick="showMeDone()">👋 I did it! Tap here!</button></div>
+      <button class="done-btn" onclick="markDone()">✅ Done! What's next? →</button>
+      <button class="skip-btn" onclick="skipActivity()">⏭️ Skip this one</button>
+    </div>`;
+  document.getElementById('hsub').textContent=`🏃 ${pa.title}`;
+  setTimeout(()=>mascotSay('Time to move your body! 💪'),600);
+}
+
+// ══════════════════════════════════════
+//  INTERACTIVE GAMES BANK (expanded #12)
+// ══════════════════════════════════════
+const GAMES = [
+  {id:'numMatch',  week:1, emoji:'🔢', title:'Number Match Game',      desc:'Match the number to the right group of objects!'},
+  {id:'wordBuild', week:2, emoji:'🔤', title:'Build a Word!',           desc:'Tap the letters in the right order to spell the word!'},
+  {id:'countGame', week:1, emoji:'🍎', title:'How Many? Count it!',     desc:'Count the objects and pick the right number!'},
+  {id:'colourMix', week:2, emoji:'🎨', title:'Colour Mixing Lab',       desc:'Mix two colours and discover what new colour you make!'},
+  {id:'shapeTap',  week:1, emoji:'🔺', title:'Tap the Right Shape!',    desc:'Listen to the shape name and tap the correct one!'},
+  // NEW GAMES (#12)
+  {id:'memoryFlip',week:1, emoji:'🧠', title:'Memory Flip Cards!',      desc:'Flip cards to find matching pairs!'},
+  {id:'findLetter',week:2, emoji:'🔤', title:'Find the Letter!',        desc:'Find all the target letters hidden in the grid!'},
+  {id:'animalSound',week:1,emoji:'🐶', title:'Animal Sounds Match!',    desc:'Listen to the sound and tap the right animal!'},
+];
+
+// ══════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════
+function todayKey(){const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;}
+function autoTime(){const h=new Date().getHours();return h<12?'morning':h<17?'learning':'evening';}
+function getWeek(){
+  let s=localStorage.getItem('cs');
+  if(!s){s=todayKey();localStorage.setItem('cs',s);}
+  const [y,m,d]=s.split('-').map(Number);
+  const diff=Math.floor((new Date()-new Date(y,m-1,d))/(864e5));
+  return {week:Math.min(Math.floor(diff/7)+1,8),day:diff+1};
+}
+
+let {week,day}=getWeek();
+// Restore tab from saved activity if resuming, else auto-detect
+const _saved=localStorage.getItem('c_current');
+let tab=_saved?JSON.parse(_saved).tab:autoTime();
+let subj='all';
+let done=JSON.parse(localStorage.getItem('cd_'+todayKey())||'[]');
+let stars=parseInt(localStorage.getItem('cs_'+todayKey())||'0');
+let allUsed=JSON.parse(localStorage.getItem('c_allused')||'[]');
+let current=null;
+let busy=false;
+
+const ld=localStorage.getItem('cld');
+if(ld&&ld!==todayKey()){done=[];stars=0;localStorage.removeItem('cd_'+ld);localStorage.removeItem('c_skipped_'+ld);}
+localStorage.setItem('cld',todayKey());
+
+// ══════════════════════════════════════
+//  POOL + NEXT
+// ══════════════════════════════════════
+function getPool(){
+  if(tab==='games') return GAMES.filter(g=>g.week<=week&&!allUsed.includes(g.title)&&!skippedToday.includes(g.title));
+  if(tab==='create'||tab==='parent') return [];
+  let pool=CUR[tab]||[];
+  pool=pool.filter(a=>!a.w||a.w<=week);
+  if(tab==='learning'&&subj!=='all') pool=pool.filter(a=>a.subj===subj);
+  return pool.filter(a=>!allUsed.includes(a.title)&&!skippedToday.includes(a.title));
+}
+function getNext(){const p=getPool();return p.length?p[Math.floor(Math.random()*p.length)]:null;}
+
+async function fetchNext(forceAct){
+  if(busy)return;
+  busy=true;
+  document.getElementById('congrats').style.display='none';
+
+  // Special tabs
+  if(tab==='create'){renderCreativeZone();busy=false;return;}
+  if(tab==='parent'){renderParentDash();busy=false;return;}
+
+  showLoad();renderHist();updateProg();renderWbar();renderChallenge();
+  await new Promise(r=>setTimeout(r,400));
+
+  // If a specific activity was chosen from picker
+  if(forceAct){
+    current=forceAct;
+    gameStreak=0;
+    if(tab!=='games') localStorage.setItem('c_current',JSON.stringify({tab,act:forceAct}));
+    if(tab==='games') renderGame(forceAct);
+    else showAct(forceAct);
+    busy=false;return;
+  }
+
+  // Try to resume saved activity first
+  const saved=localStorage.getItem('c_current');
+  let act=null;
+  if(saved){
+    try{
+      const s=JSON.parse(saved);
+      if(s.tab===tab && !allUsed.includes(s.act.title)){
+        act=s.act;
+        localStorage.removeItem('c_current');
+      }
+    }catch(e){}
+  }
+
+  // On morning/evening tabs, show physical activity first (every 2 days)
+  if(!act&&(tab==='morning'||tab==='evening')&&!done.some(x=>x.title&&PHYSICAL_ACTS.some(p=>p.title===x.title))){
+    const pa=getPhysicalActivity();
+    if(pa&&!skippedToday.includes(pa.title)){
+      showPhysicalAct(pa);busy=false;return;
+    }
+  }
+
+  // If we have a resumed activity, show it directly
+  if(act){
+    current=act;gameStreak=0;
+    if(tab!=='games') localStorage.setItem('c_current',JSON.stringify({tab,act}));
+    if(tab==='games') renderGame(act);
+    else showAct(act);
+    busy=false;return;
+  }
+
+  // Show activity picker for non-game tabs, random for games
+  const pool=getPool();
+  if(!pool.length){
+    if(tab==='morning'||tab==='evening'){
+      const pa=getPhysicalActivity();
+      if(pa&&!skippedToday.includes(pa.title)){showPhysicalAct(pa);busy=false;return;}
+    }
+    showCongrats();busy=false;return;
+  }
+
+  if(tab==='games'){
+    // Games: pick random directly
+    const g=pool[Math.floor(Math.random()*pool.length)];
+    current=g;gameStreak=0;
+    renderGame(g);
+  } else {
+    // Activities: show picker
+    showActivityPicker(pool);
+  }
+  busy=false;
+}
+
+// ══════════════════════════════════════
+//  ACTIVITY PICKER — browse & choose
+// ══════════════════════════════════════
+function showActivityPicker(pool){
+  const tabName=tab.charAt(0).toUpperCase()+tab.slice(1);
+  document.getElementById('hsub').textContent=`📋 Pick your ${tabName} activity!`;
+
+  const items=pool.map((a,i)=>{
+    const tagBg=SC[a.subj]||'linear-gradient(135deg,#56cf81,#4ecdc4)';
+    const tagHtml=a.tag?`<span class="pi-tag" style="background:${tagBg}">${a.tag}</span>`:'';
+    return `<div class="picker-item" onclick="pickActivity(${i})">
+      <span class="pi-emoji">${a.emoji}</span>
+      <div class="pi-info">
+        <div class="pi-title">${a.title}</div>
+        <div class="pi-desc">${a.desc}</div>
+      </div>
+      ${tagHtml}
+      <span class="pi-stars">⭐${a.stars||'?'}</span>
+    </div>`;
+  }).join('');
+
+  // Show already-done items faded at bottom
+  const doneItems=done.filter(d=>d.tab===tab).map(d=>
+    `<div class="picker-item done-item">
+      <span class="pi-emoji">${d.emoji}</span>
+      <div class="pi-info"><div class="pi-title">${d.title}</div><div class="pi-desc">✅ Done</div></div>
+      <span class="pi-stars">⭐${d.stars}</span>
+    </div>`
+  ).join('');
+
+  window._pickerPool=pool;
+  document.getElementById('area').innerHTML=`
+    <div class="picker-panel">
+      <div class="picker-header">
+        <span class="picker-title">📋 Choose an activity</span>
+        <button class="picker-random" onclick="pickRandom()">🎲 Random</button>
+      </div>
+      <div class="picker-list">
+        ${items}
+        ${doneItems}
+      </div>
+    </div>`;
+}
+
+function pickActivity(idx){
+  if(!window._pickerPool||!window._pickerPool[idx])return;
+  playClick();
+  const act=window._pickerPool[idx];
+  busy=false;
+  fetchNext(act);
+}
+
+function pickRandom(){
+  if(!window._pickerPool||!window._pickerPool.length)return;
+  playClick();
+  const act=window._pickerPool[Math.floor(Math.random()*window._pickerPool.length)];
+  busy=false;
+  fetchNext(act);
+}
+
+// ══════════════════════════════════════
+//  RENDER ACTIVITY CARD (with voice + show me)
+// ══════════════════════════════════════
+const SC={abc:'linear-gradient(135deg,#ff6b9d,#a78bfa)',maths:'linear-gradient(135deg,#ffb830,#ff8c69)',art:'linear-gradient(135deg,#4ecdc4,#56cf81)',science:'linear-gradient(135deg,#4fa3e0,#a78bfa)'};
+
+function showLoad(){
+  document.getElementById('area').innerHTML=`<div class="loadcard"><span class="spin">🌀</span><div class="ltxt">Finding something perfect for Week ${week}… ✨</div></div>`;
+  document.getElementById('hsub').textContent='Thinking of the best activity… 🤔';
+}
+
+function showAct(a){
+  const steps=a.steps.map((s,i)=>`<div class="step"><div class="snum">${i+1}</div><span>${s}</span></div>`).join('');
+  const lb=a.learn?`<div class="alearn"><h4>🧠 What You Will Learn</h4><p>${a.learn}</p></div>`:'';
+  const sb=a.tag?`<span class="stag" style="background:${SC[a.subj]||'linear-gradient(135deg,#56cf81,#4ecdc4)'}">${a.tag}</span>`:'';
+
+  // Build FULL speech text — title + desc + learn + why + steps
+  const fullSpeech=[
+    a.title,
+    a.desc,
+    a.learn?'What you will learn: '+a.learn:'',
+    a.why?'Why this helps: '+a.why:'',
+    'Steps to follow:',
+    ...a.steps.map((s,i)=>'Step '+(i+1)+': '+s)
+  ].filter(Boolean).join('. ');
+  window._lastSpeech=fullSpeech;
+
+  const listenBtn=`<button class="listen-btn" onclick="speakText(window._lastSpeech)">🔊 Tap to hear everything</button>`;
+
+  // Show & Capture for real-world tasks (#6 + #13)
+  const showMeBtn = a.realLife
+    ? `<div class="showme-row"><button class="showme-btn" id="showMeBtn" onclick="showMeDone()">👋 I did it! Tap here!</button></div>`
+    : (tab==='morning'||tab==='evening')
+      ? `<div class="showme-row"><button class="showme-btn" id="showMeBtn" onclick="showMeDone()">📸 Show me — Done!</button></div>`
+      : '';
+
+  document.getElementById('area').innerHTML=`
+    <div class="acard" id="ac">
+      <div class="wtag">Week ${week} · ${tab.charAt(0).toUpperCase()+tab.slice(1)}</div>
+      ${sb}
+      ${listenBtn}
+      <span class="aemoji">${a.emoji}</span>
+      <div class="atitle">${a.title}</div>
+      <div class="adesc">${a.desc}</div>
+      ${lb}
+      <div class="awhy">🌟 <strong>Why this helps:</strong> ${a.why}</div>
+      <div class="asteps"><h4>📋 Step by Step</h4>${steps}</div>
+      ${showMeBtn}
+      <button class="done-btn" onclick="markDone()">✅ Done! What's next? →</button>
+      <button class="skip-btn" onclick="skipActivity()">⏭️ Skip this one</button>
+    </div>`;
+  document.getElementById('hsub').textContent=`${a.emoji} ${a.title}`;
+
+  // Mascot reacts
+  setTimeout(()=>mascotSay(a.realLife?'Do it in real life!':'Let\'s do this! 💪'),600);
+}
+
+function showMeDone(){
+  const btn=document.getElementById('showMeBtn');
+  btn.classList.add('done');
+  btn.textContent='✅ Amazing! You did it!';
+  btn.onclick=null;
+  playCorrect();mascotPraise();
+}
+
+// ── Skip Activity ──
+let skippedToday=JSON.parse(localStorage.getItem('c_skipped_'+todayKey())||'[]');
+function skipActivity(){
+  if(!current||busy)return;
+  playClick();
+  // Add to skipped so we don't show it again today
+  skippedToday.push(current.title);
+  localStorage.setItem('c_skipped_'+todayKey(),JSON.stringify(skippedToday));
+  localStorage.removeItem('c_current');
+  mascotSay('No worries! Let\'s try something else!');
+  const ac=document.getElementById('ac');
+  if(ac){ac.style.opacity='0';ac.style.transform='scale(.95) translateX(40px)';}
+  current=null;
+  busy=false;
+  setTimeout(fetchNext,400);
+}
+
+// ══════════════════════════════════════
+//  GAMES ENGINE (with adaptive difficulty)
+// ══════════════════════════════════════
+function renderGame(g){
+  document.getElementById('hsub').textContent=`${g.emoji} ${g.title}`;
+  renderHist();updateProg();renderWbar();renderChallenge();
+  const fns={numMatch:buildNumMatch,wordBuild:buildWordBuild,countGame:buildCountGame,
+    colourMix:buildColourMix,shapeTap:buildShapeTap,memoryFlip:buildMemoryFlip,
+    findLetter:buildFindLetter,animalSound:buildAnimalSound};
+  (fns[g.id]||buildCountGame)();
+  // Append skip button after game panel
+  const area=document.getElementById('area');
+  if(area&&!area.querySelector('.skip-btn')){
+    const btn=document.createElement('button');
+    btn.className='skip-btn';btn.textContent='⏭️ Skip this game';
+    btn.onclick=()=>skipActivity();
+    area.appendChild(btn);
+  }
+}
+
+// ── Count & Choose (adaptive) ──
+let cScore=0,cRound=0;
+function buildCountGame(){cScore=0;cRound=0;nextCountRound();}
+function nextCountRound(){
+  cRound++;
+  if(cRound>5){endGame(cScore,5,'countGame');return;}
+  const range=getDiffRange();
+  const ans=Math.floor(Math.random()*(range.max-range.min+1))+range.min;
+  const emojis=['🍎','⭐','🐸','🍌','🐱','🌸','🎈','🦋'];
+  const em=emojis[Math.floor(Math.random()*emojis.length)];
+  const display=em.repeat(ans);
+  const opts=[ans];
+  while(opts.length<4){const r=Math.floor(Math.random()*range.max)+1;if(!opts.includes(r))opts.push(r);}
+  opts.sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🍎 How Many?</div>
+      <div class="game-inst">Count the objects and tap the right number!</div>
+      <div class="game-score">Round ${cRound}/5 · Score: ${cScore} ⭐ · Level ${diffLevel}</div>
+      <div class="count-display">${display}</div>
+      <div class="count-q">How many ${em} are there?</div>
+      <div class="count-opts">${opts.map(o=>`<div class="copt" onclick="checkCount(this,${o},${ans})">${o}</div>`).join('')}</div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('How many '+em.replace(/[^\w]/g,'')+' are there?');
+}
+function checkCount(el,chosen,ans){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===ans){el.classList.add('correct');cScore++;adaptDifficulty(true);playCorrect();
+    document.getElementById('gfb').textContent='✅ Correct! Amazing!';mascotPraise();}
+  else{el.classList.add('wrong');adaptDifficulty(false);playWrong();
+    document.querySelector(`.copt:nth-child(${[...document.querySelectorAll('.copt')].indexOf([...document.querySelectorAll('.copt')].find(c=>parseInt(c.textContent)===ans))+1})`)?.classList.add('correct');
+    document.getElementById('gfb').textContent='❌ The answer was '+ans+'!';mascotHint();}
+  setTimeout(nextCountRound,1400);
+}
+
+// ── Number Match ──
+let nmScore=0,nmRound=0;
+function buildNumMatch(){nmScore=0;nmRound=0;nextNmRound();}
+function nextNmRound(){
+  const totalRounds=diffLevel===1?3:diffLevel===2?4:5;
+  nmRound++;if(nmRound>totalRounds){endGame(nmScore*2,totalRounds*2,'numMatch');return;}
+  const range=getDiffRange();
+  const nums=[];for(let i=range.min;i<=Math.min(range.max,9);i++)nums.push(i);
+  const pairCount=diffLevel===1?3:4;
+  const pick=nums.sort(()=>Math.random()-.5).slice(0,pairCount);
+  const emojis=['⭐','🌸','🎈','🍎','🐱','🦋','🍌','🐸'];
+  const em=emojis[Math.floor(Math.random()*emojis.length)];
+  const pairs=[...pick.map(n=>({val:n,type:'num'})),...pick.map(n=>({val:n,type:'obj'}))].sort(()=>Math.random()-.5);
+  nmFirst=null;
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔢 Number Match!</div>
+      <div class="game-inst">Match each number to the right group of ${em}!</div>
+      <div class="game-score">Round ${nmRound}/4 · Score: ${nmScore*2} ⭐</div>
+      <div class="num-grid">${pairs.map((p,i)=>`<div class="num-card" id="nc${i}" onclick="pickNm(${i},${p.val},'${p.type}')">${p.type==='num'?p.val:em.repeat(p.val)}</div>`).join('')}</div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+}
+let nmFirst=null;
+function pickNm(i,val,type){
+  const el=document.getElementById('nc'+i);if(el.classList.contains('matched'))return;playClick();
+  if(!nmFirst){nmFirst={i,val,type};el.classList.add('selected');}
+  else{
+    const prev=document.getElementById('nc'+nmFirst.i);
+    if(nmFirst.val===val&&nmFirst.type!==type){
+      el.classList.add('matched');prev.classList.remove('selected');prev.classList.add('matched');
+      nmScore++;playCorrect();adaptDifficulty(true);document.getElementById('gfb').textContent='✅ Matched!';
+      nmFirst=null;if(document.querySelectorAll('.num-card.matched').length===document.querySelectorAll('.num-card').length)setTimeout(nextNmRound,800);
+    } else {
+      el.classList.add('wrong');prev.classList.add('wrong');playWrong();adaptDifficulty(false);
+      document.getElementById('gfb').textContent='❌ Try again!';
+      setTimeout(()=>{el.classList.remove('wrong','selected');prev.classList.remove('wrong','selected');nmFirst=null;},700);
+    }
+  }
+}
+
+// ── Word Build ──
+const WORDS_EASY=[{w:'CAT',h:'🐱 An animal that says meow!'},{w:'DOG',h:'🐶 A furry best friend!'},{w:'SUN',h:'☀️ It shines in the sky!'},{w:'HAT',h:'🎩 You wear it on your head!'},{w:'CUP',h:'☕ You drink from this!'},{w:'BIG',h:'🐘 The opposite of small!'}];
+const WORDS_MED=[{w:'FISH',h:'🐟 It swims in water!'},{w:'BIRD',h:'🐦 It flies in the sky!'},{w:'FROG',h:'🐸 It hops and says ribbit!'},{w:'TREE',h:'🌳 Tall with green leaves!'},{w:'STAR',h:'⭐ It twinkles at night!'},{w:'MOON',h:'🌙 You see it at night!'}];
+const WORDS_HARD=[{w:'TIGER',h:'🐯 A big striped cat!'},{w:'PLANT',h:'🌱 It grows from a seed!'},{w:'CLOUD',h:'☁️ White and fluffy in the sky!'},{w:'HOUSE',h:'🏠 Where your family lives!'},{w:'WATER',h:'💧 You drink it every day!'}];
+let wbTarget,wbBuilt;
+function buildWordBuild(){nextWordRound();}
+function nextWordRound(){
+  const range=getDiffRange();
+  const pool=range.wordLen<=3?WORDS_EASY:range.wordLen<=4?WORDS_MED:WORDS_HARD;
+  const pick=pool[Math.floor(Math.random()*pool.length)];
+  wbTarget=pick.w;wbBuilt='';
+  const extraCount=range.wordLen<=3?3:range.wordLen<=4?4:5;
+  const letters=[...wbTarget,...'AEIOULNRST'.split('').filter(l=>!wbTarget.includes(l)).slice(0,extraCount)].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔤 Build the Word!</div>
+      <div class="game-inst">Tap the letters in the correct order!</div>
+      <div class="word-hint">${pick.h}</div>
+      <div class="word-display" id="wd">${'_ '.repeat(wbTarget.length).trim()}</div>
+      <div class="letters-row">${letters.map((l,i)=>`<div class="letter-tile" id="lt${i}" onclick="tapLetter(${i},'${l}')">${l}</div>`).join('')}</div>
+      <div class="game-feedback" id="gfb"></div>
+      <button class="game-next-btn" onclick="buildWordBuild()">🔀 New Word</button>
+      <button class="game-done-btn" onclick="markGameDone(4)">✅ Done! Give me stars! →</button>
+    </div>`;
+  speakText('Can you spell '+pick.w+'?');
+}
+function tapLetter(i,l){
+  if(wbBuilt.length>=wbTarget.length)return;playClick();
+  const expected=wbTarget[wbBuilt.length];const el=document.getElementById('lt'+i);
+  if(l===expected){
+    wbBuilt+=l;el.classList.add('used');adaptDifficulty(true);
+    const display=wbBuilt+('_'.repeat(wbTarget.length-wbBuilt.length));
+    document.getElementById('wd').textContent=display.split('').join(' ');
+    if(wbBuilt===wbTarget){playCorrect();mascotPraise();document.getElementById('gfb').textContent='🎉 You spelt '+wbTarget+'!';burst();setTimeout(nextWordRound,1800);}
+  } else {
+    el.style.animation='shake .3s';adaptDifficulty(false);playWrong();
+    setTimeout(()=>el.style.animation='',400);
+    document.getElementById('gfb').textContent='❌ Try again!';
+  }
+}
+
+// ── Colour Mix ──
+const MIXES=[
+  {c1:'#FF0000',n1:'Red',c2:'#FFFF00',n2:'Yellow',result:'#FF8C00',rname:'Orange 🟠'},
+  {c1:'#FF0000',n1:'Red',c2:'#0000FF',n2:'Blue',result:'#8B008B',rname:'Purple 🟣'},
+  {c1:'#FFFF00',n1:'Yellow',c2:'#0000FF',n2:'Blue',result:'#008000',rname:'Green 🟢'},
+  {c1:'#FF0000',n1:'Red',c2:'#FFFFFF',n2:'White',result:'#FFB6C1',rname:'Pink 🌸'},
+];
+let cmIdx=0;
+function buildColourMix(){cmIdx=0;nextColourRound();}
+function nextColourRound(){
+  if(cmIdx>=MIXES.length){endGame(4,4,'colourMix');return;}
+  const m=MIXES[cmIdx];
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🎨 Colour Mixing Lab!</div>
+      <div class="game-inst">Mix the two colours and see what you get!</div>
+      <div class="mix-q">What happens when you mix ${m.n1} + ${m.n2}?</div>
+      <div class="colour-mix">
+        <div class="colour-blob" style="background:${m.c1}"></div>
+        <div class="mix-plus">+</div>
+        <div class="colour-blob" style="background:${m.c2}"></div>
+        <div class="mix-plus">=</div>
+        <div class="mix-result" id="mixRes" style="background:#f0f0f0"></div>
+      </div>
+      <div class="game-feedback" id="gfb">Tap Reveal to mix! 👆</div>
+      <button class="game-next-btn" onclick="revealMix()" style="margin-bottom:8px">🔮 Reveal the Mix!</button>
+      <button class="game-done-btn" onclick="markGameDone(4)">✅ Done! Give me stars! →</button>
+    </div>`;
+  speakText('What happens when you mix '+m.n1+' and '+m.n2+'?');
+}
+function revealMix(){
+  const m=MIXES[cmIdx];
+  document.getElementById('mixRes').style.background=m.result;
+  document.getElementById('gfb').textContent='🎉 '+m.n1+' + '+m.n2+' = '+m.rname+'!';
+  playCorrect();burst();cmIdx++;setTimeout(nextColourRound,2000);
+}
+
+// ── Shape Tap ──
+const SHAPES=[
+  {name:'Circle',emoji:'⭕'},{name:'Square',emoji:'🟦'},{name:'Triangle',emoji:'🔺'},
+  {name:'Rectangle',emoji:'▬'},{name:'Star',emoji:'⭐'},{name:'Heart',emoji:'❤️'},
+  {name:'Diamond',emoji:'💎'},{name:'Moon',emoji:'🌙'}
+];
+let stScore=0,stRound=0;
+function buildShapeTap(){stScore=0;stRound=0;nextShapeRound();}
+function nextShapeRound(){
+  const range=getDiffRange();
+  const totalRounds=diffLevel===1?5:diffLevel===2?6:8;
+  stRound++;if(stRound>totalRounds){endGame(stScore,totalRounds,'shapeTap');return;}
+  const showCount=diffLevel===1?3:diffLevel===2?4:6;
+  const shuffled=[...SHAPES].sort(()=>Math.random()-.5).slice(0,showCount);
+  const target=shuffled[Math.floor(Math.random()*shuffled.length)];
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔺 Tap the Right Shape!</div>
+      <div class="game-inst">Round ${stRound}/6 · Score: ${stScore} ⭐</div>
+      <div class="shape-area">
+        <div class="shape-q">Tap the <strong>${target.name}</strong>!</div>
+        <div class="shape-grid">${shuffled.map(s=>`<div class="shape-item" onclick="checkShape(this,'${s.name}','${target.name}')">${s.emoji}</div>`).join('')}</div>
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('Can you find the '+target.name+'?');
+}
+function checkShape(el,chosen,target){
+  document.querySelectorAll('.shape-item').forEach(s=>s.onclick=null);
+  if(chosen===target){el.classList.add('correct');stScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Correct!';}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.getElementById('gfb').textContent='❌ That is a '+chosen+'!';}
+  setTimeout(nextShapeRound,1300);
+}
+
+// ── NEW GAME: Memory Flip (#12) ──
+let memPairs,memFlipped,memMatched2,memScore2,memLock;
+function buildMemoryFlip(){
+  const pool=['🍎','🌟','🐱','🎈','🦋','🐸','🌸','🎨','🐶','🌻'];
+  const pairCount=diffLevel===1?4:diffLevel===2?6:8;
+  const picks=pool.sort(()=>Math.random()-.5).slice(0,pairCount);
+  memPairs=[...picks,...picks].sort(()=>Math.random()-.5);
+  memFlipped=[];memMatched2=[];memScore2=0;memLock=false;
+  renderMemoryGrid(pairCount);
+}
+function renderMemoryGrid(pairCount){
+  const total=pairCount||(memPairs.length/2);
+  const cols=total<=4?4:4;
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🧠 Memory Flip Cards!</div>
+      <div class="game-inst">Flip two cards to find matching pairs! ${diffLevel>1?'Level '+diffLevel:''}</div>
+      <div class="game-score">Matches: ${memScore2}/${total}</div>
+      <div class="memory-grid">${memPairs.map((e,i)=>{
+        const isMatched=memMatched2.includes(i);
+        const isFlipped=memFlipped.includes(i);
+        return `<div class="mem-card ${isMatched?'matched':isFlipped?'flipped':''}" onclick="flipMem(${i})">${(isFlipped||isMatched)?e:'?'}</div>`;
+      }).join('')}</div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+}
+function flipMem(i){
+  if(memLock||memFlipped.includes(i)||memMatched2.includes(i))return;
+  playClick();memFlipped.push(i);renderMemoryGrid();
+  if(memFlipped.length===2){
+    memLock=true;
+    setTimeout(()=>{
+      if(memPairs[memFlipped[0]]===memPairs[memFlipped[1]]){
+        memMatched2.push(memFlipped[0],memFlipped[1]);memScore2++;
+        playCorrect();adaptDifficulty(true);
+        const totalPairs=memPairs.length/2;
+        if(memScore2===totalPairs){setTimeout(()=>endGame(totalPairs,totalPairs,'memoryFlip'),500);}
+      } else {playWrong();adaptDifficulty(false);}
+      memFlipped=[];memLock=false;renderMemoryGrid();
+    },800);
+  }
+}
+
+// ── NEW GAME: Find the Letter (#12) ──
+let flTarget,flFound,flTotal;
+function buildFindLetter(){
+  const easyLetters='ABCDEFG'.split('');
+  const medLetters='ABCDEFGHIJKLM'.split('');
+  const hardLetters='ABCDEFGHIJKLMNOPQRST'.split('');
+  const pool=diffLevel===1?easyLetters:diffLevel===2?medLetters:hardLetters;
+  flTarget=pool[Math.floor(Math.random()*pool.length)];
+  const gridSize=diffLevel===1?15:diffLevel===2?20:25;
+  const targetChance=diffLevel===1?.35:diffLevel===2?.28:.22;
+  const grid=[];flFound=0;flTotal=0;
+  for(let i=0;i<gridSize;i++){
+    if(Math.random()<targetChance){grid.push(flTarget);flTotal++;}
+    else{let l;do{l=pool[Math.floor(Math.random()*pool.length)];}while(l===flTarget);grid.push(l);}
+  }
+  if(flTotal===0){grid[0]=flTarget;flTotal=1;}
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔤 Find the Letter!</div>
+      <div class="game-inst">Find ALL the letter <strong style="color:var(--pink);font-size:1.4rem">${flTarget}</strong> in the grid!</div>
+      <div class="game-score" id="flScore">Found: ${flFound}/${flTotal}</div>
+      <div class="letter-search-grid">${grid.map((l,i)=>`<div class="ls-cell" id="fl${i}" onclick="tapFL(${i},'${l}')">${l}</div>`).join('')}</div>
+      <div class="game-feedback" id="gfb"></div>
+      <button class="game-done-btn" onclick="markGameDone(${Math.max(3,flTotal)})">✅ Done!</button>
+    </div>`;
+  speakText('Find all the letter '+flTarget+'!');
+}
+function tapFL(i,l){
+  const el=document.getElementById('fl'+i);
+  if(el.classList.contains('correct')||el.classList.contains('wrong'))return;
+  if(l===flTarget){el.classList.add('correct');flFound++;playCorrect();adaptDifficulty(true);
+    document.getElementById('flScore').textContent=`Found: ${flFound}/${flTotal}`;
+    if(flFound===flTotal){document.getElementById('gfb').textContent='🎉 You found them all!';mascotPraise();burst();}
+  } else {el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.getElementById('gfb').textContent='❌ That\'s '+l+', not '+flTarget+'!';}
+}
+
+// ── NEW GAME: Animal Sounds (#12) ──
+const ANIMALS=[
+  {name:'Dog',emoji:'🐶',sound:'Woof woof!'},{name:'Cat',emoji:'🐱',sound:'Meow meow!'},
+  {name:'Cow',emoji:'🐮',sound:'Moo moo!'},{name:'Duck',emoji:'🦆',sound:'Quack quack!'},
+  {name:'Pig',emoji:'🐷',sound:'Oink oink!'},{name:'Rooster',emoji:'🐓',sound:'Cock-a-doodle-doo!'},
+  {name:'Sheep',emoji:'🐑',sound:'Baa baa!'},{name:'Frog',emoji:'🐸',sound:'Ribbit ribbit!'},
+];
+let asScore=0,asRound=0,asTarget;
+function buildAnimalSound(){asScore=0;asRound=0;nextAnimalRound();}
+function nextAnimalRound(){
+  const totalRounds=diffLevel===1?4:diffLevel===2?5:6;
+  asRound++;if(asRound>totalRounds){endGame(asScore,totalRounds,'animalSound');return;}
+  const showCount=diffLevel===1?3:diffLevel===2?4:5;
+  const shuffled=[...ANIMALS].sort(()=>Math.random()-.5).slice(0,showCount);
+  asTarget=shuffled[Math.floor(Math.random()*shuffled.length)];
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🐶 Animal Sounds!</div>
+      <div class="game-inst">Round ${asRound}/5 · Score: ${asScore} ⭐</div>
+      <div class="sound-prompt" onclick="speakText('${asTarget.sound}')">
+        <span class="sp-icon">🔊</span>
+        <span class="sp-text">Tap to hear the sound!</span>
+      </div>
+      <div class="animal-grid">${shuffled.map(a=>`<div class="animal-card" onclick="checkAnimal(this,'${a.name}','${asTarget.name}')">
+        <span class="anim-emoji">${a.emoji}</span>
+        <span class="anim-name">${a.name}</span>
+      </div>`).join('')}</div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  setTimeout(()=>speakText(asTarget.sound),500);
+}
+function checkAnimal(el,chosen,target){
+  document.querySelectorAll('.animal-card').forEach(c=>c.onclick=null);
+  if(chosen===target){el.classList.add('correct');asScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Correct! That\'s the '+target+'!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.getElementById('gfb').textContent='❌ That was the '+chosen+'! The answer is '+target+'.';}
+  setTimeout(nextAnimalRound,1500);
+}
+
+// ── End Game ──
+function endGame(score,max,gid){
+  const pct=Math.round(score/max*100);
+  const msg=pct>=80?'🏆 AMAZING!':pct>=50?'👏 Great job!':'🌱 Keep practising!';
+  playCorrect();
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel" style="text-align:center">
+      <div style="font-size:3rem">${pct>=80?'🏆':pct>=50?'⭐':'💪'}</div>
+      <div class="game-title" style="text-align:center;margin:8px 0">${msg}</div>
+      <div style="font-size:.9rem;color:var(--text3);margin-bottom:14px">You scored ${score} out of ${max} ⭐</div>
+      <button class="game-done-btn" onclick="markGameDone(${score})">✅ Done! What's next? →</button>
+    </div>`;
+  mascotSay(pct>=80?'You\'re a superstar!':'Great try! Keep going!');
+}
+function markGameDone(sc){
+  if(!current)return;
+  localStorage.removeItem('c_current'); // clear resume state
+  const earnedStars=Math.max(2,Math.min(5,Math.round(sc)));
+  done.push({title:current.title,emoji:current.emoji,stars:earnedStars,tab});
+  allUsed.push(current.title);
+  localStorage.setItem('cd_'+todayKey(),JSON.stringify(done));
+  localStorage.setItem('c_allused',JSON.stringify(allUsed));
+  stars+=earnedStars;totalStarsEver+=earnedStars;
+  localStorage.setItem('cs_'+todayKey(),stars);
+  localStorage.setItem('c_total_stars',totalStarsEver);
+  const ws=JSON.parse(localStorage.getItem('cws')||'{}');
+  ws[todayKey()]=(ws[todayKey()]||0)+earnedStars;
+  localStorage.setItem('cws',JSON.stringify(ws));
+  showSpill();showToast(`⭐ +${earnedStars} stars!`);playStar();burst();
+  current=null;setTimeout(fetchNext,500);
+}
+
+// ══════════════════════════════════════
+//  MARK DONE (regular activity)
+// ══════════════════════════════════════
+function markDone(){
+  if(!current||busy)return;
+  localStorage.removeItem('c_current'); // clear resume state
+  done.push({title:current.title,emoji:current.emoji,stars:current.stars,tab});
+  allUsed.push(current.title);
+  localStorage.setItem('cd_'+todayKey(),JSON.stringify(done));
+  localStorage.setItem('c_allused',JSON.stringify(allUsed));
+  stars+=current.stars;totalStarsEver+=current.stars;
+  localStorage.setItem('cs_'+todayKey(),stars);
+  localStorage.setItem('c_total_stars',totalStarsEver);
+  const ws=JSON.parse(localStorage.getItem('cws')||'{}');
+  ws[todayKey()]=(ws[todayKey()]||0)+current.stars;
+  localStorage.setItem('cws',JSON.stringify(ws));
+  showSpill();showToast(`⭐ +${current.stars} stars!`);playStar();burst();
+  mascotPraise();
+  const ac=document.getElementById('ac');if(ac){ac.style.opacity='0';ac.style.transform='scale(.9) translateY(-10px)';}
+  current=null;setTimeout(fetchNext,500);
+}
+
+// ══════════════════════════════════════
+//  CREATIVE ZONE (#7)
+// ══════════════════════════════════════
+let drawColor='#ff6b9d',drawSize=6,drawMode='draw',drawSticker='';
+let isDrawing=false,drawCanvas,drawCtx;
+
+function renderCreativeZone(){
+  document.getElementById('area').innerHTML=`
+    <div class="create-panel">
+      <div class="game-title">🎨 Creative Zone</div>
+      <div class="game-inst">Draw, doodle and create anything you like!</div>
+      <div class="create-canvas-wrap">
+        <canvas id="drawCanvas"></canvas>
+      </div>
+      <div class="color-palette" id="palette"></div>
+      <div class="brush-sizes">
+        ${[4,8,14,22].map(s=>`<div class="brush-size ${s===drawSize?'active':''}" onclick="setDrawSize(${s})"><div class="brush-dot" style="width:${s}px;height:${s}px"></div></div>`).join('')}
+      </div>
+      <div class="sticker-row" id="stickerRow">
+        ${'⭐🌈🦋🌸🐱🐶🎈🎉🌻🦄'.split(/(?=.)/).filter(Boolean).map(s=>
+          `<span class="sticker-btn" onclick="setSticker('${s}')">${s}</span>`
+        ).join('')}
+      </div>
+      <div class="create-tools">
+        <button class="create-tool" onclick="setDrawMode('draw')">✏️ Draw</button>
+        <button class="create-tool" onclick="setDrawMode('eraser')">🧹 Eraser</button>
+        <button class="create-tool" onclick="setDrawMode('fill')">🪣 Fill</button>
+        <button class="create-tool" onclick="clearCanvas()">🗑️ Clear</button>
+        <button class="create-tool" onclick="saveArtwork()" style="background:linear-gradient(135deg,var(--green),var(--mint));color:#fff">💾 Save</button>
+      </div>
+    </div>`;
+  document.getElementById('hist').innerHTML='';
+
+  // Setup palette
+  const colors=['#ff6b9d','#ffb830','#4ecdc4','#a78bfa','#56cf81','#ff8c69','#4fa3e0','#333','#fff'];
+  document.getElementById('palette').innerHTML=colors.map(c=>
+    `<div class="color-dot ${c===drawColor?'active':''}" style="background:${c}" onclick="setDrawColor('${c}')"></div>`
+  ).join('');
+
+  // Setup canvas
+  drawCanvas=document.getElementById('drawCanvas');
+  const wrap=drawCanvas.parentElement;
+  function sizeCanvas(){
+    const w=wrap.offsetWidth,h=wrap.offsetHeight;
+    // Save current drawing
+    let imgData=null;
+    if(drawCtx)try{imgData=drawCtx.getImageData(0,0,drawCanvas.width,drawCanvas.height);}catch(e){}
+    drawCanvas.width=w*window.devicePixelRatio;
+    drawCanvas.height=h*window.devicePixelRatio;
+    drawCanvas.style.width=w+'px';
+    drawCanvas.style.height=h+'px';
+    drawCtx=drawCanvas.getContext('2d');
+    drawCtx.scale(window.devicePixelRatio,window.devicePixelRatio);
+    drawCtx.fillStyle='#fff';
+    drawCtx.fillRect(0,0,w,h);
+    if(imgData)try{drawCtx.putImageData(imgData,0,0);}catch(e){}
+    drawCtx.lineCap='round';drawCtx.lineJoin='round';
+  }
+  sizeCanvas();
+  window.addEventListener('resize',()=>{if(tab==='create'&&drawCanvas)sizeCanvas();});
+
+  // Touch/mouse events
+  drawCanvas.addEventListener('mousedown',startDraw);
+  drawCanvas.addEventListener('mousemove',doDraw);
+  drawCanvas.addEventListener('mouseup',endDraw);
+  drawCanvas.addEventListener('mouseleave',endDraw);
+  drawCanvas.addEventListener('touchstart',e=>{e.preventDefault();startDraw(e.touches[0]);},{passive:false});
+  drawCanvas.addEventListener('touchmove',e=>{e.preventDefault();doDraw(e.touches[0]);},{passive:false});
+  drawCanvas.addEventListener('touchend',endDraw);
+}
+function getDrawPos(e){
+  const r=drawCanvas.getBoundingClientRect();
+  return{x:e.clientX-r.left,y:e.clientY-r.top};
+}
+function startDraw(e){
+  isDrawing=true;
+  const{x,y}=getDrawPos(e);
+  if(drawSticker){
+    drawCtx.font=`${drawSize*3}px serif`;
+    drawCtx.fillText(drawSticker,x-drawSize,y+drawSize);
+    isDrawing=false;return;
+  }
+  drawCtx.beginPath();drawCtx.moveTo(x,y);
+}
+function doDraw(e){
+  if(!isDrawing||drawSticker)return;
+  const{x,y}=getDrawPos(e);
+  drawCtx.strokeStyle=drawMode==='eraser'?'#fff':drawColor;
+  drawCtx.lineWidth=drawMode==='eraser'?drawSize*3:drawSize;
+  drawCtx.lineTo(x,y);drawCtx.stroke();
+}
+function endDraw(){isDrawing=false;}
+function setDrawColor(c){drawColor=c;drawSticker='';drawMode='draw';
+  document.querySelectorAll('.color-dot').forEach(d=>d.classList.toggle('active',d.style.background===c));
+  document.querySelectorAll('.sticker-btn').forEach(s=>s.classList.remove('active'));}
+function setDrawSize(s){drawSize=s;
+  document.querySelectorAll('.brush-size').forEach((b,i)=>b.classList.toggle('active',[4,8,14,22][i]===s));}
+function setDrawMode(m){drawMode=m;drawSticker='';}
+function setSticker(s){drawSticker=s;drawMode='sticker';
+  document.querySelectorAll('.sticker-btn').forEach(b=>b.classList.toggle('active',b.textContent===s));}
+function clearCanvas(){if(drawCtx){drawCtx.fillStyle='#fff';drawCtx.fillRect(0,0,drawCanvas.width,drawCanvas.height);}}
+function saveArtwork(){
+  if(!drawCanvas)return;
+  try{
+    const link=document.createElement('a');
+    link.download='my-little-star-art-'+Date.now()+'.png';
+    link.href=drawCanvas.toDataURL('image/png');
+    link.click();
+    playStar();mascotSay('Your art is saved! 🎨');
+  }catch(e){mascotSay('Oops! Try again!');}
+}
+
+// ══════════════════════════════════════
+//  PARENT DASHBOARD (#9)
+// ══════════════════════════════════════
+function renderParentDash(){
+  document.getElementById('hist').innerHTML='';
+  const ws=JSON.parse(localStorage.getItem('cws')||'{}');
+  const today=new Date();const dow=today.getDay();
+  let weekStars=0,streakDays=0;
+  const streakArr=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(today);d.setDate(today.getDate()-i);
+    const key=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+    const s=ws[key]||0;weekStars+=s;
+    if(s>0)streakDays++;
+    streakArr.push({day:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()],stars:s});
+  }
+
+  // Count subject completions — all-time from allUsed
+  const subjectStars={abc:0,maths:0,art:0,science:0};
+  const subjectCount={abc:0,maths:0,art:0,science:0};
+  const allActivities=[...CUR.learning,...CUR.morning,...CUR.evening];
+  // Today's data
+  done.forEach(d=>{
+    const act=allActivities.find(a=>a.title===d.title);
+    if(act&&act.subj){subjectStars[act.subj]+=d.stars;subjectCount[act.subj]++;}
+  });
+  // All-time count from allUsed
+  const allTimeSubj={abc:0,maths:0,art:0,science:0};
+  allUsed.forEach(title=>{
+    const act=allActivities.find(a=>a.title===title);
+    if(act&&act.subj)allTimeSubj[act.subj]++;
+  });
+  const maxSubj=Math.max(1,...Object.values(allTimeSubj));
+
+  // Smart insights
+  const sorted=Object.entries(allTimeSubj).sort((a,b)=>b[1]-a[1]);
+  const strongest=sorted[0];
+  const weakest=sorted[sorted.length-1];
+  const names={abc:'ABC & Reading',maths:'Maths',art:'Art & Creativity',science:'Science'};
+  const emojis={abc:'🔤',maths:'🔢',art:'🎨',science:'🔬'};
+  let insightHTML='';
+  if(strongest[1]>0){
+    insightHTML+=`<div style="background:linear-gradient(135deg,#e8fff0,#f0fff8);border-radius:12px;padding:10px 13px;margin-bottom:8px;border-left:3px solid var(--green);">
+      <div style="font-size:.78rem;font-weight:700;color:var(--green)">💪 Strongest Area</div>
+      <div style="font-size:.88rem;color:var(--text);margin-top:2px">${emojis[strongest[0]]} ${names[strongest[0]]} — ${strongest[1]} activities completed!</div>
+    </div>`;
+  }
+  if(weakest[1]<strongest[1]&&strongest[1]>0){
+    insightHTML+=`<div style="background:linear-gradient(135deg,#fff5e0,#fff0f0);border-radius:12px;padding:10px 13px;margin-bottom:8px;border-left:3px solid var(--sun);">
+      <div style="font-size:.78rem;font-weight:700;color:var(--sun)">🌱 Needs Practice</div>
+      <div style="font-size:.88rem;color:var(--text);margin-top:2px">${emojis[weakest[0]]} ${names[weakest[0]]} — only ${weakest[1]} activities so far. Try more!</div>
+    </div>`;
+  }
+  if(strongest[1]===0){
+    insightHTML=`<div style="font-size:.82rem;color:var(--text4);padding:8px 0">Complete some activities to see insights here!</div>`;
+  }
+
+  // Difficulty level display
+  const diffNames=['Easy','Medium','Hard'];
+
+  document.getElementById('area').innerHTML=`
+    <div class="parent-dash">
+      <h3>👨‍👩‍👧 Parent Dashboard</h3>
+      <div class="dash-grid">
+        <div class="dash-stat"><div class="ds-num">${done.length}</div><div class="ds-label">Done Today</div></div>
+        <div class="dash-stat"><div class="ds-num">${stars}</div><div class="ds-label">Stars Today</div></div>
+        <div class="dash-stat"><div class="ds-num">${weekStars}</div><div class="ds-label">This Week</div></div>
+        <div class="dash-stat"><div class="ds-num">${streakDays}</div><div class="ds-label">Streak Days</div></div>
+      </div>
+
+      <div class="dash-section">
+        <h4>🧠 Smart Insights</h4>
+        ${insightHTML}
+        <div style="font-size:.75rem;color:var(--text4);margin-top:4px">🎮 Game difficulty: <strong style="color:var(--purple)">${diffNames[diffLevel-1]}</strong> (auto-adjusts based on performance)</div>
+      </div>
+
+      <div class="dash-section">
+        <h4>📊 Learning Areas (All Time)</h4>
+        ${Object.entries(allTimeSubj).map(([k,v])=>{
+          const colors={abc:'#ff6b9d',maths:'#ffb830',art:'#4ecdc4',science:'#4fa3e0'};
+          return `<div class="skill-bar">
+            <span class="skill-label">${names[k].split(' ')[0]}</span>
+            <div class="skill-track"><div class="skill-fill" style="width:${(v/maxSubj)*100}%;background:${colors[k]}"></div></div>
+            <span class="skill-stars">⭐ ${v}</span>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="dash-section">
+        <h4>🔥 7-Day Activity</h4>
+        <div class="streak-row">
+          ${streakArr.map(s=>`<div class="streak-dot ${s.stars>0?'active':''}" title="${s.day}: ${s.stars} stars">${s.stars>0?'⭐':s.day.charAt(0)}</div>`).join('')}
+        </div>
+      </div>
+      <div class="dash-section">
+        <h4>⚙️ Settings</h4>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+          <button class="create-tool" onclick="parentReset()">🔄 Reset Journey</button>
+          <button class="create-tool" onclick="toggleBedtime()">🌙 Bedtime: ${bedtimeMode?'ON':'OFF'}</button>
+          <button class="create-tool" onclick="toggleSound()">🔊 Sound: ${soundOn?'ON':'OFF'}</button>
+        </div>
+      </div>
+      <div class="dash-section">
+        <h4>🎤 Voice Selection</h4>
+        <p style="font-size:.75rem;color:var(--text4);margin-bottom:4px">Tap a voice to select it. Press ▶ Test to hear a sample first.</p>
+        <p style="font-size:.72rem;color:var(--text5);margin-bottom:8px">Current: <strong style="color:var(--purple)">${selectedVoiceName||'Default'}</strong></p>
+        <div class="voice-list" id="voiceList">
+          ${buildVoiceListHTML()}
+        </div>
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════
+//  HISTORY + PROGRESS + WEEK BAR
+// ══════════════════════════════════════
+function renderHist(){
+  const el=document.getElementById('hist');
+  if(!done.length){el.innerHTML='';return;}
+  el.innerHTML=`<div class="hlabel">✅ Done today (${done.length}) — tap ↩️ Undo</div>`+
+    done.slice().reverse().map((d,ri)=>{
+      const realIdx=done.length-1-ri;
+      return `<div class="hitem">
+        <span class="he">${d.emoji}</span>
+        <span class="hn">${d.title}</span>
+        <span class="hs">⭐${d.stars}</span>
+        <button class="undo-btn" data-idx="${realIdx}">↩️ Undo</button>
+      </div>`;
+    }).join('');
+  el.querySelectorAll('.undo-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>undoDone(parseInt(btn.dataset.idx)));
+  });
+}
+function undoDone(idx){
+  const item=done[idx];if(!item)return;
+  done.splice(idx,1);
+  const ui=allUsed.indexOf(item.title);if(ui>-1)allUsed.splice(ui,1);
+  stars=Math.max(0,stars-item.stars);
+  totalStarsEver=Math.max(0,totalStarsEver-item.stars);
+  const ws=JSON.parse(localStorage.getItem('cws')||'{}');
+  ws[todayKey()]=Math.max(0,(ws[todayKey()]||0)-item.stars);
+  localStorage.setItem('cd_'+todayKey(),JSON.stringify(done));
+  localStorage.setItem('c_allused',JSON.stringify(allUsed));
+  localStorage.setItem('cs_'+todayKey(),stars);
+  localStorage.setItem('c_total_stars',totalStarsEver);
+  localStorage.setItem('cws',JSON.stringify(ws));
+  showSpill();showToast('↩️ Undone!');
+  document.getElementById('congrats').style.display='none';
+  renderHist();updateProg();renderWbar();renderChallenge();
+  busy=false;current=null;fetchNext();
+}
+function updateProg(){
+  const pct=Math.round((done.length/Math.max(done.length+1,1))*100);
+  document.getElementById('pf').style.width=pct+'%';
+  document.getElementById('pc').textContent=`${done.length} done`;
+}
+function renderWbar(){
+  const el=document.getElementById('wbar');
+  const ws=JSON.parse(localStorage.getItem('cws')||'{}');
+  const today=new Date();const dow=today.getDay();
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  el.innerHTML='';
+  for(let i=0;i<7;i++){
+    const d=new Date(today);d.setDate(today.getDate()-dow+i);
+    const key=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+    const s=ws[key]||0;const isToday=i===dow;
+    const div=document.createElement('div');
+    div.className='wd'+(isToday?' today':s>0?' hasdone':'');
+    div.innerHTML=`<div class="wdn">${days[i]}</div><div class="wdd">${d.getDate()}</div><div class="wds">${s>0?'⭐':isToday?'📅':''}</div>`;
+    el.appendChild(div);
+  }
+}
+
+// ══════════════════════════════════════
+//  CONGRATS
+// ══════════════════════════════════════
+function showCongrats(){
+  document.getElementById('area').innerHTML='';
+  const c=document.getElementById('congrats');c.style.display='block';
+  const remaining=Object.values(CUR).flat().filter(a=>!allUsed.includes(a.title)).length+GAMES.filter(g=>!allUsed.includes(g.title)).length;
+  document.getElementById('cmsg').textContent=`You finished ${done.length} activities and earned ${stars} stars today! ${remaining>0?remaining+' more activities still to come! 🌟':'Full journey complete! 🏆'}`;
+  burst();setTimeout(burst,400);
+  mascotSay('You\'re a superstar! 🌟',4000);
+}
+function switchToNext(){
+  const o=['morning','learning','games','create','evening'];
+  switchTab(o[(o.indexOf(tab)+1)%o.length]);
+}
+function parentReset(){
+  if(!confirm('Reset the full 60-day journey? All progress will be cleared.'))return;
+  localStorage.removeItem('c_allused');localStorage.removeItem('cd_'+todayKey());
+  localStorage.removeItem('cs_'+todayKey());localStorage.removeItem('cws');
+  localStorage.removeItem('cs');localStorage.removeItem('cld');
+  localStorage.removeItem('c_owned');localStorage.removeItem('c_total_stars');
+  localStorage.removeItem('c_diff');localStorage.removeItem('c_current');
+  localStorage.removeItem('c_activeHat');localStorage.removeItem('c_activeChar');localStorage.removeItem('c_activeTheme');
+  allUsed=[];done=[];stars=0;totalStarsEver=0;owned=[];diffLevel=1;
+  activeHat='';activeChar='';activeTheme='';
+  location.reload();
+}
+
+// ══════════════════════════════════════
+//  TABS + SUBJECTS
+// ══════════════════════════════════════
+function switchTab(t){
+  tab=t;playClick();
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===t));
+  document.getElementById('subjRow').classList.toggle('show',t==='learning');
+
+  // Show/hide elements based on tab
+  const isSpecial=t==='create'||t==='parent';
+  document.getElementById('progBar').style.display=isSpecial?'none':'flex';
+  document.getElementById('factCard').style.display=isSpecial?'none':'block';
+  document.getElementById('timerBar').classList.toggle('show',!isSpecial);
+  document.getElementById('challengeBar').style.display=isSpecial?'none':'flex';
+  document.getElementById('storyBanner').style.display=isSpecial?'none':'flex';
+
+  fetchNext();
+}
+function switchSubj(s){
+  subj=s;playClick();
+  document.querySelectorAll('.sp').forEach(b=>b.classList.toggle('active',b.dataset.s===s));
+  fetchNext();
+}
+
+// ══════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════
+function showSpill(){document.getElementById('spill').textContent=`⭐ ${stars} stars`;}
+let tt;
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2500);}
+function burst(){
+  const c=['#ff6b9d','#ffb830','#4ecdc4','#a78bfa','#56cf81'];
+  for(let i=0;i<32;i++){
+    const el=document.createElement('div');const sz=Math.random()*10+6;
+    el.style.cssText=`position:fixed;top:${Math.random()*60}%;left:${Math.random()*100}vw;width:${sz}px;height:${sz}px;border-radius:${Math.random()>.5?'50%':'3px'};background:${c[Math.floor(Math.random()*c.length)]};animation:fall ${Math.random()*2+1}s linear forwards;z-index:9999;pointer-events:none;`;
+    document.body.appendChild(el);setTimeout(()=>el.remove(),3000);
+  }
+  if(!document.getElementById('kf')){const s=document.createElement('style');s.id='kf';s.textContent='@keyframes fall{0%{transform:translateY(-30px) rotate(0);opacity:1}100%{transform:translateY(80vh) rotate(540deg);opacity:0}}';document.head.appendChild(s);}
+}
+function setupHeader(){
+  const {week:w,day:d}=getWeek();
+  document.getElementById('dbadge').textContent=`Day ${Math.min(d,60)} of 60 · Week ${w} of 8`;
+}
+
+// ══════════════════════════════════════
+//  DAILY FACTS — 60 facts (trimmed for space)
+// ══════════════════════════════════════
+const FACTS=[
+  {emoji:'🌍',topic:'Earth',title:'Earth Spins at 1,670 km/h!',body:'The Earth is always spinning but we cannot feel it because everything around us is spinning too! It takes exactly 24 hours to complete one full spin — that is why we have day and night.',q:'Ask Mummy: Why do we have day and night?'},
+  {emoji:'🐙',topic:'Animals',title:'Octopuses Have 3 Hearts!',body:'An octopus has not one but THREE hearts and BLUE blood! Two hearts pump blood to the gills and one pumps it to the body.',q:'Ask Mummy: What other animals live under the sea?'},
+  {emoji:'⚡',topic:'Weather',title:'Lightning is Hotter Than the Sun!',body:'A bolt of lightning is about 30,000°C — that is five times hotter than the surface of the Sun!',q:'Ask Mummy: What causes thunder?'},
+  {emoji:'🦕',topic:'History',title:'Dinosaurs Ruled for 165 Million Years!',body:'Dinosaurs lived on Earth for about 165 million years! Humans have only been here for about 300,000 years.',q:'Ask Mummy: What was the biggest dinosaur?'},
+  {emoji:'🌈',topic:'Science',title:'Rainbows Have 7 Colours!',body:'A rainbow appears when sunlight passes through raindrops and splits into seven colours: Red, Orange, Yellow, Green, Blue, Indigo, Violet!',q:'Ask Mummy: Have you ever seen a double rainbow?'},
+  {emoji:'🐘',topic:'Animals',title:'Elephants Never Forget!',body:'Elephants have amazing memories. They can remember places, faces and paths for many years.',q:'Ask Mummy: Why do elephants have big ears?'},
+  {emoji:'🌙',topic:'Space',title:'The Moon Has No Light of Its Own!',body:'The Moon does not make any light! It shines because it reflects light from the Sun, like a mirror.',q:'Ask Mummy: Why does the Moon change shape?'},
+  {emoji:'🐝',topic:'Nature',title:'Bees Do a Waggle Dance!',body:'When a bee finds flowers it goes back to the hive and does a special dance to tell other bees where the flowers are!',q:'Ask Mummy: Why are bees so important?'},
+  {emoji:'🏔️',topic:'Earth',title:'Mount Everest is Still Growing!',body:'Mount Everest, the tallest mountain, grows about 4mm every year because of the movement of giant rocks under the Earth.',q:'Ask Mummy: How tall is Mount Everest?'},
+  {emoji:'🦈',topic:'Ocean',title:'Sharks Have Been Around Longer Than Trees!',body:'Sharks have been swimming in the oceans for over 400 million years — that is even longer than trees have existed!',q:'Ask Mummy: Are all sharks dangerous?'},
+  {emoji:'🧊',topic:'Science',title:'Ice Floats on Water!',body:'Most liquids become heavier when they freeze. But water is special — ice floats! This is why fish can survive under frozen lakes.',q:'Ask Mummy: Can you put ice in water and see it float?'},
+  {emoji:'🌻',topic:'Nature',title:'Sunflowers Face the Sun!',body:'Young sunflowers slowly turn to face the Sun as it moves across the sky each day! This is called heliotropism.',q:'Ask Mummy: Can we grow a sunflower at home?'},
+  {emoji:'🦓',topic:'Animals',title:'Every Zebra is Unique!',body:'Just like your fingerprints, every zebra has a completely unique pattern of stripes! No two zebras look the same.',q:'Ask Mummy: Are zebras white with black stripes or black with white stripes?'},
+  {emoji:'🔭',topic:'Space',title:'Mars is the Red Planet!',body:'Mars looks red because its surface is covered in reddish dust containing iron — like rust! Scientists want to send humans there.',q:'Ask Mummy: How long would it take to travel to Mars?'},
+];
+
+function renderFact(){
+  const {day:d}=getWeek();
+  const fact=FACTS[(d-1)%FACTS.length];
+  const el=document.getElementById('factCard');
+  el.innerHTML=`
+    <div class="fact-card" onclick="speakText('${fact.title}. ${fact.body.replace(/<[^>]+>/g,'').replace(/'/g,"\\'")}')">
+      <div class="fact-top">
+        <span class="fact-badge">🌍 Did You Know?</span>
+        <span class="fact-day">Day ${Math.min(d,60)} · ${fact.topic}</span>
+      </div>
+      <span class="fact-emoji">${fact.emoji}</span>
+      <div class="fact-title">${fact.title}</div>
+      <div class="fact-body">${fact.body}</div>
+      <div class="fact-q"><strong>💬 Talk about it:</strong> ${fact.q}</div>
+    </div>`;
+}
+
+// ══════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════
+setupHeader();showSpill();renderWbar();renderFact();renderStory();renderChallenge();applyRewards();
+document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===tab));
+document.getElementById('subjRow').classList.toggle('show',tab==='learning');
+document.getElementById('timerBar').classList.add('show');
+fetchNext();
+</script>
+</body>
+</html>
