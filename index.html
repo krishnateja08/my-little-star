@@ -725,6 +725,54 @@ body.bedtime .skill-track{background:#333355;}
 .spill:active{transform:scale(.93);}
 
 /* PARENT GATE */
+
+/* DAILY 3 GOALS */
+.goals-card{margin:8px 12px 0;padding:14px 16px;border-radius:16px;
+  background:linear-gradient(135deg,#f0e8ff,#e8f5ff);
+  box-shadow:0 4px 14px rgba(167,139,250,.12);border-left:4px solid var(--purple);}
+body.bedtime .goals-card{background:linear-gradient(135deg,#2a1a3e,#1a2a3e);}
+.goals-title{font-family:'Baloo 2',cursive;font-size:.88rem;font-weight:700;color:var(--purple);margin-bottom:8px;}
+.goal-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(167,139,250,.1);}
+.goal-item:last-child{border-bottom:none;}
+.goal-check{width:24px;height:24px;border-radius:8px;border:2.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:.75rem;
+  cursor:pointer;transition:all .2s;flex-shrink:0;background:var(--inputbg);}
+.goal-check.done{background:var(--green);border-color:var(--green);color:#fff;}
+.goal-text{font-size:.82rem;color:var(--text2);flex:1;}
+.goal-text.done{text-decoration:line-through;color:var(--text5);}
+.goals-reward{text-align:center;margin-top:8px;font-family:'Baloo 2',cursive;
+  font-size:.78rem;color:var(--sun);font-weight:700;}
+
+/* BEDTIME LOCK */
+.bedtime-lock-overlay{position:fixed;inset:0;background:linear-gradient(180deg,#1a1a2e,#0f0f1e);
+  z-index:9997;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:30px;text-align:center;animation:fadeIn .5s;}
+.bl-moon{font-size:4rem;margin-bottom:12px;animation:float 3s ease-in-out infinite;}
+.bl-title{font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;color:#e0d4ff;margin-bottom:6px;}
+.bl-sub{font-size:.9rem;color:rgba(255,255,255,.5);margin-bottom:20px;line-height:1.5;}
+.bl-stars{margin-bottom:20px;}
+.bl-star{display:inline-block;font-size:1.2rem;animation:twinkle 2s ease-in-out infinite;margin:0 4px;}
+.bl-btn{border:2px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.7);
+  padding:12px 28px;border-radius:50px;font-family:'Baloo 2',cursive;font-size:.9rem;
+  font-weight:700;cursor:pointer;transition:all .2s;margin:6px;}
+.bl-btn:active{background:rgba(255,255,255,.1);}
+.bl-btn.parent{font-size:.72rem;padding:8px 18px;opacity:.4;}
+.bl-suggest{background:rgba(255,255,255,.06);border-radius:16px;padding:14px 18px;
+  margin-bottom:16px;max-width:300px;}
+.bl-suggest-title{font-family:'Baloo 2',cursive;font-size:.82rem;color:#a78bfa;margin-bottom:4px;}
+.bl-suggest-text{font-size:.78rem;color:rgba(255,255,255,.5);}
+
+/* CHOOSE YOUR ENDING */
+.ending-box{background:rgba(255,107,157,.08);border-radius:16px;padding:14px 16px;
+  margin-top:14px;border:2px dashed rgba(255,107,157,.3);position:relative;z-index:2;}
+.ending-label{font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:700;
+  color:var(--pink);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.ending-opts{display:flex;flex-direction:column;gap:8px;}
+.ending-btn{padding:12px 14px;border-radius:14px;border:2px solid rgba(167,139,250,.2);
+  background:rgba(167,139,250,.06);color:rgba(255,255,255,.8);font-size:.85rem;
+  cursor:pointer;transition:all .2s;text-align:left;line-height:1.4;}
+.ending-btn:active{transform:scale(.97);background:rgba(167,139,250,.15);}
+.ending-btn.chosen{border-color:var(--green);background:rgba(86,207,129,.1);color:#fff;}
 .gate-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;
   display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s;}
 .gate-card{background:var(--cardbg);border-radius:24px;padding:28px 24px;text-align:center;
@@ -1296,8 +1344,18 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   <span class="spark-done" id="sparkDone"></span>
 </div>
 
+<!-- Daily 3 Goals -->
+<div class="goals-card" id="goalsCard" style="display:none">
+  <div class="goals-title">🎯 Today's 3 Goals</div>
+  <div id="goalsList"></div>
+  <div class="goals-reward" id="goalsReward"></div>
+</div>
+
 <!-- Beat the Timer (#2a) -->
 <div class="btt-card" id="bttCard" style="display:none" onclick="startBeatTimer()">
+
+<!-- Bedtime Lock overlay (injected by JS) -->
+<div id="bedtimeLockOverlay"></div>
   <span class="btt-emoji">⏱️</span>
   <div class="btt-info">
     <div class="btt-title" id="bttTitle">⏱️ Beat the Timer!</div>
@@ -2583,7 +2641,7 @@ function markGameDone(sc){
   ws[todayKey()]=(ws[todayKey()]||0)+earnedStars;
   localStorage.setItem('cws',JSON.stringify(ws));
   showSpill();showToast(`⭐ +${earnedStars} stars!`);playStar();burst();
-  renderStarPath();
+  renderStarPath();renderGoals();
   current=null;setTimeout(fetchNext,500);
 }
 
@@ -2604,7 +2662,7 @@ function markDone(){
   ws[todayKey()]=(ws[todayKey()]||0)+current.stars;
   localStorage.setItem('cws',JSON.stringify(ws));
   showSpill();showToast(`⭐ +${current.stars} stars!`);playStar();burst();
-  mascotPraise();renderStarPath();
+  mascotPraise();renderStarPath();renderGoals();
   const ac=document.getElementById('ac');if(ac){ac.style.opacity='0';ac.style.transform='scale(.9) translateY(-10px)';}
   current=null;setTimeout(fetchNext,500);
 }
@@ -2948,6 +3006,8 @@ function switchTab(t){
   document.getElementById('challengeBar').style.display=isSpecial?'none':'flex';
   document.getElementById('storyBanner').style.display=isSpecial?'none':'flex';
   document.getElementById('starPath').style.display=isSpecial?'none':'block';
+  document.getElementById('goalsCard').style.display=isSpecial?'none':'block';
+  if(!isSpecial)renderGoals();
   document.getElementById('sparkCard').style.display=isSpecial?'none':'flex';
   document.getElementById('bttCard').style.display='none';
   if(!isSpecial)renderBtt();
@@ -3014,6 +3074,7 @@ function openParentTab(){
   document.getElementById('challengeBar').style.display='none';
   document.getElementById('storyBanner').style.display='none';
   document.getElementById('starPath').style.display='none';
+  document.getElementById('goalsCard').style.display='none';
   document.getElementById('sparkCard').style.display='none';
   document.getElementById('bttCard').style.display='none';
   document.getElementById('qcFab').style.display='none';
@@ -3302,6 +3363,7 @@ function renderStoryReader(){
       <div class="sr-page">
         <div class="sr-page-text ${isParent?'parent-mode':''}">${page}</div>
         ${getStoryQuestion(currentStoryIdx,currentPage)}
+        ${getEndingHTML(currentStoryIdx,currentPage,s.pages.length)}
         <div class="sr-page-num">Page ${currentPage+1} of ${s.pages.length}</div>
       </div>
       <div class="sr-nav">
@@ -4271,10 +4333,228 @@ function viewGalleryItem(idx){
 }
 
 // ══════════════════════════════════════
+//  #1 — DAILY 3 GOALS
+// ══════════════════════════════════════
+const GOAL_POOL=[
+  {id:'learn_letter',text:'📚 Learn a new letter',check:()=>done.some(d=>d.tab==='learning')},
+  {id:'play_game',text:'🎮 Play 1 game',check:()=>done.some(d=>d.tab==='games')},
+  {id:'do_morning',text:'🌅 Complete a morning task',check:()=>done.some(d=>d.tab==='morning')},
+  {id:'draw_art',text:'🎨 Draw something creative',check:()=>gallery.length>0&&gallery[gallery.length-1].date===todayKey()},
+  {id:'read_story',text:'📖 Listen to a bedtime story',check:()=>storiesHeard.length>0},
+  {id:'brain_spark',text:'🧠 Complete Brain Spark',check:()=>sparkDoneToday},
+  {id:'beat_timer',text:'⏱️ Beat the Timer challenge',check:()=>bttDoneToday},
+  {id:'breathing',text:'🧘 Do a breathing exercise',check:()=>done.some(d=>d.title&&d.title.toLowerCase().includes('breath'))},
+  {id:'evening',text:'🌙 Complete an evening task',check:()=>done.some(d=>d.tab==='evening')},
+  {id:'help_real',text:'🤗 Do a real-life kind act',check:()=>done.some(d=>d.title&&(d.title.includes('Hug')||d.title.includes('Help')||d.title.includes('Nice')||d.title.includes('Clean')))},
+];
+
+let todayGoals=JSON.parse(localStorage.getItem('c_goals_'+todayKey())||'null');
+
+function initGoals(){
+  if(!todayGoals){
+    // Pick 3 random goals for today
+    const shuffled=[...GOAL_POOL].sort(()=>Math.random()-.5);
+    todayGoals=shuffled.slice(0,3).map(g=>({...g,completed:false}));
+    localStorage.setItem('c_goals_'+todayKey(),JSON.stringify(todayGoals));
+  }
+}
+
+function renderGoals(){
+  initGoals();
+  const card=document.getElementById('goalsCard');
+  card.style.display='block';
+
+  // Check completion status
+  let allDone=true;
+  todayGoals.forEach(g=>{
+    const goalDef=GOAL_POOL.find(p=>p.id===g.id);
+    g.completed=goalDef?goalDef.check():false;
+    if(!g.completed)allDone=false;
+  });
+  localStorage.setItem('c_goals_'+todayKey(),JSON.stringify(todayGoals));
+
+  document.getElementById('goalsList').innerHTML=todayGoals.map(g=>
+    `<div class="goal-item">
+      <div class="goal-check ${g.completed?'done':''}">${g.completed?'✓':''}</div>
+      <span class="goal-text ${g.completed?'done':''}">${g.text}</span>
+    </div>`
+  ).join('');
+
+  const doneCount=todayGoals.filter(g=>g.completed).length;
+  if(allDone){
+    document.getElementById('goalsReward').innerHTML='🏆 All goals complete! You are a SUPERSTAR! +3 bonus ⭐';
+    // Award bonus once
+    if(!localStorage.getItem('c_goals_bonus_'+todayKey())){
+      localStorage.setItem('c_goals_bonus_'+todayKey(),'1');
+      stars+=3;totalStarsEver+=3;
+      localStorage.setItem('cs_'+todayKey(),stars);
+      localStorage.setItem('c_total_stars',totalStarsEver);
+      showSpill();burst();
+    }
+  } else {
+    document.getElementById('goalsReward').textContent=`${doneCount}/3 done — complete all 3 for bonus stars! ⭐`;
+  }
+}
+
+// ══════════════════════════════════════
+//  #2 — SMART BEDTIME LOCK
+// ══════════════════════════════════════
+let bedtimeLockHour=20; // 8 PM
+let bedtimeLockDismissed=localStorage.getItem('c_bl_dismiss_'+todayKey())==='1';
+
+function checkBedtimeLock(){
+  const hour=new Date().getHours();
+  if(hour>=bedtimeLockHour&&!bedtimeLockDismissed&&!bedtimeMode){
+    showBedtimeLock();
+  }
+}
+
+function showBedtimeLock(){
+  const suggestions=[
+    {emoji:'📖',title:'Read a bedtime story',action:'switchTab(\'stories\')'},
+    {emoji:'🧘',title:'Do a breathing exercise',action:'switchTab(\'evening\')'},
+    {emoji:'🌙',title:'Turn on bedtime mode',action:'toggleBedtime()'},
+  ];
+  const pick=suggestions[Math.floor(Math.random()*suggestions.length)];
+
+  // Generate twinkling stars
+  let starsHTML='';
+  for(let i=0;i<15;i++){
+    starsHTML+=`<span class="bl-star" style="animation-delay:${Math.random()*3}s;opacity:${Math.random()*.6+.2}">✨</span>`;
+  }
+
+  document.getElementById('bedtimeLockOverlay').innerHTML=`
+    <div class="bedtime-lock-overlay">
+      <div class="bl-moon">🌙</div>
+      <div class="bl-title">Time to Wind Down!</div>
+      <div class="bl-sub">It's getting late, little star.<br>Let's get ready for dreamland!</div>
+      <div class="bl-stars">${starsHTML}</div>
+      <div class="bl-suggest">
+        <div class="bl-suggest-title">${pick.emoji} Suggested Activity</div>
+        <div class="bl-suggest-text">${pick.title}</div>
+      </div>
+      <button class="bl-btn" onclick="acceptBedtimeLock('${pick.action}')">${pick.emoji} ${pick.title}</button>
+      <button class="bl-btn" onclick="dismissBedtimeLock()">💤 Go to sleep now</button>
+      <br>
+      <button class="bl-btn parent" onclick="parentBypassBedtime()">👨‍👩‍👧 Parent: Continue (needs code)</button>
+    </div>`;
+
+  // Auto-enable bedtime visual mode
+  if(!bedtimeMode){bedtimeMode=true;localStorage.setItem('c_bedtime','on');applyBedtime();}
+  playBedtime();
+}
+
+function acceptBedtimeLock(action){
+  document.getElementById('bedtimeLockOverlay').innerHTML='';
+  bedtimeLockDismissed=true;
+  localStorage.setItem('c_bl_dismiss_'+todayKey(),'1');
+  eval(action);
+}
+
+function dismissBedtimeLock(){
+  document.getElementById('bedtimeLockOverlay').innerHTML='';
+  bedtimeLockDismissed=true;
+  localStorage.setItem('c_bl_dismiss_'+todayKey(),'1');
+  mascotSay('Sweet dreams, little star! 🌙💤',4000);
+}
+
+function parentBypassBedtime(){
+  // Reuse parent gate
+  document.getElementById('bedtimeLockOverlay').innerHTML='';
+  showParentGate();
+  // After gate passes, it opens parent tab — user can then navigate
+  bedtimeLockDismissed=true;
+  localStorage.setItem('c_bl_dismiss_'+todayKey(),'1');
+}
+
+// Check every 5 minutes
+setInterval(checkBedtimeLock,300000);
+
+// ══════════════════════════════════════
+//  #3 — CHOOSE YOUR ENDING
+// ══════════════════════════════════════
+const STORY_ENDINGS={
+  // Story index → two ending options
+  0:{ // Turtle
+    prompt:'What should Tiku do next?',
+    options:[
+      {text:'🏅 Tiku teaches all the other animals that slow and steady wins! He becomes the village coach.',emoji:'🏅'},
+      {text:'🌍 Tiku goes on a big adventure around the world, slowly visiting every country, one step at a time!',emoji:'🌍'},
+    ]
+  },
+  3:{ // Ellie
+    prompt:'What does Ellie do with her toys now?',
+    options:[
+      {text:'🎪 Ellie opens a "Toy Library" where every animal can borrow toys and play together every day!',emoji:'🎪'},
+      {text:'🎁 Ellie makes a special gift box and gives one toy to every baby animal in the jungle!',emoji:'🎁'},
+    ]
+  },
+  9:{ // Meera Painted Kindness
+    prompt:'What does Meera paint next?',
+    options:[
+      {text:'🏫 Meera paints a huge mural on her school wall showing all the children holding hands around the world!',emoji:'🏫'},
+      {text:'📬 Meera starts sending painted postcards to children in other countries, spreading colour everywhere!',emoji:'📬'},
+    ]
+  },
+  4:{ // Raja Rainbow
+    prompt:'What does Raja do the next rainy day?',
+    options:[
+      {text:'🎨 Raja learns to paint rainbows and gives one to every friend who feels sad on rainy days!',emoji:'🎨'},
+      {text:'☔ Raja starts a "Rainy Day Club" where kids play fun indoor games and always look for the rainbow after!',emoji:'☔'},
+    ]
+  },
+  10:{ // Tommy the Brave Puppy
+    prompt:'What adventure does Tommy go on next?',
+    options:[
+      {text:'🏥 Tommy becomes the town\'s rescue dog, saving animals in trouble with his small-but-mighty skills!',emoji:'🏥'},
+      {text:'🎓 Tommy opens a school for small puppies, teaching them that being small is a superpower!',emoji:'🎓'},
+    ]
+  },
+};
+
+let chosenEndings=JSON.parse(localStorage.getItem('c_endings')||'{}');
+
+function getEndingHTML(storyIdx,pageIdx,totalPages){
+  // Only show on last page
+  if(pageIdx!==totalPages-1)return '';
+  const ending=STORY_ENDINGS[storyIdx];
+  if(!ending)return '';
+  const chosen=chosenEndings[storyIdx];
+  if(chosen!==undefined){
+    return `<div class="ending-box">
+      <div class="ending-label">✨ Your Chosen Ending</div>
+      <div class="ending-opts">
+        <div class="ending-btn chosen">${ending.options[chosen].text}</div>
+      </div>
+    </div>`;
+  }
+  return `<div class="ending-box">
+    <div class="ending-label">🌟 Choose Your Ending!</div>
+    <div style="font-size:.82rem;color:rgba(255,255,255,.6);margin-bottom:8px">${ending.prompt}</div>
+    <div class="ending-opts">
+      ${ending.options.map((o,i)=>
+        `<div class="ending-btn" onclick="pickEnding(${storyIdx},${i})">${o.text}</div>`
+      ).join('')}
+    </div>
+  </div>`;
+}
+
+function pickEnding(storyIdx,optIdx){
+  chosenEndings[storyIdx]=optIdx;
+  localStorage.setItem('c_endings',JSON.stringify(chosenEndings));
+  playCorrect();mascotPraise();
+  const ending=STORY_ENDINGS[storyIdx];
+  speakText(ending.options[optIdx].text);
+  renderStoryReader(); // re-render to show chosen state
+}
+
+// ══════════════════════════════════════
 //  BOOT
 // ══════════════════════════════════════
 setupHeader();showSpill();renderWbar();renderFact();renderStory();renderChallenge();applyRewards();
-renderStarPath();renderSpark();renderWeather();renderPhysBanner();renderTodayBar();renderBtt();
+renderStarPath();renderSpark();renderWeather();renderPhysBanner();renderTodayBar();renderBtt();renderGoals();
+// Check bedtime lock (delayed so other UI loads first)
+setTimeout(checkBedtimeLock,1500);
 document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===tab));
 document.getElementById('subjRow').classList.toggle('show',tab==='learning');
 document.getElementById('gameRow').classList.toggle('show',tab==='games');
