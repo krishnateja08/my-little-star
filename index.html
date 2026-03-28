@@ -639,6 +639,27 @@ body.bedtime .skill-track{background:#333355;}
   cursor:pointer;transition:all .2s;}
 .spill:active{transform:scale(.93);}
 
+/* PARENT GATE */
+.gate-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;
+  display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s;}
+.gate-card{background:var(--cardbg);border-radius:24px;padding:28px 24px;text-align:center;
+  max-width:320px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:pop .4s cubic-bezier(.68,-.55,.27,1.55);}
+.gate-icon{font-size:2.4rem;margin-bottom:6px;}
+.gate-title{font-family:'Baloo 2',cursive;font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:4px;}
+.gate-sub{font-size:.82rem;color:var(--text3);margin-bottom:16px;}
+.gate-question{font-family:'Baloo 2',cursive;font-size:1.6rem;font-weight:800;color:var(--purple);margin-bottom:14px;}
+.gate-opts{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;}
+.gate-opt{width:56px;height:56px;border-radius:14px;border:3px solid var(--border);
+  background:var(--inputbg);font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;
+  color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.gate-opt:active{transform:scale(.9);}
+.gate-opt.correct{border-color:var(--green);background:#e8fff0;color:var(--green);}
+.gate-opt.wrong{border-color:var(--pink);background:#ffe8f0;animation:shake .3s;}
+.gate-msg{font-size:.85rem;color:var(--text4);min-height:22px;margin-bottom:6px;}
+.gate-cancel{border:none;background:none;color:var(--text5);font-family:'Baloo 2',cursive;
+  font-size:.78rem;font-weight:700;cursor:pointer;padding:6px 16px;}
+.gate-cancel:active{color:var(--text3);}
+
 /* FEELINGS CHECK-IN (#1) */
 .feelings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998;
   display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s;}
@@ -1219,6 +1240,8 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
 <div id="feelingsOverlay"></div>
 <!-- Surprise overlay (injected by JS) -->
 <div id="surpriseOverlay"></div>
+<!-- Parent gate overlay -->
+<div id="gateOverlay"></div>
 
 <script>
 // ══════════════════════════════════════
@@ -2788,6 +2811,9 @@ function parentReset(){
 //  TABS + SUBJECTS
 // ══════════════════════════════════════
 function switchTab(t){
+  // Parent gate — require simple math answer
+  if(t==='parent'){playClick();showParentGate();return;}
+
   tab=t;playClick();
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===t));
   document.getElementById('subjRow').classList.toggle('show',t==='learning');
@@ -2810,6 +2836,69 @@ function switchTab(t){
 
   fetchNext();
 }
+// ── Parent Gate ──
+function showParentGate(){
+  const a=Math.floor(Math.random()*8)+2;
+  const b=Math.floor(Math.random()*8)+2;
+  const answer=a+b;
+  // Generate 4 options including the correct one
+  const opts=new Set([answer]);
+  while(opts.size<4){
+    const wrong=answer+Math.floor(Math.random()*7)-3;
+    if(wrong>0&&wrong!==answer)opts.add(wrong);
+  }
+  const shuffled=[...opts].sort(()=>Math.random()-.5);
+
+  document.getElementById('gateOverlay').innerHTML=`
+    <div class="gate-overlay" onclick="event.target===this&&closeGate()">
+      <div class="gate-card">
+        <div class="gate-icon">🔒</div>
+        <div class="gate-title">Parent Area</div>
+        <div class="gate-sub">Solve this to enter — keeps little fingers out!</div>
+        <div class="gate-question">${a} + ${b} = ?</div>
+        <div class="gate-opts">
+          ${shuffled.map(o=>`<div class="gate-opt" onclick="checkGate(this,${o},${answer})">${o}</div>`).join('')}
+        </div>
+        <div class="gate-msg" id="gateMsg"></div>
+        <button class="gate-cancel" onclick="closeGate()">← Go back</button>
+      </div>
+    </div>`;
+}
+function checkGate(el,chosen,answer){
+  if(chosen===answer){
+    el.classList.add('correct');
+    playCorrect();
+    document.getElementById('gateMsg').textContent='✅ Welcome, parent!';
+    setTimeout(()=>{closeGate();openParentTab();},600);
+  } else {
+    el.classList.add('wrong');
+    playWrong();
+    document.getElementById('gateMsg').textContent='❌ Try again!';
+    setTimeout(()=>{el.classList.remove('wrong');document.getElementById('gateMsg').textContent='';},800);
+  }
+}
+function closeGate(){document.getElementById('gateOverlay').innerHTML='';}
+
+function openParentTab(){
+  tab='parent';
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t==='parent'));
+  document.getElementById('subjRow').classList.remove('show');
+  document.getElementById('gameRow').classList.remove('show');
+  const isSpecial=true;
+  document.getElementById('progBar').style.display='none';
+  document.getElementById('factCard').style.display='none';
+  document.getElementById('timerBar').classList.remove('show');
+  document.getElementById('challengeBar').style.display='none';
+  document.getElementById('storyBanner').style.display='none';
+  document.getElementById('starPath').style.display='none';
+  document.getElementById('sparkCard').style.display='none';
+  document.getElementById('qcFab').style.display='none';
+  document.getElementById('weatherBar').classList.remove('show');
+  document.getElementById('todayBar').style.display='none';
+  document.getElementById('physBanner').style.display='none';
+  fetchNext();
+}
+
 function switchSubj(s){
   subj=s;playClick();
   document.querySelectorAll('.sp').forEach(b=>b.classList.toggle('active',b.dataset.s===s));
