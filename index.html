@@ -207,6 +207,19 @@ body.bedtime .story-banner{background:linear-gradient(135deg,#2a2044,#1a2a44);}
 .subj-row{display:none;gap:6px;padding:8px 12px 0;overflow-x:auto;scrollbar-width:none;}
 .subj-row::-webkit-scrollbar{display:none;}
 .subj-row.show{display:flex;}
+/* Game category pills */
+.game-row{display:none;gap:6px;padding:8px 12px 0;overflow-x:auto;scrollbar-width:none;flex-wrap:wrap;justify-content:center;}
+.game-row::-webkit-scrollbar{display:none;}
+.game-row.show{display:flex;}
+.gp{flex-shrink:0;border:none;padding:5px 13px;border-radius:50px;cursor:pointer;
+  font-family:'Baloo 2',cursive;font-size:.76rem;font-weight:700;background:#f0f0f0;color:var(--text4);transition:all .2s;}
+.gp.active{color:#fff;}
+.gp[data-g="all"].active    {background:linear-gradient(135deg,#ff6b9d,#ffb830);}
+.gp[data-g="maths"].active  {background:linear-gradient(135deg,#ffb830,#ff8c69);}
+.gp[data-g="letters"].active{background:linear-gradient(135deg,#a78bfa,#4fa3e0);}
+.gp[data-g="shapes"].active {background:linear-gradient(135deg,#4ecdc4,#56cf81);}
+.gp[data-g="creative"].active{background:linear-gradient(135deg,#ff6b9d,#a78bfa);}
+.gp[data-g="brain"].active  {background:linear-gradient(135deg,#4fa3e0,#56cf81);}
 .sp{flex-shrink:0;border:none;padding:5px 13px;border-radius:50px;cursor:pointer;
   font-family:'Baloo 2',cursive;font-size:.76rem;font-weight:700;background:#f0f0f0;color:var(--text4);transition:all .2s;}
 .sp.active{color:#fff;}
@@ -1034,6 +1047,15 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   <button class="sp"        data-s="science" onclick="switchSubj('science')">🔬 Science</button>
 </div>
 
+<div class="game-row" id="gameRow">
+  <button class="gp active" data-g="all"      onclick="switchGameCat('all')">🌈 All Games</button>
+  <button class="gp"        data-g="maths"    onclick="switchGameCat('maths')">🔢 Maths</button>
+  <button class="gp"        data-g="letters"  onclick="switchGameCat('letters')">🔤 Letters</button>
+  <button class="gp"        data-g="shapes"   onclick="switchGameCat('shapes')">🔺 Shapes</button>
+  <button class="gp"        data-g="creative" onclick="switchGameCat('creative')">🎨 Creative</button>
+  <button class="gp"        data-g="brain"    onclick="switchGameCat('brain')">🧠 Brain</button>
+</div>
+
 <div class="wbar" id="wbar"></div>
 
 <!-- Star Reward Path (#2) -->
@@ -1676,15 +1698,14 @@ function showPhysicalAct(pa){
 //  INTERACTIVE GAMES BANK (expanded #12)
 // ══════════════════════════════════════
 const GAMES = [
-  {id:'numMatch',  week:1, emoji:'🔢', title:'Number Match Game',      desc:'Match the number to the right group of objects!'},
-  {id:'wordBuild', week:2, emoji:'🔤', title:'Build a Word!',           desc:'Tap the letters in the right order to spell the word!'},
-  {id:'countGame', week:1, emoji:'🍎', title:'How Many? Count it!',     desc:'Count the objects and pick the right number!'},
-  {id:'colourMix', week:2, emoji:'🎨', title:'Colour Mixing Lab',       desc:'Mix two colours and discover what new colour you make!'},
-  {id:'shapeTap',  week:1, emoji:'🔺', title:'Tap the Right Shape!',    desc:'Listen to the shape name and tap the correct one!'},
-  // NEW GAMES (#12)
-  {id:'memoryFlip',week:1, emoji:'🧠', title:'Memory Flip Cards!',      desc:'Flip cards to find matching pairs!'},
-  {id:'findLetter',week:2, emoji:'🔤', title:'Find the Letter!',        desc:'Find all the target letters hidden in the grid!'},
-  {id:'animalSound',week:1,emoji:'🐶', title:'Animal Sounds Match!',    desc:'Listen to the sound and tap the right animal!'},
+  {id:'numMatch',  week:1, emoji:'🔢', title:'Number Match Game',      desc:'Match the number to the right group of objects!',    cat:'maths'},
+  {id:'wordBuild', week:2, emoji:'🔤', title:'Build a Word!',           desc:'Tap the letters in the right order to spell the word!',cat:'letters'},
+  {id:'countGame', week:1, emoji:'🍎', title:'How Many? Count it!',     desc:'Count the objects and pick the right number!',       cat:'maths'},
+  {id:'colourMix', week:2, emoji:'🎨', title:'Colour Mixing Lab',       desc:'Mix two colours and discover what new colour you make!',cat:'creative'},
+  {id:'shapeTap',  week:1, emoji:'🔺', title:'Tap the Right Shape!',    desc:'Listen to the shape name and tap the correct one!',  cat:'shapes'},
+  {id:'memoryFlip',week:1, emoji:'🧠', title:'Memory Flip Cards!',      desc:'Flip cards to find matching pairs!',                 cat:'brain'},
+  {id:'findLetter',week:2, emoji:'🔤', title:'Find the Letter!',        desc:'Find all the target letters hidden in the grid!',    cat:'letters'},
+  {id:'animalSound',week:1,emoji:'🐶', title:'Animal Sounds Match!',    desc:'Listen to the sound and tap the right animal!',      cat:'brain'},
 ];
 
 // ══════════════════════════════════════
@@ -1705,6 +1726,7 @@ let {week,day}=getWeek();
 const _saved=localStorage.getItem('c_current');
 let tab=_saved?JSON.parse(_saved).tab:autoTime();
 let subj='all';
+let gameCat='all';
 let done=JSON.parse(localStorage.getItem('cd_'+todayKey())||'[]');
 let stars=parseInt(localStorage.getItem('cs_'+todayKey())||'0');
 let allUsed=JSON.parse(localStorage.getItem('c_allused')||'[]');
@@ -1719,7 +1741,11 @@ localStorage.setItem('cld',todayKey());
 //  POOL + NEXT
 // ══════════════════════════════════════
 function getPool(){
-  if(tab==='games') return GAMES.filter(g=>g.week<=week&&!allUsed.includes(g.title)&&!skippedToday.includes(g.title));
+  if(tab==='games'){
+    let pool=GAMES.filter(g=>g.week<=week&&!allUsed.includes(g.title)&&!skippedToday.includes(g.title));
+    if(gameCat!=='all') pool=pool.filter(g=>g.cat===gameCat);
+    return pool;
+  }
   if(tab==='create'||tab==='parent') return [];
   let pool=CUR[tab]||[];
   pool=pool.filter(a=>!a.w||a.w<=week);
@@ -1806,9 +1832,13 @@ function showActivityPicker(pool){
 
   const items=pool.map((a,i)=>{
     const isGame=tab==='games';
+    const catColors={maths:'linear-gradient(135deg,#ffb830,#ff8c69)',letters:'linear-gradient(135deg,#a78bfa,#4fa3e0)',
+      shapes:'linear-gradient(135deg,#4ecdc4,#56cf81)',creative:'linear-gradient(135deg,#ff6b9d,#a78bfa)',
+      brain:'linear-gradient(135deg,#4fa3e0,#56cf81)'};
+    const catNames={maths:'🔢 Maths',letters:'🔤 Letters',shapes:'🔺 Shapes',creative:'🎨 Creative',brain:'🧠 Brain'};
     const tagBg=SC[a.subj]||'linear-gradient(135deg,#56cf81,#4ecdc4)';
     const tagHtml=a.tag?`<span class="pi-tag" style="background:${tagBg}">${a.tag}</span>`:
-      isGame?`<span class="pi-tag" style="background:linear-gradient(135deg,#ff6b9d,#ffb830)">🎮 Game</span>`:'';
+      (isGame&&a.cat)?`<span class="pi-tag" style="background:${catColors[a.cat]||'linear-gradient(135deg,#ff6b9d,#ffb830)'}">${catNames[a.cat]||'🎮 Game'}</span>`:'';
     const starsHtml=isGame?'<span class="pi-stars" style="color:var(--pink)">▶ Play</span>'
       :`<span class="pi-stars">⭐${a.stars||'?'}</span>`;
     return `<div class="picker-item" onclick="pickActivity(${i})">
@@ -2649,6 +2679,7 @@ function switchTab(t){
   tab=t;playClick();
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===t));
   document.getElementById('subjRow').classList.toggle('show',t==='learning');
+  document.getElementById('gameRow').classList.toggle('show',t==='games');
 
   // Show/hide elements based on tab
   const isSpecial=t==='create'||t==='parent'||t==='stories';
@@ -2666,6 +2697,11 @@ function switchTab(t){
 function switchSubj(s){
   subj=s;playClick();
   document.querySelectorAll('.sp').forEach(b=>b.classList.toggle('active',b.dataset.s===s));
+  fetchNext();
+}
+function switchGameCat(c){
+  gameCat=c;playClick();
+  document.querySelectorAll('.gp').forEach(b=>b.classList.toggle('active',b.dataset.g===c));
   fetchNext();
 }
 
@@ -3300,6 +3336,7 @@ setupHeader();showSpill();renderWbar();renderFact();renderStory();renderChalleng
 renderStarPath();renderSpark();
 document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===tab));
 document.getElementById('subjRow').classList.toggle('show',tab==='learning');
+document.getElementById('gameRow').classList.toggle('show',tab==='games');
 document.getElementById('timerBar').classList.add('show');
 
 // Morning tune + feelings check-in
