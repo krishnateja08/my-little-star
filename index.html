@@ -557,6 +557,113 @@ body.bedtime .skill-track{background:#333355;}
   cursor:pointer;transition:all .2s;}
 .spill:active{transform:scale(.93);}
 
+/* FEELINGS CHECK-IN (#1) */
+.feelings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998;
+  display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.feelings-card{background:var(--cardbg);border-radius:24px;padding:24px 20px;text-align:center;
+  max-width:340px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:pop .4s cubic-bezier(.68,-.55,.27,1.55);}
+.feelings-title{font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:var(--text);margin-bottom:4px;}
+.feelings-sub{font-size:.82rem;color:var(--text3);margin-bottom:16px;}
+.feelings-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;}
+.feeling-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 10px;
+  border:3px solid transparent;border-radius:16px;background:var(--inputbg);cursor:pointer;
+  transition:all .2s;min-width:58px;}
+.feeling-btn:active{transform:scale(.9);}
+.feeling-btn.selected{border-color:var(--purple);background:#f0e8ff;transform:scale(1.05);}
+body.bedtime .feeling-btn.selected{background:#2a2a4e;}
+.feeling-emoji{font-size:2rem;}
+.feeling-label{font-size:.65rem;font-weight:700;color:var(--text3);}
+.feelings-msg{font-size:.85rem;color:var(--green);font-weight:700;min-height:24px;margin-bottom:10px;}
+.feelings-done{border:none;padding:12px 32px;border-radius:50px;font-family:'Baloo 2',cursive;
+  font-size:.95rem;font-weight:700;cursor:pointer;color:#fff;
+  background:linear-gradient(135deg,var(--green),var(--mint));box-shadow:0 4px 14px rgba(86,207,129,.3);}
+
+/* STAR REWARD PATH (#2) */
+.star-path{padding:8px 12px;overflow-x:auto;scrollbar-width:none;}
+.star-path::-webkit-scrollbar{display:none;}
+.star-path-inner{display:flex;align-items:center;gap:0;min-width:min-content;}
+.sp-node{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;flex-shrink:0;transition:all .3s;position:relative;}
+.sp-node.filled{background:linear-gradient(135deg,var(--sun),var(--pink));color:#fff;
+  box-shadow:0 3px 10px rgba(255,184,48,.4);animation:starPulse 2s ease-in-out infinite;}
+.sp-node.current{background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;
+  box-shadow:0 3px 12px rgba(167,139,250,.5);animation:starPulse 1.5s ease-in-out infinite;}
+.sp-node.empty{background:var(--inputbg);color:var(--text6);border:2px dashed var(--border);}
+.sp-node.constellation{width:38px;height:38px;font-size:1.1rem;
+  background:linear-gradient(135deg,#ffb830,#ff6b9d);color:#fff;
+  box-shadow:0 4px 14px rgba(255,107,157,.4);}
+@keyframes starPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.sp-line{width:12px;height:3px;background:var(--border);flex-shrink:0;}
+.sp-line.filled{background:linear-gradient(90deg,var(--sun),var(--pink));}
+
+/* BRAIN SPARK (#6) */
+.spark-card{background:linear-gradient(135deg,#fff5e0,#ffe8d0);border-radius:16px;
+  margin:8px 12px 0;padding:12px 16px;display:flex;align-items:center;gap:10px;
+  box-shadow:0 4px 14px rgba(255,184,48,.12);cursor:pointer;transition:all .2s;
+  border-left:3px solid var(--sun);}
+body.bedtime .spark-card{background:linear-gradient(135deg,#2a2a3e,#2e2a1e);border-left-color:var(--sun);}
+.spark-card:active{transform:scale(.98);}
+.spark-emoji{font-size:1.4rem;}
+.spark-text{flex:1;font-size:.82rem;color:var(--text2);font-weight:600;}
+.spark-done{font-size:.7rem;color:var(--green);font-weight:700;}
+
+/* QUICK CREATE (#5) */
+.qc-fab{position:fixed;bottom:68px;left:16px;width:50px;height:50px;border-radius:50%;
+  background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;border:none;
+  font-size:1.3rem;cursor:pointer;box-shadow:0 6px 20px rgba(167,139,250,.4);z-index:100;
+  display:flex;align-items:center;justify-content:center;transition:all .3s;}
+.qc-fab:active{transform:scale(.88);}
+.qc-popup{position:fixed;bottom:126px;left:16px;width:260px;background:var(--cardbg);
+  border-radius:20px;padding:16px;box-shadow:0 12px 40px rgba(0,0,0,.2);z-index:101;
+  display:none;animation:pop .3s cubic-bezier(.68,-.55,.27,1.55);}
+.qc-popup.show{display:block;}
+.qc-title{font-family:'Baloo 2',cursive;font-size:.92rem;font-weight:700;color:var(--text);margin-bottom:10px;}
+.qc-item{padding:10px 12px;border-radius:12px;background:var(--inputbg);margin-bottom:6px;
+  font-size:.82rem;color:var(--text2);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;}
+.qc-item:active{transform:scale(.97);background:var(--border);}
+
+/* PARENT NOTES (#8) */
+.notes-section{margin-top:14px;}
+.note-input{width:100%;padding:12px;border:2px solid var(--border);border-radius:14px;
+  background:var(--inputbg);color:var(--text);font-family:'Nunito',sans-serif;font-size:.85rem;
+  resize:vertical;min-height:70px;transition:border-color .2s;}
+.note-input:focus{outline:none;border-color:var(--purple);}
+.note-save{border:none;padding:10px 20px;border-radius:50px;font-family:'Baloo 2',cursive;
+  font-size:.82rem;font-weight:700;cursor:pointer;color:#fff;margin-top:8px;
+  background:linear-gradient(135deg,var(--purple),var(--blue));}
+.note-list{margin-top:10px;}
+.note-entry{background:var(--inputbg);border-radius:12px;padding:10px 12px;margin-bottom:6px;
+  border-left:3px solid var(--purple);}
+.note-date{font-size:.65rem;color:var(--text5);font-weight:700;}
+.note-mood{font-size:.85rem;margin:0 4px;}
+.note-text{font-size:.8rem;color:var(--text2);margin-top:3px;line-height:1.4;}
+
+/* FRIEND NAMER (#10) */
+.friend-section{margin-top:14px;text-align:center;}
+.friend-display{font-size:2.4rem;margin-bottom:4px;}
+.friend-name{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;color:var(--purple);}
+.friend-input{padding:8px 14px;border:2px solid var(--border);border-radius:50px;
+  background:var(--inputbg);color:var(--text);font-family:'Baloo 2',cursive;font-size:.88rem;
+  text-align:center;width:180px;transition:border-color .2s;}
+.friend-input:focus{outline:none;border-color:var(--purple);}
+.friend-save{border:none;padding:8px 18px;border-radius:50px;font-family:'Baloo 2',cursive;
+  font-size:.78rem;font-weight:700;cursor:pointer;color:#fff;margin-left:6px;
+  background:linear-gradient(135deg,var(--pink),var(--purple));}
+
+/* SURPRISE STAR (#9) */
+.surprise-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;
+  display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s;}
+.surprise-card{background:linear-gradient(135deg,#ffb830,#ff6b9d);border-radius:28px;
+  padding:30px 24px;text-align:center;max-width:320px;width:100%;color:#fff;
+  box-shadow:0 20px 60px rgba(255,107,157,.4);animation:pop .5s cubic-bezier(.68,-.55,.27,1.55);}
+.surprise-emoji{font-size:3.5rem;display:block;margin-bottom:8px;}
+.surprise-title{font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;margin-bottom:6px;}
+.surprise-desc{font-size:.9rem;opacity:.9;margin-bottom:16px;}
+.surprise-claim{border:2px solid #fff;background:transparent;color:#fff;padding:12px 28px;
+  border-radius:50px;font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;cursor:pointer;}
+.surprise-claim:active{background:#fff;color:#ff6b9d;}
+
 /* SKIP BUTTON */
 .skip-btn{width:100%;padding:11px;border:2px solid var(--border);border-radius:14px;
   background:transparent;color:var(--text4);font-family:'Baloo 2',cursive;font-size:.9rem;
@@ -929,6 +1036,9 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
 
 <div class="wbar" id="wbar"></div>
 
+<!-- Star Reward Path (#2) -->
+<div class="star-path" id="starPath"></div>
+
 <!-- WEEKLY CHALLENGE -->
 <div class="challenge-bar" id="challengeBar">
   <span class="challenge-emoji">🎯</span>
@@ -953,6 +1063,13 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
 
 <div id="factCard"></div>
 
+<!-- Brain Spark (#6) -->
+<div class="spark-card" id="sparkCard" onclick="completeSpark()">
+  <span class="spark-emoji" id="sparkEmoji">🧠</span>
+  <span class="spark-text" id="sparkText">Loading brain spark...</span>
+  <span class="spark-done" id="sparkDone"></span>
+</div>
+
 <div class="prog" id="progBar">
   <span class="pl">Today</span>
   <div class="pb"><div class="pf" id="pf" style="width:0%"></div></div>
@@ -973,6 +1090,15 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
 
 <div class="spill" id="spill" onclick="showShop()">⭐ 0 stars</div>
 <div class="toast" id="toast">⭐</div>
+
+<!-- Quick Create FAB (#5) -->
+<button class="qc-fab" id="qcFab" onclick="toggleQuickCreate()">🎨</button>
+<div class="qc-popup" id="qcPopup"></div>
+
+<!-- Feelings overlay (injected by JS) -->
+<div id="feelingsOverlay"></div>
+<!-- Surprise overlay (injected by JS) -->
+<div id="surpriseOverlay"></div>
 
 <script>
 // ══════════════════════════════════════
@@ -2178,6 +2304,7 @@ function markGameDone(sc){
   ws[todayKey()]=(ws[todayKey()]||0)+earnedStars;
   localStorage.setItem('cws',JSON.stringify(ws));
   showSpill();showToast(`⭐ +${earnedStars} stars!`);playStar();burst();
+  renderStarPath();
   current=null;setTimeout(fetchNext,500);
 }
 
@@ -2198,7 +2325,7 @@ function markDone(){
   ws[todayKey()]=(ws[todayKey()]||0)+current.stars;
   localStorage.setItem('cws',JSON.stringify(ws));
   showSpill();showToast(`⭐ +${current.stars} stars!`);playStar();burst();
-  mascotPraise();
+  mascotPraise();renderStarPath();
   const ac=document.getElementById('ac');if(ac){ac.style.opacity='0';ac.style.transform='scale(.9) translateY(-10px)';}
   current=null;setTimeout(fetchNext,500);
 }
@@ -2424,6 +2551,8 @@ function renderParentDash(){
           ${buildVoiceListHTML()}
         </div>
       </div>
+      ${renderParentNotes()}
+      ${renderFriendSection()}
     </div>`;
 }
 
@@ -2462,7 +2591,7 @@ function undoDone(idx){
   localStorage.setItem('cws',JSON.stringify(ws));
   showSpill();showToast('↩️ Undone!');
   document.getElementById('congrats').style.display='none';
-  renderHist();updateProg();renderWbar();renderChallenge();
+  renderHist();updateProg();renderWbar();renderChallenge();renderStarPath();
   busy=false;current=null;fetchNext();
 }
 function updateProg(){
@@ -2530,6 +2659,9 @@ function switchTab(t){
   document.getElementById('timerBar').classList.toggle('show',!isSpecial);
   document.getElementById('challengeBar').style.display=isSpecial?'none':'flex';
   document.getElementById('storyBanner').style.display=isSpecial?'none':'flex';
+  document.getElementById('starPath').style.display=isSpecial?'none':'block';
+  document.getElementById('sparkCard').style.display=isSpecial?'none':'flex';
+  document.getElementById('qcFab').style.display=(t==='create'||t==='parent'||t==='stories')?'none':'flex';
 
   fetchNext();
 }
@@ -2870,12 +3002,320 @@ function readFullStory(){
 }
 
 // ══════════════════════════════════════
+//  #1 — FEELINGS CHECK-IN
+// ══════════════════════════════════════
+const FEELINGS=[
+  {emoji:'🙂',label:'Happy',msg:'Wonderful! Happy days are the best! 🌈'},
+  {emoji:'😐',label:'Okay',msg:'That\'s perfectly fine! Let\'s make today great! ✨'},
+  {emoji:'😴',label:'Sleepy',msg:'A little sleepy? Some fun activities will wake you up! 💪'},
+  {emoji:'😡',label:'Upset',msg:'Even big feelings are okay. I\'m here for you! 💛'},
+  {emoji:'🤩',label:'Excited',msg:'Wow, so much energy! Let\'s use it! 🚀'},
+  {emoji:'😢',label:'Sad',msg:'It\'s okay to feel sad. A hug and some fun will help! 🤗'},
+];
+let todayMood=localStorage.getItem('c_mood_'+todayKey())||'';
+
+function showFeelingsCheckIn(){
+  if(todayMood)return; // already done today
+  document.getElementById('feelingsOverlay').innerHTML=`
+    <div class="feelings-overlay" onclick="event.target===this&&closeFeelings()">
+      <div class="feelings-card">
+        <div class="feelings-title">How are you feeling today? 💛</div>
+        <div class="feelings-sub">Tap the face that matches your mood!</div>
+        <div class="feelings-row">
+          ${FEELINGS.map((f,i)=>`<div class="feeling-btn" onclick="pickFeeling(${i})">
+            <span class="feeling-emoji">${f.emoji}</span>
+            <span class="feeling-label">${f.label}</span>
+          </div>`).join('')}
+        </div>
+        <div class="feelings-msg" id="feelingsMsg"></div>
+        <button class="feelings-done" id="feelingsDone" onclick="closeFeelings()" style="display:none">Let's go! →</button>
+      </div>
+    </div>`;
+}
+function pickFeeling(idx){
+  const f=FEELINGS[idx];
+  todayMood=f.label;
+  localStorage.setItem('c_mood_'+todayKey(),f.label);
+  // Save mood history for parent notes
+  const moodHist=JSON.parse(localStorage.getItem('c_mood_hist')||'[]');
+  moodHist.push({date:todayKey(),mood:f.emoji,label:f.label});
+  if(moodHist.length>60)moodHist.shift();
+  localStorage.setItem('c_mood_hist',JSON.stringify(moodHist));
+
+  document.querySelectorAll('.feeling-btn').forEach((b,i)=>b.classList.toggle('selected',i===idx));
+  document.getElementById('feelingsMsg').textContent=f.msg;
+  document.getElementById('feelingsDone').style.display='inline-block';
+  playCorrect();speakText(f.msg);
+}
+function closeFeelings(){
+  document.getElementById('feelingsOverlay').innerHTML='';
+}
+
+// ══════════════════════════════════════
+//  #2 — STAR REWARD PATH
+// ══════════════════════════════════════
+function renderStarPath(){
+  const {day:d}=getWeek();
+  const totalDays=60;
+  const ws=JSON.parse(localStorage.getItem('cws')||'{}');
+  let html='<div class="star-path-inner">';
+  for(let i=1;i<=Math.min(d+3,totalDays);i++){
+    // Every 7th day is a constellation milestone
+    const isMilestone=i%7===0;
+    const isFilled=i<d||(i===d&&done.length>0);
+    const isCurrent=i===d&&done.length===0;
+    if(i>1) html+=`<div class="sp-line ${isFilled?'filled':''}"></div>`;
+    if(isMilestone){
+      html+=`<div class="sp-node constellation" title="Week ${i/7} Complete!">🌟</div>`;
+    } else {
+      html+=`<div class="sp-node ${isFilled?'filled':isCurrent?'current':'empty'}">${isFilled?'⭐':isCurrent?'📍':'☆'}</div>`;
+    }
+  }
+  html+='</div>';
+  document.getElementById('starPath').innerHTML=html;
+  // Auto-scroll to current day
+  const container=document.getElementById('starPath');
+  const currentNode=container.querySelector('.sp-node.current');
+  if(currentNode)currentNode.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+}
+
+// ══════════════════════════════════════
+//  #3 — MORNING TUNE
+// ══════════════════════════════════════
+function playMorningTune(){
+  if(!soundOn)return;
+  try{audioCtx.resume();}catch(e){}
+  const notes=[523,587,659,784,880,784,659];
+  const durations=[.15,.15,.15,.15,.2,.15,.25];
+  let t=audioCtx.currentTime;
+  notes.forEach((freq,i)=>{
+    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.type='sine';o.frequency.value=freq;
+    g.gain.setValueAtTime(.12,t);
+    g.gain.exponentialRampToValueAtTime(.001,t+durations[i]);
+    o.connect(g);g.connect(audioCtx.destination);
+    o.start(t);o.stop(t+durations[i]);
+    t+=durations[i]*.85;
+  });
+}
+let morningTunePlayed=localStorage.getItem('c_tune_'+todayKey())==='1';
+
+// ══════════════════════════════════════
+//  #5 — QUICK CREATE
+// ══════════════════════════════════════
+const QC_PROMPTS=[
+  {emoji:'🌸',text:'Draw a flower in 30 seconds!'},
+  {emoji:'🌈',text:'Pick colors for today\'s sky!'},
+  {emoji:'⭐',text:'Draw your favourite animal!'},
+  {emoji:'🏠',text:'Draw your dream house!'},
+  {emoji:'🌻',text:'Doodle a happy face!'},
+  {emoji:'🐱',text:'Draw a cat with a hat!'},
+  {emoji:'🎈',text:'Draw 5 colourful balloons!'},
+  {emoji:'🌙',text:'Draw the moon and stars!'},
+];
+let qcOpen=false;
+function toggleQuickCreate(){
+  qcOpen=!qcOpen;playClick();
+  const popup=document.getElementById('qcPopup');
+  if(qcOpen){
+    const prompts=QC_PROMPTS.sort(()=>Math.random()-.5).slice(0,4);
+    popup.innerHTML=`<div class="qc-title">🎨 Quick Create!</div>
+      ${prompts.map(p=>`<div class="qc-item" onclick="startQuickCreate('${p.text.replace(/'/g,"\\'")}')">
+        <span>${p.emoji}</span><span>${p.text}</span>
+      </div>`).join('')}`;
+    popup.classList.add('show');
+  } else popup.classList.remove('show');
+}
+function startQuickCreate(prompt){
+  qcOpen=false;
+  document.getElementById('qcPopup').classList.remove('show');
+  switchTab('create');
+  setTimeout(()=>mascotSay(prompt,4000),600);
+}
+// Close popup when clicking elsewhere
+document.addEventListener('click',e=>{
+  if(qcOpen&&!e.target.closest('.qc-popup')&&!e.target.closest('.qc-fab')){
+    qcOpen=false;document.getElementById('qcPopup').classList.remove('show');
+  }
+});
+
+// ══════════════════════════════════════
+//  #6 — BRAIN SPARK
+// ══════════════════════════════════════
+const SPARKS=[
+  {emoji:'🟢',text:'Find something GREEN around you!'},
+  {emoji:'🔢',text:'Count 5 things in your room!'},
+  {emoji:'🐾',text:'Name one animal you love!'},
+  {emoji:'🔴',text:'Find something RED in the house!'},
+  {emoji:'👂',text:'Close your eyes — what can you hear?'},
+  {emoji:'🤲',text:'Touch something soft and something hard!'},
+  {emoji:'👃',text:'Smell something nice in the kitchen!'},
+  {emoji:'🔺',text:'Find a triangle shape around you!'},
+  {emoji:'⭕',text:'Find 3 circles in your room!'},
+  {emoji:'📏',text:'Find the tallest thing near you!'},
+  {emoji:'🎵',text:'Clap a rhythm and hum a song!'},
+  {emoji:'🌈',text:'Name all the colours you are wearing!'},
+  {emoji:'🐛',text:'Walk like a caterpillar for 10 seconds!'},
+  {emoji:'💧',text:'Count how many taps you have at home!'},
+  {emoji:'📚',text:'Find a book and read the title aloud!'},
+];
+let sparkDoneToday=localStorage.getItem('c_spark_'+todayKey())==='1';
+
+function renderSpark(){
+  const {day:d}=getWeek();
+  const spark=SPARKS[(d-1)%SPARKS.length];
+  document.getElementById('sparkEmoji').textContent=spark.emoji;
+  document.getElementById('sparkText').textContent=spark.text;
+  document.getElementById('sparkDone').textContent=sparkDoneToday?'✅ Done':'Tap when done!';
+  if(sparkDoneToday)document.getElementById('sparkCard').style.opacity='.5';
+}
+function completeSpark(){
+  if(sparkDoneToday)return;
+  sparkDoneToday=true;
+  localStorage.setItem('c_spark_'+todayKey(),'1');
+  playCorrect();mascotPraise();
+  stars+=1;totalStarsEver+=1;
+  localStorage.setItem('cs_'+todayKey(),stars);
+  localStorage.setItem('c_total_stars',totalStarsEver);
+  showSpill();showToast('⭐ +1 Brain Spark!');
+  renderSpark();renderStarPath();
+}
+
+// ══════════════════════════════════════
+//  #8 — PARENT NOTES
+// ══════════════════════════════════════
+function renderParentNotes(){
+  const notes=JSON.parse(localStorage.getItem('c_parent_notes')||'[]');
+  const moodHist=JSON.parse(localStorage.getItem('c_mood_hist')||'[]');
+  const recent=notes.slice(-10).reverse();
+  const recentMoods=moodHist.slice(-7);
+
+  return `<div class="notes-section">
+    <h4 style="font-family:'Baloo 2',cursive;font-size:.9rem;color:var(--text3);margin-bottom:8px">📝 Parent Notes</h4>
+    ${recentMoods.length?`<div style="font-size:.78rem;color:var(--text4);margin-bottom:8px">Recent moods: ${recentMoods.map(m=>m.mood).join(' ')}</div>`:''}
+    <textarea class="note-input" id="parentNoteInput" placeholder="Write a note about today... (milestones, struggles, fun moments)"></textarea>
+    <button class="note-save" onclick="saveParentNote()">💾 Save Note</button>
+    ${recent.length?`<div class="note-list">
+      ${recent.map(n=>`<div class="note-entry">
+        <span class="note-date">${n.date}</span>${n.mood?`<span class="note-mood">${n.mood}</span>`:''}
+        <div class="note-text">${n.text}</div>
+      </div>`).join('')}
+    </div>`:'<div style="font-size:.78rem;color:var(--text5);margin-top:8px">No notes yet. Start writing!</div>'}
+  </div>`;
+}
+function saveParentNote(){
+  const input=document.getElementById('parentNoteInput');
+  const text=input.value.trim();
+  if(!text)return;
+  const notes=JSON.parse(localStorage.getItem('c_parent_notes')||'[]');
+  const mood=todayMood?FEELINGS.find(f=>f.label===todayMood)?.emoji:'';
+  notes.push({date:todayKey(),text,mood});
+  localStorage.setItem('c_parent_notes',JSON.stringify(notes));
+  input.value='';playClick();showToast('📝 Note saved!');
+  // Re-render parent dash
+  renderParentDash();
+}
+
+// ══════════════════════════════════════
+//  #9 — SURPRISE STAR (weekly)
+// ══════════════════════════════════════
+const SURPRISES=[
+  {emoji:'🎭',name:'Mystery Mask',type:'hat'},
+  {emoji:'🦄',name:'Unicorn Friend',type:'character'},
+  {emoji:'🎪',name:'Circus Theme',type:'theme',colors:{'--bg':'#fff5e8','--pink':'#ff6b9d','--sun':'#ff8c69'}},
+  {emoji:'🌸',name:'Cherry Blossom',type:'hat'},
+  {emoji:'🐲',name:'Dragon Buddy',type:'character'},
+  {emoji:'🍭',name:'Candy Theme',type:'theme',colors:{'--bg':'#fff0f5','--pink':'#ff69b4','--sun':'#ff6b9d'}},
+  {emoji:'🎵',name:'Music Note',type:'hat'},
+  {emoji:'🦊',name:'Fox Friend',type:'character'},
+];
+let lastSurpriseWeek=parseInt(localStorage.getItem('c_surprise_week')||'0');
+
+function checkWeeklySurprise(){
+  const {week:w}=getWeek();
+  if(w>lastSurpriseWeek&&w>1){
+    // Give surprise!
+    const available=SURPRISES.filter(s=>!owned.includes('surprise_'+s.name.toLowerCase().replace(/ /g,'_')));
+    if(!available.length)return;
+    const pick=available[Math.floor(Math.random()*available.length)];
+    const id='surprise_'+pick.name.toLowerCase().replace(/ /g,'_');
+    // Add to shop items dynamically
+    SHOP_ITEMS.push({id,emoji:pick.emoji,name:pick.name+'✨',cost:0,type:pick.type,colors:pick.colors});
+    owned.push(id);localStorage.setItem('c_owned',JSON.stringify(owned));
+    lastSurpriseWeek=w;localStorage.setItem('c_surprise_week',w);
+
+    document.getElementById('surpriseOverlay').innerHTML=`
+      <div class="surprise-overlay" onclick="event.target===this&&closeSurprise()">
+        <div class="surprise-card">
+          <div class="surprise-emoji">${pick.emoji}</div>
+          <div class="surprise-title">🎉 Weekly Surprise!</div>
+          <div class="surprise-desc">You unlocked <strong>${pick.name}</strong> for being a superstar this week!</div>
+          <button class="surprise-claim" onclick="closeSurprise()">Yay! Thank you! 🌟</button>
+        </div>
+      </div>`;
+    playStar();burst();
+  }
+}
+function closeSurprise(){
+  document.getElementById('surpriseOverlay').innerHTML='';
+}
+
+// ══════════════════════════════════════
+//  #10 — LITTLE STAR FRIEND (nameable)
+// ══════════════════════════════════════
+let friendName=localStorage.getItem('c_friend_name')||'';
+let friendEmoji=localStorage.getItem('c_friend_emoji')||'🌟';
+
+function renderFriendSection(){
+  const friendChars=['🌟','☁️','🌙','🌱','🔥','💫','🦋','🐣'];
+  return `<div class="friend-section">
+    <h4 style="font-family:'Baloo 2',cursive;font-size:.9rem;color:var(--text3);margin-bottom:8px">🧚 Little Star Friend</h4>
+    <div class="friend-display">${friendEmoji}</div>
+    <div class="friend-name">${friendName||'Unnamed — give me a name!'}</div>
+    <div style="margin-top:10px">
+      <input class="friend-input" id="friendNameInput" placeholder="Name your friend..." value="${friendName}" maxlength="15">
+      <button class="friend-save" onclick="saveFriendName()">💛 Save</button>
+    </div>
+    <div style="display:flex;gap:6px;justify-content:center;margin-top:10px;flex-wrap:wrap">
+      ${friendChars.map(e=>`<span style="font-size:1.6rem;cursor:pointer;padding:4px;border-radius:8px;border:2px solid ${e===friendEmoji?'var(--purple)':'transparent'};background:${e===friendEmoji?'#f0e8ff':'transparent'}" onclick="pickFriendEmoji('${e}')">${e}</span>`).join('')}
+    </div>
+  </div>`;
+}
+function saveFriendName(){
+  const input=document.getElementById('friendNameInput');
+  friendName=input.value.trim()||'';
+  localStorage.setItem('c_friend_name',friendName);
+  playCorrect();
+  if(friendName)mascotSay('Hello '+friendName+'! 💛');
+  renderParentDash();
+}
+function pickFriendEmoji(e){
+  friendEmoji=e;
+  localStorage.setItem('c_friend_emoji',e);
+  playClick();renderParentDash();
+}
+
+// ══════════════════════════════════════
 //  BOOT
 // ══════════════════════════════════════
 setupHeader();showSpill();renderWbar();renderFact();renderStory();renderChallenge();applyRewards();
+renderStarPath();renderSpark();
 document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===tab));
 document.getElementById('subjRow').classList.toggle('show',tab==='learning');
 document.getElementById('timerBar').classList.add('show');
+
+// Morning tune + feelings check-in
+setTimeout(()=>{
+  if(!morningTunePlayed&&new Date().getHours()<12){
+    playMorningTune();morningTunePlayed=true;localStorage.setItem('c_tune_'+todayKey(),'1');
+  }
+},1200);
+setTimeout(()=>showFeelingsCheckIn(),2000);
+setTimeout(()=>checkWeeklySurprise(),3000);
+
+// Show friend name in mascot bubble if named
+if(friendName)setTimeout(()=>mascotSay('Hi '+friendName+'! Let\'s go! 💛'),1500);
+
 fetchNext();
 </script>
 </body>
