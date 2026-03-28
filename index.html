@@ -1791,15 +1791,8 @@ async function fetchNext(forceAct){
     showCongrats();busy=false;return;
   }
 
-  if(tab==='games'){
-    // Games: pick random directly
-    const g=pool[Math.floor(Math.random()*pool.length)];
-    current=g;gameStreak=0;
-    renderGame(g);
-  } else {
-    // Activities: show picker
-    showActivityPicker(pool);
-  }
+  // All tabs: show picker to choose
+  showActivityPicker(pool);
   busy=false;
 }
 
@@ -1808,11 +1801,16 @@ async function fetchNext(forceAct){
 // ══════════════════════════════════════
 function showActivityPicker(pool){
   const tabName=tab.charAt(0).toUpperCase()+tab.slice(1);
+  const tabEmojis={morning:'🌅',learning:'📚',games:'🎮',evening:'🌙'};
   document.getElementById('hsub').textContent=`📋 Pick your ${tabName} activity!`;
 
   const items=pool.map((a,i)=>{
+    const isGame=tab==='games';
     const tagBg=SC[a.subj]||'linear-gradient(135deg,#56cf81,#4ecdc4)';
-    const tagHtml=a.tag?`<span class="pi-tag" style="background:${tagBg}">${a.tag}</span>`:'';
+    const tagHtml=a.tag?`<span class="pi-tag" style="background:${tagBg}">${a.tag}</span>`:
+      isGame?`<span class="pi-tag" style="background:linear-gradient(135deg,#ff6b9d,#ffb830)">🎮 Game</span>`:'';
+    const starsHtml=isGame?'<span class="pi-stars" style="color:var(--pink)">▶ Play</span>'
+      :`<span class="pi-stars">⭐${a.stars||'?'}</span>`;
     return `<div class="picker-item" onclick="pickActivity(${i})">
       <span class="pi-emoji">${a.emoji}</span>
       <div class="pi-info">
@@ -1820,7 +1818,7 @@ function showActivityPicker(pool){
         <div class="pi-desc">${a.desc}</div>
       </div>
       ${tagHtml}
-      <span class="pi-stars">⭐${a.stars||'?'}</span>
+      ${starsHtml}
     </div>`;
   }).join('');
 
@@ -1837,8 +1835,8 @@ function showActivityPicker(pool){
   document.getElementById('area').innerHTML=`
     <div class="picker-panel">
       <div class="picker-header">
-        <span class="picker-title">📋 Choose an activity</span>
-        <button class="picker-random" onclick="pickRandom()">🎲 Random</button>
+        <span class="picker-title">${tabEmojis[tab]||'📋'} Pick your ${tabName} ${tab==='games'?'game':'activity'}</span>
+        <button class="picker-random" onclick="pickRandom()">🎲 Surprise me!</button>
       </div>
       <div class="picker-list">
         ${items}
