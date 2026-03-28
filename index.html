@@ -1448,7 +1448,7 @@ function speakText(text){
   // Use saved voice preference, or fallback to Karen
   let pick=null;
   if(selectedVoiceName) pick=voices.find(v=>v.name===selectedVoiceName);
-  if(!pick) pick=voices.find(v=>v.name.includes('Karen'));
+  if(!pick) pick=voices.find(v=>v.name.includes('Google US English'));
   if(!pick) pick=voices.find(v=>v.name.includes('Google UK English Female'));
   if(!pick) pick=voices.find(v=>(v.name.includes('Female')||v.lang.startsWith('en'))&&!isBlockedVoice(v.name));
   if(pick)u.voice=pick;
@@ -3412,7 +3412,7 @@ function toggleStoryAudio(){
   const voices=speechSynthesis.getVoices();
   let pick=null;
   if(selectedVoiceName) pick=voices.find(v=>v.name===selectedVoiceName);
-  if(!pick) pick=voices.find(v=>v.name.includes('Karen'));
+  if(!pick) pick=voices.find(v=>v.name.includes('Google US English'));
   if(!pick) pick=voices.find(v=>v.name.includes('Google UK English Female'));
   if(!pick) pick=voices.find(v=>(v.name.includes('Female')||v.lang.startsWith('en'))&&!isBlockedVoice(v.name));
   if(pick)u.voice=pick;
@@ -3434,7 +3434,7 @@ function readFullStory(){
   const voices=speechSynthesis.getVoices();
   let pick=null;
   if(selectedVoiceName) pick=voices.find(v=>v.name===selectedVoiceName);
-  if(!pick) pick=voices.find(v=>v.name.includes('Karen'));
+  if(!pick) pick=voices.find(v=>v.name.includes('Google US English'));
   if(!pick) pick=voices.find(v=>v.name.includes('Google UK English Female'));
   if(!pick) pick=voices.find(v=>(v.name.includes('Female')||v.lang.startsWith('en'))&&!isBlockedVoice(v.name));
   if(pick)u.voice=pick;
