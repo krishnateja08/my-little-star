@@ -259,17 +259,19 @@ body.bedtime .btt-bar{background:#333355;}
 .gallery-view img{max-width:100%;max-height:80vh;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.5);}
 
 /* BEDTIME STORIES */
-.stories-list{display:flex;flex-direction:column;gap:10px;}
-.story-card-item{display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;
+.stories-list{display:grid;grid-template-columns:1fr;gap:10px;}
+@media(min-width:600px){.stories-list{grid-template-columns:1fr 1fr;}}
+@media(min-width:900px){.stories-list{grid-template-columns:1fr 1fr 1fr;}}
+.story-card-item{display:flex;align-items:flex-start;gap:12px;padding:16px;border-radius:16px;
   background:linear-gradient(135deg,#1a1a2e,#16213e);cursor:pointer;transition:all .2s;
-  box-shadow:0 6px 20px rgba(26,26,46,.3);}
+  box-shadow:0 6px 20px rgba(26,26,46,.3);flex-direction:column;height:100%;}
 .story-card-item:active{transform:scale(.98);}
-.sci-emoji{font-size:2.2rem;flex-shrink:0;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3));}
+.sci-top{display:flex;align-items:center;gap:10px;width:100%;}
+.sci-emoji{font-size:2rem;flex-shrink:0;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3));}
 .sci-info{flex:1;min-width:0;}
-.sci-title{font-family:'Baloo 2',cursive;font-size:.92rem;font-weight:700;color:#fff;}
-.sci-moral{font-size:.7rem;color:rgba(255,255,255,.5);margin-top:2px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.sci-dur{font-size:.65rem;color:rgba(255,255,255,.35);flex-shrink:0;font-weight:700;}
+.sci-title{font-family:'Baloo 2',cursive;font-size:.88rem;font-weight:700;color:#fff;line-height:1.3;}
+.sci-moral{font-size:.68rem;color:rgba(255,255,255,.5);margin-top:6px;line-height:1.4;}
+.sci-dur{font-size:.62rem;color:rgba(255,255,255,.35);font-weight:700;margin-top:auto;padding-top:8px;align-self:flex-end;}
 .sci-heard{display:inline-block;background:rgba(86,207,129,.3);color:#56cf81;font-size:.58rem;
   font-weight:700;padding:2px 7px;border-radius:50px;margin-left:6px;}
 
@@ -3291,6 +3293,55 @@ pages:['Buttons was a soft teddy bear who belonged to a little girl named Anu. E
 'He was so excited! He tried to hug Anu, but his real paws were too rough. He tried to sleep on her bed, but he was too heavy. He tried to fit in her arms, but he was too big.',
 'That night, Anu cried. "Where is my Buttons? I miss my teddy bear. He was perfect just the way he was."',
 'Buttons understood. He asked the firefly to change him back. When Anu found him on her pillow the next morning, she squeezed him tight. "Never leave me, Buttons!" And Buttons was happy. He learned that being loved exactly as you are is the most wonderful thing in the world.']},
+
+{emoji:'🌊',title:'The Little Wave Who Was Afraid to Crash',moral:'Sometimes you have to let go to find your true purpose.',
+pages:['Out in the wide blue ocean, there was a little wave named Wavi. She loved travelling across the sea, growing taller and taller every day.',
+'"I never want to stop!" said Wavi. "I want to keep rolling forever!" She watched the big waves ahead of her crash onto the shore and disappear. "How sad," she thought.',
+'As Wavi came closer to the shore, she got scared. "I do not want to end!" she cried to the old whale swimming beside her.',
+'"You are not ending," said the whale with a gentle smile. "Watch." Wavi looked at where the waves had crashed. Children were laughing and playing in the foam. Crabs were dancing in the wet sand. Shells were being polished to a shine.',
+'"Every wave that crashes becomes part of the shore forever," said the whale. "It becomes laughter, and play, and beauty."',
+'Wavi took a deep breath. She rushed towards the shore with all her might — CRASH! She felt herself spread across the warm sand, and in that moment, she felt the happiest she had ever been. She learned that letting go is not the end — it is the beginning of something beautiful.']},
+
+{emoji:'🦅',title:'Kavi the Eagle Who Could Not Fly',moral:'Believe in yourself — your wings are stronger than you think.',
+pages:['High on a mountain cliff lived a little eagle named Kavi. All the other eaglets had already learned to fly, but Kavi was still afraid.',
+'"What if I fall?" he said, peering down at the valley far below. "What if my wings are not strong enough?"',
+'Days passed. The other eagles soared through clouds and dove through rainbows. Kavi watched from his rock, his heart aching to join them.',
+'One morning, a fierce storm came. The wind howled and the rain poured. Kavi clutched his rock tightly. But the storm blew so hard that — whoooosh — he was swept off the cliff!',
+'Down, down, down he fell. And then — without even thinking — his wings opened WIDE. The wind caught them and suddenly Kavi was not falling. He was FLYING!',
+'"I am flying!" he screamed with joy. He soared above the mountain, above the clouds, above everything. When the storm cleared, he landed beside Mamma eagle. "You were always ready," she said. "You just needed to believe." And Kavi never doubted his wings again.']},
+
+{emoji:'🕯️',title:'The Candle Who Was Afraid of the Wind',moral:'Your light is needed most when things feel the hardest.',
+pages:['In a little house on a hill, there lived a small candle named Diya. Every evening, she was lit to bring warmth and light to the family.',
+'But Diya was terrified of the wind. "What if the wind blows me out?" she worried. "Then I will be useless. Then I will be nothing."',
+'One stormy night, the electricity went out. The whole house went dark. The little children began to cry. Their grandmother tried to find her way but bumped into the furniture.',
+'Then someone lit Diya. Her tiny flame flickered wildly in the drafts from the window. "I am going to go out! I am going to go out!" she thought.',
+'But she did not. She held on with everything she had. Her light fell across the room and the crying children looked up. "The light! The candle is still burning!" they cheered. Grandmother found her way safely to them.',
+'"You see," whispered the wind, softer now, "I did not come to put you out. I came to test how brightly you could burn." Diya understood then — the harder the wind blows, the more the world needs your light.']},
+
+{emoji:'🐌',title:'Snaily Finds Her Own Way',moral:'Your pace is perfect — you will get there exactly when you are meant to.',
+pages:['Snaily the snail lived in a garden full of fast creatures. The rabbits hopped by in a flash. The butterflies fluttered past in seconds. Even the ants marched quickly in their long lines.',
+'"I am so slow," sighed Snaily. "By the time I get anywhere, everything will already be over."',
+'One morning, Snaily decided she wanted to see the beautiful roses at the far end of the garden. She set off slowly, carrying her little home on her back.',
+'The rabbits passed her. The butterflies passed her. The ants passed her. "Poor Snaily!" they called. But Snaily just smiled and kept going.',
+'Along the way, she noticed a tiny caterpillar who needed help crossing a puddle. She stopped to help. She saw a beautiful spider web with morning dew — she stopped to admire it. She found a fallen seed and helped push it into the soft soil.',
+'When she finally reached the roses, everyone else had already gone home. But the roses had just opened their petals in the warm afternoon sun, and they were more beautiful than ever. "Thank you for waiting," said the roses. "Only you were patient enough to see us at our best." Snaily smiled. She would never wish to go faster again.']},
+
+{emoji:'🌱',title:'The Seed Who Thought It Was Too Small',moral:'Great things always start from something small — including you.',
+pages:['Deep in the dark soil, a tiny seed sat very still. All around her were roots of mighty trees — oak, banyan, mango. "I am just a tiny seed," she whispered. "What could I ever become?"',
+'Rain came and soaked the earth. The seed felt herself getting bigger. She tried to push upward but the soil was heavy. "I cannot do it," she thought. "I am too small."',
+'But she kept pushing. A little every day. Even when it was hard. Even when the soil seemed too heavy. Even when she was in the dark.',
+'One morning, a tiny green shoot broke through the surface for the very first time. The sunlight touched her face and she gasped. "Oh! The world is so beautiful!"',
+'A child walking by stopped and pointed. "Mummy, look! Something is growing!" The child watered her every single day after that.',
+'Years later, that tiny seed had become a great tree — with wide branches for children to climb, sweet fruit for the birds, and cool shade for anyone who needed to rest. The other trees nodded wisely. "Every great thing you see," they said, "was once a small seed that refused to give up." And the tree rustled her leaves in the breeze, proud of every small beginning.']},
+
+{emoji:'🤝',title:'Two Friends and the Mountain',moral:'Together we can climb any mountain that seems impossible alone.',
+pages:['Rina and Rohan were best friends who lived near a great mountain. Everyone said it was too steep to climb. "No child has ever made it to the top," the villagers warned.',
+'But Rina and Rohan had a dream — they wanted to see the whole world from up there. So one bright morning, they began to climb.',
+'Halfway up, Rina slipped on a wet rock. "I cannot go on," she said, her knee hurting. "Maybe everyone was right."',
+'"Put your hand on my shoulder," said Rohan. He helped her up, and they kept climbing — slower now, but together.',
+'Then Rohan got tired. His legs ached and his breath came in short puffs. "I need to stop," he gasped. "You go on without me."',
+'"Never," said Rina. She told him funny jokes to make him laugh, and the laughter gave him energy. Step by step, they helped each other up.',
+'When they finally reached the top, the whole world spread out before them — green valleys, silver rivers, tiny little villages. Tears ran down their faces. "We made it," they whispered. "Because we did not let go of each other." They learned that the hardest mountains are always easier to climb when someone you love is beside you.']},
 ];
 
 let storiesHeard=JSON.parse(localStorage.getItem('c_stories_heard')||'[]');
@@ -3317,12 +3368,14 @@ function renderStories(){
         ${BEDTIME_STORIES.map((s,i)=>{
           const heard=storiesHeard.includes(i);
           return `<div class="story-card-item" onclick="openStory(${i})">
-            <span class="sci-emoji">${s.emoji}</span>
-            <div class="sci-info">
-              <div class="sci-title">${s.title}${heard?'<span class="sci-heard">✓ Heard</span>':''}</div>
-              <div class="sci-moral">💛 ${s.moral}</div>
+            <div class="sci-top">
+              <span class="sci-emoji">${s.emoji}</span>
+              <div class="sci-info">
+                <div class="sci-title">${s.title}${heard?'<span class="sci-heard">✓ Heard</span>':''}</div>
+              </div>
             </div>
-            <span class="sci-dur">${s.pages.length} pg</span>
+            <div class="sci-moral">💛 ${s.moral}</div>
+            <span class="sci-dur">${s.pages.length} pages</span>
           </div>`;
         }).join('')}
       </div>
@@ -3340,9 +3393,6 @@ function openStory(idx){
 
 function renderStoryReader(){
   const s=BEDTIME_STORIES[currentStoryIdx];
-  const page=s.pages[currentPage];
-  const isFirst=currentPage===0;
-  const isLast=currentPage===s.pages.length-1;
   const isParent=storyMode==='parent';
 
   // Generate twinkling stars background
@@ -3351,44 +3401,75 @@ function renderStoryReader(){
     starsHTML+=`<div class="sr-star" style="top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*3}s;opacity:${Math.random()*.5+.1}"></div>`;
   }
 
-  // Audio buttons — only in app mode
-  const audioButtons=isParent?'':`
-      <button class="sr-listen ${storyPlaying?'playing':''}" id="storyListenBtn" onclick="toggleStoryAudio()">
-        ${storyPlaying?'⏸️ Pause Reading':'🔊 Read This Page Aloud'}
-      </button>
-      <button class="sr-listen" onclick="readFullStory()" style="margin-top:6px;border-color:rgba(255,184,48,.3);color:var(--sun);background:rgba(255,184,48,.08)">
-        📖 Read Entire Story Aloud
-      </button>`;
+  if(isParent){
+    // PARENT MODE: show all pages as one continuous story
+    const allPagesHTML=s.pages.map((p,i)=>`
+      <div style="margin-bottom:18px;padding-bottom:18px;${i<s.pages.length-1?'border-bottom:1px solid rgba(255,255,255,.1)':''}">
+        <div style="font-size:.65rem;color:rgba(255,255,255,.35);font-family:\'Baloo 2\',cursive;margin-bottom:6px;letter-spacing:.5px;">PAGE ${i+1}</div>
+        <div class="sr-page-text parent-mode" style="text-align:left;padding:0;">${p}</div>
+      </div>`).join('');
 
-  // Parent tip — only in parent mode
-  const parentTip=isParent?`<div class="sr-parent-tip">👆 Read the text above to your child. Tap Next when ready.</div>`:'';
-
-  document.getElementById('area').innerHTML=`
-    <div class="story-reader">
-      <div class="sr-stars">${starsHTML}</div>
-      <div class="sr-top-row">
-        <button class="sr-back" onclick="backToStories()">← All Stories</button>
-        <div class="sr-mode-toggle">
-          <button class="sr-mode-btn ${storyMode==='app'?'active':''}" onclick="setStoryMode('app')">🔊 App</button>
-          <button class="sr-mode-btn ${storyMode==='parent'?'active':''}" onclick="setStoryMode('parent')">👨‍👩‍👧 Parent</button>
+    document.getElementById('area').innerHTML=`
+      <div class="story-reader">
+        <div class="sr-stars">${starsHTML}</div>
+        <div class="sr-top-row">
+          <button class="sr-back" onclick="backToStories()">← All Stories</button>
+          <div class="sr-mode-toggle">
+            <button class="sr-mode-btn" onclick="setStoryMode('app')">🔊 App</button>
+            <button class="sr-mode-btn active" onclick="setStoryMode('parent')">👨‍👩‍👧 Parent</button>
+          </div>
         </div>
-      </div>
-      <span class="sr-emoji">${s.emoji}</span>
-      <div class="sr-title">${s.title}</div>
-      <div class="sr-moral-tag"><span>💛 ${s.moral}</span></div>
-      <div class="sr-page">
-        <div class="sr-page-text ${isParent?'parent-mode':''}">${page}</div>
-        ${getStoryQuestion(currentStoryIdx,currentPage)}
-        ${getEndingHTML(currentStoryIdx,currentPage,s.pages.length)}
-        <div class="sr-page-num">Page ${currentPage+1} of ${s.pages.length}</div>
-      </div>
-      <div class="sr-nav">
-        ${!isFirst?'<button class="sr-prev" onclick="storyPrev()">← Back</button>':''}
-        ${!isLast?'<button class="sr-next" onclick="storyNext()">Next →</button>':'<button class="sr-next" onclick="backToStories()" style="background:linear-gradient(135deg,#56cf81,#4ecdc4)">✅ The End!</button>'}
-      </div>
-      ${audioButtons}
-      ${parentTip}
-    </div>`;
+        <span class="sr-emoji">${s.emoji}</span>
+        <div class="sr-title">${s.title}</div>
+        <div class="sr-moral-tag"><span>💛 ${s.moral}</span></div>
+        <div class="sr-page" style="text-align:left;">
+          ${allPagesHTML}
+        </div>
+        <div class="sr-nav">
+          <button class="sr-next" onclick="backToStories()" style="background:linear-gradient(135deg,#56cf81,#4ecdc4)">✅ Done Reading</button>
+        </div>
+        <div class="sr-parent-tip">👆 Read the full story above to your child.</div>
+      </div>`;
+  } else {
+    // APP MODE: page-by-page as before
+    const page=s.pages[currentPage];
+    const isFirst=currentPage===0;
+    const isLast=currentPage===s.pages.length-1;
+
+    const audioButtons=`
+        <button class="sr-listen ${storyPlaying?'playing':''}" id="storyListenBtn" onclick="toggleStoryAudio()">
+          ${storyPlaying?'⏸️ Pause Reading':'🔊 Read This Page Aloud'}
+        </button>
+        <button class="sr-listen" onclick="readFullStory()" style="margin-top:6px;border-color:rgba(255,184,48,.3);color:var(--sun);background:rgba(255,184,48,.08)">
+          📖 Read Entire Story Aloud
+        </button>`;
+
+    document.getElementById('area').innerHTML=`
+      <div class="story-reader">
+        <div class="sr-stars">${starsHTML}</div>
+        <div class="sr-top-row">
+          <button class="sr-back" onclick="backToStories()">← All Stories</button>
+          <div class="sr-mode-toggle">
+            <button class="sr-mode-btn active" onclick="setStoryMode('app')">🔊 App</button>
+            <button class="sr-mode-btn" onclick="setStoryMode('parent')">👨‍👩‍👧 Parent</button>
+          </div>
+        </div>
+        <span class="sr-emoji">${s.emoji}</span>
+        <div class="sr-title">${s.title}</div>
+        <div class="sr-moral-tag"><span>💛 ${s.moral}</span></div>
+        <div class="sr-page">
+          <div class="sr-page-text">${page}</div>
+          ${getStoryQuestion(currentStoryIdx,currentPage)}
+          ${getEndingHTML(currentStoryIdx,currentPage,s.pages.length)}
+          <div class="sr-page-num">Page ${currentPage+1} of ${s.pages.length}</div>
+        </div>
+        <div class="sr-nav">
+          ${!isFirst?'<button class="sr-prev" onclick="storyPrev()">← Back</button>':''}
+          ${!isLast?'<button class="sr-next" onclick="storyNext()">Next →</button>':'<button class="sr-next" onclick="backToStories()" style="background:linear-gradient(135deg,#56cf81,#4ecdc4)">✅ The End!</button>'}
+        </div>
+        ${audioButtons}
+      </div>`;
+  }
   document.getElementById('hist').innerHTML='';
 }
 
