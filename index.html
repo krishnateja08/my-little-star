@@ -1414,49 +1414,13 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
 <!-- Parent gate overlay -->
 <div id="gateOverlay"></div>
 
-<!-- Firebase SDK — using unpkg CDN for reliability -->
-<script>
-// Dynamically load Firebase SDK to handle failures gracefully
-(function(){
-  var sdkBase = 'https://unpkg.com/firebase@9.23.0/compat/';
-  var scripts = [
-    sdkBase + 'app/index.js',
-    sdkBase + 'database/index.js'
-  ];
-  var loaded = 0;
-  function loadNext(i){
-    if(i >= scripts.length){ window._fbSdkReady = true; return; }
-    var s = document.createElement('script');
-    s.src = scripts[i];
-    s.onload = function(){ loadNext(i+1); };
-    s.onerror = function(){
-      // Fallback to jsdelivr if unpkg fails
-      var fallbackBase = 'https://cdn.jsdelivr.net/npm/firebase@9.23.0/compat/';
-      var f = document.createElement('script');
-      f.src = (i===0 ? fallbackBase+'app/index.js' : fallbackBase+'database/index.js');
-      f.onload = function(){ loadNext(i+1); };
-      f.onerror = function(){ window._fbSdkFailed = true; };
-      document.head.appendChild(f);
-    };
-    document.head.appendChild(s);
-  }
-  loadNext(0);
-})();
-</script>
 
 <script>
 // ══════════════════════════════════════
-//  🔥 FIREBASE SYNC SETUP
+//  🔥 FIREBASE SYNC — REST API (no CDN needed!)
+//  Uses built-in fetch() — works on every browser/network
 // ══════════════════════════════════════
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyCFWkBSHzo4PzwYAQKvgXExMBCtX_HI2Ro",
-  authDomain: "my-little-star-ef311.firebaseapp.com",
-  databaseURL: "https://my-little-star-ef311-default-rtdb.firebaseio.com",
-  projectId: "my-little-star-ef311",
-  storageBucket: "my-little-star-ef311.firebasestorage.app",
-  messagingSenderId: "839580895226",
-  appId: "1:839580895226:web:2ce7845aa8d63beb4d8643"
-};
+const _DB_URL = 'https://my-little-star-ef311-default-rtdb.firebaseio.com';
 
 // Keys & prefixes that should sync across devices
 const SYNC_KEYS = [
@@ -1470,31 +1434,61 @@ const SYNC_PREFIXES = [
   'c_tune_','c_bl_dismiss_','c_goals_bonus_','c_weather_','c_skipped_'
 ];
 
-function _shouldSync(key){
-  return SYNC_KEYS.includes(key)||SYNC_PREFIXES.some(p=>key.startsWith(p));
-}
-function _safeKey(key){return key.replace(/[.#$[\]]/g,'_');}
+function _shouldSync(key){ return SYNC_KEYS.includes(key)||SYNC_PREFIXES.some(p=>key.startsWith(p)); }
+function _safeKey(key){ return key.replace(/[.#$[\]/]/g,'_'); }
 
-// Keep reference to real localStorage methods before overriding
+// Keep originals before overriding
 const _lsSet    = localStorage.setItem.bind(localStorage);
 const _lsRemove = localStorage.removeItem.bind(localStorage);
 const _lsGet    = localStorage.getItem.bind(localStorage);
 
-let _fbApp = null;
-let _fbDB  = null;
 let _familyCode = _lsGet('c_family_code')||'';
+let _syncReady  = false;
 
-// Write to Firebase (fire-and-forget)
+// ── REST helpers ──
+function _fbPath(key){ return `${_DB_URL}/families/${_familyCode}/${_safeKey(key)}.json`; }
+
 function fbWrite(key, value){
-  if(!_fbDB||!_familyCode) return;
-  _fbDB.ref(`families/${_familyCode}/${_safeKey(key)}`).set(value);
-}
-function fbDelete(key){
-  if(!_fbDB||!_familyCode) return;
-  _fbDB.ref(`families/${_familyCode}/${_safeKey(key)}`).remove();
+  if(!_syncReady||!_familyCode) return;
+  fetch(_fbPath(key),{
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(value)
+  }).catch(()=>{});
 }
 
-// Override localStorage so every write also goes to Firebase
+function fbDelete(key){
+  if(!_syncReady||!_familyCode) return;
+  fetch(_fbPath(key),{ method:'DELETE' }).catch(()=>{});
+}
+
+async function _loadFromFirebase(){
+  if(!_familyCode) return;
+  try{
+    const res  = await fetch(`${_DB_URL}/families/${_familyCode}.json`);
+    const data = await res.json();
+    if(data && typeof data === 'object'){
+      Object.keys(data).forEach(k => _lsSet(k, data[k]));
+      console.log('✅ Firebase synced!', Object.keys(data).length, 'keys loaded');
+    }
+  }catch(e){ console.warn('Firebase load error:',e); }
+}
+
+// Poll for changes from other devices every 30 seconds
+function _startPolling(){
+  if(!_familyCode) return;
+  setInterval(async ()=>{
+    try{
+      const res  = await fetch(`${_DB_URL}/families/${_familyCode}.json`);
+      const data = await res.json();
+      if(data && typeof data === 'object'){
+        Object.keys(data).forEach(k => _lsSet(k, data[k]));
+      }
+    }catch(e){}
+  }, 30000);
+}
+
+// Override localStorage so every write also syncs to Firebase
 localStorage.setItem = function(key, value){
   _lsSet(key, value);
   if(_shouldSync(key)) fbWrite(key, value);
@@ -1504,19 +1498,7 @@ localStorage.removeItem = function(key){
   if(_shouldSync(key)) fbDelete(key);
 };
 
-// Pull all data from Firebase into localStorage
-async function _loadFromFirebase(){
-  if(!_fbDB||!_familyCode) return;
-  try{
-    const snap = await _fbDB.ref(`families/${_familyCode}`).get();
-    if(snap.exists()){
-      const data = snap.val();
-      Object.keys(data).forEach(k=>{ _lsSet(k, data[k]); });
-    }
-  }catch(e){ console.warn('Firebase load error:',e); }
-}
-
-// Show family code setup screen (first time only)
+// ── Family code screen ──
 function _showFamilyCodeScreen(){
   return new Promise(resolve=>{
     document.getElementById('familyCodeOverlay').innerHTML=`
@@ -1527,7 +1509,7 @@ function _showFamilyCodeScreen(){
           <div style="font-size:3rem;margin-bottom:8px">⭐</div>
           <h2 style="font-family:'Baloo 2',cursive;color:#ff6b9d;margin-bottom:6px;font-size:1.4rem">My Little Star</h2>
           <p style="font-size:.85rem;color:#666;margin-bottom:16px;line-height:1.5">
-            Create a <strong>Family Code</strong> to sync baby's progress across all your devices! 📱💻<br><br>
+            Create a <strong>Family Code</strong> to sync baby's progress across all devices! 📱💻<br><br>
             Use the <strong>same code</strong> on every phone, tablet and computer.
           </p>
           <input id="fcInput" type="text" placeholder="e.g. krishna-baby-2024"
@@ -1543,7 +1525,7 @@ function _showFamilyCodeScreen(){
             font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:700;">
             🚀 Start Learning!
           </button>
-          <p style="font-size:.65rem;color:#ccc;margin-top:10px">You can change this later in Parent settings</p>
+          <p style="font-size:.65rem;color:#ccc;margin-top:10px">You can change this in Parent settings anytime</p>
         </div>
       </div>`;
 
@@ -1557,7 +1539,6 @@ function _showFamilyCodeScreen(){
       document.getElementById('familyCodeOverlay').innerHTML='';
       resolve(code);
     };
-
     setTimeout(()=>{
       const inp=document.getElementById('fcInput');
       if(inp) inp.addEventListener('keydown',e=>{ if(e.key==='Enter') window.__setFC(); });
@@ -1565,45 +1546,27 @@ function _showFamilyCodeScreen(){
   });
 }
 
-// Main async init — runs before app boots
+// ── Main init ──
 (async function _firebaseInit(){
-  // Wait up to 10s for Firebase SDK to be available (dynamic loading takes longer)
-  let attempts = 0;
-  while(typeof firebase === 'undefined' && !window._fbSdkFailed && attempts < 100){
-    await new Promise(r=>setTimeout(r,100));
-    attempts++;
-  }
-  if(typeof firebase === 'undefined'){
-    console.warn('Firebase SDK never loaded, running offline.');
-    document.getElementById('appLoader').style.display='none';
-    return;
-  }
   try{
-    _fbApp = firebase.initializeApp(FIREBASE_CONFIG);
-    _fbDB  = firebase.database();
-
-    // Ask for family code if not set
     if(!_familyCode) await _showFamilyCodeScreen();
 
-    // Show loader while syncing
     document.getElementById('appLoader').style.display='flex';
     await _loadFromFirebase();
+    _syncReady = true;
+    _startPolling();
     document.getElementById('appLoader').style.display='none';
-
-    // Listen for real-time changes from other devices
-    _fbDB.ref(`families/${_familyCode}`).on('child_changed', snap=>{
-      _lsSet(snap.key, snap.val());
-    });
-
+    console.log('🔥 Firebase REST sync active! Family:', _familyCode);
   }catch(e){
-    console.warn('Firebase init failed, running offline:',e);
+    console.warn('Firebase init error, running offline:',e);
+    _syncReady = true; // still let app work offline
     document.getElementById('appLoader').style.display='none';
   }
 })();
 
-// Helper for Parent dashboard to change family code
+// Helper to change family code from Parent Dashboard
 function changeFamilyCode(){
-  const newCode = prompt('Enter new Family Code (use on all devices):','');
+  const newCode = prompt('Enter new Family Code (use same on all devices):','');
   if(!newCode) return;
   const code = newCode.trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'');
   if(!code){ alert('Invalid code!'); return; }
