@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🌟 My Little Star — Smart Learning Coach</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
 :root{
   --pink:#ff6b9d;--sun:#ffb830;--mint:#4ecdc4;--purple:#a78bfa;
@@ -1417,6 +1414,10 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
 <!-- Parent gate overlay -->
 <div id="gateOverlay"></div>
 
+<!-- Firebase SDK — loaded here so it's ready before main script -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <script>
 // ══════════════════════════════════════
 //  🔥 FIREBASE SYNC SETUP
@@ -1540,6 +1541,17 @@ function _showFamilyCodeScreen(){
 
 // Main async init — runs before app boots
 (async function _firebaseInit(){
+  // Wait up to 5s for Firebase SDK to be available
+  let attempts = 0;
+  while(typeof firebase === 'undefined' && attempts < 50){
+    await new Promise(r=>setTimeout(r,100));
+    attempts++;
+  }
+  if(typeof firebase === 'undefined'){
+    console.warn('Firebase SDK never loaded, running offline.');
+    document.getElementById('appLoader').style.display='none';
+    return;
+  }
   try{
     _fbApp = firebase.initializeApp(FIREBASE_CONFIG);
     _fbDB  = firebase.database();
