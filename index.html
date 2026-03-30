@@ -1367,6 +1367,43 @@ body.bedtime .scenario-card{background:linear-gradient(135deg,#1a2e1e,#1a2030);}
 .hh-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;
   background:linear-gradient(90deg,#ff6b9d,#ffb830,#4ecdc4);}
 
+/* ── Bubble Popper ── */
+.bubble-arena{position:relative;width:100%;height:220px;border-radius:18px;
+  background:linear-gradient(135deg,#e0f4ff,#f0e8ff);overflow:hidden;cursor:pointer;
+  border:2px solid rgba(167,139,250,.2);}
+body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
+.bubble{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;cursor:pointer;transition:transform .08s;user-select:none;
+  animation:bubbleFloat linear infinite;}
+.bubble:active{transform:scale(1.2);}
+.bubble.popped{animation:bubblePop .3s forwards!important;}
+@keyframes bubbleFloat{0%{transform:translateY(0) scale(1)}50%{transform:translateY(-12px) scale(1.04)}100%{transform:translateY(0) scale(1)}}
+@keyframes bubblePop{0%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.7}100%{transform:scale(0);opacity:0}}
+.bubble-score{text-align:center;font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;
+  color:var(--purple);margin:8px 0 4px;}
+.bubble-msg{text-align:center;font-size:.78rem;color:var(--text3);min-height:20px;}
+.bubble-restart{border:none;padding:9px 22px;border-radius:50px;font-family:'Baloo 2',cursive;
+  font-size:.82rem;font-weight:700;cursor:pointer;color:#fff;margin-top:8px;
+  background:linear-gradient(135deg,var(--purple),var(--blue));transition:all .2s;}
+.bubble-restart:active{transform:scale(.94);}
+
+/* ── Feelings Thermometer ── */
+.thermo-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;padding:6px 0 10px;}
+.thermo-labels{display:flex;justify-content:space-between;width:100%;padding:0 4px;
+  font-size:.68rem;font-weight:700;font-family:'Baloo 2',cursive;}
+.thermo-label-hot{color:#ff6b9d;}
+.thermo-label-cold{color:#4fa3e0;}
+.thermo-slider{-webkit-appearance:none;appearance:none;width:100%;height:28px;border-radius:50px;
+  outline:none;cursor:pointer;transition:all .2s;}
+.thermo-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+  width:40px;height:40px;border-radius:50%;cursor:pointer;border:3px solid #fff;
+  box-shadow:0 4px 12px rgba(0,0,0,.18);transition:transform .15s;}
+.thermo-slider::-webkit-slider-thumb:active{transform:scale(1.15);}
+.thermo-face{font-size:3.2rem;line-height:1;transition:all .3s;filter:drop-shadow(0 4px 8px rgba(0,0,0,.12));}
+.thermo-desc{font-family:'Baloo 2',cursive;font-size:.88rem;font-weight:700;text-align:center;
+  line-height:1.4;min-height:44px;transition:all .3s;}
+.thermo-tip{font-size:.76rem;color:var(--text3);text-align:center;line-height:1.5;min-height:36px;}
+
 /* mood journal */
 .mood-entry-list{max-height:220px;overflow-y:auto;scrollbar-width:thin;margin-top:8px;}
 .mood-entry-row{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:12px;
@@ -3851,6 +3888,38 @@ function renderHeartsTab(){
           🛠️ Pick a calm-down tool:
         </div>
         <div class="calm-grid">${calmHTML}</div>
+
+        <!-- Feelings Thermometer -->
+        <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;color:var(--text);margin:16px 0 10px">
+          🌡️ How hot is your feeling right now?
+        </div>
+        <div style="background:linear-gradient(135deg,#fff0f8,#f0f0ff);border-radius:18px;padding:16px;border:2px solid rgba(167,139,250,.15);">
+          <div class="thermo-wrap">
+            <div class="thermo-face" id="hhThermoFace">😐</div>
+            <div class="thermo-desc" id="hhThermoDesc">Slide to show how you feel inside</div>
+            <div class="thermo-labels">
+              <span class="thermo-label-hot">🔥 Boiling Angry</span>
+              <span class="thermo-label-cold">🧊 Super Calm</span>
+            </div>
+            <input type="range" class="thermo-slider" id="hhThermoSlider"
+              min="0" max="100" value="50"
+              oninput="hhUpdateThermo(this.value)"
+              style="background:linear-gradient(to right,#ff6b9d 0%,#ffb830 30%,#4ecdc4 70%,#4fa3e0 100%)">
+            <div class="thermo-tip" id="hhThermoTip">Move the slider and see what helps!</div>
+          </div>
+        </div>
+
+        <!-- Bubble Popper -->
+        <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;color:var(--text);margin:16px 0 10px">
+          🫧 Pop Your Worries Away!
+        </div>
+        <div style="font-size:.74rem;color:var(--text3);margin-bottom:8px;line-height:1.5">
+          Tap every bubble to pop it! Pop them all to feel better. 💛
+        </div>
+        <div class="bubble-arena" id="hhBubbleArena"></div>
+        <div class="bubble-score" id="hhBubbleScore">0 popped</div>
+        <div class="bubble-msg" id="hhBubbleMsg"></div>
+        <button class="bubble-restart" onclick="hhSpawnBubbles()">🫧 New Bubbles!</button>
       </div>
     </div>
 
@@ -3904,6 +3973,16 @@ function renderHeartsTab(){
     const btn=document.querySelector(`.feel-btn[data-feel="${window._hhCurrentFeel}"]`);
     if(btn)btn.classList.add('selected');
   }
+
+  // Initialise thermometer to last value
+  const slider=document.getElementById('hhThermoSlider');
+  if(slider&&window._hhThermoVal!==undefined){
+    slider.value=window._hhThermoVal;
+    hhUpdateThermo(window._hhThermoVal);
+  }
+
+  // Spawn bubbles
+  setTimeout(hhSpawnBubbles,100);
 }
 
 // ── Feeling selection ──
@@ -4078,6 +4157,105 @@ function hhNextScenario(){
   hhScenarioIdx++;
   renderHeartsTab();
   speakText(HH_SCENARIOS[hhScenarioIdx%HH_SCENARIOS.length].q);
+}
+
+// ── Feelings Thermometer ──
+const HH_THERMO_LEVELS=[
+  {min:0,  max:15, face:'🤬', desc:'Boiling Angry!',       color:'#ff4444', tip:'Try the breathing bubble — breathe in slow and out slow. You\'ve got this! 💪'},
+  {min:15, max:30, face:'😠', desc:'Really Angry',          color:'#ff6b9d', tip:'Count to 10 very slowly. Or ask Mummy for a big hug — hugs really help! 🤗'},
+  {min:30, max:45, face:'😟', desc:'A Bit Upset',           color:'#ffb830', tip:'Try drawing your feelings, or go for a little walk to shake it out. 🚶'},
+  {min:45, max:55, face:'😐', desc:'In the Middle',         color:'#aaa',    tip:'Neither hot nor cold — that\'s okay! What would make you feel even better? 🌟'},
+  {min:55, max:70, face:'😌', desc:'Getting Calmer',        color:'#4ecdc4', tip:'Great! Keep breathing slowly. You\'re doing so well at calming down! 🌿'},
+  {min:70, max:85, face:'😊', desc:'Feeling Better!',       color:'#56cf81', tip:'Wonderful! A calm mind is a superpower. Keep it up! 💛'},
+  {min:85, max:101,face:'😄', desc:'Super Calm & Happy!',   color:'#4fa3e0', tip:'Ice-cold calm — you are a feelings superstar! 🏆 Mummy will be so proud!'},
+];
+
+function hhUpdateThermo(val){
+  val=parseInt(val);
+  window._hhThermoVal=val;
+  // val=0 is boiling, val=100 is icy calm (slider goes left=hot, right=calm)
+  const inverted=100-val;
+  const level=HH_THERMO_LEVELS.find(l=>inverted>=l.min&&inverted<l.max)||HH_THERMO_LEVELS[3];
+  const face=document.getElementById('hhThermoFace');
+  const desc=document.getElementById('hhThermoDesc');
+  const tip =document.getElementById('hhThermoTip');
+  if(!face)return;
+  face.textContent=level.face;
+  desc.textContent=level.desc;
+  desc.style.color=level.color;
+  tip.textContent=level.tip;
+  // Gradient thumb colour via CSS custom prop trick
+  const slider=document.getElementById('hhThermoSlider');
+  if(slider)slider.style.setProperty('--thumb-color',level.color);
+}
+
+// ── Bubble Popper ──
+let hhBubblePoppedCount=0;
+let hhBubbleTotal=0;
+
+const HH_BUBBLE_EMOJIS=['💜','🩵','💛','🩷','💚','🤍','💙','🧡','💗','💚'];
+const HH_BUBBLE_MSGS=[
+  'Pop! There goes a worry! 💨',
+  'Pop! Feelings are lighter now! ✨',
+  'Pop! That one had anger in it! 💛',
+  'Pop! Frustration — gone! 🌈',
+  'Pop! You\'re doing amazing! 🌟',
+];
+
+function hhSpawnBubbles(){
+  const arena=document.getElementById('hhBubbleArena');
+  if(!arena)return;
+  arena.innerHTML='';
+  hhBubblePoppedCount=0;
+  hhBubbleTotal=12;
+  document.getElementById('hhBubbleScore').textContent='0 popped';
+  document.getElementById('hhBubbleMsg').textContent='Tap every bubble to pop it! 🫧';
+
+  for(let i=0;i<hhBubbleTotal;i++){
+    const size=40+Math.random()*36;
+    const x=Math.random()*(100-size/arena.offsetWidth*100);
+    const y=Math.random()*(100-size/220*100);
+    const dur=2.5+Math.random()*2.5;
+    const delay=Math.random()*1.5;
+    const emoji=HH_BUBBLE_EMOJIS[Math.floor(Math.random()*HH_BUBBLE_EMOJIS.length)];
+    const opacity=0.55+Math.random()*0.4;
+
+    const b=document.createElement('div');
+    b.className='bubble';
+    b.style.cssText=`
+      width:${size}px;height:${size}px;
+      left:${x}%;top:${y}%;
+      background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.7),rgba(167,139,250,${opacity}));
+      box-shadow:inset -3px -3px 8px rgba(255,255,255,.4),0 4px 14px rgba(167,139,250,.25);
+      animation-duration:${dur}s;animation-delay:-${delay}s;
+    `;
+    b.textContent=emoji;
+    b.addEventListener('click',()=>hhPopBubble(b));
+    arena.appendChild(b);
+  }
+}
+
+function hhPopBubble(el){
+  if(el.classList.contains('popped'))return;
+  el.classList.add('popped');
+  playCorrect();
+  hhBubblePoppedCount++;
+
+  const scoreEl=document.getElementById('hhBubbleScore');
+  const msgEl=document.getElementById('hhBubbleMsg');
+  if(scoreEl)scoreEl.textContent=hhBubblePoppedCount+' popped';
+  if(msgEl)msgEl.textContent=HH_BUBBLE_MSGS[Math.floor(Math.random()*HH_BUBBLE_MSGS.length)];
+
+  setTimeout(()=>el.remove(),320);
+
+  if(hhBubblePoppedCount>=hhBubbleTotal){
+    setTimeout(()=>{
+      playStar();burst();
+      mascotSay('You popped ALL the bubbles! Worries all gone! 🌟',3500);
+      if(msgEl)msgEl.textContent='🎉 ALL bubbles popped! You let all those feelings out! Amazing!';
+      if(scoreEl)scoreEl.textContent='✅ '+hhBubblePoppedCount+' / '+hhBubbleTotal+' — Perfect!';
+    },400);
+  }
 }
 
 // ── Parent Gate ──
