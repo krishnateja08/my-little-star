@@ -106,7 +106,6 @@ body.bedtime .story-banner{background:linear-gradient(135deg,#2a2044,#1a2a44);}
 .tab[data-t="create"].active  {background:linear-gradient(135deg,#ff6b9d,#a78bfa);}
 .tab[data-t="stories"].active {background:linear-gradient(135deg,#1a1a2e,#4a3a6e);}
 .tab[data-t="parent"].active  {background:linear-gradient(135deg,#333,#555);}
-.tab[data-t="calm"].active    {background:linear-gradient(135deg,#56cf81,#a78bfa);}
 @media(min-width:481px){.tab .tab-icon{font-size:1.6rem;}.tab .tab-label{font-size:.62rem;}.tab{padding:8px 6px 6px;border-radius:18px;}}
 @media(min-width:769px){.tab .tab-icon{font-size:1.8rem;}.tab .tab-label{font-size:.68rem;}.tab{padding:10px 8px 7px;border-radius:20px;gap:2px;}}
 
@@ -620,34 +619,6 @@ canvas.trace-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:cros
   font-family:'Baloo 2',cursive;font-size:1.2rem;font-weight:800;border-radius:10px;
   padding:6px 14px;cursor:pointer;transition:all .2s;}
 .nr-chip:active{transform:scale(.9);}
-
-/* CALM TAB */
-.calm-section{margin:0 12px 6px;}
-.calm-section-title{font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:800;
-  letter-spacing:.5px;text-transform:uppercase;color:var(--text3);margin:14px 0 8px 2px;}
-.calm-card{background:var(--cardbg);border-radius:18px;padding:14px 16px;margin-bottom:8px;
-  cursor:pointer;transition:all .2s;box-shadow:0 4px 14px var(--shadow2);
-  display:flex;align-items:center;gap:12px;border-left:4px solid transparent;}
-.calm-card:active{transform:scale(.97);}
-.calm-card.done-calm{opacity:.45;pointer-events:none;text-decoration:line-through;}
-.calm-card-emoji{font-size:1.8rem;flex-shrink:0;}
-.calm-card-body{flex:1;min-width:0;}
-.calm-card-title{font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:var(--text);line-height:1.2;}
-.calm-card-desc{font-size:.72rem;color:var(--text3);margin-top:2px;}
-.calm-card-stars{font-size:.72rem;color:var(--sun);flex-shrink:0;}
-.calm-card[data-cat="emotions"]{border-left-color:#a78bfa;}
-.calm-card[data-cat="listening"]{border-left-color:#4fa3e0;}
-.calm-card[data-cat="selfcontrol"]{border-left-color:#ff6b9d;}
-.calm-card[data-cat="empathy"]{border-left-color:#56cf81;}
-.calm-card[data-cat="calmdown"]{border-left-color:#4ecdc4;}
-.calm-hero{margin:8px 12px 4px;padding:16px;border-radius:20px;
-  background:linear-gradient(135deg,#e8f0ff,#f0ffe8,#fff5e8);
-  box-shadow:0 4px 16px rgba(167,139,250,.12);text-align:center;}
-body.bedtime .calm-hero{background:linear-gradient(135deg,#1a2044,#1a2a1e,#2a2a1e);}
-.calm-hero-emoji{font-size:2.4rem;display:block;margin-bottom:4px;}
-.calm-hero-title{font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;
-  background:linear-gradient(135deg,#a78bfa,#56cf81);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.calm-hero-sub{font-size:.75rem;color:var(--text3);margin-top:3px;}
 
 /* CREATIVE ZONE */
 .create-panel{background:var(--cardbg);border-radius:var(--r);padding:20px 16px;margin-bottom:12px;
@@ -1330,7 +1301,6 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   <button class="tab"        data-t="create"   onclick="switchTab('create')"><span class="tab-icon">🎨</span><span class="tab-label">Create</span></button>
   <button class="tab"        data-t="evening"  onclick="switchTab('evening')"><span class="tab-icon">🌙</span><span class="tab-label">Evening</span></button>
   <button class="tab"        data-t="stories"  onclick="switchTab('stories')"><span class="tab-icon">📖</span><span class="tab-label">Stories</span></button>
-  <button class="tab"        data-t="calm"     onclick="switchTab('calm')"><span class="tab-icon">💛</span><span class="tab-label">Calm</span></button>
   <button class="tab"        data-t="parent"   onclick="switchTab('parent')"><span class="tab-icon">👨‍👩‍👧</span><span class="tab-label">Parent</span></button>
 </div>
 
@@ -2133,46 +2103,6 @@ const CUR = {
     {w:6,subj:'science',emoji:'🔦',title:'Light and Shadow',desc:'Use a torch to make shadows!',learn:'Shadows form when something blocks light!',why:'Light and shadow introduces optics.',steps:['Darken the room, use a torch','Hold your hand in front','Move closer — shadow grows!','Make animal shadow shapes!'],stars:4,tag:'🔬 Science'},
     {w:7,subj:'science',emoji:'🫁',title:'My Amazing Body',desc:'Learn about your heart, lungs, brain and bones!',learn:'Heart pumps blood. Lungs fill with air. Brain controls everything!',why:'Body science builds health awareness.',steps:['Feel your heartbeat!','Take a big breath!','Jump 10 times — heart faster?','Count fingers and toes!'],stars:3,tag:'🔬 Science'},
     {w:8,subj:'science',emoji:'🌙',title:'Moon and Stars',desc:'The moon changes shape every night!',learn:'The Moon orbits Earth. We see different phases!',why:'Astronomy builds wonder and observation.',steps:['Look at the moon tonight','Draw what shape it is','Check in 3 days','Count stars you can see!'],stars:4,tag:'🔬 Science'},
-  ],
-  calm:[
-    // ── EMOTIONS & FEELINGS ──
-    {w:1,emoji:'😊',title:'Name That Feeling!',desc:'Look at these faces and say what feeling each one shows!',learn:'Naming feelings is called emotional literacy — it is a superpower! Scientists say children who name feelings have fewer tantrums.',why:'When we name a feeling, the brain calms down faster.',steps:['Look at a happy face — say HAPPY!','Look at a sad face — say SAD!','Look at an angry face — say ANGRY!','Ask Mummy to show a surprised face — you guess!'],stars:2},
-    {w:1,emoji:'🤔',title:'How Do I Feel Right Now?',desc:'Sit quietly and check inside — what feeling is in your tummy?',learn:'Checking your feelings is called a body scan! Your body gives clues — tight tummy = nervous, warm chest = happy!',why:'Self-awareness is the foundation of emotional intelligence.',steps:['Sit still and close your eyes','Take one big breath','Ask yourself: am I happy? sad? tired? excited?','Tell Mummy one word for your feeling!'],stars:2},
-    {w:2,emoji:'😤',title:'What Makes Me Angry?',desc:'Let's talk about what makes us feel angry — and what helps!',learn:'Anger is a completely normal feeling! Every person feels angry sometimes. The trick is what we DO with it.',why:'Understanding triggers prevents meltdowns.',steps:['Think of one thing that makes you angry','Tell Mummy — no shouting, just words!','Together think: what helps when angry?','Try: deep breath, hug, or walk away'],stars:3},
-    {w:2,emoji:'😢',title:'It Is Okay to Feel Sad',desc:'Sadness is not bad — it means you care about something!',learn:'When we feel sad it is because something matters to us. Tears help our brain reset — it is natural!',why:'Accepting sadness prevents emotional suppression.',steps:['Think of a time you felt sad','What happened?','Did you cry? That is okay!','What made you feel better afterwards?'],stars:2},
-    {w:3,emoji:'🫂',title:'Ask For a Hug!',desc:'When you feel overwhelmed — ask Mummy for a hug!',learn:'Hugs release a brain chemical called oxytocin that makes you feel safe and calm almost instantly!',why:'Physical comfort is the fastest reset for overwhelmed children.',steps:['When you feel too big feelings...','Stop and say: "Mummy I need a hug"','Give the biggest hug you can','Notice how it makes you feel after'],stars:2,realLife:true},
-    {w:3,emoji:'🌡️',title:'My Feelings Thermometer',desc:'How BIG is your feeling right now? Let's check the thermometer!',learn:'Feelings come in different sizes — a little annoyed is different from very very angry. Knowing the size helps you choose what to do.',why:'Intensity awareness prevents overreaction.',steps:['Think of a feeling you have right now','Is it tiny (1), medium (5) or HUGE (10)?','Tell Mummy the number','For big feelings: use a calm-down tool!'],stars:3},
-    {w:4,emoji:'🎭',title:'Feelings Face Challenge',desc:'Act out 5 different feelings with only your face!',learn:'Facial expressions are a universal language — people everywhere in the world show feelings the same way!',why:'Acting emotions builds emotional recognition and empathy.',steps:['Show HAPPY with just your face','Show SURPRISED — eyes wide!','Show WORRIED — furrowed brow!','Show PROUD — chin up, big smile!','Show TIRED — droopy eyes!'],stars:3},
-    {w:5,emoji:'💌',title:'Tell Someone You Love Them',desc:'Say or write one kind thing to someone you love today!',learn:'Expressing love and appreciation makes BOTH people feel happy — the giver AND the receiver!',why:'Positive expression builds emotional bonds.',steps:['Think of someone special','Think of one thing you love about them','Say it out loud or write it with Mummy','Notice how they smile!'],stars:3,realLife:true},
-    // ── LISTENING & FOLLOWING INSTRUCTIONS ──
-    {w:1,emoji:'👂',title:'Listen and Do — 2 Steps!',desc:'Listen carefully — then do BOTH things in order!',learn:'Following 2 instructions means holding them in your memory AND doing them in the right order. That is called working memory!',why:'Multi-step instruction following is a key school readiness skill.',steps:['Mummy will say 2 things','Example: "Clap twice, then touch your nose"','Listen — do NOT do it yet!','NOW do both in the right order!'],stars:2},
-    {w:2,emoji:'🗺️',title:'Follow the Treasure Clues!',desc:'Mummy will give you clues one at a time — follow each one!',learn:'Following clues in order is called sequential thinking — detectives and scientists use this every day!',why:'Sequential listening builds focus and instruction-following.',steps:['Mummy hides something small','Clue 1: Go to the door','Clue 2: Look under something soft','Clue 3: Find your treasure!','Listen to ONE clue at a time!'],stars:4,realLife:true},
-    {w:2,emoji:'🎯',title:'Listen and Draw!',desc:'Mummy describes a picture — you draw it from words alone!',learn:'Drawing from spoken words means your ears must stay very focused. This is how architects build from instructions!',why:'Active listening builds comprehension skills.',steps:['Get paper and crayons','Mummy says: "Draw a big red circle"','Add: "Put a yellow star inside it"','Add: "Draw grass at the bottom"','Compare — did you listen well?'],stars:3},
-    {w:3,emoji:'🤫',title:'The Quiet Listening Game',desc:'Sit still and silent for 1 minute — what sounds can you hear?',learn:'Really listening means your whole body is still. This is called mindful listening and it trains your brain to focus!',why:'Stillness and attention are practised skills.',steps:['Find a comfortable spot','Set a 1 minute timer','Close your eyes — listen only','Count how many different sounds you hear','Tell Mummy everything you heard!'],stars:3},
-    {w:4,emoji:'📋',title:'Remember My Shopping List!',desc:'Mummy says 3 things — you remember them all!',learn:'Remembering a list of spoken words is called verbal working memory — it is the same skill used in maths and reading!',why:'Verbal memory is foundational for learning.',steps:['Mummy says 3 food items slowly','Close eyes and say them back','Try: apple, banana, milk','Harder: bread, orange, rice, eggs!'],stars:3},
-    {w:5,emoji:'🏃',title:'Follow My Instructions — Fast!',desc:'Can you listen and move at the same time? Touch head! Turn around! Clap!',learn:'Listening while doing something else is called dual-task attention. Pilots and athletes train this skill!',why:'Multi-tasking attention is a lifelong skill.',steps:['Stand up in open space','Mummy calls out actions fast','Touch knees! Jump! Spin! Sit!','Keep going without missing one!'],stars:3,realLife:true},
-    // ── SELF-CONTROL & PATIENCE ──
-    {w:1,emoji:'🛑',title:'Red Light, Green Light!',desc:'Run when green — FREEZE when red! Practice stopping instantly!',learn:'Stopping yourself when you want to keep going is called inhibitory control — the most important brain skill for school!',why:'Stop-and-go games directly train impulse control.',steps:['Stand at one end of the room','Mummy says GREEN LIGHT — run!','Mummy says RED LIGHT — FREEZE!','Stay perfectly still or go back to start!'],stars:3,realLife:true},
-    {w:1,emoji:'⏳',title:'The Waiting Game',desc:'Can you wait quietly for 2 whole minutes without asking?',learn:'Waiting patiently means your brain is controlling your impulses. Scientists call this delayed gratification — and it predicts success in life!',why:'Patience is a trainable muscle.',steps:['Mummy sets a 2 minute timer','You must wait quietly — no asking!','Find something to look at or think about','When timer rings — well done!'],stars:3},
-    {w:2,emoji:'🎵',title:'Freeze Dance!',desc:'Dance when music plays — FREEZE like a statue when it stops!',learn:'When your brain decides to stop your body mid-movement, it is building the prefrontal cortex — the planning part of your brain!',why:'Freeze dance is one of the most effective impulse control activities.',steps:['Put on fun music','Dance however you like!','When Mummy stops the music — FREEZE!','Hold the pose until music starts again!'],stars:3,realLife:true},
-    {w:2,emoji:'🗣️',title:'Wait Your Turn to Talk',desc:'Practice letting Mummy finish speaking before you talk.',learn:'Waiting your turn to speak shows respect and is called taking turns in conversation — a very grown-up skill!',why:'Turn-taking reduces interrupting and crankiness.',steps:['Mummy starts telling a story','You must NOT talk until she pauses','When she pauses — nod to show listening','When she finishes — now it's your turn!'],stars:2},
-    {w:3,emoji:'😤',title:'Count to 10 When Angry',desc:'When you feel angry — count slowly to 10 before you speak!',learn:'Counting to 10 gives your brain's thinking part time to take over from the feeling part. It REALLY works!',why:'This is the single most effective anger management technique for children.',steps:['When something makes you angry','STOP — do not speak yet','Count slowly: 1...2...3...10','Now speak calmly about the problem'],stars:4},
-    {w:4,emoji:'🤝',title:'I Will Try It Mummy's Way',desc:'Choose one thing today where you do it Mummy's way without arguing.',learn:'Choosing to cooperate even when you disagree is called flexibility — it is one of the most important character traits!',why:'Practicing compliance voluntarily builds cooperation habits.',steps:['Think of something Mummy often asks you to do','Today — do it without being asked!','Don't argue — just do it calmly','Notice how happy it makes Mummy — and you!'],stars:4,realLife:true},
-    // ── EMPATHY & KINDNESS ──
-    {w:1,emoji:'🤗',title:'How Would YOU Feel?',desc:'If someone took your toy — how would you feel? Let's think together!',learn:'Thinking about how others feel is called EMPATHY — the most powerful kindness superpower!',why:'Perspective-taking reduces selfish behaviour.',steps:['Mummy tells a situation: "Your friend falls and hurts herself"','How do you think SHE feels?','What could you say or do to help?','Act it out together!'],stars:3},
-    {w:2,emoji:'🌟',title:'Catch Someone Being Kind',desc:'Look for one kind thing someone does today and tell them you noticed!',learn:'Noticing kindness in others makes YOU more likely to be kind too. Kindness is contagious!',why:'Gratitude and observation of kindness reinforces kind behaviour.',steps:['Watch the people around you today','Did anyone help someone?','Did anyone say something nice?','Tell that person: "I saw that — it was kind!"'],stars:3,realLife:true},
-    {w:2,emoji:'🎁',title:'Do Something Kind — Surprise!',desc:'Do one surprise kind thing for someone today without being asked!',learn:'Kindness that nobody asked for is called spontaneous kindness — and it feels AMAZING to give!',why:'Proactive kindness builds generosity and reduces entitlement.',steps:['Think of someone at home','Think of one small thing they would love','Do it secretly!','Example: tidy up, draw a card, make their bed!'],stars:4,realLife:true},
-    {w:3,emoji:'😔',title:'When Someone is Sad — What Do I Do?',desc:'Learn 3 things you can do when someone you love feels sad.',learn:'Comforting others is called giving emotional support — doctors, teachers and good friends all learn this!',why:'Knowing how to respond to others' sadness reduces social anxiety.',steps:['When someone is sad — don't say "stop crying"','Step 1: Sit close to them','Step 2: Say "I am here with you"','Step 3: Ask: "Do you want a hug or some space?"'],stars:3},
-    {w:4,emoji:'🤬',title:'When I Disagree — But Stay Kind',desc:'Practice saying "I don't want to" kindly — without shouting or crying.',learn:'Disagreeing calmly is called assertiveness. It means sharing your feelings with respect for others.',why:'Assertiveness prevents both aggression and sulking.',steps:['Say this with Mummy: "I don't want to do that right now"','Say it in a calm voice — not whining!','Add: "Can we do it a bit later?"','Practice 3 times!'],stars:3},
-    // ── CALM-DOWN CORNER ──
-    {w:1,emoji:'🫧',title:'Bubble Breathing',desc:'Breathe out slowly like you are blowing the biggest bubble!',learn:'Slow out-breaths activate your calm nervous system. Scientists call this the parasympathetic response — it works in under 60 seconds!',why:'Breathing is the fastest self-calming tool available.',steps:['Sit comfortably','Breathe IN through your nose — 4 counts','Breathe OUT slowly through your mouth — 8 counts','Imagine a beautiful bubble floating away!','Do this 5 times'],stars:2},
-    {w:1,emoji:'🖐️',title:'5-4-3-2-1 Calm Down',desc:'Use your 5 senses to come back to the present moment!',learn:'This is called grounding — when big feelings take over, your senses bring you back to right now. Therapists teach this to adults too!',why:'Sensory grounding is the most evidence-based calming technique.',steps:['Find 5 things you can SEE — name them!','Find 4 things you can TOUCH — feel them!','Find 3 things you can HEAR — listen!','Find 2 things you can SMELL!','Find 1 thing you can TASTE!'],stars:3},
-    {w:2,emoji:'🌊',title:'Wave Breathing',desc:'Your tummy rises like a wave coming in — and falls going out!',learn:'Breathing from your tummy is called diaphragmatic breathing. It is the most powerful calming breath!',why:'Belly breathing directly reduces cortisol (the stress hormone).',steps:['Lie down or sit with hands on tummy','Breathe in — feel your tummy RISE like a wave','Breathe out — feel it FALL','Keep going for 10 waves','Notice how calm you feel after!'],stars:2},
-    {w:2,emoji:'🧊',title:'Cool Down with Cold',desc:'When very angry — put cool water on your wrists and face!',learn:'Cool water triggers the dive reflex in your brain which slows your heart rate and calms feelings very quickly!',why:'Temperature is a fast physiological reset for overwhelming emotions.',steps:['Go to the bathroom sink','Run cool water','Put your wrists under it for 30 seconds','Splash cool water on your face gently','Take 3 deep breaths — you are calmer now!'],stars:2,realLife:true},
-    {w:3,emoji:'🐢',title:'Go to Your Calm Space',desc:'Every child needs a special quiet spot — let's make yours!',learn:'Having a designated calm space tells your brain "this is my safe place." It works even better when YOU help design it!',why:'Safe spaces reduce recovery time from emotional overwhelm.',steps:['With Mummy — choose a corner or spot','Add something soft (cushion, toy)','Add something calming (book, fidget)','When upset — go there BEFORE it gets too big!','Practice visiting it when you feel fine too!'],stars:4,realLife:true},
-    {w:3,emoji:'💜',title:'My Calm-Down Toolbox',desc:'Learn 4 tools you can use any time you feel too angry or sad!',learn:'A toolbox of calm-down strategies is something therapists help adults build too — you are learning it young!',why:'Multiple strategies ensures one will work in any situation.',steps:['Tool 1: Deep breathing','Tool 2: Count to 10','Tool 3: Ask for a hug','Tool 4: Go to your calm spot','Pick one to practise RIGHT NOW!'],stars:4},
-    {w:4,emoji:'✏️',title:'Draw My Feelings',desc:'When you cannot find words — draw what the feeling looks like!',learn:'Drawing feelings is called expressive art therapy. It helps your brain process big emotions safely.',why:'Art expression prevents emotional build-up and is non-verbal — perfect for overwhelmed children.',steps:['Get paper and any colours','Think of a big feeling you have had','What COLOUR is it? What SHAPE?','Draw it — it does not have to look like anything!','Tell Mummy what you drew'],stars:3},
-    {w:5,emoji:'😴',title:'Relaxation Body Scan',desc:'Lie down and relax every part of your body one by one!',learn:'Releasing tension from muscles is called progressive muscle relaxation. It prepares your body for sleep and calm.',why:'Body awareness and relaxation prevents physical anxiety symptoms.',steps:['Lie on your back','Squeeze your toes tight — then let go','Squeeze your legs — then let go','Squeeze your tummy — let go','Squeeze your hands — let go','Your whole body is soft now!'],stars:3},
   ]
 };
 
@@ -2402,7 +2332,6 @@ async function fetchNext(forceAct){
   if(tab==='create'){renderCreativeZone();busy=false;return;}
   if(tab==='parent'){renderParentDash();busy=false;return;}
   if(tab==='stories'){renderStories();busy=false;return;}
-  if(tab==='calm'){renderCalmTab();busy=false;return;}
 
   showLoad();renderHist();updateProg();renderWbar();renderChallenge();
   await new Promise(r=>setTimeout(r,400));
@@ -2467,7 +2396,7 @@ async function fetchNext(forceAct){
 // ══════════════════════════════════════
 function showActivityPicker(pool){
   const tabName=tab.charAt(0).toUpperCase()+tab.slice(1);
-  const tabEmojis={morning:'🌅',learning:'📚',games:'🎮',evening:'🌙',calm:'💛'};
+  const tabEmojis={morning:'🌅',learning:'📚',games:'🎮',evening:'🌙'};
   document.getElementById('hsub').textContent=`📋 Pick your ${tabName} activity!`;
 
   const items=pool.map((a,i)=>{
@@ -3216,126 +3145,6 @@ function saveArtwork(){
 }
 
 // ══════════════════════════════════════
-//  CALM TAB — Emotions, Listening, Self-Control, Empathy, Calm-Down
-// ══════════════════════════════════════
-function renderCalmTab(){
-  const sections=[
-    {key:'emotions',   label:'😊 Emotions & Feelings',    color:'#a78bfa'},
-    {key:'listening',  label:'👂 Listening & Instructions',color:'#4fa3e0'},
-    {key:'selfcontrol',label:'🛑 Self-Control & Patience', color:'#ff6b9d'},
-    {key:'empathy',    label:'💛 Kindness & Empathy',      color:'#56cf81'},
-    {key:'calmdown',   label:'🌊 Calm-Down Corner',        color:'#4ecdc4'},
-  ];
-
-  const catMap={
-    'Name That Feeling!':'emotions','How Do I Feel Right Now?':'emotions',
-    'What Makes Me Angry?':'emotions','It Is Okay to Feel Sad':'emotions',
-    'Ask For a Hug!':'emotions','My Feelings Thermometer':'emotions',
-    'Feelings Face Challenge':'emotions','Tell Someone You Love Them':'emotions',
-    'Listen and Do — 2 Steps!':'listening','Follow the Treasure Clues!':'listening',
-    'Listen and Draw!':'listening','The Quiet Listening Game':'listening',
-    'Remember My Shopping List!':'listening','Follow My Instructions — Fast!':'listening',
-    'Red Light, Green Light!':'selfcontrol','The Waiting Game':'selfcontrol',
-    'Freeze Dance!':'selfcontrol','Wait Your Turn to Talk':'selfcontrol',
-    'Count to 10 When Angry':'selfcontrol','I Will Try It Mummy's Way':'selfcontrol',
-    'How Would YOU Feel?':'empathy','Catch Someone Being Kind':'empathy',
-    'Do Something Kind — Surprise!':'empathy','When Someone is Sad — What Do I Do?':'empathy',
-    'When I Disagree — But Stay Kind':'empathy',
-    'Bubble Breathing':'calmdown','5-4-3-2-1 Calm Down':'calmdown',
-    'Wave Breathing':'calmdown','Cool Down with Cold':'calmdown',
-    'Go to Your Calm Space':'calmdown','My Calm-Down Toolbox':'calmdown',
-    'Draw My Feelings':'calmdown','Relaxation Body Scan':'calmdown',
-  };
-
-  const pool=CUR.calm||[];
-  const doneToday=done.filter(d=>d.tab==='calm').map(d=>d.title);
-
-  // Group by category
-  const grouped={};
-  sections.forEach(s=>{grouped[s.key]=[];});
-  pool.forEach(act=>{
-    if(!act.w||act.w<=week){
-      const cat=catMap[act.title]||'calmdown';
-      if(grouped[cat]) grouped[cat].push(act);
-    }
-  });
-
-  let html=`
-    <div class="calm-hero">
-      <span class="calm-hero-emoji">💛</span>
-      <div class="calm-hero-title">Feelings & Calm Corner</div>
-      <div class="calm-hero-sub">Choose an activity to explore feelings, listen better, or calm down!</div>
-    </div>`;
-
-  sections.forEach(sec=>{
-    const acts=grouped[sec.key]||[];
-    if(!acts.length) return;
-    html+=`<div class="calm-section"><div class="calm-section-title">${sec.label}</div>`;
-    acts.forEach(act=>{
-      const isDone=doneToday.includes(act.title)||allUsed.includes(act.title);
-      html+=`<div class="calm-card${isDone?' done-calm':''}" data-cat="${sec.key}"
-        onclick="startCalmActivity(${JSON.stringify(act).replace(/"/g,'&quot;')})">
-        <span class="calm-card-emoji">${act.emoji}</span>
-        <div class="calm-card-body">
-          <div class="calm-card-title">${act.title}</div>
-          <div class="calm-card-desc">${act.desc}</div>
-        </div>
-        <span class="calm-card-stars">⭐${act.stars}</span>
-      </div>`;
-    });
-    html+='</div>';
-  });
-
-  document.getElementById('hist').innerHTML='';
-  document.getElementById('area').innerHTML=`<div style="padding-bottom:20px">${html}</div>`;
-  document.getElementById('hsub').textContent='💛 Feelings & Calm';
-  renderHist();updateProg();
-}
-
-function startCalmActivity(act){
-  playClick();
-  current={...act,tab:'calm'};
-  // Render like a standard activity card
-  const stepsHtml=(act.steps||[]).map((s,i)=>`
-    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
-      <div style="min-width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#56cf81);
-        color:#fff;font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:800;
-        display:flex;align-items:center;justify-content:center;flex-shrink:0">${i+1}</div>
-      <div style="font-size:.88rem;color:var(--text);line-height:1.5;padding-top:3px">${s}</div>
-    </div>`).join('');
-
-  document.getElementById('area').innerHTML=`
-    <div class="acard">
-      <div class="act-emoji">${act.emoji}</div>
-      <div class="act-title">${act.title}</div>
-      <div class="act-desc">${act.desc}</div>
-      ${act.learn?`<div class="showme-bubble"><span class="sm-icon">💡</span><span class="sm-txt">${act.learn}</span></div>`:''}
-      <div style="margin:14px 0">${stepsHtml}</div>
-      ${act.why?`<div style="font-size:.75rem;color:var(--text4);font-style:italic;margin-bottom:14px;padding:8px 12px;background:var(--inputbg);border-radius:12px">🌱 ${act.why}</div>`:''}
-      <button class="done-btn" onclick="markCalmDone()">✅ I did it! What's next? →</button>
-    </div>`;
-  document.getElementById('hsub').textContent=act.emoji+' '+act.title;
-  speakText(act.desc);
-}
-
-function markCalmDone(){
-  if(!current)return;
-  const act=current;
-  if(!done.find(d=>d.title===act.title)){
-    done.push({title:act.title,tab:'calm',emoji:act.emoji});
-    stars+=(act.stars||2);totalStarsEver+=(act.stars||2);
-    if(!allUsed.includes(act.title)) allUsed.push(act.title);
-    localStorage.setItem('cd_'+todayKey(),JSON.stringify(done));
-    localStorage.setItem('cs_'+todayKey(),stars);
-    localStorage.setItem('c_total_stars',totalStarsEver);
-    localStorage.setItem('c_allused',JSON.stringify(allUsed));
-    playStar();mascotPraise();showToast('⭐ +'+act.stars+' stars!');
-  }
-  current=null;
-  renderCalmTab();
-}
-
-// ══════════════════════════════════════
 //  PARENT DASHBOARD (#9)
 // ══════════════════════════════════════
 function renderParentDash(){
@@ -3729,8 +3538,7 @@ function switchTab(t){
   document.getElementById('gameRow').classList.toggle('show',t==='games');
 
   // Show/hide elements based on tab
-  const isSpecial=t==='create'||t==='parent'||t==='stories'||t==='calm';
-  const isCalmTab=t==='calm';
+  const isSpecial=t==='create'||t==='parent'||t==='stories';
   document.getElementById('progBar').style.display=isSpecial?'none':'flex';
   document.getElementById('factCard').style.display=isSpecial?'none':'block';
   document.getElementById('timerBar').classList.toggle('show',!isSpecial);
