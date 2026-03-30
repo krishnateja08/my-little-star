@@ -2813,42 +2813,130 @@ function tapFL(i,l){
 
 // ── NEW GAME: Animal Sounds (#12) ──
 const ANIMALS=[
-  {name:'Dog',emoji:'🐶',sound:'Woof woof!'},{name:'Cat',emoji:'🐱',sound:'Meow meow!'},
-  {name:'Cow',emoji:'🐮',sound:'Moo moo!'},{name:'Duck',emoji:'🦆',sound:'Quack quack!'},
-  {name:'Pig',emoji:'🐷',sound:'Oink oink!'},{name:'Rooster',emoji:'🐓',sound:'Cock-a-doodle-doo!'},
-  {name:'Sheep',emoji:'🐑',sound:'Baa baa!'},{name:'Frog',emoji:'🐸',sound:'Ribbit ribbit!'},
+  // Easy — very well-known
+  {name:'Dog',    emoji:'🐶',sound:'Woof woof!',         diff:1},
+  {name:'Cat',    emoji:'🐱',sound:'Meow meow!',         diff:1},
+  {name:'Cow',    emoji:'🐮',sound:'Moo moo!',           diff:1},
+  {name:'Duck',   emoji:'🦆',sound:'Quack quack!',       diff:1},
+  {name:'Pig',    emoji:'🐷',sound:'Oink oink!',         diff:1},
+  // Medium — familiar but slightly trickier
+  {name:'Sheep',  emoji:'🐑',sound:'Baa baa!',           diff:2},
+  {name:'Frog',   emoji:'🐸',sound:'Ribbit ribbit!',     diff:2},
+  {name:'Rooster',emoji:'🐓',sound:'Cock-a-doodle-doo!',diff:2},
+  {name:'Horse',  emoji:'🐴',sound:'Neigh neigh!',       diff:2},
+  {name:'Donkey', emoji:'🫏',sound:'Hee-haw hee-haw!',   diff:2},
+  {name:'Lion',   emoji:'🦁',sound:'Roar roar!',         diff:2},
+  {name:'Elephant',emoji:'🐘',sound:'Trumpet trumpet!',  diff:2},
+  // Hard — less obvious sounds
+  {name:'Owl',    emoji:'🦉',sound:'Hoo hoo!',           diff:3},
+  {name:'Snake',  emoji:'🐍',sound:'Hiss hiss!',         diff:3},
+  {name:'Bee',    emoji:'🐝',sound:'Buzz buzz!',         diff:3},
+  {name:'Crow',   emoji:'🐦',sound:'Caw caw!',           diff:3},
+  {name:'Monkey', emoji:'🐒',sound:'Ooh ooh ah ah!',     diff:3},
+  {name:'Wolf',   emoji:'🐺',sound:'Awoo awoo!',         diff:3},
+  {name:'Turkey', emoji:'🦃',sound:'Gobble gobble!',     diff:3},
+  {name:'Goat',   emoji:'🐐',sound:'Meh meh!',           diff:3},
 ];
+
 let asScore=0,asRound=0,asTarget;
-function buildAnimalSound(){asScore=0;asRound=0;nextAnimalRound();}
+let _asRecentTargets=[];
+let _asRecentDistractors=[];
+
+function buildAnimalSound(){
+  asScore=0;asRound=0;
+  _asRecentTargets=[];
+  _asRecentDistractors=[];
+  nextAnimalRound();
+}
+
 function nextAnimalRound(){
   const totalRounds=diffLevel===1?4:diffLevel===2?5:6;
-  asRound++;if(asRound>totalRounds){endGame(asScore,totalRounds,'animalSound');return;}
+  asRound++;
+  if(asRound>totalRounds){endGame(asScore,totalRounds,'animalSound');return;}
+
+  const maxDiff=diffLevel===1?1:diffLevel===2?2:3;
   const showCount=diffLevel===1?3:diffLevel===2?4:5;
-  const shuffled=[...ANIMALS].sort(()=>Math.random()-.5).slice(0,showCount);
-  asTarget=shuffled[Math.floor(Math.random()*shuffled.length)];
-  document.getElementById('area').innerHTML=`
-    <div class="game-panel">
-      <div class="game-title">🐶 Animal Sounds!</div>
-      <div class="game-inst">Round ${asRound}/5 · Score: ${asScore} ⭐</div>
-      <div class="sound-prompt" onclick="speakText('${asTarget.sound}')">
-        <span class="sp-icon">🔊</span>
-        <span class="sp-text">Tap to hear the sound!</span>
-      </div>
-      <div class="animal-grid">${shuffled.map(a=>`<div class="animal-card" onclick="checkAnimal(this,'${a.name}','${asTarget.name}')">
-        <span class="anim-emoji">${a.emoji}</span>
-        <span class="anim-name">${a.name}</span>
-      </div>`).join('')}</div>
-      <div class="game-feedback" id="gfb"></div>
-    </div>`;
-  setTimeout(()=>speakText(asTarget.sound),500);
+  // Reverse mode at hard: see animal, pick sound
+  const reverseMode=(diffLevel===3 && asRound%2===0);
+
+  const eligible=ANIMALS.filter(a=>a.diff<=maxDiff);
+
+  // Pick target — avoid repeating last 2 used
+  const targetPool=eligible.filter(a=>!_asRecentTargets.includes(a.name));
+  asTarget=targetPool[Math.floor(Math.random()*targetPool.length)];
+  _asRecentTargets.push(asTarget.name);
+  if(_asRecentTargets.length>2) _asRecentTargets.shift();
+
+  // Pick distractors — prefer ones not seen recently
+  const distractorPool=eligible.filter(a=>a.name!==asTarget.name);
+  const freshPool=distractorPool.filter(a=>!_asRecentDistractors.includes(a.name));
+  const usePool=freshPool.length>=showCount-1?freshPool:distractorPool;
+  const distractors=[...usePool].sort(()=>Math.random()-.5).slice(0,showCount-1);
+  distractors.forEach(d=>_asRecentDistractors.push(d.name));
+  if(_asRecentDistractors.length>8) _asRecentDistractors=_asRecentDistractors.slice(-8);
+
+  const options=[...distractors,asTarget].sort(()=>Math.random()-.5);
+  const hideNames=(diffLevel===3);
+
+  if(reverseMode){
+    const soundOptions=options.map(a=>a.sound);
+    document.getElementById('area').innerHTML=`
+      <div class="game-panel">
+        <div class="game-title">🐶 Animal Sounds!</div>
+        <div class="game-inst">Round ${asRound}/${totalRounds} · Score: ${asScore} ⭐ · <span style="color:var(--purple);font-size:.75rem">🔀 Pick the right sound!</span></div>
+        <div style="text-align:center;font-size:4rem;margin:14px 0">${asTarget.emoji}</div>
+        <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--text);margin-bottom:12px">${asTarget.name}</div>
+        <div class="animal-grid" style="grid-template-columns:1fr 1fr">
+          ${soundOptions.map(s=>`<div class="animal-card" style="font-size:.78rem;padding:10px 6px;text-align:center;" onclick="checkAnimalReverse(this,this.dataset.s,'${asTarget.sound.replace(/'/g,"\x27")}')" data-s="${s.replace(/"/g,'&quot;')}">
+            <span style="font-size:1.1rem">🔊</span><br>${s}
+          </div>`).join('')}
+        </div>
+        <div class="game-feedback" id="gfb"></div>
+      </div>`;
+  } else {
+    document.getElementById('area').innerHTML=`
+      <div class="game-panel">
+        <div class="game-title">🐶 Animal Sounds!</div>
+        <div class="game-inst">Round ${asRound}/${totalRounds} · Score: ${asScore} ⭐${diffLevel===3?' · <span style="color:var(--coral);font-size:.72rem">🔥 Hard Mode</span>':''}</div>
+        <div class="sound-prompt" onclick="speakText('${asTarget.sound.replace(/'/g,"\x27")}')">
+          <span class="sp-icon">🔊</span>
+          <span class="sp-text">Tap to hear the sound!</span>
+        </div>
+        <div class="animal-grid">
+          ${options.map(a=>`<div class="animal-card" onclick="checkAnimal(this,'${a.name}','${asTarget.name}')">
+            <span class="anim-emoji">${a.emoji}</span>
+            ${hideNames?'':`<span class="anim-name">${a.name}</span>`}
+          </div>`).join('')}
+        </div>
+        <div class="game-feedback" id="gfb"></div>
+      </div>`;
+    setTimeout(()=>speakText(asTarget.sound),500);
+  }
 }
+
 function checkAnimal(el,chosen,target){
   document.querySelectorAll('.animal-card').forEach(c=>c.onclick=null);
-  if(chosen===target){el.classList.add('correct');asScore++;playCorrect();adaptDifficulty(true);
-    document.getElementById('gfb').textContent='✅ Correct! That\'s the '+target+'!';mascotPraise();}
-  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
-    document.getElementById('gfb').textContent='❌ That was the '+chosen+'! The answer is '+target+'.';}
-  setTimeout(nextAnimalRound,1500);
+  if(chosen===target){
+    el.classList.add('correct');asScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Yes! That is the '+target+'!';mascotPraise();
+  } else {
+    el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.animal-card').forEach(c=>{if(c.querySelector('.anim-name')&&c.querySelector('.anim-name').textContent===target)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ That was the '+chosen+'! The '+target+' makes that sound.';
+  }
+  setTimeout(nextAnimalRound,1800);
+}
+
+function checkAnimalReverse(el,chosen,target){
+  document.querySelectorAll('.animal-card').forEach(c=>c.onclick=null);
+  if(chosen===target){
+    el.classList.add('correct');asScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Correct! '+target;mascotPraise();
+  } else {
+    el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.getElementById('gfb').textContent='❌ The correct sound is: '+target;
+  }
+  setTimeout(nextAnimalRound,1800);
 }
 
 // ── End Game ──
