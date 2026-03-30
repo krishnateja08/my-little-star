@@ -1414,9 +1414,35 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
 <!-- Parent gate overlay -->
 <div id="gateOverlay"></div>
 
-<!-- Firebase SDK — loaded here so it's ready before main script -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<!-- Firebase SDK — using unpkg CDN for reliability -->
+<script>
+// Dynamically load Firebase SDK to handle failures gracefully
+(function(){
+  var sdkBase = 'https://unpkg.com/firebase@9.23.0/compat/';
+  var scripts = [
+    sdkBase + 'app/index.js',
+    sdkBase + 'database/index.js'
+  ];
+  var loaded = 0;
+  function loadNext(i){
+    if(i >= scripts.length){ window._fbSdkReady = true; return; }
+    var s = document.createElement('script');
+    s.src = scripts[i];
+    s.onload = function(){ loadNext(i+1); };
+    s.onerror = function(){
+      // Fallback to jsdelivr if unpkg fails
+      var fallbackBase = 'https://cdn.jsdelivr.net/npm/firebase@9.23.0/compat/';
+      var f = document.createElement('script');
+      f.src = (i===0 ? fallbackBase+'app/index.js' : fallbackBase+'database/index.js');
+      f.onload = function(){ loadNext(i+1); };
+      f.onerror = function(){ window._fbSdkFailed = true; };
+      document.head.appendChild(f);
+    };
+    document.head.appendChild(s);
+  }
+  loadNext(0);
+})();
+</script>
 
 <script>
 // ══════════════════════════════════════
@@ -1541,9 +1567,9 @@ function _showFamilyCodeScreen(){
 
 // Main async init — runs before app boots
 (async function _firebaseInit(){
-  // Wait up to 5s for Firebase SDK to be available
+  // Wait up to 10s for Firebase SDK to be available (dynamic loading takes longer)
   let attempts = 0;
-  while(typeof firebase === 'undefined' && attempts < 50){
+  while(typeof firebase === 'undefined' && !window._fbSdkFailed && attempts < 100){
     await new Promise(r=>setTimeout(r,100));
     attempts++;
   }
@@ -3096,7 +3122,185 @@ function renderParentDash(){
       </div>
       ${renderParentNotes()}
       ${renderFriendSection()}
+
+      <!-- MONTHLY REPORT SECTION -->
+      <div class="dash-section" id="monthlyReportSection">
+        <h4>📅 Monthly Progress Report</h4>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center">
+          <select id="reportMonthSel" onchange="renderMonthlyReport()" style="padding:7px 12px;border-radius:10px;border:2px solid var(--border);background:var(--inputbg);color:var(--text);font-family:'Baloo 2',cursive;font-size:.85rem;cursor:pointer">
+            ${(()=>{
+              const now=new Date();
+              let opts='';
+              for(let i=0;i<6;i++){
+                const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+                const val=`${d.getFullYear()}-${d.getMonth()+1}`;
+                const label=d.toLocaleString('default',{month:'long',year:'numeric'});
+                opts+=`<option value="${val}"${i===0?' selected':''}>${label}</option>`;
+              }
+              return opts;
+            })()}
+          </select>
+        </div>
+        <div id="monthlyReportBody"></div>
+      </div>
     </div>`;
+
+  // Auto-render monthly report after inserting HTML
+  setTimeout(()=>renderMonthlyReport(),50);
+}
+
+function renderMonthlyReport(){
+  const sel=document.getElementById('reportMonthSel');
+  if(!sel)return;
+  const [yr,mo]=sel.value.split('-').map(Number);
+  const ws=JSON.parse(localStorage.getItem('cws')||'{}');
+  const daysInMonth=new Date(yr,mo,0).getDate();
+  const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  // Build daily data
+  let totalStarsMonth=0,activeDays=0,bestDay=0,bestDayNum=0;
+  const dailyData=[];
+  for(let d=1;d<=daysInMonth;d++){
+    const key=`${yr}-${mo}-${d}`;
+    const s=ws[key]||0;
+    const acts=JSON.parse(localStorage.getItem('cd_'+key)||'[]');
+    totalStarsMonth+=s;
+    if(s>0)activeDays++;
+    if(s>bestDay){bestDay=s;bestDayNum=d;}
+    dailyData.push({day:d,stars:s,acts});
+  }
+
+  // Session breakdown from all daily activity logs
+  const sessionData={morning:{count:0,stars:0},learning:{count:0,stars:0},games:{count:0,stars:0},create:{count:0,stars:0},evening:{count:0,stars:0},stories:{count:0,stars:0}};
+  const sessionInfo={
+    morning: {label:'Morning',emoji:'🌅',color:'#ffb830'},
+    learning:{label:'Learning',emoji:'📚',color:'#a78bfa'},
+    games:   {label:'Games',  emoji:'🎮',color:'#ff6b9d'},
+    create:  {label:'Create', emoji:'🎨',color:'#4ecdc4'},
+    evening: {label:'Evening',emoji:'🌙',color:'#56cf81'},
+    stories: {label:'Stories',emoji:'📖',color:'#4fa3e0'},
+  };
+
+  for(let d=1;d<=daysInMonth;d++){
+    const key=`${yr}-${mo}-${d}`;
+    const acts=JSON.parse(localStorage.getItem('cd_'+key)||'[]');
+    acts.forEach(a=>{
+      const tab=a.tab||'morning';
+      if(sessionData[tab]){
+        sessionData[tab].count++;
+        sessionData[tab].stars+=(a.stars||0);
+      }
+    });
+  }
+
+  // Sort sessions: best first
+  const sessionEntries=Object.entries(sessionData).sort((a,b)=>b[1].count-a[1].count);
+  const maxCount=Math.max(1,...sessionEntries.map(([,v])=>v.count));
+  const bestSessions=sessionEntries.filter(([,v])=>v.count>=maxCount*.6);
+  const improveSessions=sessionEntries.filter(([,v])=>v.count<maxCount*.3);
+
+  // Calendar grid (stars per day)
+  const firstDow=new Date(yr,mo-1,1).getDay();
+  let calHTML='<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px">';
+  ['S','M','T','W','T','F','S'].forEach(d=>{
+    calHTML+=`<div style="text-align:center;font-size:.6rem;font-weight:700;color:var(--text4);padding:2px">${d}</div>`;
+  });
+  calHTML+='</div>';
+  calHTML+='<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:16px">';
+  for(let i=0;i<firstDow;i++) calHTML+=`<div></div>`;
+  dailyData.forEach(({day,stars})=>{
+    const isToday=new Date().getDate()===day&&new Date().getMonth()+1===mo&&new Date().getFullYear()===yr;
+    const bg=stars>=10?'#ffb830':stars>=6?'#56cf81':stars>=3?'#4ecdc4':stars>0?'#a78bfa':'var(--inputbg)';
+    const txtColor=stars>0?'#fff':'var(--text5)';
+    calHTML+=`<div style="aspect-ratio:1;border-radius:8px;background:${bg};display:flex;flex-direction:column;align-items:center;justify-content:center;border:${isToday?'2px solid var(--pink)':'2px solid transparent'};cursor:default" title="Day ${day}: ${stars} stars">
+      <span style="font-size:.62rem;font-weight:700;color:${txtColor}">${day}</span>
+      ${stars>0?`<span style="font-size:.55rem;color:${txtColor}">⭐${stars}</span>`:''}
+    </div>`;
+  });
+  calHTML+='</div>';
+
+  // Stars legend
+  const legendHTML=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;font-size:.68rem;color:var(--text3)">
+    <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#a78bfa;margin-right:3px;vertical-align:middle"></span>1–2 ⭐</span>
+    <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#4ecdc4;margin-right:3px;vertical-align:middle"></span>3–5 ⭐</span>
+    <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#56cf81;margin-right:3px;vertical-align:middle"></span>6–9 ⭐</span>
+    <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#ffb830;margin-right:3px;vertical-align:middle"></span>10+ ⭐</span>
+  </div>`;
+
+  // Summary cards
+  const summaryHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+    <div style="background:linear-gradient(135deg,#fff5d4,#ffe0f0);border-radius:12px;padding:12px;text-align:center">
+      <div style="font-size:1.5rem;font-weight:800;color:var(--sun);font-family:'Baloo 2',cursive">${totalStarsMonth}</div>
+      <div style="font-size:.7rem;color:var(--text3)">Total Stars</div>
+    </div>
+    <div style="background:linear-gradient(135deg,#e8fff0,#f0fff8);border-radius:12px;padding:12px;text-align:center">
+      <div style="font-size:1.5rem;font-weight:800;color:var(--green);font-family:'Baloo 2',cursive">${activeDays}</div>
+      <div style="font-size:.7rem;color:var(--text3)">Active Days</div>
+    </div>
+    <div style="background:linear-gradient(135deg,#f0e8ff,#e8f0ff);border-radius:12px;padding:12px;text-align:center">
+      <div style="font-size:1.5rem;font-weight:800;color:var(--purple);font-family:'Baloo 2',cursive">${bestDay>0?bestDay+'⭐':'-'}</div>
+      <div style="font-size:.7rem;color:var(--text3)">Best Day (Day ${bestDayNum||'-'})</div>
+    </div>
+    <div style="background:linear-gradient(135deg,#ffe8f0,#fff0e0);border-radius:12px;padding:12px;text-align:center">
+      <div style="font-size:1.5rem;font-weight:800;color:var(--pink);font-family:'Baloo 2',cursive">${activeDays>0?Math.round(totalStarsMonth/activeDays):0}</div>
+      <div style="font-size:.7rem;color:var(--text3)">Avg Stars/Day</div>
+    </div>
+  </div>`;
+
+  // Session performance bars
+  const sessionBarsHTML=`
+    <div style="margin-bottom:16px">
+      <div style="font-family:'Baloo 2',cursive;font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:10px">📊 Sessions This Month</div>
+      ${sessionEntries.map(([key,val])=>{
+        const info=sessionInfo[key];
+        const pct=maxCount>0?Math.round((val.count/maxCount)*100):0;
+        return `<div style="margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;font-size:.75rem;color:var(--text2);margin-bottom:3px">
+            <span>${info.emoji} ${info.label}</span>
+            <span style="color:var(--text3)">${val.count} activities · ${val.stars}⭐</span>
+          </div>
+          <div style="background:var(--border);border-radius:50px;height:10px;overflow:hidden">
+            <div style="width:${pct}%;height:100%;background:${info.color};border-radius:50px;transition:width .6s"></div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+
+  // Strengths & Improve
+  const strengthHTML=bestSessions.length?`
+    <div style="background:linear-gradient(135deg,#e8fff0,#f0fff8);border-radius:14px;padding:14px;margin-bottom:10px;border-left:4px solid var(--green)">
+      <div style="font-family:'Baloo 2',cursive;font-size:.88rem;font-weight:700;color:var(--green);margin-bottom:8px">💪 She's Great At!</div>
+      ${bestSessions.map(([key,val])=>{
+        const info=sessionInfo[key];
+        return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="font-size:1.2rem">${info.emoji}</span>
+          <div>
+            <div style="font-size:.82rem;font-weight:700;color:var(--text)">${info.label}</div>
+            <div style="font-size:.7rem;color:var(--text3)">${val.count} activities completed · ${val.stars} stars earned</div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`:'';
+
+  const improveHTML=improveSessions.length?`
+    <div style="background:linear-gradient(135deg,#fff5e0,#fff0f0);border-radius:14px;padding:14px;margin-bottom:10px;border-left:4px solid var(--sun)">
+      <div style="font-family:'Baloo 2',cursive;font-size:.88rem;font-weight:700;color:var(--sun);margin-bottom:8px">🌱 Needs More Practice</div>
+      ${improveSessions.map(([key,val])=>{
+        const info=sessionInfo[key];
+        return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="font-size:1.2rem">${info.emoji}</span>
+          <div>
+            <div style="font-size:.82rem;font-weight:700;color:var(--text)">${info.label}</div>
+            <div style="font-size:.7rem;color:var(--text3)">${val.count===0?'Not started yet — try some activities!':'Only '+val.count+' activities — explore more!'}</div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`:'';
+
+  const noDataHTML=totalStarsMonth===0?`<div style="text-align:center;padding:20px;color:var(--text4);font-size:.85rem">No activity recorded for this month yet.<br>Start playing to see the report! 🌟</div>`:'';
+
+  document.getElementById('monthlyReportBody').innerHTML=
+    noDataHTML||( calHTML + legendHTML + summaryHTML + sessionBarsHTML + strengthHTML + improveHTML );
 }
 
 // ══════════════════════════════════════
