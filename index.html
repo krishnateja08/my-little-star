@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🌟 My Little Star — Smart Learning Coach</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
 :root{
   --pink:#ff6b9d;--sun:#ffb830;--mint:#4ecdc4;--purple:#a78bfa;
@@ -1232,6 +1235,17 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
 </head>
 <body>
 
+<!-- Family Code Overlay (shown once per device) -->
+<div id="familyCodeOverlay"></div>
+
+<!-- App Loader (shown while Firebase syncs) -->
+<div id="appLoader" style="display:none;position:fixed;inset:0;background:linear-gradient(135deg,#ff6b9d,#ffb830,#4ecdc4);z-index:99998;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+  <div style="font-size:3.5rem;animation:float 1.5s ease-in-out infinite">⭐</div>
+  <div style="font-family:'Baloo 2',cursive;font-size:1.3rem;color:#fff;font-weight:700">Syncing your progress...</div>
+  <div style="width:48px;height:48px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite"></div>
+  <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+</div>
+
 <header>
   <button class="bedtime-toggle" id="bedtimeBtn" onclick="toggleBedtime()" title="Bedtime Mode">☀️</button>
   <button class="sound-toggle" id="soundBtn" onclick="toggleSound()" title="Toggle Sound">🔊</button>
@@ -1404,6 +1418,162 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
 <div id="gateOverlay"></div>
 
 <script>
+// ══════════════════════════════════════
+//  🔥 FIREBASE SYNC SETUP
+// ══════════════════════════════════════
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCFWkBSHzo4PzwYAQKvgXExMBCtX_HI2Ro",
+  authDomain: "my-little-star-ef311.firebaseapp.com",
+  databaseURL: "https://my-little-star-ef311-default-rtdb.firebaseio.com",
+  projectId: "my-little-star-ef311",
+  storageBucket: "my-little-star-ef311.firebasestorage.app",
+  messagingSenderId: "839580895226",
+  appId: "1:839580895226:web:2ce7845aa8d63beb4d8643"
+};
+
+// Keys & prefixes that should sync across devices
+const SYNC_KEYS = [
+  'c_allused','cws','c_total_stars','c_owned','c_diff',
+  'c_stories_heard','c_endings','c_gallery','c_mood_hist',
+  'c_bedtime','c_sound','c_activeHat','c_activeChar','c_activeTheme',
+  'c_voiceName','c_friendName','c_parentNotes','cs','cld'
+];
+const SYNC_PREFIXES = [
+  'cd_','cs_','c_mood_','c_goals_','c_spark_','c_btt_',
+  'c_tune_','c_bl_dismiss_','c_goals_bonus_','c_weather_','c_skipped_'
+];
+
+function _shouldSync(key){
+  return SYNC_KEYS.includes(key)||SYNC_PREFIXES.some(p=>key.startsWith(p));
+}
+function _safeKey(key){return key.replace(/[.#$[\]]/g,'_');}
+
+// Keep reference to real localStorage methods before overriding
+const _lsSet    = localStorage.setItem.bind(localStorage);
+const _lsRemove = localStorage.removeItem.bind(localStorage);
+const _lsGet    = localStorage.getItem.bind(localStorage);
+
+let _fbApp = null;
+let _fbDB  = null;
+let _familyCode = _lsGet('c_family_code')||'';
+
+// Write to Firebase (fire-and-forget)
+function fbWrite(key, value){
+  if(!_fbDB||!_familyCode) return;
+  _fbDB.ref(`families/${_familyCode}/${_safeKey(key)}`).set(value);
+}
+function fbDelete(key){
+  if(!_fbDB||!_familyCode) return;
+  _fbDB.ref(`families/${_familyCode}/${_safeKey(key)}`).remove();
+}
+
+// Override localStorage so every write also goes to Firebase
+localStorage.setItem = function(key, value){
+  _lsSet(key, value);
+  if(_shouldSync(key)) fbWrite(key, value);
+};
+localStorage.removeItem = function(key){
+  _lsRemove(key);
+  if(_shouldSync(key)) fbDelete(key);
+};
+
+// Pull all data from Firebase into localStorage
+async function _loadFromFirebase(){
+  if(!_fbDB||!_familyCode) return;
+  try{
+    const snap = await _fbDB.ref(`families/${_familyCode}`).get();
+    if(snap.exists()){
+      const data = snap.val();
+      Object.keys(data).forEach(k=>{ _lsSet(k, data[k]); });
+    }
+  }catch(e){ console.warn('Firebase load error:',e); }
+}
+
+// Show family code setup screen (first time only)
+function _showFamilyCodeScreen(){
+  return new Promise(resolve=>{
+    document.getElementById('familyCodeOverlay').innerHTML=`
+      <div style="position:fixed;inset:0;background:linear-gradient(135deg,#ff6b9d,#ffb830,#4ecdc4);
+        z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;">
+        <div style="background:#fff;border-radius:24px;padding:28px 24px;max-width:320px;width:100%;
+          text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2);">
+          <div style="font-size:3rem;margin-bottom:8px">⭐</div>
+          <h2 style="font-family:'Baloo 2',cursive;color:#ff6b9d;margin-bottom:6px;font-size:1.4rem">My Little Star</h2>
+          <p style="font-size:.85rem;color:#666;margin-bottom:16px;line-height:1.5">
+            Create a <strong>Family Code</strong> to sync baby's progress across all your devices! 📱💻<br><br>
+            Use the <strong>same code</strong> on every phone, tablet and computer.
+          </p>
+          <input id="fcInput" type="text" placeholder="e.g. krishna-baby-2024"
+            style="width:100%;padding:12px 14px;border:2px solid #e0d4ff;border-radius:12px;
+            font-size:1rem;font-family:'Nunito',sans-serif;margin-bottom:8px;outline:none;
+            text-align:center;box-sizing:border-box;">
+          <p style="font-size:.7rem;color:#bbb;margin-bottom:14px">
+            💡 Any word works! Keep it simple and easy to remember.
+          </p>
+          <button onclick="window.__setFC()"
+            style="width:100%;padding:13px;border:none;border-radius:12px;cursor:pointer;
+            background:linear-gradient(135deg,#ff6b9d,#a78bfa);color:#fff;
+            font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:700;">
+            🚀 Start Learning!
+          </button>
+          <p style="font-size:.65rem;color:#ccc;margin-top:10px">You can change this later in Parent settings</p>
+        </div>
+      </div>`;
+
+    window.__setFC = function(){
+      const raw = document.getElementById('fcInput').value.trim();
+      if(!raw){ alert('Please enter a family code!'); return; }
+      const code = raw.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'');
+      if(!code){ alert('Please use letters and numbers only!'); return; }
+      _familyCode = code;
+      _lsSet('c_family_code', code);
+      document.getElementById('familyCodeOverlay').innerHTML='';
+      resolve(code);
+    };
+
+    setTimeout(()=>{
+      const inp=document.getElementById('fcInput');
+      if(inp) inp.addEventListener('keydown',e=>{ if(e.key==='Enter') window.__setFC(); });
+    },100);
+  });
+}
+
+// Main async init — runs before app boots
+(async function _firebaseInit(){
+  try{
+    _fbApp = firebase.initializeApp(FIREBASE_CONFIG);
+    _fbDB  = firebase.database();
+
+    // Ask for family code if not set
+    if(!_familyCode) await _showFamilyCodeScreen();
+
+    // Show loader while syncing
+    document.getElementById('appLoader').style.display='flex';
+    await _loadFromFirebase();
+    document.getElementById('appLoader').style.display='none';
+
+    // Listen for real-time changes from other devices
+    _fbDB.ref(`families/${_familyCode}`).on('child_changed', snap=>{
+      _lsSet(snap.key, snap.val());
+    });
+
+  }catch(e){
+    console.warn('Firebase init failed, running offline:',e);
+    document.getElementById('appLoader').style.display='none';
+  }
+})();
+
+// Helper for Parent dashboard to change family code
+function changeFamilyCode(){
+  const newCode = prompt('Enter new Family Code (use on all devices):','');
+  if(!newCode) return;
+  const code = newCode.trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'');
+  if(!code){ alert('Invalid code!'); return; }
+  _familyCode = code;
+  _lsSet('c_family_code', code);
+  alert('✅ Family code updated to: '+code+'\n\nEnter this same code on all your devices!');
+}
+
 // ══════════════════════════════════════
 //  VOICE + SOUND SYSTEM (#1)
 // ══════════════════════════════════════
@@ -2901,6 +3071,7 @@ function renderParentDash(){
           <button class="create-tool" onclick="parentReset()">🔄 Reset Journey</button>
           <button class="create-tool" onclick="toggleBedtime()">🌙 Bedtime: ${bedtimeMode?'ON':'OFF'}</button>
           <button class="create-tool" onclick="toggleSound()">🔊 Sound: ${soundOn?'ON':'OFF'}</button>
+          <button class="create-tool" onclick="changeFamilyCode()" style="background:linear-gradient(135deg,#4fa3e0,#4ecdc4);color:#fff">🔥 Family Code: ${_familyCode||'not set'}</button>
         </div>
       </div>
       <div class="dash-section">
