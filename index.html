@@ -591,6 +591,35 @@ canvas.trace-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:cros
   font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:700;cursor:pointer;transition:all .2s;}
 .game-done-btn:active{transform:scale(.97);}
 
+/* FOCUS & MEMORY GAMES */
+.wm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.wm-card{aspect-ratio:1;border-radius:14px;background:var(--inputbg);border:3px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:2rem;cursor:pointer;
+  transition:all .2s;position:relative;}
+.wm-card:active{transform:scale(.92);}
+.wm-card.hidden-card{background:linear-gradient(135deg,var(--purple),var(--blue));border-color:transparent;font-size:1.6rem;}
+.wm-card.correct{border-color:var(--green);background:#e8fff0;}
+.wm-card.wrong{border-color:var(--pink);background:#ffe8f0;}
+.cp-sequence{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0;}
+.cp-dot{width:52px;height:52px;border-radius:50%;cursor:pointer;border:4px solid rgba(0,0,0,.1);
+  transition:all .2s;box-shadow:0 4px 12px rgba(0,0,0,.12);}
+.cp-dot:active{transform:scale(.88);}
+.cp-dot.flash{transform:scale(1.25);box-shadow:0 0 0 6px rgba(255,255,255,.5);}
+.cp-dot.correct{box-shadow:0 0 0 5px var(--green);}
+.cp-dot.wrong{animation:shake .3s;}
+.nr-display{text-align:center;font-family:'Baloo 2',cursive;font-size:3rem;font-weight:800;
+  color:var(--purple);letter-spacing:8px;min-height:64px;margin:12px 0;transition:all .3s;}
+.nr-input-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px;}
+.nr-btn{aspect-ratio:1;border-radius:14px;background:var(--inputbg);border:3px solid var(--border);
+  font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;color:var(--text);
+  cursor:pointer;transition:all .2s;}
+.nr-btn:active{transform:scale(.9);}
+.nr-answer-row{display:flex;gap:6px;justify-content:center;min-height:44px;margin-bottom:10px;flex-wrap:wrap;}
+.nr-chip{background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;
+  font-family:'Baloo 2',cursive;font-size:1.2rem;font-weight:800;border-radius:10px;
+  padding:6px 14px;cursor:pointer;transition:all .2s;}
+.nr-chip:active{transform:scale(.9);}
+
 /* CREATIVE ZONE */
 .create-panel{background:var(--cardbg);border-radius:var(--r);padding:20px 16px;margin-bottom:12px;
   box-shadow:0 12px 36px var(--shadow);position:relative;overflow:hidden;}
@@ -2243,6 +2272,9 @@ const GAMES = [
   {id:'daysOrder',   week:1,emoji:'📅',title:'Days of the Week!',       desc:'Put the days in the right order!',                   cat:'time'},
   {id:'clockGame',   week:2,emoji:'🕐',title:'What Time Is It?',        desc:'Look at the clock and pick the right time!',         cat:'time'},
   {id:'simonSays',   week:1,emoji:'🎯',title:'Simon Says!',             desc:'Watch, remember, and repeat the pattern!',           cat:'brain'},
+  {id:'whatsMissing',week:1,emoji:'🔍',title:"What's Missing?",           desc:'Look carefully, then find what disappeared!',        cat:'brain'},
+  {id:'colourPattern',week:1,emoji:'🌈',title:'Colour Pattern Memory!',   desc:'Remember the colour order and tap it back!',         cat:'brain'},
+  {id:'numberMemory', week:2,emoji:'🔢',title:'Number Memory Flash!',     desc:'See the numbers, then recall them in order!',        cat:'brain'},
 ];
 
 // ══════════════════════════════════════
@@ -2528,7 +2560,8 @@ function renderGame(g){
   const fns={numMatch:buildNumMatch,wordBuild:buildWordBuild,countGame:buildCountGame,
     colourMix:buildColourMix,shapeTap:buildShapeTap,memoryFlip:buildMemoryFlip,
     findLetter:buildFindLetter,animalSound:buildAnimalSound,phonicsMatch:buildPhonicsMatch,
-    daysOrder:buildDaysOrder,clockGame:buildClockGame,simonSays:buildSimonSays};
+    daysOrder:buildDaysOrder,clockGame:buildClockGame,simonSays:buildSimonSays,
+    whatsMissing:buildWhatsMissing,colourPattern:buildColourPattern,numberMemory:buildNumberMemory};
   (fns[g.id]||buildCountGame)();
   // Append skip button after game panel
   const area=document.getElementById('area');
@@ -5100,6 +5133,314 @@ function tapSimon(idx,label){
     document.getElementById('gfb').textContent='❌ Wrong order! The next was: '+expected;
     mascotHint();simonLock=true;setTimeout(nextSimonRound,1500);
   }
+}
+
+// ══════════════════════════════════════
+//  GAME: What's Missing? (#13)
+//  Show items, hide one, child spots the gap
+// ══════════════════════════════════════
+const WM_ITEMS=[
+  {e:'🍎',n:'Apple'},{e:'🐶',n:'Dog'},{e:'⭐',n:'Star'},{e:'🌙',n:'Moon'},
+  {e:'🚗',n:'Car'},{e:'🎈',n:'Balloon'},{e:'🦋',n:'Butterfly'},{e:'🍦',n:'Ice cream'},
+  {e:'🐱',n:'Cat'},{e:'🌸',n:'Flower'},{e:'🦁',n:'Lion'},{e:'🎸',n:'Guitar'},
+  {e:'🍕',n:'Pizza'},{e:'🚀',n:'Rocket'},{e:'🐠',n:'Fish'},{e:'🌈',n:'Rainbow'},
+  {e:'🎪',n:'Tent'},{e:'🐸',n:'Frog'},{e:'🍓',n:'Strawberry'},{e:'🐼',n:'Panda'},
+];
+let wmScore=0,wmRound=0;
+
+function buildWhatsMissing(){wmScore=0;wmRound=0;nextWmRound();}
+
+function nextWmRound(){
+  const totalRounds=diffLevel===1?4:diffLevel===2?5:6;
+  wmRound++;
+  if(wmRound>totalRounds){endGame(wmScore,totalRounds,'whatsMissing');return;}
+
+  // Grid size grows with difficulty
+  const gridSize=diffLevel===1?4:diffLevel===2?6:8;
+  const showTime=diffLevel===1?3000:diffLevel===2?2500:2000;
+
+  const picked=[...WM_ITEMS].sort(()=>Math.random()-.5).slice(0,gridSize);
+  const missingIdx=Math.floor(Math.random()*picked.length);
+  const missing=picked[missingIdx];
+
+  // Phase 1: show all items
+  function renderPhase1(){
+    document.getElementById('area').innerHTML=`
+      <div class="game-panel">
+        <div class="game-title">🔍 What's Missing?</div>
+        <div class="game-inst">Round ${wmRound}/${totalRounds} · Score: ${wmScore} ⭐</div>
+        <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:.9rem;color:var(--purple);margin-bottom:10px;font-weight:700">
+          👀 Look carefully at all the items!
+        </div>
+        <div class="wm-grid" style="grid-template-columns:repeat(${Math.min(gridSize,4)},1fr)">
+          ${picked.map(it=>`<div class="wm-card"><span>${it.e}</span></div>`).join('')}
+        </div>
+        <div style="text-align:center;font-size:.8rem;color:var(--text3);font-family:'Baloo 2',cursive">
+          Memorising in <span id="wmCountdown">${Math.round(showTime/1000)}</span>s…
+        </div>
+      </div>`;
+    speakText('Look carefully at all the items!');
+    // Countdown
+    let secs=Math.round(showTime/1000);
+    const ctdn=setInterval(()=>{secs--;const el=document.getElementById('wmCountdown');if(el)el.textContent=secs;if(secs<=0)clearInterval(ctdn);},1000);
+    setTimeout(renderPhase2,showTime);
+  }
+
+  // Phase 2: one item hidden, tap the missing one
+  function renderPhase2(){
+    const displayItems=picked.map((it,i)=>i===missingIdx?{e:'❓',n:'?',missing:true}:it);
+    // Options: missing item + wrong distractors
+    const distractors=[...WM_ITEMS].filter(x=>!picked.includes(x)).sort(()=>Math.random()-.5).slice(0,3);
+    const opts=[missing,...distractors].sort(()=>Math.random()-.5);
+
+    document.getElementById('area').innerHTML=`
+      <div class="game-panel">
+        <div class="game-title">🔍 What's Missing?</div>
+        <div class="game-inst">Round ${wmRound}/${totalRounds} · Score: ${wmScore} ⭐</div>
+        <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800;color:var(--coral);margin-bottom:10px">
+          ❓ One item disappeared! Which one?
+        </div>
+        <div class="wm-grid" style="grid-template-columns:repeat(${Math.min(gridSize,4)},1fr);margin-bottom:16px">
+          ${displayItems.map(it=>`<div class="wm-card${it.missing?' hidden-card':''}"><span>${it.e}</span></div>`).join('')}
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          ${opts.map(o=>`<div class="animal-card" style="min-width:72px;padding:12px 8px" onclick="checkWm(this,'${o.n}','${missing.n}')">
+            <span style="font-size:2rem;display:block">${o.e}</span>
+            <span style="font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:700;color:var(--text2)">${o.n}</span>
+          </div>`).join('')}
+        </div>
+        <div class="game-feedback" id="gfb"></div>
+      </div>`;
+    speakText('Which item disappeared?');
+  }
+
+  renderPhase1();
+}
+
+function checkWm(el,chosen,target){
+  document.querySelectorAll('.animal-card').forEach(c=>c.onclick=null);
+  if(chosen===target){
+    el.classList.add('correct');wmScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Yes! The '+target+' was missing!';mascotPraise();
+  } else {
+    el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.getElementById('gfb').textContent='❌ The '+chosen+' was there! It was the '+target+' that disappeared.';
+  }
+  setTimeout(nextWmRound,2000);
+}
+
+// ══════════════════════════════════════
+//  GAME: Colour Pattern Memory (#14)
+//  Growing colour sequence — tap it back
+// ══════════════════════════════════════
+const CP_COLOURS=[
+  {id:'red',   hex:'#ff5252',name:'Red'},
+  {id:'blue',  hex:'#4fa3e0',name:'Blue'},
+  {id:'green', hex:'#56cf81',name:'Green'},
+  {id:'yellow',hex:'#ffb830',name:'Yellow'},
+  {id:'purple',hex:'#a78bfa',name:'Purple'},
+  {id:'pink',  hex:'#ff6b9d',name:'Pink'},
+];
+let cpSeq=[],cpInput=[],cpScore=0,cpRound=0,cpLocked=false;
+
+function buildColourPattern(){cpScore=0;cpRound=0;nextCpRound();}
+
+function nextCpRound(){
+  const totalRounds=diffLevel===1?4:diffLevel===2?5:6;
+  cpRound++;
+  if(cpRound>totalRounds){endGame(cpScore*2,totalRounds*2,'colourPattern');return;}
+
+  // Sequence grows each round; max colours shown depends on difficulty
+  const maxCols=diffLevel===1?4:diffLevel===2?5:6;
+  const seqLen=Math.min(cpRound+1,diffLevel===1?3:diffLevel===2?4:5);
+  const colPool=CP_COLOURS.slice(0,maxCols);
+
+  // Extend sequence (add one colour to end)
+  if(cpRound===1) cpSeq=[];
+  cpSeq.push(colPool[Math.floor(Math.random()*colPool.length)]);
+  // Keep sequence at seqLen (cap it)
+  if(cpSeq.length>seqLen) cpSeq=cpSeq.slice(-seqLen);
+  cpInput=[];
+  cpLocked=true;
+
+  function renderBoard(phase){
+    document.getElementById('area').innerHTML=`
+      <div class="game-panel">
+        <div class="game-title">🌈 Colour Pattern!</div>
+        <div class="game-inst">Round ${cpRound}/${totalRounds} · Score: ${cpScore} ⭐</div>
+        <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:700;color:var(--purple);margin-bottom:10px" id="cpInst">
+          ${phase==='watch'?'👀 Watch the pattern!':'👆 Now tap the same colours in order!'}
+        </div>
+        <div class="cp-sequence" id="cpDots">
+          ${colPool.map(c=>`<div class="cp-dot" id="cpd_${c.id}" style="background:${c.hex}" onclick="tapCp('${c.id}')"></div>`).join('')}
+        </div>
+        <div style="display:flex;gap:6px;justify-content:center;margin-bottom:8px;min-height:32px" id="cpProgress">
+          ${cpSeq.map((_,i)=>`<div style="width:18px;height:18px;border-radius:50%;background:${i<cpInput.length?cpSeq[i].hex:'var(--border)'}"></div>`).join('')}
+        </div>
+        <div class="game-feedback" id="gfb"></div>
+      </div>`;
+  }
+
+  // Animate the sequence
+  renderBoard('watch');
+  speakText('Watch the pattern!');
+  let i=0;
+  function flashNext(){
+    if(i>=cpSeq.length){
+      setTimeout(()=>{
+        renderBoard('tap');
+        cpLocked=false;
+        speakText('Now tap the same colours in order!');
+      },600);
+      return;
+    }
+    const dot=document.getElementById('cpd_'+cpSeq[i].id);
+    if(dot){
+      dot.classList.add('flash');
+      speakText(cpSeq[i].name);
+      setTimeout(()=>dot.classList.remove('flash'),500);
+    }
+    i++;
+    setTimeout(flashNext, diffLevel===1?900:diffLevel===2?750:600);
+  }
+  setTimeout(flashNext,800);
+}
+
+function tapCp(cid){
+  if(cpLocked) return;
+  playClick();
+  const dot=document.getElementById('cpd_'+cid);
+  const col=CP_COLOURS.find(c=>c.id===cid);
+  const expected=cpSeq[cpInput.length];
+
+  if(col.id===expected.id){
+    dot.classList.add('flash');
+    setTimeout(()=>dot.classList.remove('flash'),400);
+    cpInput.push(col);
+    // Update progress dots
+    const prog=document.getElementById('cpProgress');
+    if(prog) prog.innerHTML=cpSeq.map((_,i)=>`<div style="width:18px;height:18px;border-radius:50%;background:${i<cpInput.length?cpSeq[i].hex:'var(--border)'}"></div>`).join('');
+
+    if(cpInput.length===cpSeq.length){
+      cpLocked=true;cpScore++;adaptDifficulty(true);playCorrect();
+      document.getElementById('gfb').textContent='✅ Perfect pattern!';mascotPraise();
+      setTimeout(nextCpRound,1500);
+    }
+  } else {
+    dot.classList.add('wrong');adaptDifficulty(false);playWrong();cpLocked=true;
+    document.getElementById('gfb').textContent='❌ Oops! The next colour was '+expected.name+'!';
+    setTimeout(()=>{dot.classList.remove('wrong');nextCpRound();},1800);
+  }
+}
+
+// ══════════════════════════════════════
+//  GAME: Number Memory Flash (#15)
+//  Flash digits briefly, recall in order
+// ══════════════════════════════════════
+let nmFlashScore=0,nmFlashRound=0,nmFlashAnswer=[],nmFlashInput=[];
+
+function buildNumberMemory(){nmFlashScore=0;nmFlashRound=0;nextNmFlashRound();}
+
+function nextNmFlashRound(){
+  const totalRounds=diffLevel===1?4:diffLevel===2?5:6;
+  nmFlashRound++;
+  if(nmFlashRound>totalRounds){endGame(nmFlashScore*2,totalRounds*2,'numberMemory');return;}
+
+  // Sequence length grows
+  const seqLen=diffLevel===1?Math.min(nmFlashRound+1,3):diffLevel===2?Math.min(nmFlashRound+1,4):Math.min(nmFlashRound+2,5);
+  const maxNum=diffLevel===1?6:diffLevel===2?9:9;
+  const showMs=diffLevel===1?2500:diffLevel===2?2000:1500;
+
+  // Generate sequence with no immediate repeats
+  nmFlashAnswer=[];
+  for(let i=0;i<seqLen;i++){
+    let n;
+    do{ n=Math.floor(Math.random()*maxNum)+1; }while(nmFlashAnswer.length>0&&n===nmFlashAnswer[nmFlashAnswer.length-1]);
+    nmFlashAnswer.push(n);
+  }
+  nmFlashInput=[];
+
+  function renderKeypad(){
+    document.getElementById('area').innerHTML=`
+      <div class="game-panel">
+        <div class="game-title">🔢 Number Memory!</div>
+        <div class="game-inst">Round ${nmFlashRound}/${totalRounds} · Score: ${nmFlashScore} ⭐</div>
+        <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:700;color:var(--purple);margin-bottom:6px">
+          👆 Type the numbers in the same order!
+        </div>
+        <div class="nr-answer-row" id="nmAns">
+          ${nmFlashAnswer.map((_,i)=>`<div class="nr-chip" style="opacity:.3;background:var(--border);color:var(--text4)">?</div>`).join('')}
+        </div>
+        <div class="nr-input-grid">
+          ${[1,2,3,4,5,6,7,8,9,maxNum===9?0:null].filter(x=>x!==null&&x<=maxNum||(x===0&&maxNum===9)).map(n=>
+            `<div class="nr-btn" onclick="tapNmFlash(${n})">${n}</div>`
+          ).join('')}
+          <div class="nr-btn" style="background:linear-gradient(135deg,var(--pink),var(--coral));color:#fff;font-size:1rem" onclick="deleteNmFlash()">⌫</div>
+        </div>
+        <div class="game-feedback" id="gfb"></div>
+      </div>`;
+  }
+
+  // Phase 1: flash the numbers
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔢 Number Memory!</div>
+      <div class="game-inst">Round ${nmFlashRound}/${totalRounds} · Score: ${nmFlashScore} ⭐</div>
+      <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:700;color:var(--purple);margin-bottom:6px">
+        👀 Remember these numbers!
+      </div>
+      <div class="nr-display" id="nmDisplay">${nmFlashAnswer.join('  ')}</div>
+      <div style="text-align:center;font-size:.78rem;color:var(--text3);font-family:'Baloo 2',cursive">
+        Memorise in <span id="nmCountdown">${Math.round(showMs/1000)}</span>s…
+      </div>
+    </div>`;
+  speakText(nmFlashAnswer.join(', '));
+  let secs=Math.round(showMs/1000);
+  const ctdn=setInterval(()=>{secs--;const el=document.getElementById('nmCountdown');if(el)el.textContent=secs;if(secs<=0)clearInterval(ctdn);},1000);
+  setTimeout(()=>{renderKeypad();speakText('Now type them in order!');},showMs);
+}
+
+function tapNmFlash(n){
+  if(nmFlashInput.length>=nmFlashAnswer.length) return;
+  playClick();
+  nmFlashInput.push(n);
+  // Update answer chips
+  const chips=document.querySelectorAll('.nr-chip');
+  chips.forEach((c,i)=>{
+    if(i<nmFlashInput.length){
+      c.textContent=nmFlashInput[i];
+      c.style.opacity='1';
+      c.style.background='';
+      c.style.color='#fff';
+    }
+  });
+  if(nmFlashInput.length===nmFlashAnswer.length){
+    const correct=nmFlashInput.every((v,i)=>v===nmFlashAnswer[i]);
+    document.querySelectorAll('.nr-btn').forEach(b=>b.onclick=null);
+    if(correct){
+      nmFlashScore++;adaptDifficulty(true);playCorrect();
+      document.getElementById('gfb').textContent='✅ Perfect memory! 🧠';mascotPraise();
+    } else {
+      adaptDifficulty(false);playWrong();
+      document.getElementById('gfb').textContent='❌ The answer was: '+nmFlashAnswer.join(' → ');
+    }
+    setTimeout(nextNmFlashRound,2000);
+  }
+}
+
+function deleteNmFlash(){
+  if(nmFlashInput.length===0) return;
+  nmFlashInput.pop();
+  playClick();
+  const chips=document.querySelectorAll('.nr-chip');
+  chips.forEach((c,i)=>{
+    if(i>=nmFlashInput.length){
+      c.textContent='?';
+      c.style.opacity='.3';
+      c.style.background='var(--border)';
+      c.style.color='var(--text4)';
+    }
+  });
 }
 
 // ══════════════════════════════════════
