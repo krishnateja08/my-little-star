@@ -1450,10 +1450,15 @@ function _fbPath(key){ return `${_DB_URL}/families/${_familyCode}/${_safeKey(key
 
 function fbWrite(key, value){
   if(!_syncReady||!_familyCode) return;
+  // localStorage values are always strings; try to parse them back to
+  // their real type (number, array, object) before storing in Firebase.
+  // This ensures they round-trip correctly when loaded back on other devices.
+  let parsed = value;
+  try{ parsed = JSON.parse(value); }catch(e){ /* plain string — keep as-is */ }
   fetch(_fbPath(key),{
     method:'PUT',
     headers:{'Content-Type':'application/json'},
-    body: JSON.stringify(value)
+    body: JSON.stringify(parsed)
   }).catch(()=>{});
 }
 
@@ -1468,7 +1473,12 @@ async function _loadFromFirebase(){
     const res  = await fetch(`${_DB_URL}/families/${_familyCode}.json`);
     const data = await res.json();
     if(data && typeof data === 'object'){
-      Object.keys(data).forEach(k => _lsSet(k, data[k]));
+      Object.keys(data).forEach(k => {
+        // Firebase returns parsed JSON (numbers, arrays, objects).
+        // localStorage only stores strings — so we must stringify non-strings.
+        const v = data[k];
+        _lsSet(k, typeof v === 'string' ? v : JSON.stringify(v));
+      });
       console.log('✅ Firebase synced!', Object.keys(data).length, 'keys loaded');
       // Refresh app variables and UI after Firebase data loads
       _refreshAppFromStorage();
@@ -1517,7 +1527,10 @@ function _startPolling(){
       const res  = await fetch(`${_DB_URL}/families/${_familyCode}.json`);
       const data = await res.json();
       if(data && typeof data === 'object'){
-        Object.keys(data).forEach(k => _lsSet(k, data[k]));
+        Object.keys(data).forEach(k => {
+          const v = data[k];
+          _lsSet(k, typeof v === 'string' ? v : JSON.stringify(v));
+        });
         // Refresh app UI so changes from other devices show up
         _refreshAppFromStorage();
       }
