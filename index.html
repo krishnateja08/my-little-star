@@ -2481,13 +2481,33 @@ function getPool(){
   if(tab==='games'){
     let pool=GAMES.filter(g=>g.week<=week&&!allUsed.includes(g.title)&&!skippedToday.includes(g.title));
     if(gameCat!=='all') pool=pool.filter(g=>g.cat===gameCat);
+    // Auto-recycle: if this tab's pool is empty only because of allUsed, refresh those entries
+    if(!pool.length){
+      let allTabGames=GAMES.filter(g=>g.week<=week&&!skippedToday.includes(g.title));
+      if(gameCat!=='all') allTabGames=allTabGames.filter(g=>g.cat===gameCat);
+      if(allTabGames.length){
+        allTabGames.forEach(g=>{const i=allUsed.indexOf(g.title);if(i>-1)allUsed.splice(i,1);});
+        localStorage.setItem('c_allused',JSON.stringify(allUsed));
+        pool=allTabGames;
+      }
+    }
     return pool;
   }
   if(tab==='create'||tab==='parent') return [];
   let pool=CUR[tab]||[];
   pool=pool.filter(a=>!a.w||a.w<=week);
   if(tab==='learning'&&subj!=='all') pool=pool.filter(a=>a.subj===subj);
-  return pool.filter(a=>!allUsed.includes(a.title)&&!skippedToday.includes(a.title));
+  const filtered=pool.filter(a=>!allUsed.includes(a.title)&&!skippedToday.includes(a.title));
+  // Auto-recycle: if this tab's pool is empty only because of allUsed, refresh those entries
+  if(!filtered.length&&pool.length){
+    const withoutSkipped=pool.filter(a=>!skippedToday.includes(a.title));
+    if(withoutSkipped.length){
+      withoutSkipped.forEach(a=>{const i=allUsed.indexOf(a.title);if(i>-1)allUsed.splice(i,1);});
+      localStorage.setItem('c_allused',JSON.stringify(allUsed));
+      return withoutSkipped;
+    }
+  }
+  return filtered;
 }
 function getNext(){const p=getPool();return p.length?p[Math.floor(Math.random()*p.length)]:null;}
 
