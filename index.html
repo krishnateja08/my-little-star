@@ -2787,6 +2787,287 @@ function showLoad(){
   document.getElementById('hsub').textContent='Thinking of the best activity… 🤔';
 }
 
+
+// ══════════════════════════════════════
+//  VISUAL INTERACTIVE PANELS
+//  Renders rich visuals inside learning cards
+// ══════════════════════════════════════
+function buildVisualPanel(a){
+  const t=a.title||'';
+
+  // ── DAYS OF THE WEEK ──
+  if(t.includes('Days of the Week')){
+    const days=[
+      {d:'Monday',e:'🌅',c:'#ff6b9d'},
+      {d:'Tuesday',e:'🌻',c:'#ffb830'},
+      {d:'Wednesday',e:'🌈',c:'#4ecdc4'},
+      {d:'Thursday',e:'⚡',c:'#a78bfa'},
+      {d:'Friday',e:'🎉',c:'#56cf81'},
+      {d:'Saturday',e:'🌟',c:'#4fa3e0'},
+      {d:'Sunday',e:'☀️',c:'#ff8c69'},
+    ];
+    const today=new Date().toLocaleDateString('en-GB',{weekday:'long'});
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple);margin-bottom:8px;text-align:center">👆 Tap each day to hear it!</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">
+        ${days.map(x=>`<div onclick="speakText('${x.d}');this.style.transform='scale(1.15)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 8px;border-radius:14px;background:${x.c};color:#fff;cursor:pointer;transition:transform .2s;min-width:58px;${x.d===today?'box-shadow:0 0 0 3px #fff,0 0 0 6px '+x.c:''}">
+          <span style="font-size:1.6rem">${x.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:700">${x.d.slice(0,3)}</span>
+          ${x.d===today?'<span style="font-size:.55rem;background:rgba(255,255,255,.3);border-radius:50px;padding:1px 6px">TODAY</span>':''}
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── 12 MONTHS OF THE YEAR ──
+  if(t.includes('Months of the Year')||t.includes('12 Months')){
+    const months=[
+      {m:'January',e:'❄️',c:'#4fa3e0'},{m:'February',e:'💝',c:'#ff6b9d'},
+      {m:'March',e:'🌸',c:'#56cf81'},{m:'April',e:'🌧️',c:'#4ecdc4'},
+      {m:'May',e:'🌻',c:'#ffb830'},{m:'June',e:'☀️',c:'#ff8c69'},
+      {m:'July',e:'🏖️',c:'#a78bfa'},{m:'August',e:'🎒',c:'#4fa3e0'},
+      {m:'September',e:'🍂',c:'#ff8c69'},{m:'October',e:'🎃',c:'#ffb830'},
+      {m:'November',e:'🌧️',c:'#4ecdc4'},{m:'December',e:'🎄',c:'#ff6b9d'},
+    ];
+    const nowM=new Date().getMonth();
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple);margin-bottom:8px;text-align:center">👆 Tap each month to hear it!</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+        ${months.map((x,i)=>`<div onclick="speakText('${x.m}');this.style.transform='scale(1.1)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:12px;background:${x.c};color:#fff;cursor:pointer;transition:transform .2s;text-align:center;${i===nowM?'box-shadow:0 0 0 3px #fff,0 0 0 5px '+x.c:''}">
+          <span style="font-size:1.4rem">${x.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.6rem;font-weight:700">${x.m.slice(0,3)}</span>
+          ${i===nowM?'<span style="font-size:.5rem;background:rgba(255,255,255,.35);border-radius:50px;padding:1px 5px">NOW</span>':''}
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── SEASONS ──
+  if(t.includes('Seasons')){
+    const seasons=[
+      {s:'Spring',e:'🌸',desc:'Flowers bloom!',c:'#56cf81'},
+      {s:'Summer',e:'☀️',desc:'Hot & sunny!',c:'#ffb830'},
+      {s:'Autumn',e:'🍂',desc:'Leaves fall!',c:'#ff8c69'},
+      {s:'Winter',e:'❄️',desc:'Cold & icy!',c:'#4fa3e0'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple);margin-bottom:8px;text-align:center">👆 Tap each season to hear it!</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
+        ${seasons.map(x=>`<div onclick="speakText('${x.s}! ${x.desc}');this.style.transform='scale(1.05)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 8px;border-radius:16px;background:${x.c};color:#fff;cursor:pointer;transition:transform .2s;text-align:center">
+          <span style="font-size:2.2rem">${x.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800">${x.s}</span>
+          <span style="font-size:.72rem;opacity:.9">${x.desc}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── MORNING / AFTERNOON / NIGHT ──
+  if(t.includes('Morning, Afternoon')){
+    const times=[
+      {label:'Morning',e:'🌅',desc:'Wake up! Breakfast time!',c:'#ffb830',ex:'7am – 12pm'},
+      {label:'Afternoon',e:'☀️',desc:'Lunch & play time!',c:'#ff8c69',ex:'12pm – 5pm'},
+      {label:'Evening',e:'🌆',desc:'Dinner & wind down!',c:'#a78bfa',ex:'5pm – 8pm'},
+      {label:'Night',e:'🌙',desc:'Sleep & dream!',c:'#4fa3e0',ex:'8pm – 7am'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple);margin-bottom:8px;text-align:center">👆 Tap each time of day!</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
+        ${times.map(x=>`<div onclick="speakText('${x.label}! ${x.desc}');this.style.transform='scale(1.05)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:16px;background:${x.c};color:#fff;cursor:pointer;transition:transform .2s;text-align:center">
+          <span style="font-size:2rem">${x.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.88rem;font-weight:800">${x.label}</span>
+          <span style="font-size:.65rem;opacity:.9">${x.desc}</span>
+          <span style="font-size:.6rem;background:rgba(255,255,255,.25);border-radius:50px;padding:2px 8px">${x.ex}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── YESTERDAY TODAY TOMORROW ──
+  if(t.includes('Yesterday, Today, Tomorrow')){
+    const now=new Date();
+    const fmt=d=>d.toLocaleDateString('en-GB',{weekday:'long'});
+    const yest=new Date(now); yest.setDate(now.getDate()-1);
+    const tom=new Date(now); tom.setDate(now.getDate()+1);
+    const items=[
+      {label:'Yesterday',day:fmt(yest),e:'⏮️',c:'#4fa3e0',desc:'Already happened!'},
+      {label:'Today',day:fmt(now),e:'📍',c:'#ff6b9d',desc:'Right NOW!'},
+      {label:'Tomorrow',day:fmt(tom),e:'⏭️',c:'#56cf81',desc:'Not yet!'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple);margin-bottom:8px;text-align:center">👆 Tap each one to hear it!</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        ${items.map(x=>`<div onclick="speakText('${x.label} was ${x.day}. ${x.desc}');this.style.transform='scale(1.05)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;border-radius:16px;background:${x.c};color:#fff;cursor:pointer;transition:transform .2s;text-align:center">
+          <span style="font-size:1.8rem">${x.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:800">${x.label}</span>
+          <span style="font-size:.62rem;opacity:.9;font-weight:700">${x.day}</span>
+          <span style="font-size:.6rem;opacity:.8">${x.desc}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── LEARN A LETTER (I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z) ──
+  if(t.match(/Learn Letter[s]? /)){
+    const letters=t.replace(/Learn Letters? /,'').replace(/ &/g,'').replace(/,/g,'').split(' ').filter(l=>l.length===1);
+    const wordMap={I:['🍦','Ice cream'],J:['🍭','Jelly'],K:['🪁','Kite'],L:['🦁','Lion'],
+      M:['🌙','Moon'],N:['👃','Nose'],O:['🍊','Orange'],P:['🍕','Pizza'],
+      Q:['👑','Queen'],R:['🚀','Rocket'],S:['⭐','Star'],T:['🌳','Tree'],
+      U:['☂️','Umbrella'],V:['🚐','Van'],W:['🐺','Wolf'],X:['🔬','X-ray'],Y:['🟡','Yellow'],Z:['🦓','Zebra']};
+    const colors=['#ff6b9d','#ffb830','#a78bfa','#4ecdc4','#56cf81','#4fa3e0'];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple);margin-bottom:8px;text-align:center">👆 Tap the letter to hear its sound!</div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        ${letters.map((l,i)=>{
+          const [em,word]=wordMap[l]||['🔤',l+' word'];
+          return `<div onclick="speakText('The letter ${l}. It says its sound. ${l} is for ${word}!');this.style.transform='scale(1.15)';setTimeout(()=>this.style.transform='',400)"
+            style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 18px;border-radius:18px;background:${colors[i%colors.length]};color:#fff;cursor:pointer;transition:transform .2s;min-width:90px;text-align:center">
+            <span style="font-family:'Baloo 2',cursive;font-size:3rem;font-weight:800;line-height:1">${l}</span>
+            <span style="font-size:1.8rem">${em}</span>
+            <span style="font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:700">${l} for ${word}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── PHONICS SOUNDS ──
+  if(t.includes('Phonics Sounds')){
+    const isAtoH=t.includes('A to H');
+    const letters=isAtoH?['A','B','C','D','E','F','G','H']:['I','J','K','L','M','N','O','P'];
+    const sounds={A:'aah',B:'buh',C:'kuh',D:'duh',E:'eh',F:'fff',G:'guh',H:'huh',I:'ih',J:'juh',K:'kuh',L:'lll',M:'mmm',N:'nnn',O:'oh',P:'puh'};
+    const words={A:'Apple',B:'Ball',C:'Cat',D:'Dog',E:'Egg',F:'Fish',G:'Goat',H:'Hat',I:'Insect',J:'Jelly',K:'Kite',L:'Lion',M:'Moon',N:'Nose',O:'Orange',P:'Pizza'};
+    const emojis={A:'🍎',B:'🏀',C:'🐱',D:'🐶',E:'🥚',F:'🐟',G:'🐐',H:'🎩',I:'🐛',J:'🍭',K:'🪁',L:'🦁',M:'🌙',N:'👃',O:'🍊',P:'🍕'};
+    const colors=['#ff6b9d','#ffb830','#a78bfa','#4ecdc4','#56cf81','#4fa3e0','#ff8c69','#a78bfa'];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple);margin-bottom:8px;text-align:center">👆 Tap each letter to hear its sound!</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+        ${letters.map((l,i)=>`<div onclick="speakText('${l} says ${sounds[l]}. ${l} is for ${words[l]}!');this.style.transform='scale(1.1)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:14px;background:${colors[i]};color:#fff;cursor:pointer;transition:transform .2s;text-align:center">
+          <span style="font-family:'Baloo 2',cursive;font-size:1.6rem;font-weight:800;line-height:1">${l}</span>
+          <span style="font-size:1.2rem">${emojis[l]}</span>
+          <span style="font-size:.62rem;font-weight:700;opacity:.9">"${sounds[l]}"</span>
+          <span style="font-size:.58rem;opacity:.85">${words[l]}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── NUMBERS 11 TO 20 ──
+  if(t.includes('Numbers 11 to 20')||t.includes('11 to 20')){
+    const nums=Array.from({length:10},(_,i)=>i+11);
+    const emojis=['1️⃣1️⃣','1️⃣2️⃣','1️⃣3️⃣','1️⃣4️⃣','1️⃣5️⃣','1️⃣6️⃣','1️⃣7️⃣','1️⃣8️⃣','1️⃣9️⃣','2️⃣0️⃣'];
+    const words=['eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen','twenty'];
+    const colors=['#ff6b9d','#ffb830','#a78bfa','#4ecdc4','#56cf81','#4fa3e0','#ff8c69','#ff6b9d','#ffb830','#56cf81'];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple);margin-bottom:8px;text-align:center">👆 Tap each number to hear its name!</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
+        ${nums.map((n,i)=>`<div onclick="speakText('${n} — ${words[i]}');this.style.transform='scale(1.15)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:14px;background:${colors[i]};color:#fff;cursor:pointer;transition:transform .2s;text-align:center">
+          <span style="font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;line-height:1">${n}</span>
+          <span style="font-size:.6rem;font-weight:700;opacity:.95">${words[i]}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── PRIMARY COLOURS ──
+  if(t.includes('Primary Colours')||t.includes('Primary Colors')){
+    const cols=[
+      {name:'Red',hex:'#ff3b3b',e:'🍎',mix:'Red + Blue = Purple!'},
+      {name:'Yellow',hex:'#ffcc00',e:'🌻',mix:'Yellow + Blue = Green!'},
+      {name:'Blue',hex:'#4fa3e0',e:'🫐',mix:'Red + Yellow = Orange!'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple);margin-bottom:8px;text-align:center">👆 Tap each colour to hear it!</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
+        ${cols.map(c=>`<div onclick="speakText('${c.name}! ${c.mix}');this.style.transform='scale(1.05)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 6px;border-radius:16px;background:${c.hex};color:#fff;cursor:pointer;transition:transform .2s;text-align:center">
+          <span style="font-size:2rem">${c.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800">${c.name}</span>
+        </div>`).join('')}
+      </div>
+      <div style="background:linear-gradient(135deg,#fff5e0,#ffe0f0);border-radius:14px;padding:10px 14px">
+        <div style="font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:700;color:var(--coral);margin-bottom:6px">🎨 Mix them together!</div>
+        ${[['#ff3b3b','Red','#4fa3e0','Blue','#8b00ff','Purple 💜'],['#ff3b3b','Red','#ffcc00','Yellow','#ff8c00','Orange 🍊'],['#ffcc00','Yellow','#4fa3e0','Blue','#00aa44','Green 💚']].map(([c1,n1,c2,n2,cr,nr])=>`
+        <div onclick="speakText('${n1} and ${n2} make ${nr}!')" style="display:flex;align-items:center;gap:6px;margin-bottom:5px;cursor:pointer;padding:4px 6px;border-radius:8px;transition:background .2s" onmouseover="this.style.background='rgba(0,0,0,.05)'" onmouseout="this.style.background=''">
+          <div style="width:22px;height:22px;border-radius:50%;background:${c1}"></div>
+          <span style="font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:700">+</span>
+          <div style="width:22px;height:22px;border-radius:50%;background:${c2}"></div>
+          <span style="font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:700">=</span>
+          <div style="width:22px;height:22px;border-radius:50%;background:${cr}"></div>
+          <span style="font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:700;color:var(--text2)">${nr}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── SIGHT WORDS ──
+  if(t.includes('Sight Words')){
+    const words=['THE','IS','A','AND','IN','IT'];
+    const colors=['#ff6b9d','#ffb830','#a78bfa','#4ecdc4','#56cf81','#4fa3e0'];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple);margin-bottom:8px;text-align:center">👆 Tap each word to hear it!</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        ${words.map((w,i)=>`<div onclick="speakText('${w}');this.style.transform='scale(1.12)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;align-items:center;justify-content:center;padding:16px 8px;border-radius:16px;background:${colors[i]};color:#fff;cursor:pointer;transition:transform .2s;text-align:center">
+          <span style="font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800">${w}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── BUTTERFLY LIFE CYCLE ──
+  if(t.includes('Butterfly Life Cycle')||t.includes('butterfly')){
+    const stages=[
+      {s:'Egg',e:'🥚',desc:'Tiny egg on a leaf',c:'#a78bfa'},
+      {s:'Caterpillar',e:'🐛',desc:'Eats and grows!',c:'#56cf81'},
+      {s:'Cocoon',e:'🫘',desc:'Transforms inside',c:'#ffb830'},
+      {s:'Butterfly',e:'🦋',desc:'Flies away!',c:'#ff6b9d'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple);margin-bottom:8px;text-align:center">👆 Tap each stage to hear it!</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap">
+        ${stages.map((x,i)=>`
+          <div onclick="speakText('Stage ${i+1}: ${x.s}! ${x.desc}');this.style.transform='scale(1.1)';setTimeout(()=>this.style.transform='',400)"
+            style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:16px;background:${x.c};color:#fff;cursor:pointer;transition:transform .2s;min-width:68px;text-align:center">
+            <span style="font-size:.6rem;font-weight:700;opacity:.8">STAGE ${i+1}</span>
+            <span style="font-size:2rem">${x.e}</span>
+            <span style="font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:800">${x.s}</span>
+            <span style="font-size:.6rem;opacity:.9">${x.desc}</span>
+          </div>
+          ${i<stages.length-1?'<span style="font-size:1.4rem">→</span>':''}
+        `).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── COUNT 1-10 or COUNT REAL OBJECTS ──
+  if(t.includes('Count 1 to 10')||t.includes('Count Real Objects')){
+    const nums=Array.from({length:10},(_,i)=>i+1);
+    const emojis=['🍎','🍊','🍋','🍇','🍓','🌟','🎈','🐶','🐱','🚗'];
+    const colors=['#ff6b9d','#ffb830','#a78bfa','#4ecdc4','#56cf81','#4fa3e0','#ff8c69','#ff6b9d','#ffb830','#56cf81'];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple);margin-bottom:8px;text-align:center">👆 Tap each number to count!</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
+        ${nums.map((n,i)=>`<div onclick="speakText('${n}');this.style.transform='scale(1.2)';setTimeout(()=>this.style.transform='',300)"
+          style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:14px;background:${colors[i]};color:#fff;cursor:pointer;transition:transform .2s;text-align:center">
+          <span style="font-size:1.2rem">${emojis[i]}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;line-height:1">${n}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // No special visual for this activity — return empty string
+  return '';
+}
+
 function showAct(a){
   const steps=a.steps.map((s,i)=>`<div class="step"><div class="snum">${i+1}</div><span>${s}</span></div>`).join('');
   const lb=a.learn?`<div class="alearn"><h4>🧠 What You Will Learn</h4><p>${a.learn}</p></div>`:'';
@@ -2821,6 +3102,9 @@ function showAct(a){
       <button class="breathe-btn" onclick="startBreathing()">🧘 Start Breathing Exercise</button>
     </div>`:'';
 
+  // Build visual interactive panel based on activity type
+  const visualPanel=buildVisualPanel(a);
+
   document.getElementById('area').innerHTML=`
     <div class="acard" id="ac">
       <div class="wtag">Week ${week} · ${tab.charAt(0).toUpperCase()+tab.slice(1)}</div>
@@ -2831,6 +3115,7 @@ function showAct(a){
       <div class="adesc">${a.desc}</div>
       ${lb}
       ${breatheHTML}
+      ${visualPanel}
       <div class="awhy">🌟 <strong>Why this helps:</strong> ${a.why}</div>
       <div class="asteps"><h4>📋 Step by Step</h4>${steps}</div>
       ${showMeBtn}
@@ -6652,7 +6937,7 @@ function nextNmFlashRound(){
   // Sequence length grows
   const seqLen=diffLevel===1?Math.min(nmFlashRound+1,3):diffLevel===2?Math.min(nmFlashRound+1,4):Math.min(nmFlashRound+2,5);
   const maxNum=diffLevel===1?6:diffLevel===2?9:9;
-  const showMs=diffLevel===1?2500:diffLevel===2?2000:1500;
+  const showMs=8000; // 8 seconds — enough time for young kids to read and memorise numbers
 
   // Generate sequence with no immediate repeats
   nmFlashAnswer=[];
@@ -6684,7 +6969,10 @@ function nextNmFlashRound(){
       </div>`;
   }
 
-  // Phase 1: flash the numbers
+  // Phase 1: flash the numbers with visual ring countdown
+  const nmTotalSecs=Math.round(showMs/1000);
+  const nmRadius=36;
+  const nmCirc=2*Math.PI*nmRadius;
   document.getElementById('area').innerHTML=`
     <div class="game-panel">
       <div class="game-title">🔢 Number Memory!</div>
@@ -6693,13 +6981,43 @@ function nextNmFlashRound(){
         👀 Remember these numbers!
       </div>
       <div class="nr-display" id="nmDisplay">${nmFlashAnswer.join('  ')}</div>
-      <div style="text-align:center;font-size:.78rem;color:var(--text3);font-family:'Baloo 2',cursive">
-        Memorise in <span id="nmCountdown">${Math.round(showMs/1000)}</span>s…
+      <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-top:14px;background:linear-gradient(135deg,#f0e8ff,#e8f0ff);border-radius:16px;padding:12px 20px">
+        <div style="position:relative;width:88px;height:88px;flex-shrink:0">
+          <svg width="88" height="88" viewBox="0 0 88 88" style="transform:rotate(-90deg)">
+            <circle cx="44" cy="44" r="${nmRadius}" fill="none" stroke="#f0f0f0" stroke-width="8"/>
+            <circle id="nmRing" cx="44" cy="44" r="${nmRadius}" fill="none" stroke="#56cf81" stroke-width="8"
+              stroke-linecap="round"
+              stroke-dasharray="${nmCirc}"
+              stroke-dashoffset="0"
+              style="transition:stroke-dashoffset 1s linear,stroke .5s"/>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+            <span id="nmBigNum" style="font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;color:var(--green);line-height:1">${nmTotalSecs}</span>
+            <span style="font-size:.55rem;color:var(--text4);font-weight:700;letter-spacing:.5px">SEC</span>
+          </div>
+        </div>
+        <div style="text-align:left">
+          <div style="font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800;color:var(--text)">Remember the numbers!</div>
+          <div style="font-size:.78rem;color:var(--text3);margin-top:3px">They will disappear when<br>the timer runs out 🔢</div>
+        </div>
       </div>
     </div>`;
   speakText(nmFlashAnswer.join(', '));
-  let secs=Math.round(showMs/1000);
-  const ctdn=setInterval(()=>{secs--;const el=document.getElementById('nmCountdown');if(el)el.textContent=secs;if(secs<=0)clearInterval(ctdn);},1000);
+  let secs=nmTotalSecs;
+  const ctdn=setInterval(()=>{
+    secs--;
+    const el=document.getElementById('nmBigNum');
+    const r=document.getElementById('nmRing');
+    if(!el||!r){clearInterval(ctdn);return;}
+    el.textContent=secs;
+    const pct=(nmTotalSecs-secs)/nmTotalSecs;
+    r.style.strokeDashoffset=nmCirc*pct;
+    if(secs>5) r.style.stroke='#56cf81';
+    else if(secs>3) r.style.stroke='#ffb830';
+    else r.style.stroke='#ff5252';
+    if(el) el.style.color=secs>5?'var(--green)':secs>3?'var(--sun)':'#ff5252';
+    if(secs<=0)clearInterval(ctdn);
+  },1000);
   setTimeout(()=>{renderKeypad();speakText('Now type them in order!');},showMs);
 }
 
