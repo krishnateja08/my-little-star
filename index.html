@@ -2026,7 +2026,16 @@ function toggleSound(){
   soundOn=!soundOn;
   localStorage.setItem('c_sound',soundOn?'on':'off');
   document.getElementById('soundBtn').textContent=soundOn?'🔊':'🔇';
-  if(soundOn)playClick();
+  // Update parent panel sound button label if visible
+  const pdSoundBtn=document.getElementById('pdSoundLabel');
+  if(pdSoundBtn)pdSoundBtn.textContent=soundOn?'ON':'OFF';
+  if(!soundOn){
+    // Immediately stop all speech when turned OFF
+    if(typeof speechSynthesis!=='undefined')speechSynthesis.cancel();
+    storyPlaying=false;
+  } else {
+    playClick();
+  }
 }
 document.getElementById('soundBtn').textContent=soundOn?'🔊':'🔇';
 
@@ -3938,7 +3947,7 @@ function renderParentDash(){
           <div class="pd-card-title">⚙️ Quick settings</div>
           <div class="pd-settings-row">
             <button class="pd-set-btn" onclick="toggleBedtime()">🌙 Bedtime: <strong style="color:var(--purple);margin-left:3px">${bedtimeMode?'ON':'OFF'}</strong></button>
-            <button class="pd-set-btn" onclick="toggleSound()">🔊 Sound: <strong style="color:var(--green);margin-left:3px">${soundOn?'ON':'OFF'}</strong></button>
+            <button class="pd-set-btn" id="pdSoundBtn" onclick="toggleSound()">🔊 Sound: <strong id="pdSoundLabel" style="color:var(--green);margin-left:3px">${soundOn?'ON':'OFF'}</strong></button>
             <button class="pd-set-btn" onclick="changeFamilyCode()">🔥 Family Code: <strong style="color:var(--sun);margin-left:3px">${_familyCode||'not set'}</strong></button>
             <button class="pd-set-btn danger" onclick="parentReset()">🔄 Reset journey</button>
           </div>
