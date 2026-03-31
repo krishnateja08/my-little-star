@@ -650,26 +650,133 @@ canvas.trace-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:cros
 .sticker-btn:active{transform:scale(1.3);}
 .sticker-btn.active{border-color:var(--purple);background:#f0e8ff;}
 
-/* PARENT DASHBOARD */
-.parent-dash{background:var(--cardbg);border-radius:var(--r);padding:20px 16px;margin-bottom:12px;
-  box-shadow:0 12px 36px var(--shadow);}
-.parent-dash h3{font-family:'Baloo 2',cursive;font-size:1.2rem;color:var(--text);margin-bottom:12px;}
-.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
-.dash-stat{background:var(--inputbg);border-radius:14px;padding:14px;text-align:center;}
-.dash-stat .ds-num{font-family:'Baloo 2',cursive;font-size:1.8rem;font-weight:800;color:var(--purple);}
-.dash-stat .ds-label{font-size:.72rem;color:var(--text4);font-weight:700;text-transform:uppercase;}
-.dash-section{margin-bottom:14px;}
-.dash-section h4{font-family:'Baloo 2',cursive;font-size:.9rem;color:var(--text3);margin-bottom:8px;}
-.skill-bar{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
-.skill-label{font-size:.78rem;font-weight:700;color:var(--text3);width:70px;flex-shrink:0;}
-.skill-track{flex:1;height:8px;background:#f0f0f0;border-radius:50px;overflow:hidden;}
+/* ══════════════════════════════════════
+   PARENT DASHBOARD — redesigned
+══════════════════════════════════════ */
+.parent-dash{margin-bottom:12px;}
+
+/* Header banner */
+.pd-header{background:linear-gradient(135deg,#1c1c2e 0%,#2d1b4e 60%,#1a2940 100%);
+  border-radius:var(--r);padding:22px 20px 18px;margin-bottom:14px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+body.bedtime .pd-header{background:linear-gradient(135deg,#0f0f1e,#1a0e2e,#0a1420);}
+.pd-greeting{font-size:.72rem;color:rgba(255,255,255,.45);letter-spacing:.5px;margin-bottom:2px;}
+.pd-child-name{font-family:'Baloo 2',cursive;font-size:1.6rem;font-weight:800;color:#fff;line-height:1.1;}
+.pd-child-sub{font-size:.68rem;color:rgba(255,255,255,.38);margin-top:4px;}
+.pd-avatar{width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,var(--purple),var(--mint));
+  display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+
+/* Stats row */
+.dash-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px;}
+.dash-stat{background:var(--cardbg);border-radius:16px;padding:14px 12px;text-align:center;
+  box-shadow:0 4px 14px var(--shadow2);border:1.5px solid var(--border);}
+.dash-stat .ds-num{font-family:'Baloo 2',cursive;font-size:1.8rem;font-weight:800;line-height:1;}
+.dash-stat .ds-label{font-size:.62rem;color:var(--text4);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:3px;}
+.dash-stat .ds-delta{font-size:.62rem;margin-top:5px;font-weight:600;}
+.ds-up{color:var(--green);}
+.ds-down{color:var(--coral);}
+.ds-neutral{color:var(--text5);}
+
+/* Two-column inner grid */
+.pd-inner{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.pd-card{background:var(--cardbg);border-radius:16px;padding:16px;
+  box-shadow:0 4px 14px var(--shadow2);border:1.5px solid var(--border);}
+.pd-card-full{grid-column:1/-1;}
+.pd-card-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
+  color:var(--text4);margin-bottom:12px;}
+
+/* Skill bars */
+.skill-bar{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.skill-label{font-size:.75rem;font-weight:700;color:var(--text3);width:56px;flex-shrink:0;}
+.skill-track{flex:1;height:7px;background:var(--inputbg);border-radius:50px;overflow:hidden;}
 body.bedtime .skill-track{background:#333355;}
-.skill-fill{height:100%;border-radius:50px;transition:width .6s;}
-.skill-stars{font-size:.72rem;color:var(--text4);flex-shrink:0;width:50px;text-align:right;}
-.streak-row{display:flex;gap:4px;margin-top:8px;}
-.streak-dot{width:28px;height:28px;border-radius:50%;background:var(--inputbg);
-  display:flex;align-items:center;justify-content:center;font-size:.8rem;}
-.streak-dot.active{background:linear-gradient(135deg,var(--green),var(--mint));color:#fff;}
+.skill-fill{height:100%;border-radius:50px;transition:width .7s cubic-bezier(.68,-.55,.27,1.55);}
+.skill-pct{font-size:.65rem;color:var(--text4);flex-shrink:0;width:30px;text-align:right;}
+
+/* Week activity dots */
+.week-activity{margin-top:4px;}
+.streak-row{display:flex;gap:5px;}
+.streak-dot{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.sd-circle{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:.75rem;font-weight:700;}
+.sd-circle.sd-done{background:linear-gradient(135deg,var(--green),var(--mint));color:#fff;}
+.sd-circle.sd-today{background:var(--purple);color:#fff;box-shadow:0 0 0 3px rgba(167,139,250,.25);}
+.sd-circle.sd-empty{background:var(--inputbg);color:var(--text5);}
+.sd-label{font-size:.55rem;color:var(--text5);font-weight:700;}
+
+/* Mood row */
+.mood-row{display:flex;gap:5px;margin-top:4px;}
+.mood-block{flex:1;border-radius:10px;padding:7px 4px;text-align:center;
+  background:var(--inputbg);border:1.5px solid var(--border);}
+.mood-emoji{font-size:16px;display:block;margin-bottom:2px;}
+.mood-day{font-size:.55rem;color:var(--text5);}
+
+/* Insight items */
+.insight-item{display:flex;align-items:flex-start;gap:9px;padding:9px 0;
+  border-bottom:1px solid var(--border);}
+.insight-item:last-child{border-bottom:none;padding-bottom:0;}
+.ins-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.ins-green{background:var(--green);}
+.ins-amber{background:var(--sun);}
+.ins-purple{background:var(--purple);}
+.ins-text{font-size:.82rem;color:var(--text);font-weight:600;}
+.ins-sub{font-size:.72rem;color:var(--text3);margin-top:2px;line-height:1.4;}
+.ins-badge{display:inline-block;padding:1px 8px;border-radius:50px;font-size:.62rem;
+  font-weight:700;background:#f0e8ff;color:var(--purple);}
+
+/* Calendar heatmap */
+.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;margin-top:6px;}
+.cal-header-cell{font-size:.6rem;font-weight:700;color:var(--text5);text-align:center;padding-bottom:3px;}
+.cal-cell{aspect-ratio:1;border-radius:5px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;}
+.cal-cell.cal-empty{background:transparent;}
+.cal-cell.cal-none{background:var(--inputbg);}
+.cal-cell.cal-low{background:#afa9ec;}
+.cal-cell.cal-mid{background:#4ecdc4;}
+.cal-cell.cal-high{background:#ffb830;}
+.cal-cell.cal-today{outline:2px solid var(--pink);outline-offset:-1px;}
+.cal-cell-num{font-size:.55rem;font-weight:700;color:var(--text4);}
+.cal-cell.cal-low .cal-cell-num,.cal-cell.cal-mid .cal-cell-num,.cal-cell.cal-high .cal-cell-num{color:#fff;}
+.cal-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
+.cal-legend span{font-size:.62rem;color:var(--text4);display:flex;align-items:center;gap:4px;}
+.cal-legend-dot{width:10px;height:10px;border-radius:2px;display:inline-block;}
+
+/* Quick settings */
+.pd-settings-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px;}
+.pd-set-btn{display:flex;align-items:center;gap:5px;padding:8px 13px;
+  border-radius:50px;border:1.5px solid var(--border);background:var(--inputbg);
+  color:var(--text);font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:700;
+  cursor:pointer;transition:all .15s;}
+.pd-set-btn:hover{background:var(--border);}
+.pd-set-btn:active{transform:scale(.95);}
+.pd-set-btn.danger{border-color:rgba(255,107,107,.35);color:#e05050;}
+
+/* Voice list keeps existing style */
+.voice-list{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto;padding-right:2px;}
+
+/* Notes keep existing */
+.note-input{width:100%;padding:12px;border:1.5px solid var(--border);border-radius:12px;
+  background:var(--inputbg);color:var(--text);font-family:'Nunito',sans-serif;font-size:.85rem;
+  resize:vertical;min-height:70px;transition:border-color .2s;box-sizing:border-box;}
+.note-input:focus{outline:none;border-color:var(--purple);}
+.note-save{border:none;padding:10px 20px;border-radius:50px;font-family:'Baloo 2',cursive;
+  font-size:.82rem;font-weight:700;cursor:pointer;color:#fff;margin-top:8px;
+  background:linear-gradient(135deg,var(--purple),var(--blue));}
+.note-list{margin-top:10px;}
+.note-entry{background:var(--inputbg);border-radius:12px;padding:10px 12px;margin-bottom:6px;
+  border-left:3px solid var(--purple);}
+.note-date{font-size:.65rem;color:var(--text5);font-weight:700;}
+.note-mood{font-size:.85rem;margin:0 4px;}
+.note-text{font-size:.8rem;color:var(--text2);margin-top:3px;line-height:1.4;}
+
+/* Responsive: collapse 4-col stats to 2-col on small screens */
+@media(max-width:480px){
+  .dash-grid{grid-template-columns:1fr 1fr;}
+  .pd-inner{grid-template-columns:1fr;}
+  .pd-card-full{grid-column:auto;}
+  .pd-child-name{font-size:1.3rem;}
+}
 
 /* UNLOCKABLES SHOP */
 .shop-panel{background:var(--cardbg);border-radius:var(--r);padding:20px 16px;margin-bottom:12px;
@@ -3650,7 +3757,7 @@ function saveArtwork(){
 function renderParentDash(){
   document.getElementById('hist').innerHTML='';
   const ws=JSON.parse(localStorage.getItem('cws')||'{}');
-  const today=new Date();const dow=today.getDay();
+  const today=new Date();
   let weekStars=0,streakDays=0;
   const streakArr=[];
   for(let i=6;i>=0;i--){
@@ -3658,128 +3765,216 @@ function renderParentDash(){
     const key=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
     const s=ws[key]||0;weekStars+=s;
     if(s>0)streakDays++;
-    streakArr.push({day:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()],stars:s});
+    streakArr.push({day:['S','M','T','W','T','F','S'][d.getDay()],short:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()],stars:s,isToday:i===0});
   }
 
-  // Count subject completions — all-time from allUsed
-  const subjectStars={abc:0,maths:0,art:0,science:0};
-  const subjectCount={abc:0,maths:0,art:0,science:0};
+  // Subject data
   const allActivities=[...CUR.learning,...CUR.morning,...CUR.evening];
-  // Today's data
-  done.forEach(d=>{
-    const act=allActivities.find(a=>a.title===d.title);
-    if(act&&act.subj){subjectStars[act.subj]+=d.stars;subjectCount[act.subj]++;}
-  });
-  // All-time count from allUsed
   const allTimeSubj={abc:0,maths:0,art:0,science:0};
   allUsed.forEach(title=>{
     const act=allActivities.find(a=>a.title===title);
     if(act&&act.subj)allTimeSubj[act.subj]++;
   });
   const maxSubj=Math.max(1,...Object.values(allTimeSubj));
+  const names={abc:'Reading',maths:'Maths',art:'Art',science:'Science'};
+  const emojis={abc:'🔤',maths:'🔢',art:'🎨',science:'🔬'};
+  const skillColors={abc:'#ff6b9d',maths:'#ffb830',art:'#4ecdc4',science:'#4fa3e0'};
 
   // Smart insights
   const sorted=Object.entries(allTimeSubj).sort((a,b)=>b[1]-a[1]);
-  const strongest=sorted[0];
-  const weakest=sorted[sorted.length-1];
-  const names={abc:'ABC & Reading',maths:'Maths',art:'Art & Creativity',science:'Science'};
-  const emojis={abc:'🔤',maths:'🔢',art:'🎨',science:'🔬'};
-  let insightHTML='';
-  if(strongest[1]>0){
-    insightHTML+=`<div style="background:linear-gradient(135deg,#e8fff0,#f0fff8);border-radius:12px;padding:10px 13px;margin-bottom:8px;border-left:3px solid var(--green);">
-      <div style="font-size:.78rem;font-weight:700;color:var(--green)">💪 Strongest Area</div>
-      <div style="font-size:.88rem;color:var(--text);margin-top:2px">${emojis[strongest[0]]} ${names[strongest[0]]} — ${strongest[1]} activities completed!</div>
-    </div>`;
-  }
-  if(weakest[1]<strongest[1]&&strongest[1]>0){
-    insightHTML+=`<div style="background:linear-gradient(135deg,#fff5e0,#fff0f0);border-radius:12px;padding:10px 13px;margin-bottom:8px;border-left:3px solid var(--sun);">
-      <div style="font-size:.78rem;font-weight:700;color:var(--sun)">🌱 Needs Practice</div>
-      <div style="font-size:.88rem;color:var(--text);margin-top:2px">${emojis[weakest[0]]} ${names[weakest[0]]} — only ${weakest[1]} activities so far. Try more!</div>
-    </div>`;
-  }
-  if(strongest[1]===0){
-    insightHTML=`<div style="font-size:.82rem;color:var(--text4);padding:8px 0">Complete some activities to see insights here!</div>`;
-  }
-
-  // Difficulty level display
+  const strongest=sorted[0];const weakest=sorted[sorted.length-1];
   const diffNames=['Easy','Medium','Hard'];
+
+  // Mood history for the week
+  const moodHist=JSON.parse(localStorage.getItem('c_mood_hist')||'[]');
+  const recentMoods=moodHist.slice(-7);
+  const moodDays=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const moodRowHTML=recentMoods.length?recentMoods.slice(-5).map((m,i)=>
+    `<div class="mood-block"><span class="mood-emoji">${m.mood||'😊'}</span><div class="mood-day">${moodDays[i]||''}</div></div>`
+  ).join(''):'<div style="font-size:.75rem;color:var(--text4);padding:8px 0">No mood data yet. Check in each morning!</div>';
+
+  // Week activity dots
+  const weekDotsHTML=streakArr.map(s=>{
+    const cls=s.isToday?'sd-today':s.stars>0?'sd-done':'sd-empty';
+    return `<div class="streak-dot"><div class="sd-circle ${cls}" title="${s.short}: ${s.stars} ⭐">${s.day}</div><div class="sd-label">${s.isToday?'●':''}</div></div>`;
+  }).join('');
+
+  // Today's delta hint
+  const yesterdayKey=(()=>{const y=new Date(today);y.setDate(today.getDate()-1);return `${y.getFullYear()}-${y.getMonth()+1}-${y.getDate()}`;})();
+  const yesterdayStars=ws[yesterdayKey]||0;
+  const todayStars=ws[todayKey()]||stars;
+  const deltaVal=todayStars-yesterdayStars;
+  const deltaHTML=deltaVal>0?`<div class="ds-delta ds-up">+${deltaVal} vs yesterday</div>`:
+    deltaVal<0?`<div class="ds-delta ds-down">${deltaVal} vs yesterday</div>`:
+    `<div class="ds-delta ds-neutral">Same as yesterday</div>`;
 
   document.getElementById('area').innerHTML=`
     <div class="parent-dash">
-      <h3>👨‍👩‍👧 Parent Dashboard</h3>
+
+      <!-- ── HEADER BANNER ── -->
+      <div class="pd-header">
+        <div>
+          <div class="pd-greeting">Parent Dashboard</div>
+          <div class="pd-child-name">👨‍👩‍👧 Your Little Star</div>
+          <div class="pd-child-sub">${today.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})} &nbsp;·&nbsp; ${allUsed.length} activities completed all-time</div>
+        </div>
+        <div class="pd-avatar">${friendEmoji||'🌟'}</div>
+      </div>
+
+      <!-- ── STATS ROW ── -->
       <div class="dash-grid">
-        <div class="dash-stat"><div class="ds-num">${done.length}</div><div class="ds-label">Done Today</div></div>
-        <div class="dash-stat"><div class="ds-num">${stars}</div><div class="ds-label">Stars Today</div></div>
-        <div class="dash-stat"><div class="ds-num">${weekStars}</div><div class="ds-label">This Week</div></div>
-        <div class="dash-stat"><div class="ds-num">${streakDays}</div><div class="ds-label">Streak Days</div></div>
+        <div class="dash-stat">
+          <div class="ds-num" style="color:var(--purple)">${done.length}</div>
+          <div class="ds-label">Done Today</div>
+          <div class="ds-delta ds-neutral">${done.length===0?'Start exploring!':'Great going!'}</div>
+        </div>
+        <div class="dash-stat">
+          <div class="ds-num" style="color:var(--sun)">${stars}</div>
+          <div class="ds-label">Stars Today</div>
+          ${deltaHTML}
+        </div>
+        <div class="dash-stat">
+          <div class="ds-num" style="color:var(--green)">${weekStars}</div>
+          <div class="ds-label">This Week</div>
+          <div class="ds-delta ds-neutral">${streakDays} active days</div>
+        </div>
+        <div class="dash-stat">
+          <div class="ds-num" style="color:var(--coral)">${streakDays}</div>
+          <div class="ds-label">Streak Days</div>
+          <div class="ds-delta ${streakDays>=5?'ds-up':'ds-neutral'}">${streakDays>=5?'On fire! 🔥':'Keep it going!'}</div>
+        </div>
       </div>
 
-      <div class="dash-section">
-        <h4>🧠 Smart Insights</h4>
-        ${insightHTML}
-        <div style="font-size:.75rem;color:var(--text4);margin-top:4px">🎮 Game difficulty: <strong style="color:var(--purple)">${diffNames[diffLevel-1]}</strong> (auto-adjusts based on performance)</div>
-      </div>
+      <!-- ── MAIN INNER GRID ── -->
+      <div class="pd-inner">
 
-      <div class="dash-section">
-        <h4>📊 Learning Areas (All Time)</h4>
-        ${Object.entries(allTimeSubj).map(([k,v])=>{
-          const colors={abc:'#ff6b9d',maths:'#ffb830',art:'#4ecdc4',science:'#4fa3e0'};
-          return `<div class="skill-bar">
-            <span class="skill-label">${names[k].split(' ')[0]}</span>
-            <div class="skill-track"><div class="skill-fill" style="width:${(v/maxSubj)*100}%;background:${colors[k]}"></div></div>
-            <span class="skill-stars">⭐ ${v}</span>
-          </div>`;
-        }).join('')}
-      </div>
-      <div class="dash-section">
-        <h4>🔥 7-Day Activity</h4>
-        <div class="streak-row">
-          ${streakArr.map(s=>`<div class="streak-dot ${s.stars>0?'active':''}" title="${s.day}: ${s.stars} stars">${s.stars>0?'⭐':s.day.charAt(0)}</div>`).join('')}
+        <!-- Learning Areas -->
+        <div class="pd-card">
+          <div class="pd-card-title">📊 Learning areas · all time</div>
+          ${Object.entries(allTimeSubj).map(([k,v])=>`
+            <div class="skill-bar">
+              <span class="skill-label">${emojis[k]} ${names[k]}</span>
+              <div class="skill-track"><div class="skill-fill" style="width:${maxSubj>0?Math.round((v/maxSubj)*100):0}%;background:${skillColors[k]}"></div></div>
+              <span class="skill-pct">${v}</span>
+            </div>`).join('')}
         </div>
-      </div>
-      <div class="dash-section">
-        <h4>⚙️ Settings</h4>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-          <button class="create-tool" onclick="parentReset()">🔄 Reset Journey</button>
-          <button class="create-tool" onclick="toggleBedtime()">🌙 Bedtime: ${bedtimeMode?'ON':'OFF'}</button>
-          <button class="create-tool" onclick="toggleSound()">🔊 Sound: ${soundOn?'ON':'OFF'}</button>
-          <button class="create-tool" onclick="changeFamilyCode()" style="background:linear-gradient(135deg,#4fa3e0,#4ecdc4);color:#fff">🔥 Family Code: ${_familyCode||'not set'}</button>
-        </div>
-      </div>
-      <div class="dash-section">
-        <h4>🎤 Voice Selection</h4>
-        <p style="font-size:.75rem;color:var(--text4);margin-bottom:4px">Tap a voice to select it. Press ▶ Test to hear a sample first.</p>
-        <p style="font-size:.72rem;color:var(--text5);margin-bottom:8px">Current: <strong style="color:var(--purple)">${selectedVoiceName||'Default'}</strong></p>
-        <div class="voice-list" id="voiceList">
-          ${buildVoiceListHTML()}
-        </div>
-      </div>
-      ${renderParentNotes()}
-      ${renderFriendSection()}
 
-      <!-- MONTHLY REPORT SECTION -->
-      <div class="dash-section" id="monthlyReportSection">
-        <h4>📅 Monthly Progress Report</h4>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center">
-          <select id="reportMonthSel" onchange="renderMonthlyReport()" style="padding:7px 12px;border-radius:10px;border:2px solid var(--border);background:var(--inputbg);color:var(--text);font-family:'Baloo 2',cursive;font-size:.85rem;cursor:pointer">
-            ${(()=>{
-              const now=new Date();
-              let opts='';
-              for(let i=0;i<6;i++){
-                const d=new Date(now.getFullYear(),now.getMonth()-i,1);
-                const val=`${d.getFullYear()}-${d.getMonth()+1}`;
-                const label=d.toLocaleString('default',{month:'long',year:'numeric'});
-                opts+=`<option value="${val}"${i===0?' selected':''}>${label}</option>`;
-              }
-              return opts;
-            })()}
-          </select>
+        <!-- 7-day + Mood -->
+        <div class="pd-card">
+          <div class="pd-card-title">🔥 7-day activity</div>
+          <div class="streak-row">${weekDotsHTML}</div>
+          <div style="margin-top:14px">
+            <div class="pd-card-title">😊 Recent moods</div>
+            <div class="mood-row">${moodRowHTML}</div>
+          </div>
         </div>
-        <div id="monthlyReportBody"></div>
+
+        <!-- Smart Insights -->
+        <div class="pd-card">
+          <div class="pd-card-title">🧠 Smart insights</div>
+          ${strongest[1]>0?`
+          <div class="insight-item">
+            <div class="ins-dot ins-green"></div>
+            <div>
+              <div class="ins-text">Strongest in ${emojis[strongest[0]]} ${names[strongest[0]]}</div>
+              <div class="ins-sub">${strongest[1]} activities completed — excellent momentum!</div>
+            </div>
+          </div>`:''}
+          ${weakest[1]<strongest[1]&&strongest[1]>0?`
+          <div class="insight-item">
+            <div class="ins-dot ins-amber"></div>
+            <div>
+              <div class="ins-text">${emojis[weakest[0]]} ${names[weakest[0]]} needs more practice</div>
+              <div class="ins-sub">Only ${weakest[1]} activities so far — try a few more this week.</div>
+            </div>
+          </div>`:''}
+          ${strongest[1]===0?`
+          <div class="insight-item">
+            <div class="ins-dot ins-purple"></div>
+            <div><div class="ins-text">Complete activities to see insights!</div></div>
+          </div>`:''}
+          <div class="insight-item">
+            <div class="ins-dot ins-purple"></div>
+            <div>
+              <div class="ins-text">Game difficulty auto-set to <span class="ins-badge">${diffNames[diffLevel-1]}</span></div>
+              <div class="ins-sub">Adjusts automatically based on performance.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monthly Calendar -->
+        <div class="pd-card">
+          <div class="pd-card-title" style="display:flex;align-items:center;justify-content:space-between">
+            <span>📅 Monthly report</span>
+            <select id="reportMonthSel" onchange="renderMonthlyReport()" style="padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--inputbg);color:var(--text);font-family:'Baloo 2',cursive;font-size:.65rem;cursor:pointer">
+              ${(()=>{
+                const now=new Date();let opts='';
+                for(let i=0;i<6;i++){
+                  const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+                  const val=`${d.getFullYear()}-${d.getMonth()+1}`;
+                  const label=d.toLocaleString('default',{month:'short',year:'numeric'});
+                  opts+=`<option value="${val}"${i===0?' selected':''}>${label}</option>`;
+                }
+                return opts;
+              })()}
+            </select>
+          </div>
+          <div id="monthlyCalBody"></div>
+          <div class="cal-legend">
+            <span><span class="cal-legend-dot" style="background:#afa9ec"></span>1–2 ⭐</span>
+            <span><span class="cal-legend-dot" style="background:#4ecdc4"></span>3–9 ⭐</span>
+            <span><span class="cal-legend-dot" style="background:#ffb830"></span>10+ ⭐</span>
+          </div>
+        </div>
+
+        <!-- Session Breakdown (full width) -->
+        <div class="pd-card pd-card-full" id="monthlyReportSection">
+          <div class="pd-card-title">📈 Session breakdown this month</div>
+          <div id="monthlyReportBody"></div>
+        </div>
+
+        <!-- Quick Settings (full width) -->
+        <div class="pd-card pd-card-full">
+          <div class="pd-card-title">⚙️ Quick settings</div>
+          <div class="pd-settings-row">
+            <button class="pd-set-btn" onclick="toggleBedtime()">🌙 Bedtime: <strong style="color:var(--purple);margin-left:3px">${bedtimeMode?'ON':'OFF'}</strong></button>
+            <button class="pd-set-btn" onclick="toggleSound()">🔊 Sound: <strong style="color:var(--green);margin-left:3px">${soundOn?'ON':'OFF'}</strong></button>
+            <button class="pd-set-btn" onclick="changeFamilyCode()">🔥 Family Code: <strong style="color:var(--sun);margin-left:3px">${_familyCode||'not set'}</strong></button>
+            <button class="pd-set-btn danger" onclick="parentReset()">🔄 Reset journey</button>
+          </div>
+        </div>
+
+        <!-- Voice Selection (full width) -->
+        <div class="pd-card pd-card-full">
+          <div class="pd-card-title">🎤 Voice selection · Current: <strong style="color:var(--purple)">${selectedVoiceName||'Default'}</strong></div>
+          <p style="font-size:.72rem;color:var(--text4);margin-bottom:8px">Tap a voice to select it. Press ▶ Test to hear a sample first.</p>
+          <div class="voice-list" id="voiceList">${buildVoiceListHTML()}</div>
+        </div>
+
+        <!-- Parent Notes (full width) -->
+        <div class="pd-card pd-card-full">
+          <div class="pd-card-title">📝 Parent notes</div>
+          ${(()=>{
+            const moodHist2=JSON.parse(localStorage.getItem('c_mood_hist')||'[]');
+            const notes=JSON.parse(localStorage.getItem('c_parent_notes')||'[]');
+            const recent=notes.slice(-10).reverse();
+            const recentM=moodHist2.slice(-7);
+            return `${recentM.length?`<div style="font-size:.72rem;color:var(--text4);margin-bottom:8px">Recent moods: ${recentM.map(m=>m.mood).join(' ')}</div>`:''}
+            <textarea class="note-input" id="parentNoteInput" placeholder="Write a note about today... (milestones, struggles, fun moments)"></textarea>
+            <button class="note-save" onclick="saveParentNote()">💾 Save Note</button>
+            ${recent.length?`<div class="note-list">${recent.map(n=>`<div class="note-entry"><span class="note-date">${n.date}</span>${n.mood?`<span class="note-mood">${n.mood}</span>`:''}<div class="note-text">${n.text}</div></div>`).join('')}</div>`:'<div style="font-size:.72rem;color:var(--text5);margin-top:8px">No notes yet. Start writing!</div>'}`;
+          })()}
+        </div>
+
+        <!-- Little Star Friend (full width) -->
+        <div class="pd-card pd-card-full">
+          ${renderFriendSection()}
+        </div>
+
       </div>
     </div>`;
 
-  // Auto-render monthly report after inserting HTML
+  // Render the calendar heatmap + session bars
   setTimeout(()=>renderMonthlyReport(),50);
 }
 
@@ -3933,8 +4128,13 @@ function renderMonthlyReport(){
 
   const noDataHTML=totalStarsMonth===0?`<div style="text-align:center;padding:20px;color:var(--text4);font-size:.85rem">No activity recorded for this month yet.<br>Start playing to see the report! 🌟</div>`:'';
 
+  // Render compact calendar heatmap in the card header slot
+  const calBodyEl=document.getElementById('monthlyCalBody');
+  if(calBodyEl) calBodyEl.innerHTML=calHTML;
+
+  // Summary + session bars go in full-width section
   document.getElementById('monthlyReportBody').innerHTML=
-    noDataHTML||( calHTML + legendHTML + summaryHTML + sessionBarsHTML + strengthHTML + improveHTML );
+    noDataHTML||( legendHTML + summaryHTML + sessionBarsHTML + strengthHTML + improveHTML );
 }
 
 // ══════════════════════════════════════
