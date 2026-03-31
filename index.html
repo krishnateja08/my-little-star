@@ -6428,26 +6428,64 @@ function nextWmRound(){
   const missingIdx=Math.floor(Math.random()*picked.length);
   const missing=picked[missingIdx];
 
-  // Phase 1: show all items
+  // Phase 1: show all items with visual ring countdown
   function renderPhase1(){
+    const totalSecs=Math.round(showTime/1000);
+    const radius=36;
+    const circ=2*Math.PI*radius; // circumference
     document.getElementById('area').innerHTML=`
       <div class="game-panel">
         <div class="game-title">🔍 What's Missing?</div>
         <div class="game-inst">Round ${wmRound}/${totalRounds} · Score: ${wmScore} ⭐</div>
         <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:.9rem;color:var(--purple);margin-bottom:10px;font-weight:700">
-          👀 Look carefully at all the items!
+          👀 Look carefully — one will disappear!
         </div>
         <div class="wm-grid" style="grid-template-columns:repeat(${Math.min(gridSize,4)},1fr)">
           ${picked.map(it=>`<div class="wm-card"><span>${it.e}</span></div>`).join('')}
         </div>
-        <div style="text-align:center;font-size:.8rem;color:var(--text3);font-family:'Baloo 2',cursive">
-          ⏱️ You have <span id="wmCountdown" style="color:var(--coral);font-weight:800">${Math.round(showTime/1000)}</span> seconds to remember everything!
+        <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-top:14px;background:linear-gradient(135deg,#fff5e0,#ffe0f0);border-radius:16px;padding:12px 20px">
+          <div style="position:relative;width:88px;height:88px;flex-shrink:0">
+            <svg width="88" height="88" viewBox="0 0 88 88" style="transform:rotate(-90deg)">
+              <circle cx="44" cy="44" r="${radius}" fill="none" stroke="#f0f0f0" stroke-width="8"/>
+              <circle id="wmRing" cx="44" cy="44" r="${radius}" fill="none" stroke="#ff6b9d" stroke-width="8"
+                stroke-linecap="round"
+                stroke-dasharray="${circ}"
+                stroke-dashoffset="0"
+                style="transition:stroke-dashoffset 1s linear,stroke .5s"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+              <span id="wmBigNum" style="font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;color:var(--coral);line-height:1">${totalSecs}</span>
+              <span style="font-size:.55rem;color:var(--text4);font-weight:700;letter-spacing:.5px">SEC</span>
+            </div>
+          </div>
+          <div style="text-align:left">
+            <div style="font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800;color:var(--text)">Remember all items!</div>
+            <div style="font-size:.78rem;color:var(--text3);margin-top:3px">One will vanish when the<br>timer runs out 👀</div>
+          </div>
         </div>
       </div>`;
     speakText('Look carefully at all the items!');
-    // Countdown
-    let secs=Math.round(showTime/1000);
-    const ctdn=setInterval(()=>{secs--;const el=document.getElementById('wmCountdown');if(el)el.textContent=secs;if(secs<=0)clearInterval(ctdn);},1000);
+    // Animate ring countdown
+    let secs=totalSecs;
+    const ring=document.getElementById('wmRing');
+    const numEl=document.getElementById('wmBigNum');
+    // Tick every second
+    const ctdn=setInterval(()=>{
+      secs--;
+      const el=document.getElementById('wmBigNum');
+      const r=document.getElementById('wmRing');
+      if(!el||!r){clearInterval(ctdn);return;}
+      el.textContent=secs;
+      // Drain the ring proportionally
+      const pct=(totalSecs-secs)/totalSecs;
+      r.style.strokeDashoffset=circ*pct;
+      // Colour shifts green→orange→red as time runs out
+      if(secs>6) r.style.stroke='#56cf81';
+      else if(secs>3) r.style.stroke='#ffb830';
+      else r.style.stroke='#ff5252';
+      if(el) el.style.color=secs>6?'var(--green)':secs>3?'var(--sun)':'#ff5252';
+      if(secs<=0)clearInterval(ctdn);
+    },1000);
     setTimeout(renderPhase2,showTime);
   }
 
