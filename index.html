@@ -3946,9 +3946,17 @@ function renderParentDash(){
 
         <!-- Voice Selection (full width) -->
         <div class="pd-card pd-card-full">
-          <div class="pd-card-title">🎤 Voice selection · Current: <strong style="color:var(--purple)">${selectedVoiceName||'Default'}</strong></div>
-          <p style="font-size:.72rem;color:var(--text4);margin-bottom:8px">Tap a voice to select it. Press ▶ Test to hear a sample first.</p>
-          <div class="voice-list" id="voiceList">${buildVoiceListHTML()}</div>
+          <div class="pd-accordion-header" onclick="toggleVoiceAccordion()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
+            <div>
+              <div class="pd-card-title" style="margin-bottom:2px;">🎤 Voice Selection</div>
+              <div style="font-size:.82rem;color:var(--text2);">Current: <strong style="color:var(--purple)">${selectedVoiceName||'Default'}</strong></div>
+            </div>
+            <div id="voiceAccordionArrow" style="font-size:1.2rem;color:var(--purple);transition:transform .3s;padding:4px 8px;">▼</div>
+          </div>
+          <div id="voiceAccordionBody" style="display:none;margin-top:14px;border-top:1.5px solid var(--border);padding-top:14px;">
+            <p style="font-size:.8rem;color:var(--text4);margin-bottom:10px;">Tap a voice to select it. Press ▶ Test to hear a sample first.</p>
+            <div class="voice-list" id="voiceList">${buildVoiceListHTML()}</div>
+          </div>
         </div>
 
         <!-- Parent Notes (full width) -->
@@ -3976,6 +3984,16 @@ function renderParentDash(){
 
   // Render the calendar heatmap + session bars
   setTimeout(()=>renderMonthlyReport(),50);
+}
+
+function toggleVoiceAccordion(){
+  const body=document.getElementById('voiceAccordionBody');
+  const arrow=document.getElementById('voiceAccordionArrow');
+  if(!body||!arrow)return;
+  const isOpen=body.style.display!=='none';
+  body.style.display=isOpen?'none':'block';
+  arrow.style.transform=isOpen?'rotate(0deg)':'rotate(180deg)';
+  playClick();
 }
 
 function renderMonthlyReport(){
