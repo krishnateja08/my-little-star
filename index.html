@@ -377,6 +377,7 @@ body.bedtime .btt-bar{background:#333355;}
 .gp[data-g="creative"].active{background:linear-gradient(135deg,#ff6b9d,#a78bfa);}
 .gp[data-g="brain"].active  {background:linear-gradient(135deg,#4fa3e0,#56cf81);}
 .gp[data-g="time"].active   {background:linear-gradient(135deg,#ffb830,#a78bfa);}
+.gp[data-g="money"].active  {background:linear-gradient(135deg,#56cf81,#ffb830);}
 .sp{flex-shrink:0;border:none;padding:5px 13px;border-radius:50px;cursor:pointer;
   font-family:'Baloo 2',cursive;font-size:.76rem;font-weight:700;background:#f0f0f0;color:var(--text4);transition:all .2s;}
 .sp.active{color:#fff;}
@@ -795,6 +796,76 @@ body.bedtime .goals-card{background:linear-gradient(135deg,#2a1a3e,#1a2a3e);}
 .bl-suggest-text{font-size:.78rem;color:rgba(255,255,255,.5);}
 
 /* CHOOSE YOUR ENDING */
+/* MONEY/BUSINESS GAMES */
+.money-scene{text-align:center;padding:16px 0;}
+.money-item-row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:10px 0;}
+.money-item{background:var(--inputbg);border-radius:14px;padding:14px 12px;min-width:70px;
+  text-align:center;cursor:pointer;transition:all .2s;border:3px solid transparent;}
+.money-item:active{transform:scale(.93);}
+.money-item.selected{border-color:var(--green);background:#e8fff0;transform:scale(1.05);}
+body.bedtime .money-item.selected{background:#1e3e2e;}
+.money-item .mi-emoji{font-size:2rem;display:block;}
+.money-item .mi-label{font-size:.72rem;font-weight:700;color:var(--text2);margin-top:2px;}
+.money-item .mi-price{font-family:'Baloo 2',cursive;font-size:.68rem;color:var(--sun);font-weight:700;}
+.money-item.correct{border-color:var(--green);background:#e8fff0;}
+.money-item.wrong{border-color:var(--pink);background:#ffe8f0;animation:shake .3s;}
+
+.coin-display{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin:12px 0;min-height:60px;}
+.coin{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:'Baloo 2',cursive;font-weight:800;font-size:.68rem;color:#fff;
+  box-shadow:0 4px 12px rgba(0,0,0,.15);cursor:pointer;transition:all .2s;user-select:none;}
+.coin:active{transform:scale(.9);}
+.coin-1{background:linear-gradient(135deg,#c0a060,#a08040);width:40px;height:40px;font-size:.6rem;}
+.coin-5{background:linear-gradient(135deg,#b0b0b0,#888);width:44px;height:44px;}
+.coin-10{background:linear-gradient(135deg,#ffb830,#e0a020);width:50px;height:50px;font-size:.75rem;}
+
+.lemon-stand{background:linear-gradient(135deg,#fff9c4,#fff176);border-radius:16px;padding:16px;
+  margin:12px 0;border:3px solid #fdd835;text-align:center;}
+body.bedtime .lemon-stand{background:linear-gradient(135deg,#2a2a1e,#3e3e1e);border-color:#665500;}
+.lemon-stand-title{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:#f57f17;}
+.lemon-stand-row{display:flex;align-items:center;justify-content:center;gap:12px;margin:8px 0;}
+.lemon-slider-wrap{display:flex;align-items:center;gap:8px;margin:10px 0;}
+.lemon-slider-wrap input[type=range]{flex:1;accent-color:var(--sun);}
+.lemon-price-tag{font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:var(--green);}
+.customer-row{display:flex;justify-content:center;gap:10px;margin:10px 0;flex-wrap:wrap;}
+.customer{font-size:2rem;transition:all .5s;opacity:0;transform:translateY(20px);}
+.customer.show{opacity:1;transform:translateY(0);}
+.customer.happy{animation:bounce .4s;}
+.customer.sad{opacity:.4;filter:grayscale(.8);}
+.profit-display{font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;margin:8px 0;}
+.profit-display.good{color:var(--green);}
+.profit-display.bad{color:var(--pink);}
+
+.trade-scene{display:flex;align-items:center;justify-content:center;gap:12px;margin:14px 0;flex-wrap:wrap;}
+.trade-side{background:var(--inputbg);border-radius:16px;padding:14px 18px;text-align:center;min-width:100px;}
+.trade-vs{font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;color:var(--purple);}
+.trade-value{font-family:'Baloo 2',cursive;font-size:.7rem;color:var(--text4);margin-top:4px;}
+.trade-btns{display:flex;gap:10px;justify-content:center;margin:12px 0;}
+.trade-btn{padding:14px 28px;border:none;border-radius:14px;font-family:'Baloo 2',cursive;
+  font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;color:#fff;}
+.trade-btn:active{transform:scale(.93);}
+.trade-btn.fair{background:linear-gradient(135deg,var(--green),#4ecdc4);}
+.trade-btn.unfair{background:linear-gradient(135deg,var(--pink),var(--coral));}
+.trade-btn.correct-pick{box-shadow:0 0 20px rgba(86,207,129,.5);transform:scale(1.05);}
+.trade-btn.wrong-pick{opacity:.5;}
+
+.shop-customer{display:flex;align-items:center;gap:12px;background:var(--inputbg);
+  border-radius:16px;padding:14px;margin:10px 0;}
+.shop-customer-emoji{font-size:2.4rem;flex-shrink:0;}
+.shop-customer-bubble{background:#fff;border-radius:12px;padding:10px 14px;flex:1;
+  font-size:.85rem;color:var(--text);box-shadow:0 2px 8px var(--shadow2);position:relative;}
+body.bedtime .shop-customer-bubble{background:var(--inputbg);}
+.shop-customer-bubble::before{content:'';position:absolute;left:-8px;top:50%;transform:translateY(-50%);
+  border-right:8px solid #fff;border-top:6px solid transparent;border-bottom:6px solid transparent;}
+body.bedtime .shop-customer-bubble::before{border-right-color:var(--inputbg);}
+.price-options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0;}
+.price-opt{background:var(--inputbg);border-radius:14px;padding:14px 8px;text-align:center;
+  cursor:pointer;transition:all .2s;border:3px solid transparent;font-family:'Baloo 2',cursive;}
+.price-opt:active{transform:scale(.93);}
+.price-opt .po-coins{font-size:1.4rem;font-weight:800;color:var(--sun);}
+.price-opt .po-label{font-size:.65rem;color:var(--text4);margin-top:2px;}
+.price-opt.correct{border-color:var(--green);background:#e8fff0;}
+.price-opt.wrong{border-color:var(--pink);background:#ffe8f0;animation:shake .3s;}
 .ending-box{background:rgba(255,107,157,.08);border-radius:16px;padding:14px 16px;
   margin-top:14px;border:2px dashed rgba(255,107,157,.3);position:relative;z-index:2;}
 .ending-label{font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:700;
@@ -1505,6 +1576,7 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
   <button class="gp"        data-g="creative" onclick="switchGameCat('creative')">🎨 Creative</button>
   <button class="gp"        data-g="brain"    onclick="switchGameCat('brain')">🧠 Brain</button>
   <button class="gp"        data-g="time"     onclick="switchGameCat('time')">🕐 Time</button>
+  <button class="gp"        data-g="money"    onclick="switchGameCat('money')">💰 Money</button>
 </div>
 
 <!-- Today is... Teaching Bar -->
@@ -2443,6 +2515,10 @@ const GAMES = [
   {id:'whatsMissing',week:1,emoji:'🔍',title:"What's Missing?",           desc:'Look carefully, then find what disappeared!',        cat:'brain'},
   {id:'colourPattern',week:1,emoji:'🌈',title:'Colour Pattern Memory!',   desc:'Remember the colour order and tap it back!',         cat:'brain'},
   {id:'numberMemory', week:2,emoji:'🔢',title:'Number Memory Flash!',     desc:'See the numbers, then recall them in order!',        cat:'brain'},
+  {id:'lemonadeStand',week:1,emoji:'🍋',title:'Lemonade Stand!',           desc:'Buy lemons, set your price, and sell to earn coins!', cat:'money'},
+  {id:'coinCount',    week:1,emoji:'🪙',title:'Coin Counting!',            desc:'Count the coins and pick the right total!',           cat:'money'},
+  {id:'fairTrade',    week:1,emoji:'🔄',title:'Fair Trade Market!',         desc:'Decide if the trade is fair or not fair!',            cat:'money'},
+  {id:'myShop',       week:2,emoji:'🏪',title:'My Little Shop!',            desc:'Pick the right price to make your customers happy!',  cat:'money'},
 ];
 
 // ══════════════════════════════════════
@@ -2729,7 +2805,8 @@ function renderGame(g){
     colourMix:buildColourMix,shapeTap:buildShapeTap,memoryFlip:buildMemoryFlip,
     findLetter:buildFindLetter,animalSound:buildAnimalSound,phonicsMatch:buildPhonicsMatch,
     daysOrder:buildDaysOrder,clockGame:buildClockGame,simonSays:buildSimonSays,
-    whatsMissing:buildWhatsMissing,colourPattern:buildColourPattern,numberMemory:buildNumberMemory};
+    whatsMissing:buildWhatsMissing,colourPattern:buildColourPattern,numberMemory:buildNumberMemory,
+    lemonadeStand:buildLemonadeStand,coinCount:buildCoinCount,fairTrade:buildFairTrade,myShop:buildMyShop};
   (fns[g.id]||buildCountGame)();
   // Append skip button after game panel
   const area=document.getElementById('area');
@@ -6317,6 +6394,298 @@ function parentBypassBedtime(){
 
 // Check every 5 minutes
 setInterval(checkBedtimeLock,300000);
+
+// ══════════════════════════════════════
+//  MONEY GAMES — Lemonade Stand
+// ══════════════════════════════════════
+let lsRound=0,lsScore=0,lsCoins=0;
+function buildLemonadeStand(){lsRound=0;lsScore=0;lsCoins=10;nextLemonadeRound();}
+function nextLemonadeRound(){
+  lsRound++;
+  const totalRounds=diffLevel===1?3:diffLevel===2?4:5;
+  if(lsRound>totalRounds){endGame(lsScore,totalRounds,'lemonadeStand');return;}
+  // Cost to make lemonade scales with difficulty
+  const cost=diffLevel===1?[1,2,3][Math.floor(Math.random()*3)]:
+             diffLevel===2?[2,3,4][Math.floor(Math.random()*3)]:
+             [3,4,5][Math.floor(Math.random()*3)];
+  const weather=['☀️ Sunny & Hot','🌤️ Warm','☁️ Cloudy','🌧️ Rainy'];
+  const wIdx=Math.floor(Math.random()*weather.length);
+  const demandMod=[3,2,1,0][wIdx]; // sunny=high demand
+  const maxCustomers=diffLevel===1?4:diffLevel===2?5:6;
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🍋 Lemonade Stand!</div>
+      <div class="game-inst">Buy lemons, pick a price, and sell! Weather: <strong>${weather[wIdx]}</strong></div>
+      <div class="game-score">Round ${lsRound}/${totalRounds} · Coins: ${lsCoins} 🪙</div>
+      <div class="lemon-stand">
+        <div class="lemon-stand-title">🍋 Your Lemonade Stand</div>
+        <div style="margin:6px 0;font-size:.82rem;color:var(--text2)">Each cup costs <strong>${cost} 🪙</strong> to make</div>
+        <div style="font-size:.78rem;color:var(--text3);margin-bottom:8px">${weather[wIdx]} — ${['Lots of thirsty people!','Some thirsty people!','Not many people outside…','Everyone is hiding from rain!'][wIdx]}</div>
+        <div class="lemon-slider-wrap">
+          <span style="font-size:.72rem;color:var(--text4)">Price:</span>
+          <input type="range" min="1" max="10" value="${cost+2}" id="lsPrice" oninput="document.getElementById('lsPriceShow').textContent=this.value+' 🪙'">
+          <span class="lemon-price-tag" id="lsPriceShow">${cost+2} 🪙</span>
+        </div>
+        <button class="game-next-btn" onclick="sellLemonade(${cost},${demandMod},${maxCustomers})">🧃 Open Shop & Sell!</button>
+      </div>
+      <div id="lsResult"></div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('Round '+lsRound+'! Each cup costs '+cost+' coins to make. Pick your selling price!');
+}
+function sellLemonade(cost,demandMod,maxCustomers){
+  const price=parseInt(document.getElementById('lsPrice').value);
+  // Higher price = fewer customers, better weather = more customers
+  let customers=Math.max(0,Math.min(maxCustomers,maxCustomers-Math.max(0,price-cost-2)+demandMod));
+  if(price<=cost) customers=Math.min(maxCustomers,customers+1); // cheap = more buyers but you lose money
+  const revenue=customers*price;
+  const totalCost=customers*cost;
+  const profit=revenue-totalCost;
+  lsCoins+=profit;
+  const faces=['👧','👦','👶','🧒','👩','🧑'];
+  const customerEmojis=Array.from({length:customers},()=>faces[Math.floor(Math.random()*faces.length)]);
+  const noShowCount=maxCustomers-customers;
+  const profitGood=profit>0;
+  if(profitGood){lsScore++;adaptDifficulty(true);playCorrect();mascotPraise();}
+  else{adaptDifficulty(false);playWrong();mascotHint();}
+  // Show result
+  document.getElementById('lsResult').innerHTML=`
+    <div class="customer-row">
+      ${customerEmojis.map((_,i)=>`<span class="customer" id="lsc${i}">${customerEmojis[i]}</span>`).join('')}
+      ${Array.from({length:noShowCount},()=>'<span class="customer sad show">🚶</span>').join('')}
+    </div>
+    <div class="profit-display ${profitGood?'good':'bad'}">
+      ${customers} customer${customers!==1?'s':''} × ${price} 🪙 = ${revenue} 🪙 earned<br>
+      ${customers} cup${customers!==1?'s':''} × ${cost} 🪙 cost = ${totalCost} 🪙 spent<br>
+      ${profitGood?'📈 Profit: +'+profit+' 🪙 — Great business!':'📉 '+(profit===0?'Break even — no profit!':'Loss: '+profit+' 🪙 — Try a better price!')}
+    </div>`;
+  document.getElementById('gfb').textContent=profitGood?'✅ You made money! Smart pricing!':'💡 Try to sell higher than your cost next time!';
+  // Animate customers appearing
+  customerEmojis.forEach((_,i)=>setTimeout(()=>{
+    const el=document.getElementById('lsc'+i);if(el)el.classList.add('show','happy');
+  },i*300));
+  // Replace sell button with next
+  document.querySelector('.game-next-btn').textContent='➡️ Next Round';
+  document.querySelector('.game-next-btn').onclick=()=>nextLemonadeRound();
+  speakText(profitGood?customers+' customers came! You earned '+profit+' coins profit!':'Oh no! '+customers+' customers came but you '+( profit===0?'broke even.':'lost '+Math.abs(profit)+' coins. Try a different price!'));
+}
+
+// ══════════════════════════════════════
+//  MONEY GAMES — Coin Counting
+// ══════════════════════════════════════
+let ccScore=0,ccRound=0;
+function buildCoinCount(){ccScore=0;ccRound=0;nextCoinRound();}
+function nextCoinRound(){
+  ccRound++;
+  const totalRounds=diffLevel===1?4:diffLevel===2?5:6;
+  if(ccRound>totalRounds){endGame(ccScore,totalRounds,'coinCount');return;}
+  // Generate random coins
+  let coins=[];
+  if(diffLevel===1){
+    // Only 1s, total up to 10
+    const count=Math.floor(Math.random()*5)+2;
+    for(let i=0;i<count;i++) coins.push(1);
+  } else if(diffLevel===2){
+    // 1s and 5s
+    const fives=Math.floor(Math.random()*2)+1;
+    const ones=Math.floor(Math.random()*4)+1;
+    for(let i=0;i<fives;i++) coins.push(5);
+    for(let i=0;i<ones;i++) coins.push(1);
+  } else {
+    // 1s, 5s and 10s
+    const tens=Math.floor(Math.random()*2);
+    const fives=Math.floor(Math.random()*2)+1;
+    const ones=Math.floor(Math.random()*3)+1;
+    for(let i=0;i<tens;i++) coins.push(10);
+    for(let i=0;i<fives;i++) coins.push(5);
+    for(let i=0;i<ones;i++) coins.push(1);
+  }
+  coins.sort(()=>Math.random()-.5);
+  const total=coins.reduce((a,b)=>a+b,0);
+  // Generate wrong options
+  const opts=[total];
+  while(opts.length<4){
+    const offset=[-3,-2,-1,1,2,3,4,5][Math.floor(Math.random()*8)];
+    const wrong=total+offset;
+    if(wrong>0&&!opts.includes(wrong)) opts.push(wrong);
+  }
+  opts.sort(()=>Math.random()-.5);
+  const coinHTML=coins.map(c=>`<div class="coin coin-${c}">${c}¢</div>`).join('');
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🪙 Coin Counting!</div>
+      <div class="game-inst">Count all the coins! How much money is there?</div>
+      <div class="game-score">Round ${ccRound}/${totalRounds} · Score: ${ccScore} ⭐</div>
+      <div class="coin-display">${coinHTML}</div>
+      <div class="count-opts">${opts.map(o=>`<div class="copt" onclick="checkCoin(this,${o},${total})">${o}¢</div>`).join('')}</div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('Count the coins! How much money is there?');
+}
+function checkCoin(el,chosen,ans){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===ans){el.classList.add('correct');ccScore++;adaptDifficulty(true);playCorrect();
+    document.getElementById('gfb').textContent='✅ Correct! '+ans+' cents!';mascotPraise();}
+  else{el.classList.add('wrong');adaptDifficulty(false);playWrong();
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent===ans+'¢')c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ The answer was '+ans+'¢!';mascotHint();}
+  setTimeout(nextCoinRound,1500);
+}
+
+// ══════════════════════════════════════
+//  MONEY GAMES — Fair Trade Market
+// ══════════════════════════════════════
+const TRADE_ITEMS=[
+  {emoji:'🍎',name:'Apple',value:2},{emoji:'🍌',name:'Banana',value:1},{emoji:'🍊',name:'Orange',value:2},
+  {emoji:'🧁',name:'Cupcake',value:3},{emoji:'🍪',name:'Cookie',value:2},{emoji:'🍬',name:'Candy',value:1},
+  {emoji:'🧸',name:'Teddy',value:5},{emoji:'🖍️',name:'Crayon',value:1},{emoji:'📖',name:'Book',value:4},
+  {emoji:'⚽',name:'Ball',value:3},{emoji:'🎈',name:'Balloon',value:1},{emoji:'🌸',name:'Flower',value:2},
+  {emoji:'🧩',name:'Puzzle',value:4},{emoji:'🎨',name:'Paint Set',value:5},{emoji:'🪁',name:'Kite',value:3},
+];
+let ftScore=0,ftRound=0;
+function buildFairTrade(){ftScore=0;ftRound=0;nextTradeRound();}
+function nextTradeRound(){
+  ftRound++;
+  const totalRounds=diffLevel===1?4:diffLevel===2?5:6;
+  if(ftRound>totalRounds){endGame(ftScore,totalRounds,'fairTrade');return;}
+  // Pick two sides
+  const pool=[...TRADE_ITEMS].sort(()=>Math.random()-.5);
+  const leftCount=diffLevel===1?1:Math.floor(Math.random()*2)+1;
+  const rightCount=diffLevel===1?1:Math.floor(Math.random()*2)+1;
+  const left=pool.slice(0,leftCount);
+  const right=pool.slice(leftCount,leftCount+rightCount);
+  const leftVal=left.reduce((s,i)=>s+i.value,0);
+  let rightVal=right.reduce((s,i)=>s+i.value,0);
+  // 50% chance to make it fair, 50% unfair
+  const isFair=Math.random()<0.5;
+  if(isFair){
+    // Adjust right side to match left
+    const diff=leftVal-rightVal;
+    if(diff>0&&right.length>0) right[0]={...right[0],value:right[0].value+diff};
+    else if(diff<0&&right.length>0) right[0]={...right[0],value:Math.max(1,right[0].value+diff)};
+    rightVal=right.reduce((s,i)=>s+i.value,0);
+  }
+  const actuallyFair=leftVal===rightVal;
+  const showValues=diffLevel>=2;
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔄 Fair Trade Market!</div>
+      <div class="game-inst">Is this trade <strong>fair</strong> or <strong>not fair</strong>?</div>
+      <div class="game-score">Round ${ftRound}/${totalRounds} · Score: ${ftScore} ⭐</div>
+      <div class="trade-scene">
+        <div class="trade-side">
+          ${left.map(i=>`<div style="font-size:2rem">${i.emoji}</div><div style="font-size:.72rem;color:var(--text2)">${i.name}</div>${showValues?'<div class="trade-value">Worth: '+i.value+' 🪙</div>':''}`).join('')}
+        </div>
+        <div class="trade-vs">🔄</div>
+        <div class="trade-side">
+          ${right.map(i=>`<div style="font-size:2rem">${i.emoji}</div><div style="font-size:.72rem;color:var(--text2)">${i.name}</div>${showValues?'<div class="trade-value">Worth: '+i.value+' 🪙</div>':''}`).join('')}
+        </div>
+      </div>
+      <div class="trade-btns">
+        <button class="trade-btn fair" onclick="checkTrade(this,true,${actuallyFair},${leftVal},${rightVal})">✅ Fair!</button>
+        <button class="trade-btn unfair" onclick="checkTrade(this,false,${actuallyFair},${leftVal},${rightVal})">❌ Not Fair!</button>
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('Is this trade fair? '+left.map(i=>i.name).join(' and ')+' for '+right.map(i=>i.name).join(' and ')+'?');
+}
+function checkTrade(el,guessedFair,actuallyFair,leftVal,rightVal){
+  document.querySelectorAll('.trade-btn').forEach(b=>b.onclick=null);
+  const correct=(guessedFair===actuallyFair);
+  if(correct){
+    el.classList.add('correct-pick');ftScore++;adaptDifficulty(true);playCorrect();
+    document.getElementById('gfb').textContent=actuallyFair?'✅ Yes! Both sides are worth '+leftVal+' 🪙!':'✅ Right! Left is '+leftVal+' 🪙 but right is '+rightVal+' 🪙 — not fair!';
+    mascotPraise();
+  } else {
+    el.classList.add('wrong-pick');adaptDifficulty(false);playWrong();
+    document.getElementById('gfb').textContent=actuallyFair?'❌ Actually it IS fair! Both are worth '+leftVal+' 🪙!':'❌ It\'s NOT fair! Left is '+leftVal+' 🪙 but right is '+rightVal+' 🪙!';
+    mascotHint();
+  }
+  setTimeout(nextTradeRound,2000);
+}
+
+// ══════════════════════════════════════
+//  MONEY GAMES — My Little Shop
+// ══════════════════════════════════════
+const SHOP_PRODUCTS=[
+  {emoji:'🍎',name:'Apple',goodPrice:2,category:'food'},
+  {emoji:'🧁',name:'Cupcake',goodPrice:3,category:'food'},
+  {emoji:'🍕',name:'Pizza Slice',goodPrice:4,category:'food'},
+  {emoji:'🧃',name:'Juice Box',goodPrice:2,category:'drink'},
+  {emoji:'🍦',name:'Ice Cream',goodPrice:3,category:'food'},
+  {emoji:'🖍️',name:'Crayons',goodPrice:3,category:'toy'},
+  {emoji:'🧸',name:'Teddy Bear',goodPrice:5,category:'toy'},
+  {emoji:'📖',name:'Storybook',goodPrice:4,category:'toy'},
+  {emoji:'🎈',name:'Balloon',goodPrice:1,category:'toy'},
+  {emoji:'⚽',name:'Football',goodPrice:5,category:'toy'},
+];
+const SHOP_CUSTOMERS=[
+  {emoji:'👧',name:'Emma',mood:'happy'},{emoji:'👦',name:'Liam',mood:'careful'},
+  {emoji:'🧒',name:'Mia',mood:'happy'},{emoji:'👶',name:'Baby Noah',mood:'happy'},
+  {emoji:'👩',name:'Mum Sarah',mood:'careful'},{emoji:'🧑',name:'Dad Tom',mood:'careful'},
+];
+let msScore=0,msRound=0;
+function buildMyShop(){msScore=0;msRound=0;nextShopRound();}
+function nextShopRound(){
+  msRound++;
+  const totalRounds=diffLevel===1?3:diffLevel===2?4:5;
+  if(msRound>totalRounds){endGame(msScore,totalRounds,'myShop');return;}
+  const product=SHOP_PRODUCTS[Math.floor(Math.random()*SHOP_PRODUCTS.length)];
+  const customer=SHOP_CUSTOMERS[Math.floor(Math.random()*SHOP_CUSTOMERS.length)];
+  const goodPrice=product.goodPrice;
+  // Generate 3 price options: too cheap, just right, too expensive
+  const tooLow=Math.max(1,goodPrice-Math.floor(Math.random()*2)-1);
+  const tooHigh=goodPrice+Math.floor(Math.random()*3)+2;
+  const prices=[
+    {val:tooLow,type:'low',label:'Cheap'},
+    {val:goodPrice,type:'good',label:'Just Right'},
+    {val:tooHigh,type:'high',label:'Expensive'}
+  ].sort(()=>Math.random()-.5);
+  const sayings={
+    happy:`Hi! I'd love to buy a ${product.name}! What's the price?`,
+    careful:`Hmm, I want a ${product.name}. Is the price fair?`,
+  };
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🏪 My Little Shop!</div>
+      <div class="game-inst">Pick the <strong>best price</strong> for your customer!</div>
+      <div class="game-score">Round ${msRound}/${totalRounds} · Score: ${msScore} ⭐</div>
+      <div style="text-align:center;font-size:3rem;margin:8px 0">${product.emoji}</div>
+      <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:1rem;color:var(--text);margin-bottom:10px">${product.name}</div>
+      <div class="shop-customer">
+        <div class="shop-customer-emoji">${customer.emoji}</div>
+        <div class="shop-customer-bubble">"${sayings[customer.mood]}"<br><span style="font-size:.7rem;color:var(--text4)">— ${customer.name}</span></div>
+      </div>
+      <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:.85rem;color:var(--text3);margin:10px 0">What price should you charge?</div>
+      <div class="price-options">
+        ${prices.map(p=>`<div class="price-opt" onclick="checkShopPrice(this,'${p.type}',${goodPrice})">
+          <div class="po-coins">${p.val} 🪙</div>
+          <div class="po-label">${p.label}</div>
+        </div>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText(customer.name+' wants to buy a '+product.name+'! Pick the best price!');
+}
+function checkShopPrice(el,type,goodPrice){
+  document.querySelectorAll('.price-opt').forEach(c=>c.onclick=null);
+  if(type==='good'){
+    el.classList.add('correct');msScore++;adaptDifficulty(true);playCorrect();
+    document.getElementById('gfb').textContent='✅ Perfect price! '+goodPrice+' 🪙 — the customer is happy and you made money!';
+    mascotPraise();
+  } else if(type==='low'){
+    el.classList.add('wrong');adaptDifficulty(false);playWrong();
+    document.querySelectorAll('.price-opt').forEach(c=>{if(c.querySelector('.po-label').textContent==='Just Right')c.classList.add('correct');});
+    document.getElementById('gfb').textContent='💡 Too cheap! You won\'t earn enough. The best price is '+goodPrice+' 🪙!';
+    mascotHint();
+  } else {
+    el.classList.add('wrong');adaptDifficulty(false);playWrong();
+    document.querySelectorAll('.price-opt').forEach(c=>{if(c.querySelector('.po-label').textContent==='Just Right')c.classList.add('correct');});
+    document.getElementById('gfb').textContent='💡 Too expensive! The customer will go away! The best price is '+goodPrice+' 🪙!';
+    mascotHint();
+  }
+  setTimeout(nextShopRound,2200);
+}
 
 // ══════════════════════════════════════
 //  #3 — CHOOSE YOUR ENDING
