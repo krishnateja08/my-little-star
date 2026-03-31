@@ -3653,7 +3653,7 @@ function renderCreativeZone(){
         ${[4,8,14,22].map(s=>`<div class="brush-size ${s===drawSize?'active':''}" onclick="setDrawSize(${s})"><div class="brush-dot" style="width:${s}px;height:${s}px"></div></div>`).join('')}
       </div>
       <div class="sticker-row" id="stickerRow">
-        ${'⭐🌈🦋🌸🐱🐶🎈🎉🌻🦄'.split(/(?=.)/).filter(Boolean).map(s=>
+        ${ Array.from('⭐🌈🦋🌸🐱🐶🎈🎉🌻🦄').map(s=>
           `<span class="sticker-btn" onclick="setSticker('${s}')">${s}</span>`
         ).join('')}
       </div>
@@ -5566,7 +5566,7 @@ function renderStarPath(){
     if(isMilestone){
       html+=`<div class="sp-node constellation" title="Week ${i/7} Complete!">🌟</div>`;
     } else {
-      html+=`<div class="sp-node ${isFilled?'filled':isCurrent?'current':'empty'}">${isFilled?'⭐':isCurrent?'📍':'☆'}</div>`;
+      html+=`<div class="sp-node ${isFilled?'filled':isCurrent?'current':'empty'}">${isFilled?'⭐':isCurrent?'▶':'·'}</div>`;
     }
   }
   html+='</div>';
