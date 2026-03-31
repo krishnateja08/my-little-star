@@ -6753,7 +6753,11 @@ setTimeout(()=>checkWeeklySurprise(),3000);
 // Show friend name in mascot bubble if named
 if(friendName)setTimeout(()=>mascotSay('Hi '+friendName+'! Let\'s go! 💛'),1500);
 
-fetchNext();
+// Wait for Firebase sync before starting
+(function waitForSync(){
+  if(_syncReady){ fetchNext(); }
+  else { setTimeout(waitForSync, 100); }
+})();
 </script>
 </body>
 </html>
