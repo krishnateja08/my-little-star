@@ -4546,9 +4546,13 @@ function renderMonthlyReport(){
 function renderHist(){
   const el=document.getElementById('hist');
   if(!done.length){el.innerHTML='';return;}
-  el.innerHTML=`<div class="hlabel">✅ Done today (${done.length}) — tap ↩️ Undo</div>`+
-    done.slice().reverse().map((d,ri)=>{
-      const realIdx=done.length-1-ri;
+  // Only show items belonging to the current tab
+  const tabDone=done.filter(d=>d.tab===tab);
+  if(!tabDone.length){el.innerHTML='';return;}
+  const tabName=tab.charAt(0).toUpperCase()+tab.slice(1);
+  el.innerHTML=`<div class="hlabel">✅ Done in ${tabName} today (${tabDone.length}) — tap ↩️ Undo</div>`+
+    tabDone.slice().reverse().map(d=>{
+      const realIdx=done.indexOf(d);
       return `<div class="hitem">
         <span class="he">${d.emoji}</span>
         <span class="hn">${d.title}</span>
@@ -4579,9 +4583,11 @@ function undoDone(idx){
   busy=false;current=null;fetchNext();
 }
 function updateProg(){
-  const pct=Math.round((done.length/Math.max(done.length+1,1))*100);
+  const tabDone=done.filter(d=>d.tab===tab).length;
+  const total=done.length;
+  const pct=Math.round((tabDone/Math.max(tabDone+1,1))*100);
   document.getElementById('pf').style.width=pct+'%';
-  document.getElementById('pc').textContent=`${done.length} done`;
+  document.getElementById('pc').textContent=total>tabDone?`${tabDone} done here · ${total} total`:`${tabDone} done`;
 }
 function renderWbar(){
   const el=document.getElementById('wbar');
