@@ -2795,6 +2795,86 @@ function showLoad(){
 function buildVisualPanel(a){
   const t=a.title||'';
 
+
+  // ── FINGER TRACING FUN ──
+  if(t.includes('Finger Tracing Fun')){
+    const tracingLetters=['A','B','C','D','E','F','G','H'];
+    return `<div style="margin:12px 0" id="ftWrap">
+      <div style="font-family:'Baloo 2',cursive;font-size:.88rem;font-weight:700;color:var(--purple);margin-bottom:8px;text-align:center">
+        ✋ Pick a letter — then trace it with your finger!
+      </div>
+      <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:12px" id="ftLetterBtns">
+        ${tracingLetters.map(l=>`<button onclick="ftSelectLetter('${l}')"
+          style="width:42px;height:42px;border-radius:12px;border:2px solid #ddd;background:var(--inputbg);
+          font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;cursor:pointer;transition:all .2s;color:var(--text)"
+          id="ftBtn_${l}">${l}</button>`).join('')}
+      </div>
+      <div style="position:relative;background:#fffbe8;border-radius:20px;border:3px dashed #ffb830;overflow:hidden;touch-action:none" id="ftCanvasWrap">
+        <canvas id="ftCanvas" style="display:block;width:100%;border-radius:17px"></canvas>
+        <div id="ftGuide" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
+          <span id="ftGuideLetter" style="font-family:'Baloo 2',cursive;font-size:clamp(120px,35vw,200px);font-weight:800;color:rgba(255,184,48,.18);line-height:1;user-select:none">A</span>
+        </div>
+        <div id="ftHint" style="position:absolute;bottom:10px;left:0;right:0;text-align:center;font-family:'Baloo 2',cursive;font-size:.75rem;color:rgba(0,0,0,.35);pointer-events:none">
+          ☝️ Trace over the letter with your finger!
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px;justify-content:center">
+        <button onclick="ftClear()" style="flex:1;padding:10px;border-radius:12px;border:none;background:linear-gradient(135deg,#ff6b9d,#ffb830);color:#fff;font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;cursor:pointer">🧹 Clear</button>
+        <button onclick="ftNextLetter()" style="flex:1;padding:10px;border-radius:12px;border:none;background:linear-gradient(135deg,#a78bfa,#4ecdc4);color:#fff;font-family:'Baloo 2',cursify;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Baloo 2',cursive">➡️ Next Letter</button>
+      </div>
+    </div>`;
+  }
+
+  // ── PENCIL PRACTICE — STRAIGHT LINES / CURVES ──
+  if(t.includes('Pencil Practice')){
+    const isCurves = t.includes('Curves');
+    const practiceType = isCurves ? 'curves' : 'lines';
+    const hint = isCurves ? '☝️ Draw curves and circles with your finger!' : '☝️ Draw straight lines with your finger!';
+    const guideLabel = isCurves ? '( )' : '|||';
+    return `<div style="margin:12px 0" id="ftWrap">
+      <div style="font-family:'Baloo 2',cursive;font-size:.88rem;font-weight:700;color:var(--purple);margin-bottom:8px;text-align:center">
+        ✏️ ${isCurves ? 'Draw curves and circles with your finger!' : 'Draw straight lines with your finger!'}
+      </div>
+      <div style="position:relative;background:#f0f8ff;border-radius:20px;border:3px dashed #4fa3e0;overflow:hidden;touch-action:none" id="ftCanvasWrap">
+        <canvas id="ftCanvas" style="display:block;width:100%;border-radius:17px"></canvas>
+        <div id="ftGuide" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
+          ${isCurves
+            ? `<svg width="85%" height="85%" viewBox="0 0 300 200" style="opacity:.12"><path d="M20,100 Q80,20 150,100 Q220,180 280,100" fill="none" stroke="#4fa3e0" stroke-width="18" stroke-linecap="round"/><circle cx="80" cy="120" r="35" fill="none" stroke="#a78bfa" stroke-width="18"/></svg>`
+            : `<svg width="85%" height="85%" viewBox="0 0 300 200" style="opacity:.12"><line x1="40" y1="30" x2="40" y2="170" stroke="#4fa3e0" stroke-width="18" stroke-linecap="round"/><line x1="110" y1="30" x2="110" y2="170" stroke="#ff6b9d" stroke-width="18" stroke-linecap="round"/><line x1="180" y1="30" x2="180" y2="170" stroke="#ffb830" stroke-width="18" stroke-linecap="round"/><line x1="250" y1="30" x2="250" y2="170" stroke="#56cf81" stroke-width="18" stroke-linecap="round"/></svg>`
+          }
+        </div>
+        <div id="ftHint" style="position:absolute;bottom:10px;left:0;right:0;text-align:center;font-family:'Baloo 2',cursive;font-size:.75rem;color:rgba(0,0,0,.35);pointer-events:none">
+          ${hint}
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px;justify-content:center">
+        <button onclick="ftClear()" style="flex:1;padding:10px;border-radius:12px;border:none;background:linear-gradient(135deg,#ff6b9d,#ffb830);color:#fff;font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;cursor:pointer">🧹 Clear & Try Again</button>
+      </div>
+    </div>`;
+  }
+
+
+  // ── MY NAME IN LETTERS ──
+  if(t.includes('My Name in Letters')){
+    return `<div style="margin:12px 0" id="ftWrap">
+      <div style="font-family:'Baloo 2',cursive;font-size:.88rem;font-weight:700;color:var(--purple);margin-bottom:8px;text-align:center">
+        ✍️ Trace your name with your finger below!
+      </div>
+      <div style="position:relative;background:#fff5f8;border-radius:20px;border:3px dashed #ff6b9d;overflow:hidden;touch-action:none" id="ftCanvasWrap">
+        <canvas id="ftCanvas" style="display:block;width:100%;border-radius:17px"></canvas>
+        <div id="ftGuide" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
+          <span style="font-family:'Baloo 2',cursive;font-size:clamp(40px,12vw,72px);font-weight:800;color:rgba(255,107,157,.15);letter-spacing:8px;user-select:none">YOUR NAME</span>
+        </div>
+        <div id="ftHint" style="position:absolute;bottom:10px;left:0;right:0;text-align:center;font-family:'Baloo 2',cursive;font-size:.75rem;color:rgba(0,0,0,.35);pointer-events:none">
+          ☝️ Trace your name with your finger!
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px;justify-content:center">
+        <button onclick="ftClear()" style="flex:1;padding:10px;border-radius:12px;border:none;background:linear-gradient(135deg,#ff6b9d,#a78bfa);color:#fff;font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;cursor:pointer">🧹 Clear & Try Again</button>
+      </div>
+    </div>`;
+  }
+
   // ── DAYS OF THE WEEK ──
   if(t.includes('Days of the Week')){
     const days=[
@@ -3123,6 +3203,11 @@ function showAct(a){
       <button class="skip-btn" onclick="skipActivity()">⏭️ Skip this one</button>
     </div>`;
   document.getElementById('hsub').textContent=`${a.emoji} ${a.title}`;
+
+  // Auto-init finger tracing canvas if present
+  if(a.title&&(a.title.includes('Finger Tracing')||a.title.includes('Pencil Practice')||a.title.includes('My Name in Letters'))){
+    ftAutoInit();
+  }
 
   // Mascot reacts
   setTimeout(()=>mascotSay(a.realLife?'Do it in real life!':'Let\'s do this! 💪'),600);
@@ -7315,6 +7400,140 @@ function pickEnding(storyIdx,optIdx){
   const ending=STORY_ENDINGS[storyIdx];
   speakText(ending.options[optIdx].text);
   renderStoryReader(); // re-render to show chosen state
+}
+
+
+// ══════════════════════════════════════
+//  FINGER TRACING ENGINE
+//  Powers canvas drawing for Finger Tracing Fun,
+//  Pencil Practice, and My Name activities
+// ══════════════════════════════════════
+const FT_COLOURS=['#ff6b9d','#a78bfa','#4ecdc4','#56cf81','#ffb830','#4fa3e0','#ff8c69'];
+let ftColourIdx=0;
+let ftCurrentLetter='A';
+const ftAllLetters=['A','B','C','D','E','F','G','H'];
+let ftLetterIdx=0;
+let ftDrawing=false;
+let ftLastX=0,ftLastY=0;
+let ftObserver=null;
+
+function ftInit(){
+  const wrap=document.getElementById('ftCanvasWrap');
+  const canvas=document.getElementById('ftCanvas');
+  if(!wrap||!canvas)return;
+
+  // Set canvas size to match display size
+  const rect=wrap.getBoundingClientRect();
+  const w=rect.width||300;
+  const h=Math.max(200,w*0.6);
+  canvas.width=w;
+  canvas.height=h;
+  canvas.style.height=h+'px';
+
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,w,h);
+  ctx.lineCap='round';
+  ctx.lineJoin='round';
+  ctx.lineWidth=Math.max(10,w*0.04); // thick finger-friendly line
+
+  function getPos(e){
+    const r=canvas.getBoundingClientRect();
+    if(e.touches){
+      return{x:(e.touches[0].clientX-r.left)*(canvas.width/r.width),
+             y:(e.touches[0].clientY-r.top)*(canvas.height/r.height)};
+    }
+    return{x:(e.clientX-r.left)*(canvas.width/r.width),
+           y:(e.clientY-r.top)*(canvas.height/r.height)};
+  }
+
+  function startDraw(e){
+    e.preventDefault();
+    ftDrawing=true;
+    ftColourIdx=(ftColourIdx+1)%FT_COLOURS.length;
+    ctx.strokeStyle=FT_COLOURS[ftColourIdx];
+    const p=getPos(e);
+    ftLastX=p.x;ftLastY=p.y;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,ctx.lineWidth/2,0,Math.PI*2);
+    ctx.fillStyle=FT_COLOURS[ftColourIdx];
+    ctx.fill();
+  }
+  function draw(e){
+    if(!ftDrawing)return;
+    e.preventDefault();
+    const p=getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(ftLastX,ftLastY);
+    ctx.lineTo(p.x,p.y);
+    ctx.stroke();
+    ftLastX=p.x;ftLastY=p.y;
+  }
+  function endDraw(e){ftDrawing=false;}
+
+  // Touch events
+  canvas.addEventListener('touchstart',startDraw,{passive:false});
+  canvas.addEventListener('touchmove',draw,{passive:false});
+  canvas.addEventListener('touchend',endDraw);
+  // Mouse events
+  canvas.addEventListener('mousedown',startDraw);
+  canvas.addEventListener('mousemove',draw);
+  canvas.addEventListener('mouseup',endDraw);
+  canvas.addEventListener('mouseleave',endDraw);
+
+  // Highlight the selected letter button
+  ftHighlightBtn();
+}
+
+function ftHighlightBtn(){
+  document.querySelectorAll('[id^="ftBtn_"]').forEach(b=>{
+    b.style.background='var(--inputbg)';
+    b.style.borderColor='#ddd';
+    b.style.color='var(--text)';
+    b.style.transform='';
+  });
+  const active=document.getElementById('ftBtn_'+ftCurrentLetter);
+  if(active){
+    active.style.background='linear-gradient(135deg,#ff6b9d,#ffb830)';
+    active.style.borderColor='transparent';
+    active.style.color='#fff';
+    active.style.transform='scale(1.15)';
+  }
+}
+
+function ftSelectLetter(l){
+  ftCurrentLetter=l;
+  ftLetterIdx=ftAllLetters.indexOf(l);
+  // Update guide letter
+  const guide=document.getElementById('ftGuideLetter');
+  if(guide)guide.textContent=l;
+  // Clear canvas
+  ftClear();
+  // Speak it
+  speakText(l+'! Trace the letter '+l);
+  ftHighlightBtn();
+}
+
+function ftClear(){
+  const canvas=document.getElementById('ftCanvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+}
+
+function ftNextLetter(){
+  ftLetterIdx=(ftLetterIdx+1)%ftAllLetters.length;
+  ftSelectLetter(ftAllLetters[ftLetterIdx]);
+}
+
+// Auto-init when canvas appears in DOM (called after showAct renders)
+function ftAutoInit(){
+  // Use a small delay so the DOM is ready
+  setTimeout(()=>{
+    if(document.getElementById('ftCanvas')){
+      ftInit();
+      speakText('Trace the letter with your finger!');
+    }
+  },150);
 }
 
 // ══════════════════════════════════════
