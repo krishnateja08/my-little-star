@@ -2638,6 +2638,18 @@ function getPool(){
 }
 function getNext(){const p=getPool();return p.length?p[Math.floor(Math.random()*p.length)]:null;}
 
+// Returns pending count for ANY tab — mirrors getPool() logic exactly
+function getPendingForTab(t){
+  if(t==='games'){
+    const doneTodayTitles=done.filter(d=>d.tab==='games').map(d=>d.title);
+    return GAMES.filter(g=>g.week<=week&&!doneTodayTitles.includes(g.title)&&!skippedToday.includes(g.title)).length;
+  }
+  if(t==='create'||t==='parent') return -1; // special tabs — no count
+  let pool=(CUR[t]||[]).filter(a=>!a.w||a.w<=week);
+  const doneTodayTitles=done.filter(d=>d.tab===t).map(d=>d.title);
+  return pool.filter(a=>!doneTodayTitles.includes(a.title)&&!skippedToday.includes(a.title)).length;
+}
+
 async function fetchNext(forceAct){
   if(busy)return;
   busy=true;
@@ -4640,20 +4652,12 @@ function parentReset(){
 //  TAB BADGES — Option 2 pill style
 // ══════════════════════════════════════
 function renderTabBadges(){
-  // Activity tabs
-  const actTabs={
-    morning:  (CUR.morning||[]).filter(a=>!a.w||a.w<=week),
-    learning: (CUR.learning||[]).filter(a=>!a.w||a.w<=week),
-    games:    GAMES.filter(g=>g.week<=week),
-    evening:  (CUR.evening||[]).filter(a=>!a.w||a.w<=week),
-  };
-  Object.entries(actTabs).forEach(([t,pool])=>{
+  // Activity tabs — use getPendingForTab() which mirrors getPool() exactly
+  ['morning','learning','games','evening'].forEach(t=>{
     const btn=document.querySelector(`.tab[data-t="${t}"]`);
     if(!btn)return;
     const old=btn.querySelector('.tab-badge');if(old)old.remove();
-    if(!pool.length)return;
-    const doneTitles=done.filter(d=>d.tab===t).map(d=>d.title);
-    const pending=pool.filter(a=>!doneTitles.includes(a.title)).length;
+    const pending=getPendingForTab(t);
     const badge=document.createElement('span');
     badge.className='tab-badge '+(pending===0?'all-done':'pending');
     badge.textContent=pending===0?'✓ done':pending+' left';
