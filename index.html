@@ -2638,16 +2638,26 @@ function getPool(){
 }
 function getNext(){const p=getPool();return p.length?p[Math.floor(Math.random()*p.length)]:null;}
 
-// Returns pending count for ANY tab — mirrors getPool() logic exactly
+// Returns pending count for ANY tab — exactly mirrors getPool() logic
+// Returns 0 when nothing left to do TODAY (show ✓ done)
 function getPendingForTab(t){
+  if(t==='create'||t==='parent') return -1; // no badge
+
   if(t==='games'){
     const doneTodayTitles=done.filter(d=>d.tab==='games').map(d=>d.title);
-    return GAMES.filter(g=>g.week<=week&&!doneTodayTitles.includes(g.title)&&!skippedToday.includes(g.title)).length;
+    // Only count games NOT done today AND not skipped
+    const remaining=GAMES.filter(g=>g.week<=week&&!doneTodayTitles.includes(g.title)&&!skippedToday.includes(g.title));
+    // If she has done at least 1 game today and nothing left → ✓ done
+    if(!remaining.length) return 0;
+    // Show how many she played today vs available (not total pool)
+    return doneTodayTitles.length>0 ? remaining.length : remaining.length;
   }
-  if(t==='create'||t==='parent') return -1; // special tabs — no count
+
+  // Activity tabs (morning/learning/evening)
   let pool=(CUR[t]||[]).filter(a=>!a.w||a.w<=week);
   const doneTodayTitles=done.filter(d=>d.tab===t).map(d=>d.title);
-  return pool.filter(a=>!doneTodayTitles.includes(a.title)&&!skippedToday.includes(a.title)).length;
+  const pending=pool.filter(a=>!doneTodayTitles.includes(a.title)&&!skippedToday.includes(a.title));
+  return pending.length;
 }
 
 async function fetchNext(forceAct){
@@ -4658,9 +4668,20 @@ function renderTabBadges(){
     if(!btn)return;
     const old=btn.querySelector('.tab-badge');if(old)old.remove();
     const pending=getPendingForTab(t);
+    const doneToday=done.filter(d=>d.tab===t).length;
     const badge=document.createElement('span');
-    badge.className='tab-badge '+(pending===0?'all-done':'pending');
-    badge.textContent=pending===0?'✓ done':pending+' left';
+    if(pending===0){
+      // Nothing left to do today
+      badge.className='tab-badge all-done';
+      badge.textContent='✓ done';
+    } else if(t==='games'){
+      // For games — show how many played today, or just "play!" if none yet
+      badge.className='tab-badge pending';
+      badge.textContent=doneToday>0?doneToday+' played':'play!';
+    } else {
+      badge.className='tab-badge pending';
+      badge.textContent=pending+' left';
+    }
     btn.appendChild(badge);
   });
 
