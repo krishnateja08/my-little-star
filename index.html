@@ -2620,16 +2620,12 @@ function getPool(){
   let pool=CUR[tab]||[];
   pool=pool.filter(a=>!a.w||a.w<=week);
   if(tab==='learning'&&subj!=='all') pool=pool.filter(a=>a.subj===subj);
-  const filtered=pool.filter(a=>!allUsed.includes(a.title)&&!skippedToday.includes(a.title));
-  // Auto-recycle: if this tab's pool is empty only because of allUsed, refresh those entries
-  if(!filtered.length&&pool.length){
-    const withoutSkipped=pool.filter(a=>!skippedToday.includes(a.title));
-    if(withoutSkipped.length){
-      withoutSkipped.forEach(a=>{const i=allUsed.indexOf(a.title);if(i>-1)allUsed.splice(i,1);});
-      localStorage.setItem('c_allused',JSON.stringify(allUsed));
-      return withoutSkipped;
-    }
-  }
+  // Activities done TODAY in this tab should not appear again today
+  const doneTodayTitles=done.filter(d=>d.tab===tab).map(d=>d.title);
+  const filtered=pool.filter(a=>!doneTodayTitles.includes(a.title)&&!skippedToday.includes(a.title));
+  // If all activities for today are done, recycle allUsed for tomorrow rotation only
+  // but do NOT recycle same-day — show empty so congrats shows
+  if(!filtered.length) return [];
   return filtered;
 }
 function getNext(){const p=getPool();return p.length?p[Math.floor(Math.random()*p.length)]:null;}
@@ -2690,14 +2686,14 @@ async function fetchNext(forceAct){
   // Show activity picker for non-game tabs, random for games
   const pool=getPool();
   if(!pool.length){
-    if(tab==='games'){
-      // All games played today — show done items with friendly message
-      showActivityPicker([]);
-      busy=false;return;
-    }
     if(tab==='morning'||tab==='evening'){
       const pa=getPhysicalActivity();
       if(pa&&!skippedToday.includes(pa.title)){showPhysicalAct(pa);busy=false;return;}
+    }
+    // All activities done today for this tab — show picker with done items + all-done banner
+    if(done.filter(d=>d.tab===tab).length){
+      showActivityPicker([]);
+      busy=false;return;
     }
     showCongrats();busy=false;return;
   }
@@ -2753,7 +2749,7 @@ function showActivityPicker(pool){
         <span class="picker-title">${tabEmojis[tab]||'📋'} Pick your ${tabName} ${tab==='games'?'game':'activity'}</span>
         <button class="picker-random" onclick="pickRandom()">🎲 Surprise me!</button>
       </div>
-      ${(!pool.length&&tab==='games')?`<div style="text-align:center;padding:18px 12px;background:linear-gradient(135deg,#e8fff0,#f0fff4);border-radius:16px;margin-bottom:10px;border:2px dashed var(--green)"><div style="font-size:1.8rem">🎉</div><div style="font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--green)">All games done for today!</div><div style="font-size:.8rem;color:var(--text3);margin-top:4px">Great playing! All games come back fresh tomorrow 🌟</div></div>`:''}
+      ${(!pool.length&&done.filter(d=>d.tab===tab).length)?`<div style="text-align:center;padding:18px 12px;background:linear-gradient(135deg,#e8fff0,#f0fff4);border-radius:16px;margin-bottom:10px;border:2px dashed var(--green)"><div style="font-size:1.8rem">🎉</div><div style="font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--green)">All ${tabName} activities done for today!</div><div style="font-size:.8rem;color:var(--text3);margin-top:4px">Amazing work! Everything comes back fresh tomorrow 🌟</div></div>`:''}
       <div class="picker-list">
         ${items}
         ${doneItems}
