@@ -2208,9 +2208,9 @@ function adaptDifficulty(correct){
   localStorage.setItem('c_diff',diffLevel);
 }
 function getDiffRange(){
-  if(diffLevel===1)return{min:1,max:5,wordLen:3};
-  if(diffLevel===2)return{min:1,max:10,wordLen:4};
-  return{min:1,max:15,wordLen:5};
+  if(diffLevel===1)return{min:1,max:8,wordLen:3};
+  if(diffLevel===2)return{min:2,max:15,wordLen:4};
+  return{min:3,max:20,wordLen:5};
 }
 
 // ══════════════════════════════════════
@@ -3288,21 +3288,23 @@ function renderGame(g){
 let cScore=0,cRound=0;
 function buildCountGame(){cScore=0;cRound=0;nextCountRound();}
 function nextCountRound(){
+  const totalRounds=diffLevel===1?7:diffLevel===2?8:10;
   cRound++;
-  if(cRound>5){endGame(cScore,5,'countGame');return;}
+  if(cRound>totalRounds){endGame(cScore,totalRounds,'countGame');return;}
   const range=getDiffRange();
   const ans=Math.floor(Math.random()*(range.max-range.min+1))+range.min;
-  const emojis=['🍎','⭐','🐸','🍌','🐱','🌸','🎈','🦋'];
+  const emojis=['🍎','⭐','🐸','🍌','🐱','🌸','🎈','🦋','🍇','🚀','🦄','🐙'];
   const em=emojis[Math.floor(Math.random()*emojis.length)];
   const display=em.repeat(ans);
+  const optCount=diffLevel===1?4:5;
   const opts=[ans];
-  while(opts.length<4){const r=Math.floor(Math.random()*range.max)+1;if(!opts.includes(r))opts.push(r);}
+  while(opts.length<optCount){const r=Math.floor(Math.random()*(range.max+2))+range.min;if(!opts.includes(r))opts.push(r);}
   opts.sort(()=>Math.random()-.5);
   document.getElementById('area').innerHTML=`
     <div class="game-panel">
       <div class="game-title">🍎 How Many?</div>
       <div class="game-inst">Count the objects and tap the right number!</div>
-      <div class="game-score">Round ${cRound}/5 · Score: ${cScore} ⭐ · Level ${diffLevel}</div>
+      <div class="game-score">Round ${cRound}/${totalRounds} · Score: ${cScore} ⭐ · Level ${diffLevel}</div>
       <div class="count-display">${display}</div>
       <div class="count-q">How many ${em} are there?</div>
       <div class="count-opts">${opts.map(o=>`<div class="copt" onclick="checkCount(this,${o},${ans})">${o}</div>`).join('')}</div>
@@ -3324,13 +3326,13 @@ function checkCount(el,chosen,ans){
 let nmScore=0,nmRound=0;
 function buildNumMatch(){nmScore=0;nmRound=0;nextNmRound();}
 function nextNmRound(){
-  const totalRounds=diffLevel===1?3:diffLevel===2?4:5;
+  const totalRounds=diffLevel===1?4:diffLevel===2?5:6;
   nmRound++;if(nmRound>totalRounds){endGame(nmScore*2,totalRounds*2,'numMatch');return;}
   const range=getDiffRange();
-  const nums=[];for(let i=range.min;i<=Math.min(range.max,9);i++)nums.push(i);
-  const pairCount=diffLevel===1?3:4;
+  const nums=[];for(let i=range.min;i<=Math.min(range.max,12);i++)nums.push(i);
+  const pairCount=diffLevel===1?4:diffLevel===2?5:6;
   const pick=nums.sort(()=>Math.random()-.5).slice(0,pairCount);
-  const emojis=['⭐','🌸','🎈','🍎','🐱','🦋','🍌','🐸'];
+  const emojis=['⭐','🌸','🎈','🍎','🐱','🦋','🍌','🐸','🚀','🍇','🐙','🦄'];
   const em=emojis[Math.floor(Math.random()*emojis.length)];
   const pairs=[...pick.map(n=>({val:n,type:'num'})),...pick.map(n=>({val:n,type:'obj'}))].sort(()=>Math.random()-.5);
   nmFirst=null;
@@ -3338,7 +3340,7 @@ function nextNmRound(){
     <div class="game-panel">
       <div class="game-title">🔢 Number Match!</div>
       <div class="game-inst">Match each number to the right group of ${em}!</div>
-      <div class="game-score">Round ${nmRound}/4 · Score: ${nmScore*2} ⭐</div>
+      <div class="game-score">Round ${nmRound}/${totalRounds} · Score: ${nmScore*2} ⭐</div>
       <div class="num-grid">${pairs.map((p,i)=>`<div class="num-card" id="nc${i}" onclick="pickNm(${i},${p.val},'${p.type}')">${p.type==='num'?p.val:em.repeat(p.val)}</div>`).join('')}</div>
       <div class="game-feedback" id="gfb"></div>
     </div>`;
@@ -3443,21 +3445,21 @@ function revealMix(){
 const SHAPES=[
   {name:'Circle',emoji:'⭕'},{name:'Square',emoji:'🟦'},{name:'Triangle',emoji:'🔺'},
   {name:'Rectangle',emoji:'▬'},{name:'Star',emoji:'⭐'},{name:'Heart',emoji:'❤️'},
-  {name:'Diamond',emoji:'💎'},{name:'Moon',emoji:'🌙'}
+  {name:'Diamond',emoji:'💎'},{name:'Moon',emoji:'🌙'},{name:'Oval',emoji:'🥚'},
+  {name:'Pentagon',emoji:'⬠'},{name:'Hexagon',emoji:'⬡'},{name:'Arrow',emoji:'➡️'}
 ];
 let stScore=0,stRound=0;
 function buildShapeTap(){stScore=0;stRound=0;nextShapeRound();}
 function nextShapeRound(){
-  const range=getDiffRange();
-  const totalRounds=diffLevel===1?5:diffLevel===2?6:8;
+  const totalRounds=diffLevel===1?7:diffLevel===2?9:12;
   stRound++;if(stRound>totalRounds){endGame(stScore,totalRounds,'shapeTap');return;}
-  const showCount=diffLevel===1?3:diffLevel===2?4:6;
+  const showCount=diffLevel===1?4:diffLevel===2?6:8;
   const shuffled=[...SHAPES].sort(()=>Math.random()-.5).slice(0,showCount);
   const target=shuffled[Math.floor(Math.random()*shuffled.length)];
   document.getElementById('area').innerHTML=`
     <div class="game-panel">
       <div class="game-title">🔺 Tap the Right Shape!</div>
-      <div class="game-inst">Round ${stRound}/6 · Score: ${stScore} ⭐</div>
+      <div class="game-inst">Round ${stRound}/${totalRounds} · Score: ${stScore} ⭐</div>
       <div class="shape-area">
         <div class="shape-q">Tap the <strong>${target.name}</strong>!</div>
         <div class="shape-grid">${shuffled.map(s=>`<div class="shape-item" onclick="checkShape(this,'${s.name}','${target.name}')">${s.emoji}</div>`).join('')}</div>
@@ -3478,8 +3480,8 @@ function checkShape(el,chosen,target){
 // ── NEW GAME: Memory Flip (#12) ──
 let memPairs,memFlipped,memMatched2,memScore2,memLock;
 function buildMemoryFlip(){
-  const pool=['🍎','🌟','🐱','🎈','🦋','🐸','🌸','🎨','🐶','🌻'];
-  const pairCount=diffLevel===1?4:diffLevel===2?6:8;
+  const pool=['🍎','🌟','🐱','🎈','🦋','🐸','🌸','🎨','🐶','🌻','🚀','🦄','🍇','🐙','🦊','🌈'];
+  const pairCount=diffLevel===1?5:diffLevel===2?8:12;
   const picks=pool.sort(()=>Math.random()-.5).slice(0,pairCount);
   memPairs=[...picks,...picks].sort(()=>Math.random()-.5);
   memFlipped=[];memMatched2=[];memScore2=0;memLock=false;
@@ -3514,7 +3516,7 @@ function flipMem(i){
         if(memScore2===totalPairs){setTimeout(()=>endGame(totalPairs,totalPairs,'memoryFlip'),500);}
       } else {playWrong();adaptDifficulty(false);}
       memFlipped=[];memLock=false;renderMemoryGrid();
-    },800);
+    },600);
   }
 }
 
