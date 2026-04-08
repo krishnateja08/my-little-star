@@ -2794,8 +2794,10 @@ function showActivityPicker(pool){
     // status: 'available' | 'done' | 'skipped'
     const isGame=tab==='games';
     const tagBg=SC[a.subj]||'linear-gradient(135deg,#56cf81,#4ecdc4)';
-    const tagHtml=a.tag?`<span class="pi-tag" style="background:${tagBg}">${a.tag}</span>`:
-      (isGame&&a.cat)?`<span class="pi-tag" style="background:${catColors[a.cat]||'linear-gradient(135deg,#ff6b9d,#ffb830)'}">${catNames[a.cat]||'🎮 Game'}</span>`:'';
+    const tagHtml=(status==='available')?(
+      a.tag?`<span class="pi-tag" style="background:${tagBg}">${a.tag}</span>`:
+      (isGame&&a.cat)?`<span class="pi-tag" style="background:${catColors[a.cat]||'linear-gradient(135deg,#ff6b9d,#ffb830)'}">${catNames[a.cat]||'🎮 Game'}</span>`:''
+    ):'';
 
     let rightHtml;
     if(status==='done')         rightHtml=`<span class="pi-status done">✅ Done</span>`;
