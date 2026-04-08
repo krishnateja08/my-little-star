@@ -1741,7 +1741,8 @@ const SYNC_KEYS = [
   'c_allused','cws','c_total_stars','c_owned','c_diff',
   'c_stories_heard','c_endings','c_gallery','c_mood_hist',
   'c_bedtime','c_sound','c_activeHat','c_activeChar','c_activeTheme',
-  'c_voiceName','c_friendName','c_parentNotes','cs','cld'
+  'c_voiceName','c_friendName','c_parentNotes','c_parent_notes',
+  'c_current','cs','cld'
 ];
 const SYNC_PREFIXES = [
   'cd_','cs_','c_mood_','c_goals_','c_spark_','c_btt_',
@@ -1813,23 +1814,50 @@ function _refreshAppFromStorage(){
     const fbAllUsed = JSON.parse(_lsGet('c_allused')||'[]');
     const fbTotalStars = parseInt(_lsGet('c_total_stars')||'0');
 
+    // ── KEY FIX: recalculate week from synced start-date ──
+    // On a new device, 'cs' (app start date) was just loaded from Firebase.
+    // We MUST recalculate week/day now so the correct games are unlocked.
+    if(typeof getWeek === 'function'){
+      const recalc = getWeek();
+      if(typeof week !== 'undefined') week = recalc.week;
+      if(typeof day  !== 'undefined') day  = recalc.day;
+    }
+
+    // Re-read skipped list (may have changed on another device)
+    if(typeof skippedToday !== 'undefined'){
+      skippedToday = JSON.parse(_lsGet('c_skipped_'+todayKey())||'[]');
+    }
+
+    // Re-read rewards/cosmetics
+    if(typeof owned       !== 'undefined') owned       = JSON.parse(_lsGet('c_owned')||'[]');
+    if(typeof activeHat   !== 'undefined') activeHat   = _lsGet('c_activeHat')||'';
+    if(typeof activeChar  !== 'undefined') activeChar  = _lsGet('c_activeChar')||'';
+    if(typeof activeTheme !== 'undefined') activeTheme = _lsGet('c_activeTheme')||'';
+    if(typeof diffLevel   !== 'undefined') diffLevel   = parseInt(_lsGet('c_diff')||'1');
+    if(typeof friendName  !== 'undefined') friendName  = _lsGet('c_friendName')||'';
+
     // Update live variables
-    if(typeof done      !== 'undefined') done      = fbDone;
-    if(typeof stars     !== 'undefined') stars     = fbStars;
-    if(typeof allUsed   !== 'undefined') allUsed   = fbAllUsed;
+    if(typeof done           !== 'undefined') done           = fbDone;
+    if(typeof stars          !== 'undefined') stars          = fbStars;
+    if(typeof allUsed        !== 'undefined') allUsed        = fbAllUsed;
     if(typeof totalStarsEver !== 'undefined') totalStarsEver = fbTotalStars;
 
     // Refresh all visible UI elements
-    if(typeof showSpill    === 'function') showSpill();
-    if(typeof renderHist   === 'function') renderHist();
-    if(typeof updateProg   === 'function') updateProg();
-    if(typeof renderWbar   === 'function') renderWbar();
+    if(typeof showSpill       === 'function') showSpill();
+    if(typeof renderHist      === 'function') renderHist();
+    if(typeof updateProg      === 'function') updateProg();
+    if(typeof renderWbar      === 'function') renderWbar();
     if(typeof renderChallenge === 'function') renderChallenge();
     if(typeof renderStarPath  === 'function') renderStarPath();
     if(typeof applyRewards    === 'function') applyRewards();
     if(typeof renderGoals     === 'function') renderGoals();
+    if(typeof renderTabBadges === 'function') renderTabBadges();
 
-    console.log('🔄 App UI refreshed — Stars:', fbStars, '| Done:', fbDone.length);
+    // Re-render the current activity/game with correct week data
+    // This is the critical step that makes ALL games show on new devices
+    if(typeof fetchNext === 'function' && !busy){ fetchNext(); }
+
+    console.log('🔄 App refreshed — Week:', week, '| Stars:', fbStars, '| Done:', fbDone.length);
   }catch(e){ console.warn('Refresh error:',e); }
 }
 
@@ -2593,7 +2621,16 @@ function todayKey(){const d=new Date();return `${d.getFullYear()}-${d.getMonth()
 function autoTime(){const h=new Date().getHours();return h<12?'morning':h<17?'learning':'evening';}
 function getWeek(){
   let s=localStorage.getItem('cs');
-  if(!s){s=todayKey();localStorage.setItem('cs',s);}
+  // IMPORTANT: Do NOT create a new 'cs' start-date here on new devices.
+  // The correct start-date will arrive from Firebase via _refreshAppFromStorage().
+  // If 'cs' is missing we use today only as a temporary fallback —
+  // once Firebase loads, week will be recalculated correctly.
+  if(!s) s=todayKey();
+  // Only persist 'cs' if Firebase has already synced (i.e. we're not a brand-new device)
+  // This prevents overwriting the real start-date on a new device before Firebase loads.
+  if(!localStorage.getItem('cs') && typeof _syncReady !== 'undefined' && _syncReady){
+    localStorage.setItem('cs',s);
+  }
   const [y,m,d]=s.split('-').map(Number);
   const diff=Math.floor((new Date()-new Date(y,m-1,d))/(864e5));
   return {week:Math.min(Math.floor(diff/7)+1,8),day:diff+1};
