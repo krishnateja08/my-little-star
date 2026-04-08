@@ -1877,12 +1877,16 @@ function _startPolling(){
       const res  = await fetch(`${_DB_URL}/families/${_familyCode}.json`);
       const data = await res.json();
       if(data && typeof data === 'object'){
+        // Check if anything actually changed before refreshing UI
+        let changed = false;
         Object.keys(data).forEach(k => {
           const v = data[k];
-          _lsSet(k, typeof v === 'string' ? v : JSON.stringify(v));
+          const newVal = typeof v === 'string' ? v : JSON.stringify(v);
+          if(_lsGet(k) !== newVal){ changed = true; }
+          _lsSet(k, newVal);
         });
-        // Refresh app UI so changes from other devices show up
-        _refreshAppFromStorage();
+        // Only refresh app UI if data actually changed on another device
+        if(changed) _refreshAppFromStorage();
       }
     }catch(e){}
   }, 30000);
