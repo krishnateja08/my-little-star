@@ -1069,7 +1069,13 @@ body.bedtime .spark-card{background:linear-gradient(135deg,#2a2a3e,#2e2a1e);bord
 .picker-item{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;
   background:var(--inputbg);border:2px solid transparent;cursor:pointer;transition:all .2s;}
 .picker-item:active{transform:scale(.98);border-color:var(--purple);}
-.picker-item.done-item{opacity:.4;pointer-events:none;text-decoration:line-through;}
+.picker-item.done-item{opacity:.55;pointer-events:none;background:rgba(86,207,129,.08);border-color:rgba(86,207,129,.3);}
+.picker-item.done-item .pi-title{text-decoration:line-through;color:var(--text3);}
+.picker-item.skipped-item{opacity:.45;pointer-events:none;background:rgba(255,107,157,.06);border-color:rgba(255,107,157,.2);}
+.picker-item.skipped-item .pi-title{color:var(--text4);}
+.pi-status{font-size:.72rem;font-weight:800;flex-shrink:0;padding:3px 9px;border-radius:50px;}
+.pi-status.done{background:rgba(86,207,129,.2);color:#56cf81;}
+.pi-status.skipped{background:rgba(255,107,157,.15);color:#ff6b9d;}
 .pi-emoji{font-size:1.8rem;flex-shrink:0;}
 .pi-info{flex:1;min-width:0;}
 .pi-title{font-family:'Baloo 2',cursive;font-size:.88rem;font-weight:700;color:var(--text);
@@ -1741,7 +1747,8 @@ const SYNC_KEYS = [
   'c_allused','cws','c_total_stars','c_owned','c_diff',
   'c_stories_heard','c_endings','c_gallery','c_mood_hist',
   'c_bedtime','c_sound','c_activeHat','c_activeChar','c_activeTheme',
-  'c_voiceName','c_friendName','c_parentNotes','cs','cld'
+  'c_voiceName','c_friendName','c_parentNotes','c_parent_notes',
+  'c_current','cs','cld'
 ];
 const SYNC_PREFIXES = [
   'cd_','cs_','c_mood_','c_goals_','c_spark_','c_btt_',
@@ -1813,23 +1820,52 @@ function _refreshAppFromStorage(){
     const fbAllUsed = JSON.parse(_lsGet('c_allused')||'[]');
     const fbTotalStars = parseInt(_lsGet('c_total_stars')||'0');
 
+    // ── KEY FIX: recalculate week from synced start-date ──
+    // On a new device, 'cs' (app start date) was just loaded from Firebase.
+    // We MUST recalculate week/day now so the correct games are unlocked.
+    if(typeof getWeek === 'function'){
+      const recalc = getWeek();
+      if(typeof week !== 'undefined') week = recalc.week;
+      if(typeof day  !== 'undefined') day  = recalc.day;
+      if(typeof setupHeader    === 'function') setupHeader();
+      if(typeof renderTodayBar === 'function') renderTodayBar();
+    }
+
+    // Re-read skipped list (may have changed on another device)
+    if(typeof skippedToday !== 'undefined'){
+      skippedToday = JSON.parse(_lsGet('c_skipped_'+todayKey())||'[]');
+    }
+
+    // Re-read rewards/cosmetics
+    if(typeof owned       !== 'undefined') owned       = JSON.parse(_lsGet('c_owned')||'[]');
+    if(typeof activeHat   !== 'undefined') activeHat   = _lsGet('c_activeHat')||'';
+    if(typeof activeChar  !== 'undefined') activeChar  = _lsGet('c_activeChar')||'';
+    if(typeof activeTheme !== 'undefined') activeTheme = _lsGet('c_activeTheme')||'';
+    if(typeof diffLevel   !== 'undefined') diffLevel   = parseInt(_lsGet('c_diff')||'1');
+    if(typeof friendName  !== 'undefined') friendName  = _lsGet('c_friendName')||'';
+
     // Update live variables
-    if(typeof done      !== 'undefined') done      = fbDone;
-    if(typeof stars     !== 'undefined') stars     = fbStars;
-    if(typeof allUsed   !== 'undefined') allUsed   = fbAllUsed;
+    if(typeof done           !== 'undefined') done           = fbDone;
+    if(typeof stars          !== 'undefined') stars          = fbStars;
+    if(typeof allUsed        !== 'undefined') allUsed        = fbAllUsed;
     if(typeof totalStarsEver !== 'undefined') totalStarsEver = fbTotalStars;
 
     // Refresh all visible UI elements
-    if(typeof showSpill    === 'function') showSpill();
-    if(typeof renderHist   === 'function') renderHist();
-    if(typeof updateProg   === 'function') updateProg();
-    if(typeof renderWbar   === 'function') renderWbar();
+    if(typeof showSpill       === 'function') showSpill();
+    if(typeof renderHist      === 'function') renderHist();
+    if(typeof updateProg      === 'function') updateProg();
+    if(typeof renderWbar      === 'function') renderWbar();
     if(typeof renderChallenge === 'function') renderChallenge();
     if(typeof renderStarPath  === 'function') renderStarPath();
     if(typeof applyRewards    === 'function') applyRewards();
     if(typeof renderGoals     === 'function') renderGoals();
+    if(typeof renderTabBadges === 'function') renderTabBadges();
 
-    console.log('🔄 App UI refreshed — Stars:', fbStars, '| Done:', fbDone.length);
+    // Re-render the current activity/game with correct week data
+    // Only do this if user is NOT actively playing — don't interrupt mid-game!
+    if(typeof fetchNext === 'function' && !busy && !currentlyPlaying){ fetchNext(); }
+
+    console.log('🔄 App refreshed — Week:', week, '| Stars:', fbStars, '| Done:', fbDone.length);
   }catch(e){ console.warn('Refresh error:',e); }
 }
 
@@ -1841,12 +1877,16 @@ function _startPolling(){
       const res  = await fetch(`${_DB_URL}/families/${_familyCode}.json`);
       const data = await res.json();
       if(data && typeof data === 'object'){
+        // Check if anything actually changed before refreshing UI
+        let changed = false;
         Object.keys(data).forEach(k => {
           const v = data[k];
-          _lsSet(k, typeof v === 'string' ? v : JSON.stringify(v));
+          const newVal = typeof v === 'string' ? v : JSON.stringify(v);
+          if(_lsGet(k) !== newVal){ changed = true; }
+          _lsSet(k, newVal);
         });
-        // Refresh app UI so changes from other devices show up
-        _refreshAppFromStorage();
+        // Only refresh app UI if data actually changed on another device
+        if(changed) _refreshAppFromStorage();
       }
     }catch(e){}
   }, 30000);
@@ -2593,7 +2633,10 @@ function todayKey(){const d=new Date();return `${d.getFullYear()}-${d.getMonth()
 function autoTime(){const h=new Date().getHours();return h<12?'morning':h<17?'learning':'evening';}
 function getWeek(){
   let s=localStorage.getItem('cs');
-  if(!s){s=todayKey();localStorage.setItem('cs',s);}
+  // If 'cs' is missing (new device), use today as a TEMPORARY fallback only.
+  // NEVER write this fallback to localStorage — that would corrupt the real
+  // start-date stored in Firebase and cause week mismatches across devices.
+  if(!s) s=todayKey();
   const [y,m,d]=s.split('-').map(Number);
   const diff=Math.floor((new Date()-new Date(y,m-1,d))/(864e5));
   return {week:Math.min(Math.floor(diff/7)+1,8),day:diff+1};
@@ -2610,6 +2653,7 @@ let stars=parseInt(localStorage.getItem('cs_'+todayKey())||'0');
 let allUsed=JSON.parse(localStorage.getItem('c_allused')||'[]');
 let current=null;
 let busy=false;
+let currentlyPlaying=false; // true when user is actively inside a game/activity
 
 const ld=localStorage.getItem('cld');
 if(ld&&ld!==todayKey()){done=[];stars=0;localStorage.removeItem('cd_'+ld);localStorage.removeItem('c_skipped_'+ld);}
@@ -2680,6 +2724,7 @@ async function fetchNext(forceAct){
   if(forceAct){
     current=forceAct;
     gameStreak=0;
+    currentlyPlaying=true;
     if(tab!=='games') localStorage.setItem('c_current',JSON.stringify({tab,act:forceAct}));
     if(tab==='games') renderGame(forceAct);
     else showAct(forceAct);
@@ -2710,6 +2755,7 @@ async function fetchNext(forceAct){
   // If we have a resumed activity, show it directly
   if(act){
     current=act;gameStreak=0;
+    currentlyPlaying=true;
     if(tab!=='games') localStorage.setItem('c_current',JSON.stringify({tab,act}));
     if(tab==='games') renderGame(act);
     else showAct(act);
@@ -2733,6 +2779,7 @@ async function fetchNext(forceAct){
 
   // All tabs: show picker to choose
   showActivityPicker(pool);
+  currentlyPlaying=false;
   busy=false;
 }
 
@@ -2742,44 +2789,71 @@ async function fetchNext(forceAct){
 function showActivityPicker(pool){
   const tabName=tab.charAt(0).toUpperCase()+tab.slice(1);
   const tabEmojis={morning:'🌅',learning:'📚',games:'🎮',evening:'🌙'};
-  document.getElementById('hsub').textContent=`📋 Pick your ${tabName} activity!`;
+  document.getElementById('hsub').textContent=`📋 Pick your ${tabName} ${tab==='games'?'game':'activity'}!`;
 
-  const items=pool.map((a,i)=>{
+  const catColors={maths:'linear-gradient(135deg,#ffb830,#ff8c69)',letters:'linear-gradient(135deg,#a78bfa,#4fa3e0)',
+    shapes:'linear-gradient(135deg,#4ecdc4,#56cf81)',creative:'linear-gradient(135deg,#ff6b9d,#a78bfa)',
+    brain:'linear-gradient(135deg,#4fa3e0,#56cf81)',time:'linear-gradient(135deg,#ffb830,#a78bfa)',
+    money:'linear-gradient(135deg,#56cf81,#ffb830)'};
+  const catNames={maths:'🔢 Maths',letters:'🔤 Letters',shapes:'🔺 Shapes',creative:'🎨 Creative',
+    brain:'🧠 Brain',time:'🕐 Time',money:'💰 Money'};
+
+  function buildItem(a, idx, status){
+    // status: 'available' | 'done' | 'skipped'
     const isGame=tab==='games';
-    const catColors={maths:'linear-gradient(135deg,#ffb830,#ff8c69)',letters:'linear-gradient(135deg,#a78bfa,#4fa3e0)',
-      shapes:'linear-gradient(135deg,#4ecdc4,#56cf81)',creative:'linear-gradient(135deg,#ff6b9d,#a78bfa)',
-      brain:'linear-gradient(135deg,#4fa3e0,#56cf81)',time:'linear-gradient(135deg,#ffb830,#a78bfa)'};
-    const catNames={maths:'🔢 Maths',letters:'🔤 Letters',shapes:'🔺 Shapes',creative:'🎨 Creative',brain:'🧠 Brain',time:'🕐 Time'};
     const tagBg=SC[a.subj]||'linear-gradient(135deg,#56cf81,#4ecdc4)';
-    const tagHtml=a.tag?`<span class="pi-tag" style="background:${tagBg}">${a.tag}</span>`:
-      (isGame&&a.cat)?`<span class="pi-tag" style="background:${catColors[a.cat]||'linear-gradient(135deg,#ff6b9d,#ffb830)'}">${catNames[a.cat]||'🎮 Game'}</span>`:'';
-    const starsHtml=isGame?'<span class="pi-stars" style="color:var(--pink)">▶ Play</span>'
-      :`<span class="pi-stars">⭐${a.stars||'?'}</span>`;
-    return `<div class="picker-item" onclick="pickActivity(${i})">
+    const tagHtml=(status==='available')?(
+      a.tag?`<span class="pi-tag" style="background:${tagBg}">${a.tag}</span>`:
+      (isGame&&a.cat)?`<span class="pi-tag" style="background:${catColors[a.cat]||'linear-gradient(135deg,#ff6b9d,#ffb830)'}">${catNames[a.cat]||'🎮 Game'}</span>`:''
+    ):'';
+
+    let rightHtml;
+    if(status==='done')         rightHtml=`<span class="pi-status done">✅ Done</span>`;
+    else if(status==='skipped') rightHtml=`<span class="pi-status skipped">⏭ Skipped</span>`;
+    else                        rightHtml=isGame?`<span class="pi-stars" style="color:var(--pink)">▶ Play</span>`:`<span class="pi-stars">⭐${a.stars||'?'}</span>`;
+
+    const cls='picker-item'+(status==='done'?' done-item':status==='skipped'?' skipped-item':'');
+    const click=(status==='available')?`onclick="pickActivity(${idx})"`:'';
+    return `<div class="${cls}" ${click}>
       <span class="pi-emoji">${a.emoji}</span>
       <div class="pi-info">
         <div class="pi-title">${a.title}</div>
         <div class="pi-desc">${a.desc}</div>
       </div>
       ${tagHtml}
-      ${starsHtml}
+      ${rightHtml}
     </div>`;
-  }).join('');
+  }
 
-  // Done items are shown in the history bar — do NOT show them in picker at all
-  const doneItems='';
+  // Available items (playable now)
+  const availableHtml=pool.map((a,i)=>buildItem(a,i,'available')).join('');
+
+  // Done items — all games/activities completed today in this tab
+  const doneTodayTitles=done.filter(d=>d.tab===tab).map(d=>d.title);
+  const allPool=tab==='games'?GAMES.filter(g=>g.week<=week):((CUR[tab]||[]).filter(a=>!a.w||a.w<=week));
+  const doneGames=allPool.filter(g=>doneTodayTitles.includes(g.title));
+  // Filter by current gameCat if applicable
+  const filteredDone=tab==='games'&&gameCat!=='all'?doneGames.filter(g=>g.cat===gameCat):doneGames;
+  const filteredSkipped=tab==='games'&&gameCat!=='all'
+    ?allPool.filter(g=>skippedToday.includes(g.title)&&g.cat===gameCat)
+    :allPool.filter(g=>skippedToday.includes(g.title));
+
+  const doneHtml=filteredDone.map(a=>buildItem(a,-1,'done')).join('');
+  const skippedHtml=filteredSkipped.map(a=>buildItem(a,-1,'skipped')).join('');
 
   window._pickerPool=pool;
+  const allDoneToday=!pool.length&&doneTodayTitles.length>0;
   document.getElementById('area').innerHTML=`
     <div class="picker-panel">
       <div class="picker-header">
         <span class="picker-title">${tabEmojis[tab]||'📋'} Pick your ${tabName} ${tab==='games'?'game':'activity'}</span>
         <button class="picker-random" onclick="pickRandom()">🎲 Surprise me!</button>
       </div>
-      ${(!pool.length&&done.filter(d=>d.tab===tab).length)?`<div style="text-align:center;padding:18px 12px;background:linear-gradient(135deg,#e8fff0,#f0fff4);border-radius:16px;margin-bottom:10px;border:2px dashed var(--green)"><div style="font-size:1.8rem">🎉</div><div style="font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--green)">All ${tabName} activities done for today!</div><div style="font-size:.8rem;color:var(--text3);margin-top:4px">Amazing work! Everything comes back fresh tomorrow 🌟</div></div>`:''}
+      ${allDoneToday?`<div style="text-align:center;padding:14px 12px;background:linear-gradient(135deg,#e8fff0,#f0fff4);border-radius:16px;margin-bottom:10px;border:2px dashed var(--green)"><div style="font-size:1.8rem">🎉</div><div style="font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--green)">All ${tabName} ${tab==='games'?'games':'activities'} done for today!</div><div style="font-size:.8rem;color:var(--text3);margin-top:4px">Amazing work! Everything comes back fresh tomorrow 🌟</div></div>`:''}
       <div class="picker-list">
-        ${items}
-        ${doneItems}
+        ${availableHtml}
+        ${doneHtml}
+        ${skippedHtml}
       </div>
     </div>`;
 }
@@ -3257,6 +3331,7 @@ function skipActivity(){
   const ac=document.getElementById('ac');
   if(ac){ac.style.opacity='0';ac.style.transform='scale(.95) translateX(40px)';}
   current=null;
+  currentlyPlaying=false;
   busy=false;
   setTimeout(fetchNext,400);
 }
@@ -4019,7 +4094,7 @@ function markGameDone(sc){
   localStorage.setItem('cws',JSON.stringify(ws));
   showSpill();showToast(`⭐ +${earnedStars} stars!`);playStar();burst();
   renderStarPath();renderGoals();renderTabBadges();
-  current=null;setTimeout(fetchNext,500);
+  current=null;currentlyPlaying=false;setTimeout(fetchNext,500);
 }
 
 // ══════════════════════════════════════
@@ -4041,7 +4116,7 @@ function markDone(){
   showSpill();showToast(`⭐ +${current.stars} stars!`);playStar();burst();
   mascotPraise();renderStarPath();renderGoals();renderTabBadges();
   const ac=document.getElementById('ac');if(ac){ac.style.opacity='0';ac.style.transform='scale(.9) translateY(-10px)';}
-  current=null;setTimeout(fetchNext,500);
+  current=null;currentlyPlaying=false;setTimeout(fetchNext,500);
 }
 
 // ══════════════════════════════════════
@@ -4350,6 +4425,7 @@ function renderParentDash(){
             <button class="pd-set-btn" onclick="toggleBedtime()">🌙 Bedtime: <strong style="color:var(--purple);margin-left:3px">${bedtimeMode?'ON':'OFF'}</strong></button>
             <button class="pd-set-btn" id="pdSoundBtn" onclick="toggleSound()">🔊 Sound: <strong id="pdSoundLabel" style="color:var(--green);margin-left:3px">${soundOn?'ON':'OFF'}</strong></button>
             <button class="pd-set-btn" onclick="changeFamilyCode()">🔥 Family Code: <strong style="color:var(--sun);margin-left:3px">${_familyCode||'not set'}</strong></button>
+            <button class="pd-set-btn" onclick="forceWeekSync()" style="border-color:var(--mint);color:var(--mint)">📅 Fix Week Sync</button>
             <button class="pd-set-btn danger" onclick="parentReset()">🔄 Reset journey</button>
           </div>
         </div>
@@ -4657,6 +4733,41 @@ function parentReset(){
   allUsed=[];done=[];stars=0;totalStarsEver=0;owned=[];diffLevel=1;
   activeHat='';activeChar='';activeTheme='';
   location.reload();
+}
+
+// ── Force-push the correct start date (cs) to Firebase so ALL devices show the right week ──
+async function forceWeekSync(){
+  const currentCs = _lsGet('cs');
+  if(!currentCs){
+    alert('⚠️ No start date found on this device.\n\nRun this on the device that is already showing the CORRECT week (e.g. Week 2).');
+    return;
+  }
+  if(!_familyCode){
+    alert('⚠️ No Family Code set. Please set your Family Code first.');
+    return;
+  }
+  const {week:w, day:d} = getWeek();
+  const confirmed = confirm(
+    `📅 This will sync the start date to all devices.\n\nStart date: ${currentCs}\nCurrent: Week ${w}, Day ${d}\n\nRun this on the device showing the CORRECT week, then reload your other devices.\n\nContinue?`
+  );
+  if(!confirmed) return;
+
+  try{
+    // Directly PUT the start date to Firebase, bypassing the sync guard
+    const res = await fetch(`${_DB_URL}/families/${_familyCode}/cs.json`,{
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(currentCs)
+    });
+    if(res.ok){
+      showToast('✅ Week synced! Reload the other device now.');
+      mascotSay('Week sync done! Reload the other device! 📅',3500);
+    } else {
+      alert('❌ Sync failed. Check your internet connection and try again.');
+    }
+  }catch(e){
+    alert('❌ Sync error: '+e.message);
+  }
 }
 
 // ══════════════════════════════════════
