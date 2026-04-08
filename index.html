@@ -1827,8 +1827,7 @@ function _refreshAppFromStorage(){
       const recalc = getWeek();
       if(typeof week !== 'undefined') week = recalc.week;
       if(typeof day  !== 'undefined') day  = recalc.day;
-      // Refresh header badge and today bar so week number shows correctly
-      if(typeof setupHeader   === 'function') setupHeader();
+      if(typeof setupHeader    === 'function') setupHeader();
       if(typeof renderTodayBar === 'function') renderTodayBar();
     }
 
@@ -2630,19 +2629,10 @@ function todayKey(){const d=new Date();return `${d.getFullYear()}-${d.getMonth()
 function autoTime(){const h=new Date().getHours();return h<12?'morning':h<17?'learning':'evening';}
 function getWeek(){
   let s=localStorage.getItem('cs');
-  // IMPORTANT: Do NOT create a new 'cs' start-date here on new devices.
-  // The correct start-date will arrive from Firebase via _refreshAppFromStorage().
-  // If 'cs' is missing, use today ONLY as a temporary in-memory fallback —
-  // NEVER write this fallback back to localStorage/Firebase, as that would
-  // overwrite the real start-date and break week sync across devices.
-  const isFallback = !s;
+  // If 'cs' is missing (new device), use today as a TEMPORARY fallback only.
+  // NEVER write this fallback to localStorage — that would corrupt the real
+  // start-date stored in Firebase and cause week mismatches across devices.
   if(!s) s=todayKey();
-  // Only persist 'cs' if it already existed (i.e. this is the original device or
-  // Firebase has already delivered the real start-date).
-  // If it's a fallback, do NOT save — wait for Firebase to provide the real value.
-  if(!isFallback && !localStorage.getItem('cs')){
-    // This path should not be reached, but guard anyway.
-  }
   const [y,m,d]=s.split('-').map(Number);
   const diff=Math.floor((new Date()-new Date(y,m-1,d))/(864e5));
   return {week:Math.min(Math.floor(diff/7)+1,8),day:diff+1};
@@ -4424,6 +4414,7 @@ function renderParentDash(){
             <button class="pd-set-btn" onclick="toggleBedtime()">🌙 Bedtime: <strong style="color:var(--purple);margin-left:3px">${bedtimeMode?'ON':'OFF'}</strong></button>
             <button class="pd-set-btn" id="pdSoundBtn" onclick="toggleSound()">🔊 Sound: <strong id="pdSoundLabel" style="color:var(--green);margin-left:3px">${soundOn?'ON':'OFF'}</strong></button>
             <button class="pd-set-btn" onclick="changeFamilyCode()">🔥 Family Code: <strong style="color:var(--sun);margin-left:3px">${_familyCode||'not set'}</strong></button>
+            <button class="pd-set-btn" onclick="forceWeekSync()" style="border-color:var(--mint);color:var(--mint)">📅 Fix Week Sync</button>
             <button class="pd-set-btn danger" onclick="parentReset()">🔄 Reset journey</button>
           </div>
         </div>
@@ -4731,6 +4722,41 @@ function parentReset(){
   allUsed=[];done=[];stars=0;totalStarsEver=0;owned=[];diffLevel=1;
   activeHat='';activeChar='';activeTheme='';
   location.reload();
+}
+
+// ── Force-push the correct start date (cs) to Firebase so ALL devices show the right week ──
+async function forceWeekSync(){
+  const currentCs = _lsGet('cs');
+  if(!currentCs){
+    alert('⚠️ No start date found on this device.\n\nRun this on the device that is already showing the CORRECT week (e.g. Week 2).');
+    return;
+  }
+  if(!_familyCode){
+    alert('⚠️ No Family Code set. Please set your Family Code first.');
+    return;
+  }
+  const {week:w, day:d} = getWeek();
+  const confirmed = confirm(
+    `📅 This will sync the start date to all devices.\n\nStart date: ${currentCs}\nCurrent: Week ${w}, Day ${d}\n\nRun this on the device showing the CORRECT week, then reload your other devices.\n\nContinue?`
+  );
+  if(!confirmed) return;
+
+  try{
+    // Directly PUT the start date to Firebase, bypassing the sync guard
+    const res = await fetch(`${_DB_URL}/families/${_familyCode}/cs.json`,{
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(currentCs)
+    });
+    if(res.ok){
+      showToast('✅ Week synced! Reload the other device now.');
+      mascotSay('Week sync done! Reload the other device! 📅',3500);
+    } else {
+      alert('❌ Sync failed. Check your internet connection and try again.');
+    }
+  }catch(e){
+    alert('❌ Sync error: '+e.message);
+  }
 }
 
 // ══════════════════════════════════════
