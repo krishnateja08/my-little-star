@@ -1862,8 +1862,8 @@ function _refreshAppFromStorage(){
     if(typeof renderTabBadges === 'function') renderTabBadges();
 
     // Re-render the current activity/game with correct week data
-    // This is the critical step that makes ALL games show on new devices
-    if(typeof fetchNext === 'function' && !busy){ fetchNext(); }
+    // Only do this if user is NOT actively playing — don't interrupt mid-game!
+    if(typeof fetchNext === 'function' && !busy && !currentlyPlaying){ fetchNext(); }
 
     console.log('🔄 App refreshed — Week:', week, '| Stars:', fbStars, '| Done:', fbDone.length);
   }catch(e){ console.warn('Refresh error:',e); }
@@ -2653,6 +2653,7 @@ let stars=parseInt(localStorage.getItem('cs_'+todayKey())||'0');
 let allUsed=JSON.parse(localStorage.getItem('c_allused')||'[]');
 let current=null;
 let busy=false;
+let currentlyPlaying=false; // true when user is actively inside a game/activity
 
 const ld=localStorage.getItem('cld');
 if(ld&&ld!==todayKey()){done=[];stars=0;localStorage.removeItem('cd_'+ld);localStorage.removeItem('c_skipped_'+ld);}
@@ -2723,6 +2724,7 @@ async function fetchNext(forceAct){
   if(forceAct){
     current=forceAct;
     gameStreak=0;
+    currentlyPlaying=true;
     if(tab!=='games') localStorage.setItem('c_current',JSON.stringify({tab,act:forceAct}));
     if(tab==='games') renderGame(forceAct);
     else showAct(forceAct);
@@ -2753,6 +2755,7 @@ async function fetchNext(forceAct){
   // If we have a resumed activity, show it directly
   if(act){
     current=act;gameStreak=0;
+    currentlyPlaying=true;
     if(tab!=='games') localStorage.setItem('c_current',JSON.stringify({tab,act}));
     if(tab==='games') renderGame(act);
     else showAct(act);
@@ -2776,6 +2779,7 @@ async function fetchNext(forceAct){
 
   // All tabs: show picker to choose
   showActivityPicker(pool);
+  currentlyPlaying=false;
   busy=false;
 }
 
@@ -3327,6 +3331,7 @@ function skipActivity(){
   const ac=document.getElementById('ac');
   if(ac){ac.style.opacity='0';ac.style.transform='scale(.95) translateX(40px)';}
   current=null;
+  currentlyPlaying=false;
   busy=false;
   setTimeout(fetchNext,400);
 }
@@ -4089,7 +4094,7 @@ function markGameDone(sc){
   localStorage.setItem('cws',JSON.stringify(ws));
   showSpill();showToast(`⭐ +${earnedStars} stars!`);playStar();burst();
   renderStarPath();renderGoals();renderTabBadges();
-  current=null;setTimeout(fetchNext,500);
+  current=null;currentlyPlaying=false;setTimeout(fetchNext,500);
 }
 
 // ══════════════════════════════════════
@@ -4111,7 +4116,7 @@ function markDone(){
   showSpill();showToast(`⭐ +${current.stars} stars!`);playStar();burst();
   mascotPraise();renderStarPath();renderGoals();renderTabBadges();
   const ac=document.getElementById('ac');if(ac){ac.style.opacity='0';ac.style.transform='scale(.9) translateY(-10px)';}
-  current=null;setTimeout(fetchNext,500);
+  current=null;currentlyPlaying=false;setTimeout(fetchNext,500);
 }
 
 // ══════════════════════════════════════
