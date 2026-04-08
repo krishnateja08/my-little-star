@@ -1827,6 +1827,9 @@ function _refreshAppFromStorage(){
       const recalc = getWeek();
       if(typeof week !== 'undefined') week = recalc.week;
       if(typeof day  !== 'undefined') day  = recalc.day;
+      // Refresh header badge and today bar so week number shows correctly
+      if(typeof setupHeader   === 'function') setupHeader();
+      if(typeof renderTodayBar === 'function') renderTodayBar();
     }
 
     // Re-read skipped list (may have changed on another device)
@@ -2629,13 +2632,16 @@ function getWeek(){
   let s=localStorage.getItem('cs');
   // IMPORTANT: Do NOT create a new 'cs' start-date here on new devices.
   // The correct start-date will arrive from Firebase via _refreshAppFromStorage().
-  // If 'cs' is missing we use today only as a temporary fallback —
-  // once Firebase loads, week will be recalculated correctly.
+  // If 'cs' is missing, use today ONLY as a temporary in-memory fallback —
+  // NEVER write this fallback back to localStorage/Firebase, as that would
+  // overwrite the real start-date and break week sync across devices.
+  const isFallback = !s;
   if(!s) s=todayKey();
-  // Only persist 'cs' if Firebase has already synced (i.e. we're not a brand-new device)
-  // This prevents overwriting the real start-date on a new device before Firebase loads.
-  if(!localStorage.getItem('cs') && typeof _syncReady !== 'undefined' && _syncReady){
-    localStorage.setItem('cs',s);
+  // Only persist 'cs' if it already existed (i.e. this is the original device or
+  // Firebase has already delivered the real start-date).
+  // If it's a fallback, do NOT save — wait for Firebase to provide the real value.
+  if(!isFallback && !localStorage.getItem('cs')){
+    // This path should not be reached, but guard anyway.
   }
   const [y,m,d]=s.split('-').map(Number);
   const diff=Math.floor((new Date()-new Date(y,m-1,d))/(864e5));
