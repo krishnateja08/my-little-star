@@ -1869,28 +1869,7 @@ function _refreshAppFromStorage(){
   }catch(e){ console.warn('Refresh error:',e); }
 }
 
-// Poll for changes from other devices every 30 seconds
-function _startPolling(){
-  if(!_familyCode) return;
-  setInterval(async ()=>{
-    try{
-      const res  = await fetch(`${_DB_URL}/families/${_familyCode}.json`);
-      const data = await res.json();
-      if(data && typeof data === 'object'){
-        // Check if anything actually changed before refreshing UI
-        let changed = false;
-        Object.keys(data).forEach(k => {
-          const v = data[k];
-          const newVal = typeof v === 'string' ? v : JSON.stringify(v);
-          if(_lsGet(k) !== newVal){ changed = true; }
-          _lsSet(k, newVal);
-        });
-        // Only refresh app UI if data actually changed on another device
-        if(changed) _refreshAppFromStorage();
-      }
-    }catch(e){}
-  }, 30000);
-}
+
 
 // Override localStorage so every write also syncs to Firebase
 localStorage.setItem = function(key, value){
@@ -1958,7 +1937,6 @@ function _showFamilyCodeScreen(){
     document.getElementById('appLoader').style.display='flex';
     await _loadFromFirebase();
     _syncReady = true;
-    _startPolling();
     document.getElementById('appLoader').style.display='none';
     console.log('🔥 Firebase REST sync active! Family:', _familyCode);
   }catch(e){
