@@ -2709,7 +2709,7 @@ function showPhysicalAct(pa){
       <button class="skip-btn" onclick="skipActivity()">⏭️ Skip this one</button>
     </div>`;
   document.getElementById('hsub').textContent=`🏃 ${pa.title}`;
-  setTimeout(()=>mascotSay('Time to move your body! 💪'),600);
+  setTimeout(()=>{const bubble=document.getElementById('speechBubble');if(bubble){bubble.textContent='Time to move your body! 💪';bubble.classList.add('show');clearTimeout(speechTimeout);speechTimeout=setTimeout(()=>bubble.classList.remove('show'),2500);}},600);
 }
 
 // ══════════════════════════════════════
@@ -3963,8 +3963,8 @@ function showAct(a){
     ftAutoInit();
   }
 
-  // Mascot reacts
-  setTimeout(()=>mascotSay(a.realLife?'Do it in real life!':'Let\'s do this! 💪'),600);
+  // Mascot reacts — show bubble silently, no auto-speech on every open
+  setTimeout(()=>{const bubble=document.getElementById('speechBubble');if(bubble){bubble.textContent=a.realLife?'Do it in real life! 🌟':'Ready? Let\'s go! ⭐';bubble.classList.add('show');clearTimeout(speechTimeout);speechTimeout=setTimeout(()=>bubble.classList.remove('show'),2500);}},600);
 }
 
 function showMeDone(){
