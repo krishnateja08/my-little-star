@@ -115,6 +115,38 @@ body.bedtime .story-banner{background:linear-gradient(135deg,#2a2044,#1a2a44);}
 .tab[data-t="stories"].active {background:linear-gradient(135deg,#1a1a2e,#4a3a6e);}
 .tab[data-t="hearts"].active  {background:linear-gradient(135deg,#ff6b9d,#ffb830);}
 .tab[data-t="parent"].active  {background:linear-gradient(135deg,#333,#555);}
+.tab[data-t="think"].active   {background:linear-gradient(135deg,#7c3aed,#06b6d4);}
+
+/* THINK ROW */
+.think-row{display:none;gap:6px;padding:6px 8px;flex-wrap:wrap;overflow-x:auto;justify-content:center;}
+.think-row.show{display:flex;}
+.tp{flex:0 0 auto;border:none;padding:6px 14px;border-radius:50px;cursor:pointer;
+  font-family:'Baloo 2',cursive;font-weight:700;font-size:.72rem;transition:all .2s;
+  background:var(--cardbg);color:var(--text5);box-shadow:0 2px 8px var(--shadow2);}
+.tp.active{color:#fff;background:linear-gradient(135deg,#7c3aed,#06b6d4);}
+.tp:active{transform:scale(.95);}
+
+/* THINK VISUAL PANELS */
+.think-seq-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 10px;
+  border-radius:16px;background:var(--inputbg);border:3px solid var(--border);
+  cursor:pointer;transition:all .2s;text-align:center;}
+.think-seq-card.selected{border-color:var(--purple);background:#f0e8ff;transform:scale(1.05);}
+.think-seq-card.correct-pos{border-color:var(--green);background:#e8fff0;}
+.think-seq-card.wrong-pos{border-color:var(--pink);background:#ffe8f0;animation:shake .3s;}
+.arrow-btn{width:48px;height:48px;border-radius:14px;border:3px solid var(--border);background:var(--inputbg);
+  display:flex;align-items:center;justify-content:center;font-size:1.5rem;cursor:pointer;
+  transition:all .2s;user-select:none;}
+.arrow-btn:active{transform:scale(.88);background:linear-gradient(135deg,#7c3aed,#06b6d4);color:#fff;}
+.maze-cell{width:46px;height:46px;border:2px solid #e0d4ff;display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;border-radius:8px;transition:all .3s;}
+.maze-cell.path{background:rgba(124,58,237,.08);}
+.maze-cell.wall{background:#2a1a4e22;}
+.maze-cell.player{background:linear-gradient(135deg,#a78bfa,#06b6d4);border-color:#7c3aed;}
+.maze-cell.goal{background:linear-gradient(135deg,#56cf81,#4ecdc4);}
+.pattern-chip{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;
+  border-radius:12px;font-size:1.5rem;border:3px solid transparent;cursor:pointer;transition:all .2s;}
+.pattern-chip.blank{border:3px dashed #c4b5fd;background:var(--inputbg);}
+.pattern-chip.blank:active{transform:scale(.9);}
 @media(min-width:481px){.tab .tab-icon{font-size:1.6rem;}.tab .tab-label{font-size:.62rem;}.tab{padding:8px 6px 6px;border-radius:18px;}}
 @media(min-width:769px){.tab .tab-icon{font-size:1.8rem;}.tab .tab-label{font-size:.68rem;}.tab{padding:10px 8px 7px;border-radius:20px;gap:2px;}}
 
@@ -1586,6 +1618,7 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
 <div class="tabs">
   <button class="tab active" data-t="morning"  onclick="switchTab('morning')"><span class="tab-icon">🌅</span><span class="tab-label">Morning</span></button>
   <button class="tab"        data-t="learning" onclick="switchTab('learning')"><span class="tab-icon">📚</span><span class="tab-label">Learn</span></button>
+  <button class="tab"        data-t="think"    onclick="switchTab('think')"><span class="tab-icon">🧩</span><span class="tab-label">Think</span></button>
   <button class="tab"        data-t="games"    onclick="switchTab('games')"><span class="tab-icon">🎮</span><span class="tab-label">Games</span></button>
   <button class="tab"        data-t="create"   onclick="switchTab('create')"><span class="tab-icon">🎨</span><span class="tab-label">Create</span></button>
   <button class="tab"        data-t="evening"  onclick="switchTab('evening')"><span class="tab-icon">🌙</span><span class="tab-label">Evening</span></button>
@@ -1617,6 +1650,13 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
   <button class="sp"        data-s="maths"   onclick="switchSubj('maths')">🔢 Maths</button>
   <button class="sp"        data-s="art"     onclick="switchSubj('art')">🎨 Art</button>
   <button class="sp"        data-s="science" onclick="switchSubj('science')">🔬 Science</button>
+</div>
+
+<div class="think-row" id="thinkRow">
+  <button class="tp active" data-k="all"        onclick="switchThinkCat('all')">🌈 All</button>
+  <button class="tp"        data-k="sequencing" onclick="switchThinkCat('sequencing')">📖 Sequencing</button>
+  <button class="tp"        data-k="coding"     onclick="switchThinkCat('coding')">💻 Coding</button>
+  <button class="tp"        data-k="patterns"   onclick="switchThinkCat('patterns')">🔷 Patterns</button>
 </div>
 
 <div class="game-row" id="gameRow">
@@ -2436,8 +2476,29 @@ const CUR = {
     {w:9,subj:'science',emoji:'🚀',title:'Planets in Space',desc:'Our Solar System has 8 amazing planets going around the Sun!',learn:'8 planets: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune. We live on Earth — the 3rd planet! Saturn has rings made of ice!',why:'Astronomy builds wonder, curiosity and an understanding of scale.',steps:['Count: how many planets in our Solar System?','Which is biggest? (Jupiter!) Which is smallest? (Mercury!)','Earth is the only planet with life — why?','Draw and colour all 8 planets!'],stars:4,tag:'🔬 Science'},
     {w:9,subj:'science',emoji:'🧊',title:'Hot & Cold Science',desc:'Heat makes things melt! Cold makes things freeze! Why?',learn:'Everything is made of tiny particles. When hot, they move FAST and things melt. When cold, they slow down and freeze! Chocolate melts, water freezes!',why:'Thermodynamics basics teach cause and effect through familiar objects.',steps:['Hold an ice cube — feel it melting in your hand! Why?','Put water in the freezer — what happens?','Name 3 things that melt when hot','Name 3 things that freeze when cold'],stars:3,tag:'🔬 Science'},
     {w:10,subj:'science',emoji:'🫧',title:'Air is Real!',desc:'You can\'t see air — but it\'s everywhere and it\'s real!',learn:'Air takes up space and pushes on things. Wind is moving air. We breathe oxygen from air. Plants breathe carbon dioxide!',why:'Understanding air introduces physics and atmospheric science.',steps:['Blow into an empty bag and seal it — air inside!','Feel wind on your face — what is wind?','Blow bubbles — air fills every bubble!','Take a deep breath — say thank you to air!'],stars:3,tag:'🔬 Science'},
-  ]
-};
+  ],
+  think:[
+    // ── SEQUENCING ──
+    {w:1,subj:'sequencing',emoji:'🌅',title:'Morning Story Order',desc:'What happens first in the morning? Put the pictures in the right order!',learn:'Sequencing means putting things in the right order — first, then, last. Stories always have a beginning, middle and end!',why:'Sequencing builds logical thinking, narrative skills and early coding concepts.',steps:['Look at all the pictures','Which comes FIRST? (waking up!)','Which comes NEXT? (eating breakfast!)','Which is LAST? (going to school!)'],stars:3,tag:'🔗 Sequencing',cat:'sequencing'},
+    {w:2,subj:'sequencing',emoji:'🍳',title:'Making Toast — In Order!',desc:'Help put the steps for making toast in the right order!',learn:'Algorithms are just instructions in the right order — like a recipe! Computers follow instructions one step at a time.',why:'Following recipe order introduces algorithmic thinking in a delicious way!',steps:['Step 1: Put bread in the toaster','Step 2: Wait for it to pop!','Step 3: Spread butter on top','Step 4: Take a yummy bite!'],stars:3,tag:'🔗 Sequencing',cat:'sequencing'},
+    {w:3,subj:'sequencing',emoji:'🌱',title:'Growing a Flower — In Order!',desc:'Arrange the life of a flower from seed to bloom!',learn:'Sequencing in nature: Seed → Water → Sprout → Leaves → Flower! Every step must come in the right order.',why:'Applying sequence to real-world events builds cause-and-effect understanding.',steps:['First: plant the seed in soil','Then: water it every day','Next: watch the sprout appear','Finally: see the flower bloom!'],stars:3,tag:'🔗 Sequencing',cat:'sequencing'},
+    {w:4,subj:'sequencing',emoji:'🛁',title:'Bedtime Routine Order',desc:'Can you put the bedtime steps in the correct order?',learn:'A routine is a sequence you do every day in the same order. Computers use routines too — called loops!',why:'Recognising daily routines as sequences builds logical order awareness.',steps:['First: have a bath','Then: put on pyjamas','Next: brush teeth','Finally: read a story and sleep!'],stars:3,tag:'🔗 Sequencing',cat:'sequencing'},
+    {w:5,subj:'sequencing',emoji:'🦋',title:'Butterfly Story Order',desc:'Egg → Caterpillar → Cocoon → Butterfly — tell the story in order!',learn:'Metamorphosis is a 4-step sequence in nature. Every stage must happen before the next one can start!',why:'Sequencing with science topics reinforces both concepts simultaneously.',steps:['Tap the EGG first','Then tap the CATERPILLAR','Then tap the COCOON','Finally tap the BUTTERFLY!'],stars:4,tag:'🔗 Sequencing',cat:'sequencing'},
+    {w:6,subj:'sequencing',emoji:'🍕',title:'Pizza Making Order',desc:'Help make a pizza — put each step in the right order!',learn:'Recipes are algorithms! Chefs follow exact sequences. If you add cheese before the sauce, it goes wrong — just like code!',why:'Cooking sequences teach that order matters in all processes.',steps:['First: spread the dough flat','Then: pour the tomato sauce','Next: sprinkle the cheese','Finally: add toppings and bake!'],stars:3,tag:'🔗 Sequencing',cat:'sequencing'},
+    // ── CODING (Arrow Maze) ──
+    {w:1,subj:'coding',emoji:'🤖',title:'Drive the Robot — Easy!',desc:'Use arrows to guide the robot to the star! Think carefully before you tap!',learn:'Coding means giving a computer or robot instructions. Each arrow is one instruction. Computers do exactly what you tell them!',why:'Arrow maze introduces sequencing of commands — the foundation of all programming.',steps:['Look at where the robot is','Look at where the star is','Tap the arrows to move the robot','Can you reach the star?'],stars:3,tag:'💻 Coding',cat:'coding'},
+    {w:2,subj:'coding',emoji:'🚗',title:'Drive the Car — 2 Turns!',desc:'The car needs TWO turns to reach the flag! Plan your moves first!',learn:'In coding, we call a list of moves a "program". Planning before doing is called "debugging" — checking your plan first!',why:'Planning moves before executing teaches debugging and algorithmic thinking.',steps:['Look at the maze carefully','Plan your moves: which way first?','Then which way next?','Tap the arrows and go!'],stars:4,tag:'💻 Coding',cat:'coding'},
+    {w:3,subj:'coding',emoji:'🐝',title:'Guide the Bee to the Flower!',desc:'Help the bee find the flower by pressing the right arrow keys!',learn:'Real coding uses if-then rules: IF the path is clear, THEN move forward! Bees also use "algorithms" to find flowers!',why:'Bee-to-flower adds motivation and shows algorithms exist in nature.',steps:['Start at the bee 🐝','The flower 🌸 is your goal','Plan your path — avoid walls!','Press arrows to move!'],stars:4,tag:'💻 Coding',cat:'coding'},
+    {w:4,subj:'coding',emoji:'🦸',title:'Superhero Maze — Rescue!',desc:'Guide the superhero through the maze to rescue the puppy!',learn:'When code runs step by step it\'s called "executing". Each arrow is one step of execution. Heroes and coders both follow plans!',why:'Narrative context (rescue mission) deepens engagement with logical sequencing.',steps:['Find the hero and the puppy','How many moves to get there?','Tap arrows carefully','You\'re a coding superhero!'],stars:4,tag:'💻 Coding',cat:'coding'},
+    {w:5,subj:'coding',emoji:'🐢',title:'Turtle Walk — Exact Steps!',desc:'The turtle needs exactly 3 arrow presses to reach the leaf — no more, no less!',learn:'"Turtle programming" is how many kids learn to code first! It\'s used in a real coding language called Scratch!',why:'Exact step counting builds precision and efficiency — key coding skills.',steps:['Count the spaces to the leaf','Choose exactly 3 arrows','Think: right direction each time?','Press go — did the turtle make it?'],stars:5,tag:'💻 Coding',cat:'coding'},
+    // ── PATTERNS ──
+    {w:1,subj:'patterns',emoji:'🔴',title:'Red Blue Pattern',desc:'Red, Blue, Red, Blue — what comes next? Tap the right colour!',learn:'A pattern repeats in a predictable way. Computers use patterns (called loops) to do the same thing over and over!',why:'Pattern recognition is a core mathematical and computational skill.',steps:['Look at the pattern carefully','Say it out loud: Red, Blue, Red...','What colour comes next?','Tap the answer!'],stars:3,tag:'🔷 Patterns',cat:'patterns'},
+    {w:2,subj:'patterns',emoji:'🌟',title:'Shape Pattern — What\'s Next?',desc:'Circle, Triangle, Circle, Triangle... what shape comes next?',learn:'Shape patterns teach us to find rules. The rule here is: the same two shapes keep swapping! Patterns have rules — so does code!',why:'Shape patterns extend pattern thinking beyond colour to geometry.',steps:['Look at the shapes in order','Spot the rule — what repeats?','Can you continue the pattern?','Check if you were right!'],stars:3,tag:'🔷 Patterns',cat:'patterns'},
+    {w:3,subj:'patterns',emoji:'🎵',title:'3-Part Colour Pattern!',desc:'Red, Blue, Green, Red, Blue, Green... complete the 3-part pattern!',learn:'This is an ABC pattern — three things that repeat. Music notes, dance moves and computer animations all use repeating patterns!',why:'3-part patterns increase complexity and deepen pattern literacy.',steps:['Say the pattern out loud','Name the three colours','Where does it start again?','Fill in the missing piece!'],stars:4,tag:'🔷 Patterns',cat:'patterns'},
+    {w:4,subj:'patterns',emoji:'🔢',title:'Number Pattern — Count On!',desc:'2, 4, 6, 8... what comes next? Find the number rule!',learn:'Number patterns have a rule: add 2 each time! Mathematicians and programmers love finding the rule in sequences.',why:'Number sequences introduce arithmetic patterns and mathematical reasoning.',steps:['Say the numbers out loud: 2, 4, 6...','What do you ADD each time?','What number comes next?','Check and see!'],stars:4,tag:'🔷 Patterns',cat:'patterns'},
+    {w:5,subj:'patterns',emoji:'🎨',title:'Two Things Changing!',desc:'Big Red, Small Blue, Big Red... spot TWO things changing at once!',learn:'Some patterns have TWO rules changing at once: size AND colour! This is like a nested loop in coding!',why:'Two-attribute patterns challenge kids to track multiple variables simultaneously.',steps:['Look carefully — what is changing?','Is it just the colour?','Is it just the size?','Or... BOTH at once? Clever!'],stars:5,tag:'🔷 Patterns',cat:'patterns'},
+    {w:6,subj:'patterns',emoji:'🏠',title:'Build the Pattern Yourself!',desc:'Copy the pattern first, then extend it by two more steps!',learn:'In coding, we "extend" a loop by telling it how many times to repeat. You\'re thinking like a real programmer!',why:'Creating and extending patterns builds both pattern literacy and creative algorithmic thinking.',steps:['Look at the starter pattern','Copy it exactly first','Now add two more items','Did you keep the rule?'],stars:5,tag:'🔷 Patterns',cat:'patterns'},
+  ],
 
 // ══════════════════════════════════════
 //  PHYSICAL ACTIVITIES — every 2 days
@@ -2637,6 +2698,13 @@ const _saved=localStorage.getItem('c_current');
 let tab=_saved?JSON.parse(_saved).tab:autoTime();
 let subj='all';
 let gameCat='all';
+let thinkCat='all';
+
+function switchThinkCat(k){
+  thinkCat=k;playClick();
+  document.querySelectorAll('.tp').forEach(b=>b.classList.toggle('active',b.dataset.k===k));
+  fetchNext();
+}
 let done=JSON.parse(localStorage.getItem('cd_'+todayKey())||'[]');
 let stars=parseInt(localStorage.getItem('cs_'+todayKey())||'0');
 let allUsed=JSON.parse(localStorage.getItem('c_allused')||'[]');
@@ -2664,6 +2732,7 @@ function getPool(){
   let pool=CUR[tab]||[];
   pool=pool.filter(a=>!a.w||a.w<=week);
   if(tab==='learning'&&subj!=='all') pool=pool.filter(a=>a.subj===subj);
+  if(tab==='think'&&thinkCat!=='all') pool=pool.filter(a=>a.cat===thinkCat);
   // Activities done TODAY in this tab should not appear again today
   const doneTodayTitles=done.filter(d=>d.tab===tab).map(d=>d.title);
   const filtered=pool.filter(a=>!doneTodayTitles.includes(a.title)&&!skippedToday.includes(a.title));
@@ -2689,7 +2758,7 @@ function getPendingForTab(t){
     return doneTodayTitles.length>0 ? remaining.length : remaining.length;
   }
 
-  // Activity tabs (morning/learning/evening)
+  // Activity tabs (morning/learning/evening/think)
   let pool=(CUR[t]||[]).filter(a=>!a.w||a.w<=week);
   const doneTodayTitles=done.filter(d=>d.tab===t).map(d=>d.title);
   const pending=pool.filter(a=>!doneTodayTitles.includes(a.title)&&!skippedToday.includes(a.title));
@@ -2777,7 +2846,7 @@ async function fetchNext(forceAct){
 // ══════════════════════════════════════
 function showActivityPicker(pool){
   const tabName=tab.charAt(0).toUpperCase()+tab.slice(1);
-  const tabEmojis={morning:'🌅',learning:'📚',games:'🎮',evening:'🌙'};
+  const tabEmojis={morning:'🌅',learning:'📚',games:'🎮',evening:'🌙',think:'🧩'};
   document.getElementById('hsub').textContent=`📋 Pick your ${tabName} ${tab==='games'?'game':'activity'}!`;
 
   const catColors={maths:'linear-gradient(135deg,#ffb830,#ff8c69)',letters:'linear-gradient(135deg,#a78bfa,#4fa3e0)',
@@ -2821,10 +2890,14 @@ function showActivityPicker(pool){
   const doneTodayTitles=done.filter(d=>d.tab===tab).map(d=>d.title);
   const allPool=tab==='games'?GAMES.filter(g=>g.week<=week):((CUR[tab]||[]).filter(a=>!a.w||a.w<=week));
   const doneGames=allPool.filter(g=>doneTodayTitles.includes(g.title));
-  // Filter by current gameCat if applicable
-  const filteredDone=tab==='games'&&gameCat!=='all'?doneGames.filter(g=>g.cat===gameCat):doneGames;
+  // Filter by current gameCat / thinkCat if applicable
+  const filteredDone=tab==='games'&&gameCat!=='all'?doneGames.filter(g=>g.cat===gameCat)
+    :tab==='think'&&thinkCat!=='all'?doneGames.filter(g=>g.cat===thinkCat)
+    :doneGames;
   const filteredSkipped=tab==='games'&&gameCat!=='all'
     ?allPool.filter(g=>skippedToday.includes(g.title)&&g.cat===gameCat)
+    :tab==='think'&&thinkCat!=='all'
+    ?allPool.filter(g=>skippedToday.includes(g.title)&&g.cat===thinkCat)
     :allPool.filter(g=>skippedToday.includes(g.title));
 
   const doneHtml=filteredDone.map(a=>buildItem(a,-1,'done')).join('');
@@ -2866,7 +2939,7 @@ function pickRandom(){
 // ══════════════════════════════════════
 //  RENDER ACTIVITY CARD (with voice + show me)
 // ══════════════════════════════════════
-const SC={abc:'linear-gradient(135deg,#ff6b9d,#a78bfa)',maths:'linear-gradient(135deg,#ffb830,#ff8c69)',art:'linear-gradient(135deg,#4ecdc4,#56cf81)',science:'linear-gradient(135deg,#4fa3e0,#a78bfa)'};
+const SC={abc:'linear-gradient(135deg,#ff6b9d,#a78bfa)',maths:'linear-gradient(135deg,#ffb830,#ff8c69)',art:'linear-gradient(135deg,#4ecdc4,#56cf81)',science:'linear-gradient(135deg,#4fa3e0,#a78bfa)',sequencing:'linear-gradient(135deg,#7c3aed,#a78bfa)',coding:'linear-gradient(135deg,#06b6d4,#7c3aed)',patterns:'linear-gradient(135deg,#f59e0b,#7c3aed)'};
 
 function showLoad(){
   document.getElementById('area').innerHTML=`<div class="loadcard"><span class="spin">🌀</span><div class="ltxt">Finding something perfect for Week ${week}… ✨</div></div>`;
@@ -3446,6 +3519,327 @@ function buildVisualPanel(a){
   return '';
 }
 
+// ══════════════════════════════════════
+//  THINK TAB VISUAL PANELS
+// ══════════════════════════════════════
+function buildThinkPanel(a){
+  const t=a.title||'';
+  const cat=a.cat||'';
+
+  // ── SEQUENCING PANELS ──
+  if(cat==='sequencing'){
+    const SEQUENCES={
+      'Morning Story Order':[
+        {e:'😴',label:'Wake up',order:1},
+        {e:'🪥',label:'Brush teeth',order:3},
+        {e:'🍳',label:'Eat breakfast',order:2},
+        {e:'🎒',label:'Go to school',order:4},
+      ],
+      'Making Toast — In Order!':[
+        {e:'🧈',label:'Spread butter',order:3},
+        {e:'🍞',label:'Put bread in',order:1},
+        {e:'😋',label:'Take a bite!',order:4},
+        {e:'🍞',label:'Wait for pop!',order:2},
+      ],
+      'Growing a Flower — In Order!':[
+        {e:'🌸',label:'Flower blooms',order:4},
+        {e:'🌰',label:'Plant the seed',order:1},
+        {e:'🌿',label:'Leaves grow',order:3},
+        {e:'💧',label:'Water it',order:2},
+      ],
+      'Bedtime Routine Order':[
+        {e:'📖',label:'Read story',order:4},
+        {e:'🛁',label:'Have a bath',order:1},
+        {e:'👕',label:'Put on PJs',order:2},
+        {e:'🪥',label:'Brush teeth',order:3},
+      ],
+      'Butterfly Story Order':[
+        {e:'🐛',label:'Caterpillar',order:2},
+        {e:'🥚',label:'Tiny egg',order:1},
+        {e:'🦋',label:'Butterfly!',order:4},
+        {e:'🫘',label:'Cocoon',order:3},
+      ],
+      'Pizza Making Order':[
+        {e:'🍕',label:'Bake it!',order:4},
+        {e:'🫓',label:'Spread dough',order:1},
+        {e:'🧀',label:'Add cheese',order:3},
+        {e:'🍅',label:'Add sauce',order:2},
+      ],
+    };
+    const cards=SEQUENCES[t]||SEQUENCES['Morning Story Order'];
+    const shuffled=[...cards].sort(()=>Math.random()-.5);
+    let seqState={selected:null,placed:[],order:shuffled.map((_,i)=>i),correct:0};
+    const id='seq_'+Date.now();
+    setTimeout(()=>{
+      const wrap=document.getElementById(id);
+      if(!wrap)return;
+      let placed=[];let correct=0;
+      wrap.querySelectorAll('.think-seq-card').forEach(card=>{
+        card.addEventListener('click',()=>{
+          if(card.dataset.placed==='1')return;
+          const idx=parseInt(card.dataset.idx);
+          const expectedOrder=placed.length+1;
+          const cardOrder=parseInt(card.dataset.order);
+          if(cardOrder===expectedOrder){
+            card.classList.add('correct-pos');
+            card.dataset.placed='1';
+            card.innerHTML=card.innerHTML+`<div style="font-size:.6rem;font-weight:800;color:#56cf81;margin-top:2px">#${expectedOrder} ✅</div>`;
+            placed.push(idx);correct++;
+            speakText(card.dataset.label+'! That is step '+expectedOrder+'!');
+            if(correct===cards.length){
+              setTimeout(()=>{
+                const fb=document.getElementById(id+'_fb');
+                if(fb){fb.textContent='🎉 Amazing! You put it all in order!';fb.style.color='#56cf81';}
+                playCorrect&&playCorrect();burst&&burst();
+              },300);
+            }
+          } else {
+            card.classList.add('wrong-pos');
+            speakText('Not yet! Try a different one!');
+            setTimeout(()=>card.classList.remove('wrong-pos'),600);
+          }
+        });
+      });
+    },100);
+    return `<div style="margin:12px 0" id="${id}">
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;color:#7c3aed;margin-bottom:6px;text-align:center">
+        🔢 Tap the pictures in the RIGHT order — 1st, 2nd, 3rd, 4th!
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:10px">
+        ${shuffled.map((c,i)=>`
+          <div class="think-seq-card" data-idx="${i}" data-order="${c.order}" data-label="${c.label}">
+            <span style="font-size:2.6rem">${c.e}</span>
+            <span style="font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:700;color:var(--text2)">${c.label}</span>
+          </div>`).join('')}
+      </div>
+      <div id="${id}_fb" style="text-align:center;font-family:'Baloo 2',cursive;font-size:.9rem;min-height:24px;color:var(--purple)"></div>
+    </div>`;
+  }
+
+  // ── CODING / MAZE PANELS ──
+  if(cat==='coding'){
+    const MAZES={
+      'Drive the Robot — Easy!':{
+        grid:[
+          [1,1,1,0,0],
+          [0,0,1,0,0],
+          [0,0,1,1,2],
+          [0,0,0,0,0],
+          [0,0,0,0,0],
+        ],playerR:0,playerC:0,rows:3,cols:3,
+        player:'🤖',goal:'⭐',wall:'🌳'
+      },
+      'Drive the Car — 2 Turns!':{
+        grid:[
+          [1,1,0,0,0],
+          [0,1,0,0,0],
+          [0,1,1,2,0],
+          [0,0,0,0,0],
+          [0,0,0,0,0],
+        ],playerR:0,playerC:0,rows:3,cols:4,
+        player:'🚗',goal:'🚩',wall:'🌳'
+      },
+      'Guide the Bee to the Flower!':{
+        grid:[
+          [1,0,0,0,0],
+          [1,1,0,0,0],
+          [0,1,0,0,0],
+          [0,1,1,2,0],
+          [0,0,0,0,0],
+        ],playerR:0,playerC:0,rows:4,cols:4,
+        player:'🐝',goal:'🌸',wall:'🌳'
+      },
+      'Superhero Maze — Rescue!':{
+        grid:[
+          [1,1,1,0,0],
+          [0,0,1,0,0],
+          [0,0,1,0,0],
+          [0,0,1,1,2],
+          [0,0,0,0,0],
+        ],playerR:0,playerC:0,rows:4,cols:5,
+        player:'🦸',goal:'🐶',wall:'🌲'
+      },
+      'Turtle Walk — Exact Steps!':{
+        grid:[
+          [1,1,1,0,0],
+          [0,0,2,0,0],
+          [0,0,0,0,0],
+          [0,0,0,0,0],
+          [0,0,0,0,0],
+        ],playerR:0,playerC:0,rows:2,cols:3,
+        player:'🐢',goal:'🍃',wall:'🪨'
+      },
+    };
+    const cfg=MAZES[t]||MAZES['Drive the Robot — Easy!'];
+    // Deep copy grid
+    let grid=cfg.grid.map(r=>[...r]);
+    let pR=cfg.playerR,pC=cfg.playerC;
+    const rows=cfg.rows,cols=cfg.cols;
+    const PLAYER=cfg.player,GOAL=cfg.goal,WALL=cfg.wall;
+    const id='maze_'+Date.now();
+
+    function renderMaze(){
+      const wrap=document.getElementById(id+'_grid');
+      if(!wrap)return;
+      let html='';
+      for(let r=0;r<rows;r++){
+        for(let c=0;c<cols;c++){
+          const v=grid[r][c];
+          const isPlayer=(r===pR&&c===pC);
+          const isGoal=v===2;
+          const isWall=v===0;
+          const isPath=v===1||isGoal;
+          let cls='maze-cell';
+          if(isPlayer)cls+=' player';
+          else if(isGoal)cls+=' goal';
+          else if(isWall)cls+=' wall';
+          else cls+=' path';
+          const em=isPlayer?PLAYER:isGoal?GOAL:isWall?'':' ';
+          html+=`<div class="${cls}">${em}</div>`;
+        }
+      }
+      wrap.style.gridTemplateColumns=`repeat(${cols},46px)`;
+      wrap.innerHTML=html;
+    }
+
+    setTimeout(()=>{
+      renderMaze();
+      const fb=document.getElementById(id+'_fb');
+      document.getElementById(id+'_up').onclick=()=>move(-1,0,fb);
+      document.getElementById(id+'_dn').onclick=()=>move(1,0,fb);
+      document.getElementById(id+'_lt').onclick=()=>move(0,-1,fb);
+      document.getElementById(id+'_rt').onclick=()=>move(0,1,fb);
+
+      function move(dr,dc,fb){
+        const nr=pR+dr,nc=pC+dc;
+        if(nr<0||nr>=rows||nc<0||nc>=cols)return;
+        if(grid[nr][nc]===0)return; // wall
+        pR=nr;pC=nc;
+        renderMaze();
+        if(grid[nr][nc]===2){
+          if(fb){fb.textContent='🎉 You did it! Amazing coder!';fb.style.color='#56cf81';}
+          speakText('You reached the goal! Amazing coding!');
+          playCorrect&&playCorrect();burst&&burst();
+        } else {
+          playClick&&playClick();
+        }
+      }
+    },120);
+
+    return `<div style="margin:12px 0" id="${id}">
+      <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:#7c3aed;margin-bottom:8px;text-align:center">
+        🕹️ Use the arrows to move ${PLAYER} to ${GOAL}!
+      </div>
+      <div style="display:flex;justify-content:center;margin-bottom:10px">
+        <div id="${id}_grid" style="display:grid;gap:4px"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,52px);gap:6px;justify-content:center;margin-bottom:8px">
+        <div></div>
+        <button class="arrow-btn" id="${id}_up">⬆️</button>
+        <div></div>
+        <button class="arrow-btn" id="${id}_lt">⬅️</button>
+        <button class="arrow-btn" id="${id}_dn">⬇️</button>
+        <button class="arrow-btn" id="${id}_rt">➡️</button>
+      </div>
+      <div id="${id}_fb" style="text-align:center;font-family:'Baloo 2',cursive;font-size:.9rem;min-height:22px;color:var(--purple)"></div>
+    </div>`;
+  }
+
+  // ── PATTERN PANELS ──
+  if(cat==='patterns'){
+    const PATTERNS={
+      'Red Blue Pattern':{
+        seq:['🔴','🔵','🔴','🔵','🔴','🔵'],
+        options:['🔴','🔵','🟡','🟢'],
+        answer:'🔵',
+        label:'Red, Blue, Red, Blue...',
+        hint:'What comes after Red?'
+      },
+      "Shape Pattern — What's Next?":{
+        seq:['⭕','🔺','⭕','🔺','⭕','🔺'],
+        options:['⭕','🔺','🟦','⭐'],
+        answer:'🔺',
+        label:'Circle, Triangle, Circle...',
+        hint:'What comes after Circle?'
+      },
+      '3-Part Colour Pattern!':{
+        seq:['🔴','🔵','🟢','🔴','🔵','🟢'],
+        options:['🟡','🔴','🔵','🟢'],
+        answer:'🔴',
+        label:'Red, Blue, Green, Red...',
+        hint:'Which colour starts the pattern again?'
+      },
+      'Number Pattern — Count On!':{
+        seq:['2️⃣','4️⃣','6️⃣','8️⃣'],
+        options:['9️⃣','🔟','1️⃣','5️⃣'],
+        answer:'🔟',
+        label:'2, 4, 6, 8...',
+        hint:'Add 2 each time! What comes after 8?'
+      },
+      'Two Things Changing!':{
+        seq:['🔴','🔵🔵','🔴','🔵🔵','🔴'],
+        options:['🔴','🔵','🔵🔵','🟢'],
+        answer:'🔵🔵',
+        label:'Small Red, Big Blue, Small Red, Big Blue...',
+        hint:'Two things change — size AND colour!'
+      },
+      'Build the Pattern Yourself!':{
+        seq:['🌟','❤️','🔵','🌟','❤️','🔵'],
+        options:['🌟','❤️','🔵','🟡'],
+        answer:'🌟',
+        label:'Star, Heart, Blue, Star, Heart, Blue...',
+        hint:'Extend the pattern — what comes next?'
+      },
+    };
+    const cfg=PATTERNS[t]||PATTERNS['Red Blue Pattern'];
+    const id='pat_'+Date.now();
+    const seqShow=cfg.seq.slice(0,5);
+    const opts=cfg.options.sort(()=>Math.random()-.5);
+
+    setTimeout(()=>{
+      opts.forEach((o,i)=>{
+        const btn=document.getElementById(id+'_opt'+i);
+        if(!btn)return;
+        btn.addEventListener('click',()=>{
+          const fb=document.getElementById(id+'_fb');
+          if(o===cfg.answer){
+            btn.style.borderColor='#56cf81';btn.style.background='#e8fff0';
+            if(fb){fb.textContent='🎉 Correct! You cracked the pattern!';fb.style.color='#56cf81';}
+            speakText('Correct! Well done, you found the pattern!');
+            playCorrect&&playCorrect();burst&&burst();
+          } else {
+            btn.style.borderColor='#ff6b9d';btn.style.background='#ffe8f0';
+            btn.style.animation='shake .3s';
+            if(fb){fb.textContent='❌ Try again! '+cfg.hint;fb.style.color='#ff6b9d';}
+            speakText('Not quite! '+cfg.hint);
+            setTimeout(()=>{btn.style.animation='';btn.style.borderColor='';btn.style.background='';},700);
+          }
+        });
+      });
+    },100);
+
+    return `<div style="margin:12px 0" id="${id}">
+      <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:#7c3aed;margin-bottom:6px;text-align:center">
+        🔷 Spot the pattern — what comes next?
+      </div>
+      <div style="font-size:.75rem;color:var(--text3);text-align:center;margin-bottom:10px">${cfg.label} <strong style="color:#7c3aed">❓</strong></div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding:14px;background:linear-gradient(135deg,#f5f0ff,#eff8ff);border-radius:16px;border:2px dashed #c4b5fd">
+        ${seqShow.map(s=>`<div style="width:46px;height:46px;border-radius:12px;background:rgba(124,58,237,.08);display:flex;align-items:center;justify-content:center;font-size:1.6rem">${s}</div>`).join('')}
+        <div class="pattern-chip blank" style="width:46px;height:46px;font-size:1.4rem">❓</div>
+      </div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.75rem;color:var(--text3);text-align:center;margin-bottom:8px">Tap the correct answer 👇</div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        ${opts.map((o,i)=>`<button id="${id}_opt${i}"
+          style="width:58px;height:58px;border-radius:14px;border:3px solid var(--border);background:var(--inputbg);
+          font-size:1.7rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center">${o}</button>`).join('')}
+      </div>
+      <div id="${id}_fb" style="text-align:center;font-family:'Baloo 2',cursive;font-size:.88rem;min-height:24px;margin-top:10px;color:var(--purple)"></div>
+    </div>`;
+  }
+
+  return '';
+}
+
 function showAct(a){
   const steps=a.steps.map((s,i)=>`<div class="step"><div class="snum">${i+1}</div><span>${s}</span></div>`).join('');
   const lb=a.learn?`<div class="alearn"><h4>🧠 What You Will Learn</h4><p>${a.learn}</p></div>`:'';
@@ -3481,7 +3875,7 @@ function showAct(a){
     </div>`:'';
 
   // Build visual interactive panel based on activity type
-  const visualPanel=buildVisualPanel(a);
+  const visualPanel=tab==='think'?buildThinkPanel(a):buildVisualPanel(a);
 
   document.getElementById('area').innerHTML=`
     <div class="acard" id="ac">
@@ -5055,6 +5449,7 @@ function switchTab(t){
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===t));
   document.getElementById('subjRow').classList.toggle('show',t==='learning');
   document.getElementById('gameRow').classList.toggle('show',t==='games');
+  document.getElementById('thinkRow').classList.toggle('show',t==='think');
 
   // Show/hide elements based on tab
   const isSpecial=t==='create'||t==='parent'||t==='stories'||t==='hearts';
@@ -8017,6 +8412,7 @@ setTimeout(checkBedtimeLock,1500);
 document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===tab));
 document.getElementById('subjRow').classList.toggle('show',tab==='learning');
 document.getElementById('gameRow').classList.toggle('show',tab==='games');
+document.getElementById('thinkRow').classList.toggle('show',tab==='think');
 document.getElementById('weatherBar').classList.toggle('show',tab==='morning');
 document.getElementById('timerBar').classList.add('show');
 
