@@ -3899,6 +3899,662 @@ function buildThinkPanel(a){
     </div>`;
   }
 
+  // ══════════════════════════════════════
+  //  VISUAL IMAGE PANELS — New Subjects
+  // ══════════════════════════════════════
+
+  // Helper: wrap SVG in a styled image panel
+  function imgPanel(svgContent, caption=''){
+    return `<div style="margin:12px 0;border-radius:20px;overflow:hidden;background:linear-gradient(135deg,#f8f4ff,#f0f8ff);border:3px solid #e0d4ff;text-align:center;padding:16px 12px">
+      ${svgContent}
+      ${caption?`<div style="font-family:'Baloo 2',cursive;font-size:.78rem;color:var(--text3);margin-top:8px">${caption}</div>`:''}
+    </div>`;
+  }
+
+  // ── FEELINGS ──
+  if(a.subj==='feelings'){
+    // Emotion Matching
+    if(t.includes('Emotion Matching')){
+      return imgPanel(`<svg viewBox="0 0 320 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:320px">
+        <!-- Happy -->
+        <circle cx="40" cy="60" r="34" fill="#FFD93D" stroke="#FFC107" stroke-width="3"/>
+        <circle cx="28" cy="52" r="5" fill="#333"/><circle cx="52" cy="52" r="5" fill="#333"/>
+        <path d="M26 70 Q40 84 54 70" fill="none" stroke="#333" stroke-width="3.5" stroke-linecap="round"/>
+        <text x="40" y="108" text-anchor="middle" font-family="Baloo 2,cursive" font-size="11" fill="#FFC107" font-weight="800">Happy 😊</text>
+        <!-- Sad -->
+        <circle cx="120" cy="60" r="34" fill="#74B9FF" stroke="#0984E3" stroke-width="3"/>
+        <circle cx="108" cy="52" r="5" fill="#333"/><circle cx="132" cy="52" r="5" fill="#333"/>
+        <path d="M106 76 Q120 64 134 76" fill="none" stroke="#333" stroke-width="3.5" stroke-linecap="round"/>
+        <ellipse cx="108" cy="62" rx="4" ry="6" fill="#5499e0" opacity=".5"/>
+        <text x="120" y="108" text-anchor="middle" font-family="Baloo 2,cursive" font-size="11" fill="#0984E3" font-weight="800">Sad 😢</text>
+        <!-- Angry -->
+        <circle cx="200" cy="60" r="34" fill="#FF7675" stroke="#D63031" stroke-width="3"/>
+        <circle cx="188" cy="54" r="5" fill="#333"/><circle cx="212" cy="54" r="5" fill="#333"/>
+        <path d="M186 74 Q200 62 214 74" fill="none" stroke="#333" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M183 44 L193 50" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+        <path d="M207 44 L217 50" stroke="#333" stroke-width="3" stroke-linecap="round" transform="scale(-1,1) translate(-400,0)"/>
+        <path d="M183 44 L195 49" stroke="#5c0000" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M217 44 L205 49" stroke="#5c0000" stroke-width="2.5" stroke-linecap="round"/>
+        <text x="200" y="108" text-anchor="middle" font-family="Baloo 2,cursive" font-size="11" fill="#D63031" font-weight="800">Angry 😠</text>
+        <!-- Surprised -->
+        <circle cx="280" cy="60" r="34" fill="#FDCB6E" stroke="#E17055" stroke-width="3"/>
+        <circle cx="268" cy="50" r="5" fill="#333"/><circle cx="292" cy="50" r="5" fill="#333"/>
+        <ellipse cx="280" cy="74" rx="9" ry="12" fill="#333"/>
+        <path d="M265 42 L271 46" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M289 42 L295 46" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>
+        <text x="280" y="108" text-anchor="middle" font-family="Baloo 2,cursive" font-size="11" fill="#E17055" font-weight="800">Surprised 😲</text>
+      </svg>`, '👆 Tap each face and say the feeling out loud!');
+    }
+
+    // Breathing / Calm activities
+    if(t.includes('Balloon')||t.includes('Breathing')||t.includes('Calm Down')||t.includes('Toolkit')){
+      return imgPanel(`<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px">
+        <!-- Balloon shape -->
+        <ellipse cx="100" cy="68" rx="52" ry="60" fill="#a78bfa" opacity=".85"/>
+        <ellipse cx="85" cy="48" rx="14" ry="10" fill="#fff" opacity=".35"/>
+        <!-- String -->
+        <path d="M100 128 Q104 138 100 148 Q96 158 100 160" fill="none" stroke="#888" stroke-width="2.5"/>
+        <!-- Face on balloon -->
+        <circle cx="88" cy="62" r="5" fill="#fff" opacity=".9"/>
+        <circle cx="112" cy="62" r="5" fill="#fff" opacity=".9"/>
+        <path d="M86 82 Q100 94 114 82" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" opacity=".9"/>
+        <!-- Breath arrows -->
+        <path d="M20 68 L48 68" stroke="#4ecdc4" stroke-width="3" stroke-linecap="round" marker-end="url(#arr)"/>
+        <path d="M152 68 L180 68" stroke="#ff6b9d" stroke-width="3" stroke-linecap="round" marker-end="url(#arr2)"/>
+        <text x="16" y="58" font-family="Baloo 2,cursive" font-size="10" fill="#4ecdc4" font-weight="800">IN</text>
+        <text x="156" y="58" font-family="Baloo 2,cursive" font-size="10" fill="#ff6b9d" font-weight="800">OUT</text>
+        <defs>
+          <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4ecdc4"/></marker>
+          <marker id="arr2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff6b9d"/></marker>
+        </defs>
+      </svg>`, '🫁 Breathe IN to inflate • Breathe OUT to deflate');
+    }
+
+    // Worry Bubbles
+    if(t.includes('Worry')||t.includes('Bubble')){
+      return imgPanel(`<svg viewBox="0 0 260 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px">
+        <circle cx="50" cy="65" r="42" fill="none" stroke="#a78bfa" stroke-width="3" stroke-dasharray="6,3" opacity=".7"/>
+        <text x="50" y="58" text-anchor="middle" font-size="22">😟</text>
+        <text x="50" y="80" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#a78bfa">worry</text>
+        <!-- Arrow -->
+        <path d="M98 65 L130 65" stroke="#ffb830" stroke-width="3" stroke-linecap="round"/>
+        <polygon points="128,59 138,65 128,71" fill="#ffb830"/>
+        <text x="114" y="58" text-anchor="middle" font-family="Baloo 2,cursive" font-size="10" fill="#ffb830" font-weight="800">POP!</text>
+        <!-- Popped burst -->
+        <circle cx="185" cy="65" r="38" fill="#fff5e0" stroke="#ffb830" stroke-width="2" opacity=".6"/>
+        <text x="185" y="55" text-anchor="middle" font-size="22">😌</text>
+        <text x="185" y="80" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#56cf81" font-weight="800">I am safe!</text>
+        <line x1="155" y1="35" x2="145" y2="25" stroke="#ffb830" stroke-width="2"/><line x1="215" y1="35" x2="225" y2="25" stroke="#ffb830" stroke-width="2"/>
+        <line x1="155" y1="95" x2="145" y2="105" stroke="#ffb830" stroke-width="2"/><line x1="215" y1="95" x2="225" y2="105" stroke="#ffb830" stroke-width="2"/>
+        <line x1="140" y1="65" x2="130" y2="65" stroke="#ffb830" stroke-width="2"/><line x1="230" y1="65" x2="240" y2="65" stroke="#ffb830" stroke-width="2"/>
+      </svg>`, '💭 Put the worry in a bubble • Then pop it away!');
+    }
+
+    // Kindness Quest
+    if(t.includes('Kindness')){
+      return imgPanel(`<svg viewBox="0 0 260 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px">
+        <!-- Kid 1 -->
+        <circle cx="70" cy="38" r="20" fill="#FDCB6E" stroke="#E17055" stroke-width="2"/>
+        <circle cx="63" cy="34" r="3.5" fill="#333"/><circle cx="77" cy="34" r="3.5" fill="#333"/>
+        <path d="M62 46 Q70 54 78 46" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>
+        <rect x="55" y="60" width="30" height="38" rx="8" fill="#74B9FF"/>
+        <line x1="55" y1="72" x2="38" y2="85" stroke="#FDCB6E" stroke-width="5" stroke-linecap="round"/>
+        <line x1="85" y1="72" x2="102" y2="85" stroke="#FDCB6E" stroke-width="5" stroke-linecap="round"/>
+        <!-- Heart between them -->
+        <text x="130" y="75" text-anchor="middle" font-size="32">💛</text>
+        <!-- Kid 2 -->
+        <circle cx="190" cy="38" r="20" fill="#FFD93D" stroke="#FFC107" stroke-width="2"/>
+        <circle cx="183" cy="34" r="3.5" fill="#333"/><circle cx="197" cy="34" r="3.5" fill="#333"/>
+        <path d="M182 46 Q190 54 198 46" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>
+        <rect x="175" y="60" width="30" height="38" rx="8" fill="#FF7675"/>
+        <line x1="175" y1="72" x2="158" y2="85" stroke="#FFD93D" stroke-width="5" stroke-linecap="round"/>
+        <line x1="205" y1="72" x2="222" y2="85" stroke="#FFD93D" stroke-width="5" stroke-linecap="round"/>
+      </svg>`, '💛 Kindness makes BOTH people happy!');
+    }
+
+    // Feelings Thermometer
+    if(t.includes('Thermometer')||t.includes('Excited vs')||t.includes('I Feel')){
+      return imgPanel(`<svg viewBox="0 0 260 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px">
+        <!-- Thermometer bar -->
+        <rect x="115" y="10" width="30" height="100" rx="15" fill="#eee" stroke="#ddd" stroke-width="2"/>
+        <rect x="115" y="40" width="30" height="70" rx="15" fill="url(#thermo)"/>
+        <circle cx="130" cy="118" r="18" fill="#ff6b9d"/>
+        <defs><linearGradient id="thermo" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff6b9d"/><stop offset="100%" stop-color="#ffb830"/></linearGradient></defs>
+        <!-- Scale labels -->
+        <text x="90" y="45" text-anchor="end" font-size="18">😡</text>
+        <text x="55" y="42" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#ff6b9d" font-weight="800">Very Big</text>
+        <text x="90" y="80" text-anchor="end" font-size="18">😕</text>
+        <text x="55" y="77" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#ffb830" font-weight="800">Medium</text>
+        <text x="90" y="115" text-anchor="end" font-size="18">😌</text>
+        <text x="55" y="112" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#56cf81" font-weight="800">Tiny</text>
+        <!-- Faces right side -->
+        <text x="175" y="45" font-size="18">🔥</text>
+        <text x="175" y="80" font-size="18">🌊</text>
+        <text x="175" y="115" font-size="18">🌱</text>
+      </svg>`, '🌡️ How BIG is your feeling right now?');
+    }
+
+    // Default feelings visual — emotion wheel
+    return imgPanel(`<svg viewBox="0 0 260 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px">
+      <text x="30" y="50" font-size="36">😊</text><text x="18" y="75" font-family="Baloo 2,cursive" font-size="10" fill="#FFD93D" font-weight="800">Happy</text>
+      <text x="90" y="30" font-size="36">😢</text><text x="82" y="75" font-family="Baloo 2,cursive" font-size="10" fill="#74B9FF" font-weight="800">Sad</text>
+      <text x="155" y="50" font-size="36">😠</text><text x="145" y="75" font-family="Baloo 2,cursive" font-size="10" fill="#FF7675" font-weight="800">Angry</text>
+      <text x="210" y="30" font-size="36">😌</text><text x="203" y="75" font-family="Baloo 2,cursive" font-size="10" fill="#55EFC4" font-weight="800">Calm</text>
+      <text x="90" y="115" font-size="36">🤩</text><text x="82" y="130" font-family="Baloo 2,cursive" font-size="10" fill="#FDCB6E" font-weight="800">Excited</text>
+    </svg>`, '💛 All feelings are OK — just information!');
+  }
+
+  // ── WORLD ──
+  if(a.subj==='world'){
+    // Continents
+    if(t.includes('Continent')){
+      return imgPanel(`<svg viewBox="0 0 320 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:320px">
+        <!-- Globe circle -->
+        <circle cx="160" cy="75" r="68" fill="#4fa3e0" opacity=".2" stroke="#4fa3e0" stroke-width="2"/>
+        <!-- Continent blobs simplified -->
+        <ellipse cx="130" cy="55" rx="28" ry="20" fill="#56cf81" opacity=".85" rx="6"/><text x="130" y="58" text-anchor="middle" font-family="Baloo 2,cursive" font-size="8" fill="#fff" font-weight="800">EUROPE</text>
+        <ellipse cx="120" cy="90" rx="22" ry="28" fill="#56cf81" opacity=".85"/><text x="120" y="93" text-anchor="middle" font-family="Baloo 2,cursive" font-size="8" fill="#fff" font-weight="800">AFRICA</text>
+        <ellipse cx="195" cy="58" rx="35" ry="24" fill="#ffb830" opacity=".9"/><text x="195" y="61" text-anchor="middle" font-family="Baloo 2,cursive" font-size="8" fill="#fff" font-weight="800">ASIA</text>
+        <ellipse cx="195" cy="98" rx="20" ry="14" fill="#ff8c69" opacity=".9"/><text x="195" y="101" text-anchor="middle" font-family="Baloo 2,cursive" font-size="8" fill="#fff" font-weight="800">AUSTRALIA</text>
+        <ellipse cx="82" cy="62" rx="16" ry="22" fill="#a78bfa" opacity=".9"/><text x="82" y="58" text-anchor="middle" font-family="Baloo 2,cursive" font-size="7" fill="#fff" font-weight="800">N.AMERICA</text>
+        <ellipse cx="90" cy="100" rx="14" ry="18" fill="#ff6b9d" opacity=".9"/><text x="90" y="103" text-anchor="middle" font-family="Baloo 2,cursive" font-size="7" fill="#fff" font-weight="800">S.AMERICA</text>
+        <ellipse cx="160" cy="135" rx="30" ry="10" fill="#4ecdc4" opacity=".9"/><text x="160" y="138" text-anchor="middle" font-family="Baloo 2,cursive" font-size="7" fill="#fff" font-weight="800">ANTARCTICA</text>
+      </svg>`, '🌍 7 continents — each a different colour!');
+    }
+
+    // Doctors / Community Helpers
+    if(t.includes('Doctor')||t.includes('Nurse')){
+      return imgPanel(`<svg viewBox="0 0 240 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:260px">
+        <!-- Doctor figure -->
+        <circle cx="80" cy="35" r="22" fill="#FDCB6E" stroke="#E17055" stroke-width="2"/>
+        <circle cx="73" cy="30" r="3" fill="#333"/><circle cx="87" cy="30" r="3" fill="#333"/>
+        <path d="M72 42 Q80 49 88 42" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+        <rect x="60" y="58" width="40" height="50" rx="8" fill="#fff" stroke="#4fa3e0" stroke-width="2.5"/>
+        <!-- Stethoscope -->
+        <path d="M70 72 Q60 85 68 95 Q78 105 85 95" fill="none" stroke="#4fa3e0" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="85" cy="95" r="7" fill="#4fa3e0"/>
+        <!-- Red cross on shirt -->
+        <rect x="76" y="64" width="8" height="22" rx="2" fill="#ff6b9d"/>
+        <rect x="70" y="70" width="20" height="8" rx="2" fill="#ff6b9d"/>
+        <!-- Tools -->
+        <rect x="140" y="40" width="80" height="70" rx="14" fill="#e8f5ff" stroke="#4fa3e0" stroke-width="2"/>
+        <text x="180" y="65" text-anchor="middle" font-size="20">🩺</text>
+        <text x="158" y="95" font-size="16">💊</text>
+        <text x="188" y="95" font-size="16">🩹</text>
+        <text x="180" y="120" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#4fa3e0" font-weight="800">Doctor's Tools</text>
+      </svg>`, '👨‍⚕️ Doctors help us stay healthy!');
+    }
+
+    // Firefighters
+    if(t.includes('Firefighter')){
+      return imgPanel(`<svg viewBox="0 0 240 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:260px">
+        <!-- Fire truck -->
+        <rect x="10" y="75" width="150" height="55" rx="10" fill="#ff6b9d"/>
+        <rect x="130" y="55" width="30" height="40" rx="6" fill="#ff8c69"/>
+        <circle cx="40" cy="132" r="16" fill="#333"/>
+        <circle cx="40" cy="132" r="8" fill="#888"/>
+        <circle cx="130" cy="132" r="16" fill="#333"/>
+        <circle cx="130" cy="132" r="8" fill="#888"/>
+        <rect x="18" y="82" width="30" height="22" rx="4" fill="#74B9FF" opacity=".8"/>
+        <!-- Ladder on top -->
+        <rect x="20" y="65" width="110" height="10" rx="3" fill="#ffb830"/>
+        <line x1="40" y1="65" x2="40" y2="75" stroke="#e09520" stroke-width="2"/>
+        <line x1="65" y1="65" x2="65" y2="75" stroke="#e09520" stroke-width="2"/>
+        <line x1="90" y1="65" x2="90" y2="75" stroke="#e09520" stroke-width="2"/>
+        <line x1="115" y1="65" x2="115" y2="75" stroke="#e09520" stroke-width="2"/>
+        <!-- Firefighter figure -->
+        <circle cx="195" cy="30" r="18" fill="#FDCB6E" stroke="#E17055" stroke-width="2"/>
+        <!-- Helmet -->
+        <path d="M175 22 Q195 5 215 22" fill="#ff4444" stroke="#cc0000" stroke-width="2"/>
+        <rect x="170" y="20" width="50" height="6" rx="3" fill="#cc0000"/>
+        <rect x="178" y="58" width="34" height="45" rx="8" fill="#ff4444"/>
+        <text x="195" y="125" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#ff6b9d" font-weight="800">🚒 Brave Firefighter!</text>
+      </svg>`, '🔥 Firefighters keep us all safe!');
+    }
+
+    // Librarians
+    if(t.includes('Librarian')){
+      return imgPanel(`<svg viewBox="0 0 260 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px">
+        <!-- Bookshelf -->
+        <rect x="10" y="20" width="240" height="100" rx="8" fill="#fff5e0" stroke="#ffb830" stroke-width="2"/>
+        <!-- Shelf line -->
+        <line x1="10" y1="75" x2="250" y2="75" stroke="#ffb830" stroke-width="3"/>
+        <!-- Books top row -->
+        <rect x="20" y="25" width="22" height="46" rx="4" fill="#ff6b9d"/>
+        <rect x="46" y="28" width="18" height="43" rx="4" fill="#4fa3e0"/>
+        <rect x="68" y="22" width="24" height="49" rx="4" fill="#56cf81"/>
+        <rect x="96" y="30" width="16" height="41" rx="4" fill="#a78bfa"/>
+        <rect x="116" y="25" width="22" height="46" rx="4" fill="#ffb830"/>
+        <rect x="142" y="28" width="18" height="43" rx="4" fill="#4ecdc4"/>
+        <rect x="164" y="22" width="24" height="49" rx="4" fill="#ff8c69"/>
+        <rect x="192" y="30" width="20" height="41" rx="4" fill="#ff6b9d"/>
+        <rect x="216" y="25" width="22" height="46" rx="4" fill="#a78bfa"/>
+        <!-- Books bottom row -->
+        <rect x="20" y="80" width="28" height="34" rx="4" fill="#56cf81"/>
+        <rect x="52" y="78" width="20" height="36" rx="4" fill="#ffb830"/>
+        <rect x="76" y="82" width="24" height="32" rx="4" fill="#4fa3e0"/>
+        <rect x="104" y="79" width="18" height="35" rx="4" fill="#ff6b9d"/>
+        <rect x="126" y="81" width="26" height="33" rx="4" fill="#a78bfa"/>
+        <rect x="156" y="78" width="20" height="36" rx="4" fill="#ff8c69"/>
+        <rect x="180" y="82" width="22" height="32" rx="4" fill="#4ecdc4"/>
+        <rect x="206" y="79" width="24" height="35" rx="4" fill="#56cf81"/>
+      </svg>`, '📚 Thousands of books all sorted in order!');
+    }
+
+    // Greetings / Languages
+    if(t.includes('Greeting')||t.includes('Hello')){
+      return imgPanel(`<svg viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px">
+        <rect x="5" y="8" width="82" height="40" rx="12" fill="#ff6b9d" opacity=".15" stroke="#ff6b9d" stroke-width="2"/>
+        <text x="46" y="25" text-anchor="middle" font-family="Baloo 2,cursive" font-size="13" fill="#ff6b9d" font-weight="800">¡Hola!</text>
+        <text x="46" y="40" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#ff6b9d">🇪🇸 Spanish</text>
+        <rect x="110" y="8" width="82" height="40" rx="12" fill="#4fa3e0" opacity=".15" stroke="#4fa3e0" stroke-width="2"/>
+        <text x="151" y="25" text-anchor="middle" font-family="Baloo 2,cursive" font-size="13" fill="#4fa3e0" font-weight="800">Bonjour!</text>
+        <text x="151" y="40" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#4fa3e0">🇫🇷 French</text>
+        <rect x="215" y="8" width="80" height="40" rx="12" fill="#56cf81" opacity=".15" stroke="#56cf81" stroke-width="2"/>
+        <text x="255" y="25" text-anchor="middle" font-family="Baloo 2,cursive" font-size="11" fill="#56cf81" font-weight="800">こんにちは</text>
+        <text x="255" y="40" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#56cf81">🇯🇵 Japanese</text>
+        <rect x="5" y="62" width="90" height="40" rx="12" fill="#ffb830" opacity=".15" stroke="#ffb830" stroke-width="2"/>
+        <text x="50" y="79" text-anchor="middle" font-family="Baloo 2,cursive" font-size="13" fill="#ffb830" font-weight="800">Namaste!</text>
+        <text x="50" y="94" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#ffb830">🇮🇳 Hindi</text>
+        <rect x="110" y="62" width="82" height="40" rx="12" fill="#a78bfa" opacity=".15" stroke="#a78bfa" stroke-width="2"/>
+        <text x="151" y="79" text-anchor="middle" font-family="Baloo 2,cursive" font-size="13" fill="#a78bfa" font-weight="800">Jambo!</text>
+        <text x="151" y="94" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#a78bfa">🌍 Swahili</text>
+        <rect x="210" y="62" width="86" height="40" rx="12" fill="#ff8c69" opacity=".15" stroke="#ff8c69" stroke-width="2"/>
+        <text x="253" y="79" text-anchor="middle" font-family="Baloo 2,cursive" font-size="13" fill="#ff8c69" font-weight="800">Hello!</text>
+        <text x="253" y="94" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#ff8c69">🇬🇧 English</text>
+        <text x="150" y="125" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#888">👆 Say each greeting in its language!</text>
+      </svg>`, '');
+    }
+
+    // Music / Landmarks / Foods / Oceans — world visual
+    if(t.includes('Music')){
+      const instruments = t.includes('Africa') ? [['🥁','Djembe'],['🪘','Talking Drum'],['🎵','Rhythm']] :
+                          t.includes('Japan') ? [['🎵','Koto'],['🎋','Shakuhachi'],['🎶','5 Notes']] :
+                          [['🪗','Accordion'],['🎸','Guitar'],['🎺','Trumpet']];
+      return imgPanel(`<svg viewBox="0 0 280 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px">
+        ${instruments.map((ins,i)=>`
+          <rect x="${20+i*88}" y="15" width="76" height="80" rx="14" fill="${['#ffb830','#ff6b9d','#4ecdc4'][i]}" opacity=".15" stroke="${['#ffb830','#ff6b9d','#4ecdc4'][i]}" stroke-width="2"/>
+          <text x="${58+i*88}" y="55" text-anchor="middle" font-size="30">${ins[0]}</text>
+          <text x="${58+i*88}" y="82" text-anchor="middle" font-family="Baloo 2,cursive" font-size="10" fill="${['#ffb830','#ff6b9d','#4ecdc4'][i]}" font-weight="800">${ins[1]}</text>
+        `).join('')}
+      </svg>`, '🎵 Tap the 🔊 button to learn more!');
+    }
+
+    // Foods
+    if(t.includes('Food')){
+      return imgPanel(`<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px">
+        <text x="30" y="55" font-size="34">🍕</text><text x="14" y="78" font-family="Baloo 2,cursive" font-size="9" fill="#ff8c69" font-weight="800">Italy 🇮🇹</text>
+        <text x="88" y="55" font-size="34">🍜</text><text x="78" y="78" font-family="Baloo 2,cursive" font-size="9" fill="#ff6b9d" font-weight="800">Japan 🇯🇵</text>
+        <text x="148" y="55" font-size="34">🍛</text><text x="136" y="78" font-family="Baloo 2,cursive" font-size="9" fill="#ffb830" font-weight="800">India 🇮🇳</text>
+        <text x="208" y="55" font-size="34">🌮</text><text x="196" y="78" font-family="Baloo 2,cursive" font-size="9" fill="#56cf81" font-weight="800">Mexico 🇲🇽</text>
+        <text x="264" y="55" font-size="28">🍚</text><text x="252" y="78" font-family="Baloo 2,cursive" font-size="9" fill="#a78bfa" font-weight="800">W.Africa 🌍</text>
+      </svg>`, '😋 Every country has its own delicious food!');
+    }
+
+    // Default world visual
+    return imgPanel(`<svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px">
+      <circle cx="100" cy="60" r="55" fill="#4fa3e0" opacity=".3" stroke="#4fa3e0" stroke-width="3"/>
+      <text x="100" y="75" text-anchor="middle" font-size="60">🌍</text>
+    </svg>`, '🌏 Let\'s explore our amazing world!');
+  }
+
+  // ── MY BODY ──
+  if(a.subj==='body'){
+    // Healthy Plate
+    if(t.includes('Healthy Plate')||t.includes('Good Food')){
+      return imgPanel(`<svg viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px">
+        <!-- Plate outline -->
+        <circle cx="110" cy="105" r="90" fill="#f8f8f8" stroke="#ddd" stroke-width="3"/>
+        <circle cx="110" cy="105" r="85" fill="none" stroke="#eee" stroke-width="1"/>
+        <!-- Dividers -->
+        <line x1="110" y1="20" x2="110" y2="190" stroke="#ddd" stroke-width="2"/>
+        <line x1="25" y1="105" x2="110" y2="105" stroke="#ddd" stroke-width="2"/>
+        <!-- Vegetables quarter (top left) -->
+        <path d="M110 105 L25 105 A85 85 0 0 1 110 20 Z" fill="#56cf81" opacity=".7"/>
+        <text x="68" y="68" text-anchor="middle" font-size="22">🥦</text>
+        <text x="68" y="95" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#fff" font-weight="800">Vegetables</text>
+        <!-- Fruit quarter (bottom left) -->
+        <path d="M110 105 L25 105 A85 85 0 0 0 110 190 Z" fill="#ff6b9d" opacity=".7"/>
+        <text x="68" y="140" text-anchor="middle" font-size="22">🍎</text>
+        <text x="68" y="162" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#fff" font-weight="800">Fruit</text>
+        <!-- Grains quarter (top right) -->
+        <path d="M110 105 L110 20 A85 85 0 0 1 195 105 Z" fill="#ffb830" opacity=".7"/>
+        <text x="158" y="68" text-anchor="middle" font-size="22">🍞</text>
+        <text x="158" y="95" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#fff" font-weight="800">Grains</text>
+        <!-- Protein quarter (bottom right) -->
+        <path d="M110 105 L195 105 A85 85 0 0 1 110 190 Z" fill="#4fa3e0" opacity=".7"/>
+        <text x="158" y="140" text-anchor="middle" font-size="22">🥚</text>
+        <text x="158" y="162" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#fff" font-weight="800">Protein</text>
+      </svg>`, '🍽️ Half your plate = veggies & fruit!');
+    }
+
+    // Five Senses
+    if(t.includes('Five Senses')||t.includes('Senses')){
+      const isSight = t.includes('Sight');
+      return imgPanel(`<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px">
+        <rect x="5" y="10" width="52" height="90" rx="14" fill="#ff6b9d" opacity=".15" stroke="#ff6b9d" stroke-width="2"/>
+        <text x="31" y="52" text-anchor="middle" font-size="28">👁️</text>
+        <text x="31" y="82" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#ff6b9d" font-weight="800">See</text>
+        <rect x="65" y="10" width="52" height="90" rx="14" fill="#ffb830" opacity=".15" stroke="#ffb830" stroke-width="2"/>
+        <text x="91" y="52" text-anchor="middle" font-size="28">👂</text>
+        <text x="91" y="82" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#ffb830" font-weight="800">Hear</text>
+        <rect x="125" y="10" width="52" height="90" rx="14" fill="#56cf81" opacity=".15" stroke="#56cf81" stroke-width="2"/>
+        <text x="151" y="52" text-anchor="middle" font-size="28">👃</text>
+        <text x="151" y="82" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#56cf81" font-weight="800">Smell</text>
+        <rect x="185" y="10" width="52" height="90" rx="14" fill="#a78bfa" opacity=".15" stroke="#a78bfa" stroke-width="2"/>
+        <text x="211" y="52" text-anchor="middle" font-size="28">👅</text>
+        <text x="211" y="82" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#a78bfa" font-weight="800">Taste</text>
+        <rect x="245" y="10" width="52" height="90" rx="14" fill="#4ecdc4" opacity=".15" stroke="#4ecdc4" stroke-width="2"/>
+        <text x="271" y="52" text-anchor="middle" font-size="28">🖐️</text>
+        <text x="271" y="82" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#4ecdc4" font-weight="800">Touch</text>
+      </svg>`, '🌟 5 senses collect information for your brain!');
+    }
+
+    // Skeleton / Bones
+    if(t.includes('Skeleton')||t.includes('Bone')){
+      return imgPanel(`<svg viewBox="0 0 200 190" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:200px">
+        <!-- Skull -->
+        <ellipse cx="100" cy="28" rx="28" ry="26" fill="#f0f0f0" stroke="#ccc" stroke-width="2.5"/>
+        <rect x="84" y="46" width="32" height="14" rx="4" fill="#f0f0f0" stroke="#ccc" stroke-width="2"/>
+        <circle cx="89" cy="26" r="6" fill="#aaa" opacity=".5"/>
+        <circle cx="111" cy="26" r="6" fill="#aaa" opacity=".5"/>
+        <!-- Spine -->
+        <rect x="95" y="62" width="10" height="60" rx="3" fill="#e0e0e0" stroke="#ccc" stroke-width="1.5"/>
+        ${[70,80,90,100,110].map(y=>`<rect x="90" y="${y}" width="20" height="7" rx="3" fill="#d0d0d0" stroke="#bbb" stroke-width="1"/>`).join('')}
+        <!-- Ribcage -->
+        <path d="M100 68 Q72 74 68 88 Q72 100 100 100" fill="none" stroke="#ccc" stroke-width="3" stroke-linecap="round"/>
+        <path d="M100 74 Q76 80 73 90 Q76 98 100 98" fill="none" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M100 68 Q128 74 132 88 Q128 100 100 100" fill="none" stroke="#ccc" stroke-width="3" stroke-linecap="round"/>
+        <path d="M100 74 Q124 80 127 90 Q124 98 100 98" fill="none" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Arms -->
+        <rect x="60" y="64" width="12" height="48" rx="6" fill="#e0e0e0" stroke="#ccc" stroke-width="2"/>
+        <rect x="60" y="110" width="12" height="40" rx="6" fill="#e0e0e0" stroke="#ccc" stroke-width="2"/>
+        <rect x="128" y="64" width="12" height="48" rx="6" fill="#e0e0e0" stroke="#ccc" stroke-width="2"/>
+        <rect x="128" y="110" width="12" height="40" rx="6" fill="#e0e0e0" stroke="#ccc" stroke-width="2"/>
+        <!-- Pelvis -->
+        <ellipse cx="100" cy="128" rx="26" ry="14" fill="#e0e0e0" stroke="#ccc" stroke-width="2"/>
+        <!-- Legs (femur = longest!) -->
+        <rect x="80" y="138" width="14" height="52" rx="7" fill="#e0e0e0" stroke="#ccc" stroke-width="2"/>
+        <rect x="106" y="138" width="14" height="52" rx="7" fill="#e0e0e0" stroke="#ccc" stroke-width="2"/>
+        <!-- Labels -->
+        <text x="145" y="30" font-family="Baloo 2,cursive" font-size="8" fill="#ff6b9d" font-weight="800">SKULL</text>
+        <line x1="128" y1="28" x2="145" y2="28" stroke="#ff6b9d" stroke-width="1.5"/>
+        <text x="145" y="90" font-family="Baloo 2,cursive" font-size="8" fill="#4fa3e0" font-weight="800">RIBS</text>
+        <line x1="132" y1="88" x2="144" y2="88" stroke="#4fa3e0" stroke-width="1.5"/>
+        <text x="145" y="170" font-family="Baloo 2,cursive" font-size="8" fill="#56cf81" font-weight="800">FEMUR</text>
+        <text x="143" y="180" font-family="Baloo 2,cursive" font-size="7" fill="#56cf81">(longest!)</text>
+        <line x1="120" y1="165" x2="142" y2="168" stroke="#56cf81" stroke-width="1.5"/>
+      </svg>`, '🦴 You have 206 bones — they hold you up!');
+    }
+
+    // Heart
+    if(t.includes('Heart')){
+      return imgPanel(`<svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px">
+        <!-- Heart shape -->
+        <path d="M110 130 C60 100 20 75 20 48 A38 38 0 0 1 96 38 L110 55 L124 38 A38 38 0 0 1 200 48 C200 75 160 100 110 130Z" fill="#ff6b9d"/>
+        <!-- Pulse line -->
+        <polyline points="30,80 55,80 65,50 75,110 85,65 95,80 220,80" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".8"/>
+        <!-- Fist size label -->
+        <text x="110" y="95" text-anchor="middle" font-family="Baloo 2,cursive" font-size="10" fill="#fff" font-weight="800">Your fist size! 👊</text>
+        <text x="110" y="145" text-anchor="middle" font-family="Baloo 2,cursive" font-size="10" fill="#ff6b9d" font-weight="800">Beats 100,000 times a day!</text>
+      </svg>`, '❤️ Feel your heartbeat — put your hand on your chest!');
+    }
+
+    // Lungs
+    if(t.includes('Lung')){
+      return imgPanel(`<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px">
+        <!-- Trachea -->
+        <rect x="103" y="10" width="14" height="35" rx="7" fill="#4fa3e0" opacity=".8"/>
+        <!-- Bronchi -->
+        <path d="M110 45 Q88 55 80 65" fill="none" stroke="#4fa3e0" stroke-width="6" stroke-linecap="round"/>
+        <path d="M110 45 Q132 55 140 65" fill="none" stroke="#4fa3e0" stroke-width="6" stroke-linecap="round"/>
+        <!-- Left lung -->
+        <ellipse cx="72" cy="100" rx="46" ry="52" fill="#ff8c69" opacity=".75"/>
+        <ellipse cx="68" cy="95" rx="18" ry="22" fill="#fff" opacity=".2"/>
+        <!-- Right lung -->
+        <ellipse cx="148" cy="100" rx="46" ry="52" fill="#ff8c69" opacity=".75"/>
+        <ellipse cx="152" cy="95" rx="18" ry="22" fill="#fff" opacity=".2"/>
+        <!-- Labels -->
+        <text x="72" y="105" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#fff" font-weight="800">Left Lung</text>
+        <text x="148" y="105" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#fff" font-weight="800">Right Lung</text>
+        <!-- O2/CO2 -->
+        <text x="30" y="148" font-family="Baloo 2,cursive" font-size="9" fill="#56cf81" font-weight="800">O₂ IN</text>
+        <text x="155" y="148" font-family="Baloo 2,cursive" font-size="9" fill="#ff6b9d" font-weight="800">CO₂ OUT</text>
+      </svg>`, '🫁 Lungs fill like balloons — 20,000 breaths a day!');
+    }
+
+    // Brain
+    if(t.includes('Brain')){
+      return imgPanel(`<svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px">
+        <!-- Brain shape -->
+        <path d="M50 90 Q30 80 30 60 Q30 30 58 25 Q70 20 80 28 Q90 10 110 12 Q130 10 140 28 Q150 20 162 25 Q190 30 190 60 Q190 80 170 90 Q160 130 110 135 Q60 130 50 90Z" fill="#ff8c69" opacity=".85"/>
+        <!-- Brain folds -->
+        <path d="M75 50 Q90 40 105 50 Q120 60 135 50" fill="none" stroke="#ff6b9d" stroke-width="3" stroke-linecap="round"/>
+        <path d="M65 70 Q82 60 100 70 Q118 80 135 70 Q152 60 165 70" fill="none" stroke="#ff6b9d" stroke-width="3" stroke-linecap="round"/>
+        <path d="M72 90 Q90 82 108 90 Q126 98 145 90" fill="none" stroke="#ff6b9d" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Labels pointing out -->
+        <text x="110" y="148" text-anchor="middle" font-family="Baloo 2,cursive" font-size="10" fill="#ff8c69" font-weight="800">100 BILLION nerve cells!</text>
+      </svg>`, '🧠 Your brain never switches off — even while you sleep!');
+    }
+
+    // Muscles
+    if(t.includes('Muscle')){
+      return imgPanel(`<svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px">
+        <!-- Arm outline -->
+        <path d="M60 30 Q40 50 40 90 Q40 120 70 130 Q100 138 110 130 Q120 120 120 90 Q120 50 100 30 Z" fill="#FDCB6E" stroke="#E17055" stroke-width="2"/>
+        <!-- Bicep muscle -->
+        <ellipse cx="80" cy="72" rx="32" ry="22" fill="#ff8c69" opacity=".9"/>
+        <ellipse cx="74" cy="66" rx="12" ry="8" fill="#fff" opacity=".3"/>
+        <!-- Arrow up = contracts -->
+        <path d="M140 90 L140 50" stroke="#56cf81" stroke-width="3" marker-end="url(#upArr)" stroke-linecap="round"/>
+        <text x="148" y="68" font-family="Baloo 2,cursive" font-size="9" fill="#56cf81" font-weight="800">PULL</text>
+        <text x="148" y="80" font-family="Baloo 2,cursive" font-size="9" fill="#56cf81" font-weight="800">(contract)</text>
+        <!-- Label -->
+        <text x="80" y="76" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#fff" font-weight="800">BICEP 💪</text>
+        <defs><marker id="upArr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,6 L3,0 L6,6 Z" fill="#56cf81"/></marker></defs>
+        <text x="110" y="148" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#888">Muscles only PULL — never push!</text>
+      </svg>`, '💪 Bend your arm and feel the bicep muscle harden!');
+    }
+
+    // Sleep
+    if(t.includes('Sleep')){
+      return imgPanel(`<svg viewBox="0 0 260 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:260px">
+        <!-- Moon and stars background -->
+        <rect x="0" y="0" width="260" height="130" rx="16" fill="#1a1a2e" opacity=".08"/>
+        <text x="30" y="40" font-size="30">🌙</text>
+        <text x="80" y="25" font-size="16">⭐</text>
+        <text x="120" y="35" font-size="12">✨</text>
+        <text x="155" y="22" font-size="18">⭐</text>
+        <text x="200" y="32" font-size="14">✨</text>
+        <!-- Sleeping child -->
+        <ellipse cx="130" cy="92" rx="90" ry="28" fill="#e8d5ff" stroke="#a78bfa" stroke-width="2"/>
+        <circle cx="70" cy="82" r="22" fill="#FDCB6E" stroke="#E17055" stroke-width="2"/>
+        <circle cx="62" cy="78" r="3.5" fill="#333" opacity=".3"/>
+        <circle cx="78" cy="78" r="3.5" fill="#333" opacity=".3"/>
+        <!-- Zzz -->
+        <text x="100" y="55" font-family="Baloo 2,cursive" font-size="16" fill="#a78bfa" font-weight="800">z</text>
+        <text x="118" y="42" font-family="Baloo 2,cursive" font-size="20" fill="#a78bfa" font-weight="800">z</text>
+        <text x="140" y="28" font-family="Baloo 2,cursive" font-size="26" fill="#a78bfa" font-weight="800">Z</text>
+        <text x="130" y="125" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#a78bfa" font-weight="800">Brain sorts memories while you sleep! 🌟</text>
+      </svg>`, '😴 Children need 10–12 hours of sleep every night!');
+    }
+
+    // Teeth
+    if(t.includes('Teeth')){
+      return imgPanel(`<svg viewBox="0 0 220 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px">
+        <!-- Smile arc -->
+        <path d="M30 50 Q110 140 190 50" fill="#fff5f8" stroke="#ff6b9d" stroke-width="3"/>
+        <!-- Top teeth -->
+        ${[45,72,99,126,153].map((x,i)=>`<rect x="${x}" y="38" width="20" height="28" rx="6" fill="#fff" stroke="#e0e0e0" stroke-width="2"/>`).join('')}
+        <!-- Bottom teeth -->
+        ${[55,82,109,136].map((x,i)=>`<rect x="${x}" y="70" width="18" height="24" rx="5" fill="#fff" stroke="#e0e0e0" stroke-width="2"/>`).join('')}
+        <!-- Toothbrush -->
+        <rect x="155" y="88" width="55" height="16" rx="8" fill="#4fa3e0"/>
+        <rect x="148" y="90" width="20" height="12" rx="4" fill="#fff"/>
+        ${[152,158,164].map(x=>`<line x1="${x}" y1="90" x2="${x}" y2="102" stroke="#4fa3e0" stroke-width="2" stroke-linecap="round"/>`).join('')}
+        <text x="110" y="130" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#ff6b9d" font-weight="800">Brush for 2 minutes, twice a day!</text>
+      </svg>`, '🦷 You get only 2 sets of teeth in your whole life!');
+    }
+
+    // Default body visual — body outline
+    return imgPanel(`<svg viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:160px">
+      <circle cx="80" cy="28" r="26" fill="#FDCB6E" stroke="#E17055" stroke-width="2.5"/>
+      <rect x="56" y="56" width="48" height="70" rx="14" fill="#4fa3e0"/>
+      <rect x="30" y="58" width="22" height="58" rx="11" fill="#74B9FF"/>
+      <rect x="108" y="58" width="22" height="58" rx="11" fill="#74B9FF"/>
+      <rect x="56" y="124" width="20" height="64" rx="10" fill="#FDCB6E"/>
+      <rect x="84" y="124" width="20" height="64" rx="10" fill="#FDCB6E"/>
+      <circle cx="70" cy="25" r="4" fill="#333"/><circle cx="90" cy="25" r="4" fill="#333"/>
+      <path d="M68 37 Q80 45 92 37" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>`, '🫀 Your amazing body — let\'s explore it!');
+  }
+
+  // ── READ ──
+  if(a.subj==='read'){
+    // Word families
+    if(t.includes('Word Family')){
+      const families = t.includes('-AT') ? {words:['CAT','HAT','BAT','MAT','RAT'],color:'#ff6b9d',emoji:['🐱','🎩','🦇','🪤','🐭']} :
+                       t.includes('-AN')||t.includes('-IN') ? {words:['CAN','MAN','PIN','BIN','WIN'],color:'#ffb830',emoji:['🥫','👨','📌','🗑️','🏆']} :
+                       t.includes('-OG')||t.includes('-OP') ? {words:['DOG','LOG','HOP','TOP','POP'],color:'#4fa3e0',emoji:['🐶','🪵','🐸','🔝','💥']} :
+                       t.includes('-OX')||t.includes('-UN') ? {words:['FOX','BOX','SUN','RUN','FUN'],color:'#56cf81',emoji:['🦊','📦','☀️','🏃','🎉']} :
+                       t.includes('-EE') ? {words:['BEE','TREE','FREE','SEE','THREE'],color:'#a78bfa',emoji:['🐝','🌳','✈️','👁️','3️⃣']} :
+                       {words:['CAT','HAT','BAT'],color:'#ff6b9d',emoji:['🐱','🎩','🦇']};
+      const cols = families.words.length;
+      const w = Math.floor(280/cols);
+      return imgPanel(`<svg viewBox="0 0 ${cols*w+20} 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:320px">
+        ${families.words.map((word,i)=>`
+          <rect x="${10+i*w}" y="10" width="${w-8}" height="110" rx="14" fill="${families.color}" opacity=".12" stroke="${families.color}" stroke-width="2"/>
+          <text x="${10+i*w+(w-8)/2}" y="56" text-anchor="middle" font-size="26">${families.emoji[i]}</text>
+          <text x="${10+i*w+(w-8)/2}" y="84" text-anchor="middle" font-family="Baloo 2,cursive" font-size="13" fill="${families.color}" font-weight="800">${word}</text>
+          <text x="${10+i*w+(w-8)/2}" y="108" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#888">${word.slice(-2).toLowerCase()}</text>
+        `).join('')}
+      </svg>`, `👆 They all share the same ending sound!`);
+    }
+
+    // Sight Words
+    if(t.includes('Sight Word')){
+      const sets = t.includes('He, She') ? ['HE','SHE','WE','MY','YOU','ARE'] :
+                   t.includes('Come') ? ['COME','LOOK','SEE','PLAY','GO','UP'] :
+                   ['THE','IS','A','AND','IN','IT'];
+      const colors = ['#ff6b9d','#ffb830','#56cf81','#4fa3e0','#a78bfa','#ff8c69'];
+      return imgPanel(`<svg viewBox="0 0 290 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px">
+        ${sets.map((w,i)=>`
+          <rect x="${8+(i%3)*96}" y="${i<3?8:70}" width="88" height="52" rx="14" fill="${colors[i]}" opacity=".15" stroke="${colors[i]}" stroke-width="2.5"/>
+          <text x="${52+(i%3)*96}" y="${i<3?40:102}" text-anchor="middle" font-family="Baloo 2,cursive" font-size="18" fill="${colors[i]}" font-weight="800">${w}</text>
+        `).join('')}
+      </svg>`, '⚡ Memorise these — they appear on every page!');
+    }
+
+    // Blending / CVC
+    if(t.includes('Blend')||t.includes('CVC')){
+      return imgPanel(`<svg viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px">
+        <!-- Word: CAT example -->
+        <rect x="10" y="20" width="60" height="68" rx="14" fill="#ff6b9d" opacity=".15" stroke="#ff6b9d" stroke-width="2.5"/>
+        <text x="40" y="58" text-anchor="middle" font-family="Baloo 2,cursive" font-size="30" fill="#ff6b9d" font-weight="800">C</text>
+        <text x="40" y="76" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#ff6b9d">kuh</text>
+        <rect x="80" y="20" width="60" height="68" rx="14" fill="#ffb830" opacity=".15" stroke="#ffb830" stroke-width="2.5"/>
+        <text x="110" y="58" text-anchor="middle" font-family="Baloo 2,cursive" font-size="30" fill="#ffb830" font-weight="800">A</text>
+        <text x="110" y="76" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#ffb830">aah</text>
+        <rect x="150" y="20" width="60" height="68" rx="14" fill="#56cf81" opacity=".15" stroke="#56cf81" stroke-width="2.5"/>
+        <text x="180" y="58" text-anchor="middle" font-family="Baloo 2,cursive" font-size="30" fill="#56cf81" font-weight="800">T</text>
+        <text x="180" y="76" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#56cf81">tuh</text>
+        <!-- Arrow and result -->
+        <path d="M218 54 L238 54" stroke="#888" stroke-width="3" stroke-linecap="round"/>
+        <polygon points="236,48 246,54 236,60" fill="#888"/>
+        <rect x="250" y="20" width="44" height="68" rx="14" fill="#a78bfa" opacity=".9"/>
+        <text x="272" y="52" text-anchor="middle" font-size="22">🐱</text>
+        <text x="272" y="75" text-anchor="middle" font-family="Baloo 2,cursive" font-size="12" fill="#fff" font-weight="800">CAT</text>
+        <text x="150" y="110" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#888">C + A + T = CAT ✨</text>
+      </svg>`, '🔊 Stretch each sound then slide them together!');
+    }
+
+    // Story retelling
+    if(t.includes('Retell')||t.includes('Beginning')){
+      return imgPanel(`<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px">
+        <rect x="5" y="15" width="82" height="86" rx="14" fill="#ffb830" opacity=".15" stroke="#ffb830" stroke-width="2.5"/>
+        <text x="46" y="50" text-anchor="middle" font-size="28">🌅</text>
+        <text x="46" y="72" text-anchor="middle" font-family="Baloo 2,cursive" font-size="10" fill="#ffb830" font-weight="800">BEGINNING</text>
+        <text x="46" y="86" text-anchor="middle" font-family="Baloo 2,cursive" font-size="8" fill="#888">Who? Where?</text>
+        <!-- Arrow -->
+        <path d="M94 58 L108 58" stroke="#ddd" stroke-width="3" stroke-linecap="round"/>
+        <polygon points="106,52 116,58 106,64" fill="#ddd"/>
+        <rect x="113" y="15" width="76" height="86" rx="14" fill="#ff6b9d" opacity=".15" stroke="#ff6b9d" stroke-width="2.5"/>
+        <text x="151" y="50" text-anchor="middle" font-size="28">⚡</text>
+        <text x="151" y="72" text-anchor="middle" font-family="Baloo 2,cursive" font-size="10" fill="#ff6b9d" font-weight="800">MIDDLE</text>
+        <text x="151" y="86" text-anchor="middle" font-family="Baloo 2,cursive" font-size="8" fill="#888">Problem!</text>
+        <!-- Arrow -->
+        <path d="M196 58 L210 58" stroke="#ddd" stroke-width="3" stroke-linecap="round"/>
+        <polygon points="208,52 218,58 208,64" fill="#ddd"/>
+        <rect x="215" y="15" width="80" height="86" rx="14" fill="#56cf81" opacity=".15" stroke="#56cf81" stroke-width="2.5"/>
+        <text x="255" y="50" text-anchor="middle" font-size="28">🌟</text>
+        <text x="255" y="72" text-anchor="middle" font-family="Baloo 2,cursive" font-size="10" fill="#56cf81" font-weight="800">END</text>
+        <text x="255" y="86" text-anchor="middle" font-family="Baloo 2,cursive" font-size="8" fill="#888">Solved!</text>
+      </svg>`, '📖 Every story has 3 parts — Beginning, Middle, End!');
+    }
+
+    // Reading aloud
+    if(t.includes('Reading Aloud')||t.includes('Read One')){
+      return imgPanel(`<svg viewBox="0 0 260 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:260px">
+        <!-- Book -->
+        <rect x="60" y="20" width="140" height="95" rx="10" fill="#fff5e0" stroke="#ffb830" stroke-width="2.5"/>
+        <line x1="130" y1="20" x2="130" y2="115" stroke="#ffb830" stroke-width="2.5"/>
+        <!-- Text lines on left page -->
+        ${[38,50,62,74,86].map(y=>`<rect x="70" y="${y}" width="${30+Math.random()*30|0}" height="6" rx="3" fill="#ffb830" opacity=".4"/>`).join('')}
+        <!-- Text lines on right page -->
+        ${[38,50,62,74,86].map(y=>`<rect x="138" y="${y}" width="${25+Math.random()*35|0}" height="6" rx="3" fill="#ffb830" opacity=".4"/>`).join('')}
+        <!-- Child reading -->
+        <circle cx="22" cy="58" r="18" fill="#FDCB6E" stroke="#E17055" stroke-width="2"/>
+        <circle cx="16" cy="54" r="3" fill="#333"/><circle cx="28" cy="54" r="3" fill="#333"/>
+        <path d="M16 66 Q22 72 28 66" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+        <!-- Sound waves -->
+        <path d="M215 58 Q225 48 225 68" fill="none" stroke="#4fa3e0" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M215 58 Q238 40 238 76" fill="none" stroke="#4fa3e0" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+        <text x="130" y="126" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#ffb830" font-weight="800">Point to each word as you say it!</text>
+      </svg>`, '📖 Eyes see + Mouth says + Ears hear = Triple learning!');
+    }
+
+    // Interactive story / choice
+    if(t.includes('Interactive Story')||t.includes('Choice')){
+      return imgPanel(`<svg viewBox="0 0 280 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px">
+        <!-- Story start -->
+        <rect x="10" y="40" width="80" height="50" rx="12" fill="#a78bfa" opacity=".2" stroke="#a78bfa" stroke-width="2"/>
+        <text x="50" y="62" text-anchor="middle" font-size="22">📖</text>
+        <text x="50" y="80" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#a78bfa" font-weight="800">Story starts...</text>
+        <!-- Fork arrow up -->
+        <path d="M96 55 L120 38" stroke="#ffb830" stroke-width="2.5" stroke-linecap="round"/>
+        <polygon points="118,32 126,42 116,44" fill="#ffb830"/>
+        <!-- Fork arrow down -->
+        <path d="M96 75 L120 92" stroke="#ff6b9d" stroke-width="2.5" stroke-linecap="round"/>
+        <polygon points="118,98 126,88 116,86" fill="#ff6b9d"/>
+        <!-- Choice A -->
+        <rect x="128" y="18" width="72" height="40" rx="12" fill="#ffb830" opacity=".2" stroke="#ffb830" stroke-width="2"/>
+        <text x="164" y="35" text-anchor="middle" font-size="14">🏃</text>
+        <text x="164" y="50" text-anchor="middle" font-family="Baloo 2,cursive" font-size="8" fill="#ffb830" font-weight="800">Choice A</text>
+        <!-- Choice B -->
+        <rect x="128" y="72" width="72" height="40" rx="12" fill="#ff6b9d" opacity=".2" stroke="#ff6b9d" stroke-width="2"/>
+        <text x="164" y="89" text-anchor="middle" font-size="14">🤝</text>
+        <text x="164" y="104" text-anchor="middle" font-family="Baloo 2,cursive" font-size="8" fill="#ff6b9d" font-weight="800">Choice B</text>
+        <!-- Outcomes -->
+        <path d="M200 38 L225 38" stroke="#ffb830" stroke-width="2" stroke-linecap="round"/>
+        <text x="232" y="42" font-size="16">🌟</text>
+        <path d="M200 92 L225 92" stroke="#ff6b9d" stroke-width="2" stroke-linecap="round"/>
+        <text x="232" y="96" font-size="16">💛</text>
+        <text x="140" y="126" text-anchor="middle" font-family="Baloo 2,cursive" font-size="9" fill="#888">YOU are the author — choose!</text>
+      </svg>`, '✍️ Your choice changes the whole story!');
+    }
+
+    // Default read visual
+    return imgPanel(`<svg viewBox="0 0 220 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px">
+      <text x="30" y="75" font-size="50">📖</text>
+      <text x="110" y="40" font-family="Baloo 2,cursive" font-size="18" fill="#a78bfa" font-weight="800">A</text>
+      <text x="135" y="60" font-family="Baloo 2,cursive" font-size="22" fill="#ff6b9d" font-weight="800">B</text>
+      <text x="162" y="45" font-family="Baloo 2,cursive" font-size="16" fill="#ffb830" font-weight="800">C</text>
+      <text x="140" y="85" font-family="Baloo 2,cursive" font-size="20" fill="#56cf81" font-weight="800">D</text>
+      <text x="170" y="70" font-family="Baloo 2,cursive" font-size="18" fill="#4fa3e0" font-weight="800">E</text>
+      <text x="110" y="125" font-family="Baloo 2,cursive" font-size="10" fill="#a78bfa" font-weight="800">Letters make words make stories!</text>
+    </svg>`, '📚 Reading is a superpower — let\'s build it!');
+  }
+
   return '';
 }
 
