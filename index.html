@@ -1897,11 +1897,11 @@ function _refreshAppFromStorage(){
     if(typeof diffLevel   !== 'undefined') diffLevel   = parseInt(_lsGet('c_diff')||'1');
     if(typeof friendName  !== 'undefined') friendName  = _lsGet('c_friendName')||'';
 
-    // Update live variables
-    if(typeof done           !== 'undefined') done           = fbDone;
-    if(typeof stars          !== 'undefined') stars          = fbStars;
-    if(typeof allUsed        !== 'undefined') allUsed        = fbAllUsed;
-    if(typeof totalStarsEver !== 'undefined') totalStarsEver = fbTotalStars;
+    // Update live variables — use higher value to never lose progress
+    if(typeof done           !== 'undefined') done           = fbDone.length >= done.length ? fbDone : done;
+    if(typeof stars          !== 'undefined') stars          = Math.max(fbStars, stars);
+    if(typeof allUsed        !== 'undefined') allUsed        = fbAllUsed.length >= allUsed.length ? fbAllUsed : allUsed;
+    if(typeof totalStarsEver !== 'undefined') totalStarsEver = Math.max(fbTotalStars, totalStarsEver);
 
     // Refresh all visible UI elements
     if(typeof showSpill       === 'function') showSpill();
@@ -2018,15 +2018,35 @@ async function _pollFirebase(){
       const v = data[k];
       _lsSet(k, typeof v === 'string' ? v : JSON.stringify(v));
     });
-    // Only refresh UI if user is NOT mid-activity to avoid interruptions
+    // ALWAYS update stars + totalStarsEver + done — even mid-activity
+    // so the star button stays accurate on all devices
+    if(typeof todayKey === 'function'){
+      const syncedStars = parseInt(_lsGet('cs_'+todayKey())||'0');
+      const syncedTotal = parseInt(_lsGet('c_total_stars')||'0');
+      const syncedDone  = JSON.parse(_lsGet('cd_'+todayKey())||'[]');
+      // Only apply if synced value is HIGHER (never overwrite local progress)
+      if(syncedStars > stars && typeof stars !== 'undefined'){
+        stars = syncedStars;
+        if(typeof showSpill === 'function') showSpill();
+      }
+      if(syncedTotal > totalStarsEver && typeof totalStarsEver !== 'undefined'){
+        totalStarsEver = syncedTotal;
+      }
+      if(syncedDone.length > done.length && typeof done !== 'undefined'){
+        done = syncedDone;
+        if(typeof renderTabBadges === 'function') renderTabBadges();
+        if(typeof renderStarPath  === 'function') renderStarPath();
+      }
+    }
+    // Full UI refresh only when not mid-activity (avoids disrupting gameplay)
     if(!busy && !currentlyPlaying){
       _refreshAppFromStorage();
       console.log('🔄 Live sync: changes detected and applied');
     }
   }catch(e){ /* silent — offline is fine */ }
 }
-// Start polling 5s after boot (let initial load settle), then every 30s
-setTimeout(()=>{ _pollFirebase(); setInterval(_pollFirebase, 30000); }, 5000);
+// Start polling 5s after boot (let initial load settle), then every 10s
+setTimeout(()=>{ _pollFirebase(); setInterval(_pollFirebase, 10000); }, 5000);
 
 // Helper to change family code from Parent Dashboard
 function changeFamilyCode(){
