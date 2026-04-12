@@ -2741,6 +2741,7 @@ const GAMES = [
   {id:'dotCard',      week:1,emoji:'🎯',title:'Dot Card Match!',          desc:'Find the card with the right number of dots!',       cat:'puzzle'},
   {id:'oppSnap',      week:1,emoji:'🔄',title:'Opposite Snap!',           desc:'Tap the card that is the opposite of the word shown!',cat:'puzzle'},
   {id:'colourWordMatch',week:1,emoji:'🌈',title:'Colour Word Match!',     desc:'Match the colour word to the right colour card!',    cat:'puzzle'},
+  {id:'puzzleJigsaw',   week:1,emoji:'🧩',title:'Animal Jigsaw Puzzle!', desc:'Drag the 4 pieces together to build the animal!',    cat:'puzzle'},
 ];
 
 // ══════════════════════════════════════
@@ -4685,7 +4686,8 @@ function renderGame(g){
     daysOrder:buildDaysOrder,clockGame:buildClockGame,simonSays:buildSimonSays,
     whatsMissing:buildWhatsMissing,colourPattern:buildColourPattern,numberMemory:buildNumberMemory,
     coinCount:buildCoinCount,fairTrade:buildFairTrade,myShop:buildMyShop,lemonadeStand:buildLemonadeStand,changeMaker:buildChangeMaker,
-    shadowMatch:buildShadowMatch,dotCard:buildDotCard,oppSnap:buildOppSnap,colourWordMatch:buildColourWordMatch};
+    shadowMatch:buildShadowMatch,dotCard:buildDotCard,oppSnap:buildOppSnap,colourWordMatch:buildColourWordMatch,
+    puzzleJigsaw:buildPuzzleJigsaw};
   (fns[g.id]||buildCountGame)();
   // Append skip button after game panel
   const area=document.getElementById('area');
@@ -5640,6 +5642,242 @@ function checkCW(idx,chosen){
     document.getElementById('gfb').innerHTML='<span style="color:var(--pink);font-family:\'Baloo 2\',cursive;font-weight:700">Look for '+cwAnswer+'! Try again next round!</span>';
   }
   setTimeout(nextCWRound,1600);
+}
+
+// ══════════════════════════════════════
+//  🧩 DRAG-AND-DROP JIGSAW PUZZLE
+// ══════════════════════════════════════
+let jigScore=0,jigRound=0,jigPlacements={};
+let _jigAnimal=null,_jigGhost=null,_jigTouchPiece=null,_jigDragPiece=null;
+
+const JIGSAW_ANIMALS=[
+  {name:'Lion',emoji:'🦁',bg:'#fff3e0',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <circle cx='100' cy='110' r='74' fill='#c77b2a'/>
+    <ellipse cx='100' cy='158' rx='52' ry='42' fill='#e8962e'/>
+    <circle cx='100' cy='90' r='54' fill='#e8962e'/>
+    <circle cx='60' cy='44' r='22' fill='#e8962e'/><circle cx='60' cy='44' r='13' fill='#c77b2a'/>
+    <circle cx='140' cy='44' r='22' fill='#e8962e'/><circle cx='140' cy='44' r='13' fill='#c77b2a'/>
+    <circle cx='78' cy='82' r='12' fill='#fff'/><circle cx='80' cy='83' r='7' fill='#2a1800'/>
+    <circle cx='122' cy='82' r='12' fill='#fff'/><circle cx='124' cy='83' r='7' fill='#2a1800'/>
+    <circle cx='77' cy='79' r='2.5' fill='#fff'/><circle cx='121' cy='79' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='104' rx='11' ry='8' fill='#c77b2a'/>
+    <path d='M87,113 Q100,124 113,113' fill='none' stroke='#c77b2a' stroke-width='3'/>
+    <line x1='52' y1='104' x2='87' y2='109' stroke='#e8d5a0' stroke-width='2'/>
+    <line x1='52' y1='113' x2='87' y2='113' stroke='#e8d5a0' stroke-width='2'/>
+    <line x1='113' y1='109' x2='148' y2='104' stroke='#e8d5a0' stroke-width='2'/>
+    <line x1='113' y1='113' x2='148' y2='113' stroke='#e8d5a0' stroke-width='2'/>
+   </svg>`},
+  {name:'Elephant',emoji:'🐘',bg:'#e8eaf6',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <ellipse cx='118' cy='148' rx='68' ry='50' fill='#8e8ea8'/>
+    <circle cx='90' cy='88' r='56' fill='#8e8ea8'/>
+    <ellipse cx='30' cy='84' rx='32' ry='44' fill='#b0a0c8'/>
+    <ellipse cx='32' cy='84' rx='22' ry='32' fill='#d4b8e8'/>
+    <path d='M58,122 Q22,150 34,182' fill='none' stroke='#8e8ea8' stroke-width='22' stroke-linecap='round'/>
+    <circle cx='106' cy='74' r='12' fill='#fff'/><circle cx='107' cy='75' r='7' fill='#1a1a2e'/>
+    <circle cx='105' cy='72' r='3' fill='#fff'/>
+    <path d='M62,116 Q44,130 50,152' fill='none' stroke='#f0e8d0' stroke-width='8' stroke-linecap='round'/>
+    <circle cx='148' cy='192' r='20' fill='#8e8ea8'/>
+    <circle cx='94' cy='194' r='20' fill='#8e8ea8'/>
+   </svg>`},
+  {name:'Frog',emoji:'🐸',bg:'#e8f5e9',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <ellipse cx='100' cy='142' rx='70' ry='58' fill='#43b86c'/>
+    <circle cx='100' cy='80' r='64' fill='#43b86c'/>
+    <circle cx='64' cy='34' r='26' fill='#43b86c'/>
+    <circle cx='136' cy='34' r='26' fill='#43b86c'/>
+    <circle cx='64' cy='32' r='18' fill='#fff'/><circle cx='65' cy='33' r='11' fill='#1a1200'/>
+    <circle cx='136' cy='32' r='18' fill='#fff'/><circle cx='137' cy='33' r='11' fill='#1a1200'/>
+    <circle cx='62' cy='29' r='4' fill='#fff'/><circle cx='134' cy='29' r='4' fill='#fff'/>
+    <ellipse cx='100' cy='150' rx='42' ry='32' fill='#a8f0c0'/>
+    <path d='M72,108 Q100,130 128,108' fill='none' stroke='#1a7a38' stroke-width='3.5'/>
+    <ellipse cx='32' cy='188' rx='34' ry='16' fill='#43b86c'/>
+    <ellipse cx='168' cy='188' rx='34' ry='16' fill='#43b86c'/>
+   </svg>`},
+  {name:'Cat',emoji:'🐱',bg:'#fff8e1',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <ellipse cx='100' cy='158' rx='58' ry='46' fill='#ff9f69'/>
+    <circle cx='100' cy='90' r='58' fill='#ff9f69'/>
+    <polygon points='50,54 36,12 78,46' fill='#ff9f69'/>
+    <polygon points='150,54 164,12 122,46' fill='#ff9f69'/>
+    <polygon points='54,50 43,18 75,43' fill='#ffc4a8'/>
+    <polygon points='146,50 157,18 125,43' fill='#ffc4a8'/>
+    <ellipse cx='77' cy='84' rx='13' ry='15' fill='#4a8800'/>
+    <ellipse cx='77' cy='84' rx='5' ry='13' fill='#1a1200'/>
+    <circle cx='75' cy='80' r='3' fill='#fff'/>
+    <ellipse cx='123' cy='84' rx='13' ry='15' fill='#4a8800'/>
+    <ellipse cx='123' cy='84' rx='5' ry='13' fill='#1a1200'/>
+    <circle cx='121' cy='80' r='3' fill='#fff'/>
+    <polygon points='100,102 92,112 108,112' fill='#ff6b9d'/>
+    <path d='M95,112 Q100,122 105,112' fill='none' stroke='#ff6b9d' stroke-width='2'/>
+    <line x1='50' y1='107' x2='90' y2='112' stroke='#e0c8b8' stroke-width='2'/>
+    <line x1='50' y1='116' x2='90' y2='116' stroke='#e0c8b8' stroke-width='2'/>
+    <line x1='110' y1='112' x2='150' y2='107' stroke='#e0c8b8' stroke-width='2'/>
+    <line x1='110' y1='116' x2='150' y2='116' stroke='#e0c8b8' stroke-width='2'/>
+   </svg>`},
+  {name:'Dog',emoji:'🐶',bg:'#fbe9e7',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <ellipse cx='100' cy='155' rx='58' ry='46' fill='#c8a46e'/>
+    <circle cx='100' cy='88' r='58' fill='#c8a46e'/>
+    <ellipse cx='46' cy='82' rx='26' ry='44' fill='#a07840' transform='rotate(-18 46 82)'/>
+    <ellipse cx='154' cy='82' rx='26' ry='44' fill='#a07840' transform='rotate(18 154 82)'/>
+    <circle cx='77' cy='78' r='13' fill='#fff'/><circle cx='78' cy='79' r='7' fill='#2a1800'/>
+    <circle cx='76' cy='75' r='2.5' fill='#fff'/>
+    <circle cx='123' cy='78' r='13' fill='#fff'/><circle cx='124' cy='79' r='7' fill='#2a1800'/>
+    <circle cx='122' cy='75' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='108' rx='16' ry='12' fill='#2a1800'/>
+    <ellipse cx='97' cy='105' rx='5' ry='3.5' fill='#555'/>
+    <path d='M86,120 Q100,136 114,120' fill='none' stroke='#a07840' stroke-width='3'/>
+    <ellipse cx='100' cy='132' rx='12' ry='10' fill='#ff6b9d'/>
+   </svg>`},
+];
+
+function _jigGetPiece(animal,pieceIdx,sz){
+  const vbs=['0 0 100 100','100 0 100 100','0 100 100 100','100 100 100 100'];
+  return animal.svg
+    .replace("viewBox='0 0 200 200'","viewBox='"+vbs[pieceIdx]+"'")
+    .replace("width='200'","width='"+sz+"'")
+    .replace("height='200'","height='"+sz+"'");
+}
+
+function buildPuzzleJigsaw(){jigScore=0;jigRound=0;nextJigRound();}
+
+function nextJigRound(){
+  const total=5;jigRound++;
+  if(jigRound>total){endGame(jigScore,total,'puzzleJigsaw');return;}
+  jigPlacements={0:null,1:null,2:null,3:null};
+  _jigAnimal=JIGSAW_ANIMALS[(jigRound-1)%JIGSAW_ANIMALS.length];
+  const scrambled=[0,1,2,3].sort(()=>Math.random()-0.5);
+  _renderJigsaw(scrambled);
+  speakText('Build the '+_jigAnimal.name+'! Drag each piece into the puzzle!');
+}
+
+function _renderJigsaw(scrambled){
+  const ps=88,a=_jigAnimal;
+  document.getElementById('area').innerHTML=`
+    <div class='game-panel' id='jigPanel'>
+      <div class='game-title'>🧩 Jigsaw Puzzle!</div>
+      <div class='game-inst'>Drag the pieces to build the ${a.emoji} <strong>${a.name}</strong>!</div>
+      <div class='game-score'>Puzzle ${jigRound}/5 &nbsp;·&nbsp; ⭐ ${jigScore}</div>
+      <div id='jigBoard' style='display:grid;grid-template-columns:${ps}px ${ps}px;gap:3px;margin:14px auto;width:fit-content;border-radius:14px;overflow:hidden;box-shadow:0 6px 28px rgba(0,0,0,.14)'>
+        ${[0,1,2,3].map(s=>`
+          <div id='jigSlot_${s}' data-slot='${s}'
+            style='width:${ps}px;height:${ps}px;background:${a.bg};border:3px dashed #c4b5fd;display:flex;align-items:center;justify-content:center;font-size:2rem;color:#c4b5fd;box-sizing:border-box;transition:all .25s'
+            ondragover='event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"'
+            ondragleave='this.style.borderColor="#c4b5fd";this.style.background="${a.bg}"'
+            ondrop='jigDrop(event,${s})'>?</div>`).join('')}
+      </div>
+      <div style='font-family:"Baloo 2",cursive;font-size:.78rem;font-weight:700;color:var(--text3);text-align:center;margin-bottom:8px'>☝️ Drag the pieces below into the puzzle frame!</div>
+      <div id='jigTray' style='display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:8px 4px;min-height:${ps+16}px'>
+        ${scrambled.map(p=>`
+          <div id='jigPiece_${p}' data-piece='${p}' draggable='true'
+            style='width:${ps}px;height:${ps}px;cursor:grab;border-radius:12px;border:3px solid var(--purple);overflow:hidden;box-shadow:0 4px 16px rgba(167,139,250,.45);touch-action:none;flex-shrink:0;transition:transform .15s'
+            ondragstart='jigDragStart(event,${p})'
+            ondragend='this.style.opacity="1"'
+            ontouchstart='jigTouchStart(event,${p})'
+            ontouchmove='jigTouchMove(event)'
+            ontouchend='jigTouchEnd(event)'
+          >${_jigGetPiece(a,p,ps)}</div>`).join('')}
+      </div>
+      <div class='game-feedback' id='gfb' style='min-height:28px;margin-top:4px'></div>
+    </div>`;
+}
+
+function jigDragStart(e,p){
+  _jigDragPiece=p;
+  e.dataTransfer.setData('text',String(p));
+  setTimeout(()=>{const el=document.getElementById('jigPiece_'+p);if(el)el.style.opacity='.45';},0);
+}
+function jigDrop(e,slot){
+  e.preventDefault();
+  const slotEl=document.getElementById('jigSlot_'+slot);
+  if(slotEl){slotEl.style.borderColor='#c4b5fd';slotEl.style.background=_jigAnimal.bg;}
+  const p=parseInt(e.dataTransfer.getData('text'));
+  if(!isNaN(p))jigPlacePiece(p,slot);
+}
+
+function jigTouchStart(e,p){
+  e.preventDefault();
+  _jigTouchPiece=p;
+  const src=document.getElementById('jigPiece_'+p);
+  if(!src)return;
+  const g=src.cloneNode(true);
+  g.id='_jigGhost';
+  g.removeAttribute('ontouchstart');g.removeAttribute('ontouchmove');g.removeAttribute('ontouchend');
+  g.style.cssText='position:fixed;opacity:.88;pointer-events:none;z-index:9999;border-radius:12px;overflow:hidden;border:3px solid var(--purple);box-shadow:0 8px 28px rgba(167,139,250,.6);transform:scale(1.08)';
+  g.style.width=src.offsetWidth+'px';g.style.height=src.offsetHeight+'px';
+  document.body.appendChild(g);_jigGhost=g;
+  src.style.opacity='.4';
+  const t=e.touches[0];
+  g.style.left=(t.clientX-src.offsetWidth/2)+'px';
+  g.style.top=(t.clientY-src.offsetHeight/2)+'px';
+}
+function jigTouchMove(e){
+  e.preventDefault();
+  if(!_jigGhost)return;
+  const t=e.touches[0];
+  const w=parseInt(_jigGhost.style.width)||88;
+  const h=parseInt(_jigGhost.style.height)||88;
+  _jigGhost.style.left=(t.clientX-w/2)+'px';
+  _jigGhost.style.top=(t.clientY-h/2)+'px';
+}
+function jigTouchEnd(e){
+  if(_jigGhost){_jigGhost.remove();_jigGhost=null;}
+  const src=_jigTouchPiece!==null?document.getElementById('jigPiece_'+_jigTouchPiece):null;
+  if(src)src.style.opacity='1';
+  if(_jigTouchPiece===null)return;
+  const t=e.changedTouches[0];
+  const hit=document.elementFromPoint(t.clientX,t.clientY);
+  const slotEl=hit&&hit.closest('[data-slot]');
+  if(slotEl)jigPlacePiece(_jigTouchPiece,parseInt(slotEl.getAttribute('data-slot')));
+  _jigTouchPiece=null;
+}
+
+function jigPlacePiece(pieceIdx,slotIdx){
+  if(jigPlacements[slotIdx]!==null)return; // slot already correctly filled
+  const ps=88,a=_jigAnimal;
+  const correct=(pieceIdx===slotIdx);
+  const slotEl=document.getElementById('jigSlot_'+slotIdx);
+  const pieceEl=document.getElementById('jigPiece_'+pieceIdx);
+  if(!slotEl)return;
+
+  if(correct){
+    jigPlacements[slotIdx]=pieceIdx;
+    slotEl.innerHTML=_jigGetPiece(a,pieceIdx,ps);
+    slotEl.style.border='3px solid #56cf81';
+    slotEl.style.background='#e8fff0';
+    slotEl.removeAttribute('ondragover');slotEl.removeAttribute('ondragleave');slotEl.removeAttribute('ondrop');
+    if(pieceEl)pieceEl.remove();
+    playCorrect();
+    const allDone=Object.values(jigPlacements).every(v=>v!==null);
+    if(allDone){
+      jigScore++;
+      burst();
+      speakText('You built the '+a.name+'! Amazing job!');
+      const fb=document.getElementById('gfb');
+      if(fb)fb.innerHTML='<span style="color:var(--green);font-family:\'Baloo 2\',cursive;font-weight:800;font-size:1.05rem">🎉 Puzzle Complete! You\'re a star!</span>';
+      // Show full animal briefly
+      const board=document.getElementById('jigBoard');
+      if(board){board.style.borderRadius='16px';board.style.boxShadow='0 0 0 5px #56cf81, 0 8px 32px rgba(86,207,129,.4)';}
+      setTimeout(nextJigRound,2800);
+    } else {
+      speakText('Great fit! Keep going!');
+    }
+  } else {
+    // Wrong slot — shake piece & flash slot red
+    slotEl.style.background='#ffe8f0';slotEl.style.borderColor='#ff6b9d';
+    setTimeout(()=>{slotEl.style.background=a.bg;slotEl.style.borderColor='#c4b5fd';},500);
+    if(pieceEl){
+      pieceEl.style.opacity='1';
+      pieceEl.style.animation='shake .4s';
+      setTimeout(()=>{if(pieceEl)pieceEl.style.animation='';},400);
+    }
+    playWrong();speakText('Not quite — try a different spot!');
+    const fb=document.getElementById('gfb');
+    if(fb){fb.innerHTML='<span style="color:var(--pink);font-family:\'Baloo 2\',cursive;font-weight:700">Try a different spot! 🔄</span>';
+    setTimeout(()=>{if(fb)fb.innerHTML='';},1200);}
+  }
 }
 
 function endGame(score,max,gid){
