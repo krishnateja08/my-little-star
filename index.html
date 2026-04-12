@@ -1591,7 +1591,7 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
 <div id="familyCodeOverlay"></div>
 
 <!-- App Loader (shown while Firebase syncs) -->
-<div id="appLoader" style="display:none;position:fixed;inset:0;background:linear-gradient(135deg,#ff6b9d,#ffb830,#4ecdc4);z-index:99998;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+<div id="appLoader" style="display:flex;position:fixed;inset:0;background:linear-gradient(135deg,#ff6b9d,#ffb830,#4ecdc4);z-index:99998;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
   <div style="font-size:3.5rem;animation:float 1.5s ease-in-out infinite">⭐</div>
   <div style="font-family:'Baloo 2',cursive;font-size:1.3rem;color:#fff;font-weight:700">Syncing your progress...</div>
   <div style="width:48px;height:48px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite"></div>
@@ -1985,17 +1985,17 @@ function _showFamilyCodeScreen(){
 (async function _firebaseInit(){
   try{
     if(!_familyCode) await _showFamilyCodeScreen();
-
-    document.getElementById('appLoader').style.display='flex';
     await _loadFromFirebase();
     _syncReady = true;
     document.getElementById('appLoader').style.display='none';
     console.log('🔥 Firebase REST sync active! Family:', _familyCode);
   }catch(e){
     console.warn('Firebase init error, running offline:',e);
-    _syncReady = true; // still let app work offline
+    _syncReady = true;
     document.getElementById('appLoader').style.display='none';
   }
+  // Boot the app NOW — after Firebase has loaded data into localStorage
+  _bootApp();
 })();
 
 // ══════════════════════════════════════
@@ -9914,41 +9914,40 @@ function ftAutoInit(){
 }
 
 // ══════════════════════════════════════
-//  BOOT
+//  BOOT — called by _firebaseInit after Firebase has loaded
 // ══════════════════════════════════════
-// Re-read from localStorage now — Firebase has already written synced values above
-done          = JSON.parse(localStorage.getItem('cd_'+todayKey())||'[]');
-stars         = parseInt(localStorage.getItem('cs_'+todayKey())||'0');
-allUsed       = JSON.parse(localStorage.getItem('c_allused')||'[]');
-totalStarsEver= parseInt(localStorage.getItem('c_total_stars')||'0');
-setupHeader();showSpill();renderWbar();renderFact();renderStory();renderChallenge();applyRewards();renderTabBadges();
-renderStarPath();renderSpark();renderWeather();renderPhysBanner();renderTodayBar();renderBtt();renderGoals();
+function _bootApp(){
+  // Re-read everything from localStorage — Firebase has already written synced values
+  done          = JSON.parse(localStorage.getItem('cd_'+todayKey())||'[]');
+  stars         = parseInt(localStorage.getItem('cs_'+todayKey())||'0');
+  allUsed       = JSON.parse(localStorage.getItem('c_allused')||'[]');
+  totalStarsEver= parseInt(localStorage.getItem('c_total_stars')||'0');
+  setupHeader();showSpill();renderWbar();renderFact();renderStory();renderChallenge();applyRewards();renderTabBadges();
+  renderStarPath();renderSpark();renderWeather();renderPhysBanner();renderTodayBar();renderBtt();renderGoals();
 // Check bedtime lock (delayed so other UI loads first)
-setTimeout(checkBedtimeLock,1500);
-document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===tab));
-document.getElementById('subjRow').classList.toggle('show',tab==='learning');
-document.getElementById('gameRow').classList.toggle('show',tab==='games');
-document.getElementById('thinkRow').classList.toggle('show',tab==='learning'&&subj==='think');
-document.getElementById('weatherBar').classList.toggle('show',tab==='morning');
-document.getElementById('timerBar').classList.add('show');
+  setTimeout(checkBedtimeLock,1500);
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===tab));
+  document.getElementById('subjRow').classList.toggle('show',tab==='learning');
+  document.getElementById('gameRow').classList.toggle('show',tab==='games');
+  document.getElementById('thinkRow').classList.toggle('show',tab==='learning'&&subj==='think');
+  document.getElementById('weatherBar').classList.toggle('show',tab==='morning');
+  document.getElementById('timerBar').classList.add('show');
 
-// Morning tune + feelings check-in
-setTimeout(()=>{
-  if(!morningTunePlayed&&new Date().getHours()<12){
-    playMorningTune();morningTunePlayed=true;localStorage.setItem('c_tune_'+todayKey(),'1');
-  }
-},1200);
-setTimeout(()=>showFeelingsCheckIn(),2000);
-setTimeout(()=>checkWeeklySurprise(),3000);
+  // Morning tune + feelings check-in
+  setTimeout(()=>{
+    if(!morningTunePlayed&&new Date().getHours()<12){
+      playMorningTune();morningTunePlayed=true;localStorage.setItem('c_tune_'+todayKey(),'1');
+    }
+  },1200);
+  setTimeout(()=>showFeelingsCheckIn(),2000);
+  setTimeout(()=>checkWeeklySurprise(),3000);
 
-// Show friend name in mascot bubble if named
-if(friendName)setTimeout(()=>mascotSay('Hi '+friendName+'! Let\'s go! 💛'),1500);
+  // Show friend name in mascot bubble if named
+  if(friendName)setTimeout(()=>mascotSay('Hi '+friendName+'! Let\'s go! 💛'),1500);
 
-// Wait for Firebase sync before starting
-(function waitForSync(){
-  if(_syncReady){ fetchNext(); }
-  else { setTimeout(waitForSync, 100); }
-})();
+  // Start activities
+  fetchNext();
+}
 </script>
 </body>
 </html>
