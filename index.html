@@ -1837,7 +1837,6 @@ const _lsSet    = localStorage.setItem.bind(localStorage);
 const _lsRemove = localStorage.removeItem.bind(localStorage);
 const _lsGet    = localStorage.getItem.bind(localStorage);
 
-let _familyCode = ''; // kept for backward compat — now unused for sync
 let _syncReady  = false;
 
 // ── REST helpers (now uses /users/{uid} + auth token) ──
@@ -1945,56 +1944,6 @@ async function _migrateFromFamilyCode(){
     }
     _lsRemove('c_family_code');
   }catch(e){ console.warn('Migration error (non-fatal):', e); }
-}
-
-// Re-read all key variables from localStorage and refresh UI
-function _refreshAppFromStorage(){
-  try{
-    if(typeof todayKey !== 'function') return;
-
-    const fbDone  = JSON.parse(_lsGet('cd_'+todayKey())||'[]');
-    const fbStars = parseInt(_lsGet('cs_'+todayKey())||'0');
-    const fbAllUsed = JSON.parse(_lsGet('c_allused')||'[]');
-    const fbTotalStars = parseInt(_lsGet('c_total_stars')||'0');
-
-    if(typeof getWeek === 'function'){
-      const recalc = getWeek();
-      if(typeof week !== 'undefined') week = recalc.week;
-      if(typeof day  !== 'undefined') day  = recalc.day;
-      if(typeof setupHeader    === 'function') setupHeader();
-      if(typeof renderTodayBar === 'function') renderTodayBar();
-    }
-
-    if(typeof skippedToday !== 'undefined'){
-      skippedToday = JSON.parse(_lsGet('c_skipped_'+todayKey())||'[]');
-    }
-
-    if(typeof owned       !== 'undefined') owned       = JSON.parse(_lsGet('c_owned')||'[]');
-    if(typeof activeHat   !== 'undefined') activeHat   = _lsGet('c_activeHat')||'';
-    if(typeof activeChar  !== 'undefined') activeChar  = _lsGet('c_activeChar')||'';
-    if(typeof activeTheme !== 'undefined') activeTheme = _lsGet('c_activeTheme')||'';
-    if(typeof diffLevel   !== 'undefined') diffLevel   = parseInt(_lsGet('c_diff')||'1');
-    if(typeof friendName  !== 'undefined') friendName  = _lsGet('c_friendName')||'';
-
-    if(typeof done           !== 'undefined') done           = fbDone.length >= done.length ? fbDone : done;
-    if(typeof stars          !== 'undefined') stars          = Math.max(fbStars, stars);
-    if(typeof allUsed        !== 'undefined') allUsed        = fbAllUsed.length >= allUsed.length ? fbAllUsed : allUsed;
-    if(typeof totalStarsEver !== 'undefined') totalStarsEver = Math.max(fbTotalStars, totalStarsEver);
-
-    if(typeof showSpill       === 'function') showSpill();
-    if(typeof renderHist      === 'function') renderHist();
-    if(typeof updateProg      === 'function') updateProg();
-    if(typeof renderWbar      === 'function') renderWbar();
-    if(typeof renderChallenge === 'function') renderChallenge();
-    if(typeof renderStarPath  === 'function') renderStarPath();
-    if(typeof applyRewards    === 'function') applyRewards();
-    if(typeof renderGoals     === 'function') renderGoals();
-    if(typeof renderTabBadges === 'function') renderTabBadges();
-
-    if(typeof fetchNext === 'function' && !busy && !currentlyPlaying){ fetchNext(); }
-
-    console.log('🔄 App refreshed — Week:', week, '| Stars:', fbStars, '| Done:', fbDone.length);
-  }catch(e){ console.warn('Refresh error:',e); }
 }
 
 // Override localStorage so every write also syncs to Firebase
@@ -2175,48 +2124,6 @@ async function forceUploadAll(){
   _bootApp();
 })();
 
-// ══════════════════════════════════════
-//  LIVE SYNC — poll Firebase every 10s so all devices stay up to date
-// ══════════════════════════════════════
-let _lastSyncHash = '';
-async function _pollFirebase(){
-  if(!_syncReady||!_currentUser) return;
-  try{
-    _authToken = await _currentUser.getIdToken();
-    const res  = await fetch(`${_DB_URL}/users/${_currentUser.uid}.json?auth=${_authToken}`);
-    const data = await res.json();
-    if(!data||typeof data !== 'object') return;
-    const hash = JSON.stringify(data);
-    if(hash === _lastSyncHash) return;
-    _lastSyncHash = hash;
-    Object.keys(data).forEach(k => {
-      const v = data[k];
-      _lsSet(k, typeof v === 'string' ? v : JSON.stringify(v));
-    });
-    if(typeof todayKey === 'function'){
-      const syncedStars = parseInt(_lsGet('cs_'+todayKey())||'0');
-      const syncedTotal = parseInt(_lsGet('c_total_stars')||'0');
-      const syncedDone  = JSON.parse(_lsGet('cd_'+todayKey())||'[]');
-      if(syncedStars > stars && typeof stars !== 'undefined'){
-        stars = syncedStars;
-        if(typeof showSpill === 'function') showSpill();
-      }
-      if(syncedTotal > totalStarsEver && typeof totalStarsEver !== 'undefined'){
-        totalStarsEver = syncedTotal;
-      }
-      if(syncedDone.length > done.length && typeof done !== 'undefined'){
-        done = syncedDone;
-        if(typeof renderTabBadges === 'function') renderTabBadges();
-        if(typeof renderStarPath  === 'function') renderStarPath();
-      }
-    }
-    if(!busy && !currentlyPlaying){
-      _refreshAppFromStorage();
-      console.log('🔄 Live sync: changes detected and applied');
-    }
-  }catch(e){ /* silent — offline is fine */ }
-}
-// Auto-polling REMOVED — use 📤 Force Upload / 📥 Force Download buttons in Parent Dashboard
 
 // ── Debug: show sync status ──
 function showSyncDebug(){
