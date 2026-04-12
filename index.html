@@ -1872,16 +1872,55 @@ function fbDelete(key){
 async function _loadFromFirebase(){
   if(!_currentUser) return;
   try{
+    _authToken = await _currentUser.getIdToken(true); // force fresh token
     const res  = await fetch(`${_DB_URL}/users/${_currentUser.uid}.json?auth=${_authToken}`);
     const data = await res.json();
+    if(data && data.error){
+      console.error('❌ Firebase permission error:', data.error);
+      return;
+    }
     if(data && typeof data === 'object'){
+      let count = 0;
       Object.keys(data).forEach(k => {
         const v = data[k];
         _lsSet(k, typeof v === 'string' ? v : JSON.stringify(v));
+        count++;
       });
-      console.log('✅ Firebase synced!', Object.keys(data).length, 'keys loaded');
+      console.log('✅ Firebase synced!', count, 'keys loaded');
+    } else {
+      console.warn('⚠️ Firebase returned empty/null data');
     }
   }catch(e){ console.error('❌ Firebase LOAD error:',e); }
+}
+
+// ── Force Download: pull ALL data from Firebase → localStorage → refresh UI ──
+async function forceDownloadAll(){
+  if(!_currentUser){
+    alert('❌ Not signed in!');
+    return;
+  }
+  try{
+    _authToken = await _currentUser.getIdToken(true);
+    const res = await fetch(`${_DB_URL}/users/${_currentUser.uid}.json?auth=${_authToken}`);
+    const data = await res.json();
+
+    if(!data || data.error){
+      alert('❌ No data in cloud or permission error.\n\n'+(data?.error||'Empty database'));
+      return;
+    }
+
+    let count = 0;
+    Object.keys(data).forEach(k => {
+      const v = data[k];
+      _lsSet(k, typeof v === 'string' ? v : JSON.stringify(v));
+      count++;
+    });
+
+    alert('✅ Downloaded '+count+' keys from cloud!\n\nPage will reload now.');
+    location.reload();
+  }catch(e){
+    alert('❌ Download error: '+e.message);
+  }
 }
 
 // ── One-time migration: copy old family code data → user's auth path ──
@@ -7101,6 +7140,7 @@ function renderParentDash(){
             <button class="pd-set-btn" onclick="signOutUser()" style="border-color:var(--pink);color:var(--pink)">🚪 Sign Out</button>
             <button class="pd-set-btn" onclick="showSyncDebug()" style="background:linear-gradient(135deg,#333,#555)">🔍 Debug Sync Status</button>
             <button class="pd-set-btn" onclick="forceUploadAll()" style="border-color:var(--sun);color:var(--sun)">📤 Force Upload to Cloud</button>
+            <button class="pd-set-btn" onclick="forceDownloadAll()" style="border-color:var(--blue);color:var(--blue)">📥 Force Download from Cloud</button>
             <button class="pd-set-btn" onclick="forceWeekSync()" style="border-color:var(--mint);color:var(--mint)">📅 Fix Week Sync</button>
             <button class="pd-set-btn danger" onclick="parentReset()">🔄 Reset journey</button>
           </div>
@@ -10538,6 +10578,25 @@ function _bootApp(){
   stars         = parseInt(localStorage.getItem('cs_'+todayKey())||'0');
   allUsed       = JSON.parse(localStorage.getItem('c_allused')||'[]');
   totalStarsEver= parseInt(localStorage.getItem('c_total_stars')||'0');
+
+  // ── Re-read ALL synced variables (these are initialized before Firebase loads) ──
+  skippedToday  = JSON.parse(localStorage.getItem('c_skipped_'+todayKey())||'[]');
+  owned         = JSON.parse(localStorage.getItem('c_owned')||'[]');
+  diffLevel     = parseInt(localStorage.getItem('c_diff')||'1');
+  friendName    = localStorage.getItem('c_friendName')||'';
+  activeHat     = localStorage.getItem('c_activeHat')||'';
+  activeChar    = localStorage.getItem('c_activeChar')||'';
+  activeTheme   = localStorage.getItem('c_activeTheme')||'';
+  bedtimeMode   = localStorage.getItem('c_bedtime')==='on';
+  if(bedtimeMode) document.body.classList.add('bedtime');
+
+  // Re-read week/day from synced start date
+  if(typeof getWeek === 'function'){
+    const recalc = getWeek();
+    week = recalc.week;
+    day  = recalc.day;
+  }
+
   setupHeader();showSpill();renderWbar();renderFact();renderStory();renderChallenge();applyRewards();renderTabBadges();
   renderStarPath();renderSpark();renderWeather();renderPhysBanner();renderTodayBar();renderBtt();renderGoals();
 // Check bedtime lock (delayed so other UI loads first)
