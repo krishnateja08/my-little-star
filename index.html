@@ -1822,16 +1822,16 @@ function _fbPath(key){ return `${_DB_URL}/families/${_familyCode}/${_safeKey(key
 
 function fbWrite(key, value){
   if(!_syncReady||!_familyCode) return;
-  // localStorage values are always strings; try to parse them back to
-  // their real type (number, array, object) before storing in Firebase.
-  // This ensures they round-trip correctly when loaded back on other devices.
   let parsed = value;
   try{ parsed = JSON.parse(value); }catch(e){ /* plain string — keep as-is */ }
   fetch(_fbPath(key),{
     method:'PUT',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify(parsed)
-  }).catch(()=>{});
+  }).then(r=>{
+    if(!r.ok) r.text().then(t=>console.error('❌ Firebase write FAILED for key:',key,'status:',r.status,'response:',t));
+    else console.log('✅ Firebase wrote:',key,'=',parsed);
+  }).catch(e=>console.error('❌ Firebase write ERROR:',key,e));
 }
 
 function fbDelete(key){
@@ -1857,7 +1857,7 @@ async function _loadFromFirebase(){
       // at the bottom of the file reads from localStorage AFTER Firebase has written
       // all values above, so stars/done will already be correct on first render.
     }
-  }catch(e){ console.warn('Firebase load error:',e); }
+  }catch(e){ console.error('❌ Firebase LOAD error:',e); }
 }
 
 // Re-read all key variables from localStorage and refresh UI
@@ -2049,6 +2049,36 @@ async function _pollFirebase(){
 setTimeout(()=>{ _pollFirebase(); setInterval(_pollFirebase, 10000); }, 5000);
 
 // Helper to change family code from Parent Dashboard
+// ── Debug: show sync status ──
+function showSyncDebug(){
+  const info = {
+    familyCode: _familyCode || '❌ NOT SET',
+    syncReady: _syncReady,
+    todayKey: typeof todayKey==='function' ? todayKey() : '?',
+    starsVar: typeof stars !== 'undefined' ? stars : '?',
+    totalStarsVar: typeof totalStarsEver !== 'undefined' ? totalStarsEver : '?',
+    lsStars: localStorage.getItem('cs_'+(typeof todayKey==='function'?todayKey():'?')),
+    lsTotal: localStorage.getItem('c_total_stars'),
+    lsDone: (()=>{ try{ return JSON.parse(localStorage.getItem('cd_'+(typeof todayKey==='function'?todayKey():'?'))||'[]').length+' activities'; }catch(e){ return '?'; }})(),
+    lsAllUsed: (()=>{ try{ return JSON.parse(localStorage.getItem('c_allused')||'[]').length+' items'; }catch(e){ return '?'; }})(),
+    firebasePath: typeof _familyCode!=='undefined' ? _DB_URL+'/families/'+_familyCode : '?',
+  };
+  alert(
+    '🔥 FIREBASE SYNC STATUS\n\n'+
+    '👨‍👩‍👧 Family Code: '+info.familyCode+'\n'+
+    '✅ Sync Ready: '+info.syncReady+'\n'+
+    '📅 Today Key: '+info.todayKey+'\n\n'+
+    '⭐ stars variable: '+info.starsVar+'\n'+
+    '⭐ totalStarsEver: '+info.totalStarsVar+'\n'+
+    '💾 localStorage today stars (cs_): '+info.lsStars+'\n'+
+    '💾 localStorage total (c_total_stars): '+info.lsTotal+'\n'+
+    '📋 Done today: '+info.lsDone+'\n'+
+    '📋 All used ever: '+info.lsAllUsed+'\n\n'+
+    '🔗 Firebase path: '+info.firebasePath+'\n\n'+
+    '👉 Open browser Console (F12) to see write logs'
+  );
+}
+
 function changeFamilyCode(){
   const newCode = prompt('Enter new Family Code (use same on all devices):','');
   if(!newCode) return;
@@ -6506,6 +6536,7 @@ function renderParentDash(){
             <button class="pd-set-btn" onclick="toggleBedtime()">🌙 Bedtime: <strong style="color:var(--purple);margin-left:3px">${bedtimeMode?'ON':'OFF'}</strong></button>
             <button class="pd-set-btn" id="pdSoundBtn" onclick="toggleSound()">🔊 Sound: <strong id="pdSoundLabel" style="color:var(--green);margin-left:3px">${soundOn?'ON':'OFF'}</strong></button>
             <button class="pd-set-btn" onclick="changeFamilyCode()">🔥 Family Code: <strong style="color:var(--sun);margin-left:3px">${_familyCode||'not set'}</strong></button>
+            <button class="pd-set-btn" onclick="showSyncDebug()" style="background:linear-gradient(135deg,#333,#555)">🔍 Debug Sync Status</button>
             <button class="pd-set-btn" onclick="forceWeekSync()" style="border-color:var(--mint);color:var(--mint)">📅 Fix Week Sync</button>
             <button class="pd-set-btn danger" onclick="parentReset()">🔄 Reset journey</button>
           </div>
