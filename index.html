@@ -1622,7 +1622,6 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
 <div class="tabs">
   <button class="tab active" data-t="morning"  onclick="switchTab('morning')"><span class="tab-icon">🌅</span><span class="tab-label">Morning</span></button>
   <button class="tab"        data-t="learning" onclick="switchTab('learning')"><span class="tab-icon">📚</span><span class="tab-label">Learn</span></button>
-  <button class="tab"        data-t="think"    onclick="switchTab('think')"><span class="tab-icon">🧩</span><span class="tab-label">Think</span></button>
   <button class="tab"        data-t="games"    onclick="switchTab('games')"><span class="tab-icon">🎮</span><span class="tab-label">Games</span></button>
   <button class="tab"        data-t="create"   onclick="switchTab('create')"><span class="tab-icon">🎨</span><span class="tab-label">Create</span></button>
   <button class="tab"        data-t="evening"  onclick="switchTab('evening')"><span class="tab-icon">🌙</span><span class="tab-label">Evening</span></button>
@@ -1657,6 +1656,7 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
   <button class="sp"        data-s="feelings" onclick="switchSubj('feelings')">💛 Feelings</button>
   <button class="sp"        data-s="world"    onclick="switchSubj('world')">🌍 World</button>
   <button class="sp"        data-s="body"     onclick="switchSubj('body')">🫀 My Body</button>
+  <button class="sp"        data-s="think"    onclick="switchSubj('think')">🧩 Think</button>
   <button class="sp"        data-s="read"     onclick="switchSubj('read')">📖 Read</button>
 </div>
 
@@ -2791,10 +2791,19 @@ function getPool(){
     return pool;
   }
   if(tab==='create'||tab==='parent') return [];
+  // Think is now a subject within learning
+  if(tab==='learning'&&subj==='think'){
+    let pool=CUR.think||[];
+    pool=pool.filter(a=>!a.w||a.w<=week);
+    if(thinkCat!=='all') pool=pool.filter(a=>a.cat===thinkCat);
+    const doneTodayTitles=done.filter(d=>d.tab==='learning').map(d=>d.title);
+    const filtered=pool.filter(a=>!doneTodayTitles.includes(a.title)&&!skippedToday.includes(a.title));
+    if(!filtered.length) return [];
+    return filtered;
+  }
   let pool=CUR[tab]||[];
   pool=pool.filter(a=>!a.w||a.w<=week);
-  if(tab==='learning'&&subj!=='all') pool=pool.filter(a=>a.subj===subj);
-  if(tab==='think'&&thinkCat!=='all') pool=pool.filter(a=>a.cat===thinkCat);
+  if(tab==='learning'&&subj!=='all'&&subj!=='think') pool=pool.filter(a=>a.subj===subj);
   // Activities done TODAY in this tab should not appear again today
   const doneTodayTitles=done.filter(d=>d.tab===tab).map(d=>d.title);
   const filtered=pool.filter(a=>!doneTodayTitles.includes(a.title)&&!skippedToday.includes(a.title));
@@ -2822,6 +2831,11 @@ function getPendingForTab(t){
 
   // Activity tabs (morning/learning/evening/think)
   let pool=(CUR[t]||[]).filter(a=>!a.w||a.w<=week);
+  // Include think activities in learning tab badge count
+  if(t==='learning'){
+    const thinkPool=(CUR.think||[]).filter(a=>!a.w||a.w<=week);
+    pool=[...pool,...thinkPool];
+  }
   const doneTodayTitles=done.filter(d=>d.tab===t).map(d=>d.title);
   const pending=pool.filter(a=>!doneTodayTitles.includes(a.title)&&!skippedToday.includes(a.title));
   return pending.length;
@@ -2907,8 +2921,10 @@ async function fetchNext(forceAct){
 //  ACTIVITY PICKER — browse & choose
 // ══════════════════════════════════════
 function showActivityPicker(pool){
-  const tabName=tab.charAt(0).toUpperCase()+tab.slice(1);
-  const tabEmojis={morning:'🌅',learning:'📚',games:'🎮',evening:'🌙',think:'🧩'};
+  const isThinkView=tab==='learning'&&subj==='think';
+  const tabName=isThinkView?'Think':(tab.charAt(0).toUpperCase()+tab.slice(1));
+  const tabEmojis={morning:'🌅',learning:'📚',games:'🎮',evening:'🌙'};
+  const tabEmoji=isThinkView?'🧩':(tabEmojis[tab]||'📋');
   document.getElementById('hsub').textContent=`📋 Pick your ${tabName} ${tab==='games'?'game':'activity'}!`;
 
   const catColors={maths:'linear-gradient(135deg,#ffb830,#ff8c69)',letters:'linear-gradient(135deg,#a78bfa,#4fa3e0)',
@@ -2950,15 +2966,18 @@ function showActivityPicker(pool){
 
   // Done items — all games/activities completed today in this tab
   const doneTodayTitles=done.filter(d=>d.tab===tab).map(d=>d.title);
-  const allPool=tab==='games'?GAMES.filter(g=>g.week<=week):((CUR[tab]||[]).filter(a=>!a.w||a.w<=week));
+  const isThinkSubj=tab==='learning'&&subj==='think';
+  const allPool=tab==='games'?GAMES.filter(g=>g.week<=week)
+    :isThinkSubj?(CUR.think||[]).filter(a=>!a.w||a.w<=week)
+    :((CUR[tab]||[]).filter(a=>!a.w||a.w<=week));
   const doneGames=allPool.filter(g=>doneTodayTitles.includes(g.title));
   // Filter by current gameCat / thinkCat if applicable
   const filteredDone=tab==='games'&&gameCat!=='all'?doneGames.filter(g=>g.cat===gameCat)
-    :tab==='think'&&thinkCat!=='all'?doneGames.filter(g=>g.cat===thinkCat)
+    :(isThinkSubj)&&thinkCat!=='all'?doneGames.filter(g=>g.cat===thinkCat)
     :doneGames;
   const filteredSkipped=tab==='games'&&gameCat!=='all'
     ?allPool.filter(g=>skippedToday.includes(g.title)&&g.cat===gameCat)
-    :tab==='think'&&thinkCat!=='all'
+    :(isThinkSubj)&&thinkCat!=='all'
     ?allPool.filter(g=>skippedToday.includes(g.title)&&g.cat===thinkCat)
     :allPool.filter(g=>skippedToday.includes(g.title));
 
@@ -2970,7 +2989,7 @@ function showActivityPicker(pool){
   document.getElementById('area').innerHTML=`
     <div class="picker-panel">
       <div class="picker-header">
-        <span class="picker-title">${tabEmojis[tab]||'📋'} Pick your ${tabName} ${tab==='games'?'game':'activity'}</span>
+        <span class="picker-title">${tabEmoji} Pick your ${tabName} ${tab==='games'?'game':'activity'}</span>
         <button class="picker-random" onclick="pickRandom()">🎲 Surprise me!</button>
       </div>
       ${allDoneToday?`<div style="text-align:center;padding:14px 12px;background:linear-gradient(135deg,#e8fff0,#f0fff4);border-radius:16px;margin-bottom:10px;border:2px dashed var(--green)"><div style="font-size:1.8rem">🎉</div><div style="font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--green)">All ${tabName} ${tab==='games'?'games':'activities'} done for today!</div><div style="font-size:.8rem;color:var(--text3);margin-top:4px">Amazing work! Everything comes back fresh tomorrow 🌟</div></div>`:''}
@@ -4593,7 +4612,7 @@ function showAct(a){
     </div>`:'';
 
   // Build visual interactive panel based on activity type
-  const visualPanel=tab==='think'?buildThinkPanel(a):buildVisualPanel(a);
+  const visualPanel=(tab==='learning'&&subj==='think')?buildThinkPanel(a):buildVisualPanel(a);
 
   document.getElementById('area').innerHTML=`
     <div class="acard" id="ac">
@@ -6167,7 +6186,8 @@ function switchTab(t){
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===t));
   document.getElementById('subjRow').classList.toggle('show',t==='learning');
   document.getElementById('gameRow').classList.toggle('show',t==='games');
-  document.getElementById('thinkRow').classList.toggle('show',t==='think');
+  document.getElementById('thinkRow').classList.remove('show');
+  if(t!=='learning') subj='all';
 
   // Show/hide elements based on tab
   const isSpecial=t==='create'||t==='parent'||t==='stories'||t==='hearts';
@@ -6791,6 +6811,8 @@ function openParentTab(){
 function switchSubj(s){
   subj=s;playClick();
   document.querySelectorAll('.sp').forEach(b=>b.classList.toggle('active',b.dataset.s===s));
+  document.getElementById('thinkRow').classList.toggle('show', s==='think');
+  if(s!=='think') thinkCat='all';
   fetchNext();
 }
 function switchGameCat(c){
@@ -9176,7 +9198,7 @@ setTimeout(checkBedtimeLock,1500);
 document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===tab));
 document.getElementById('subjRow').classList.toggle('show',tab==='learning');
 document.getElementById('gameRow').classList.toggle('show',tab==='games');
-document.getElementById('thinkRow').classList.toggle('show',tab==='think');
+document.getElementById('thinkRow').classList.toggle('show',tab==='learning'&&subj==='think');
 document.getElementById('weatherBar').classList.toggle('show',tab==='morning');
 document.getElementById('timerBar').classList.add('show');
 
