@@ -5756,21 +5756,32 @@ function nextJigRound(){
 
 function _renderJigsaw(scrambled){
   const ps=88,a=_jigAnimal;
+  const boardSize=(ps*2+3); // total board width/height (2 cells + gap)
   document.getElementById('area').innerHTML=`
     <div class='game-panel' id='jigPanel'>
       <div class='game-title'>🧩 Jigsaw Puzzle!</div>
       <div class='game-inst'>Drag the pieces to build the ${a.emoji} <strong>${a.name}</strong>!</div>
       <div class='game-score'>Puzzle ${jigRound}/5 &nbsp;·&nbsp; ⭐ ${jigScore}</div>
-      <div id='jigBoard' style='display:grid;grid-template-columns:${ps}px ${ps}px;gap:3px;margin:14px auto;width:fit-content;border-radius:14px;overflow:hidden;box-shadow:0 6px 28px rgba(0,0,0,.14)'>
-        ${[0,1,2,3].map(s=>`
-          <div id='jigSlot_${s}' data-slot='${s}'
-            style='width:${ps}px;height:${ps}px;background:${a.bg};border:3px dashed #c4b5fd;display:flex;align-items:center;justify-content:center;font-size:2rem;color:#c4b5fd;box-sizing:border-box;transition:all .25s'
-            ondragover='event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"'
-            ondragleave='this.style.borderColor="#c4b5fd";this.style.background="${a.bg}"'
-            ondrop='jigDrop(event,${s})'>?</div>`).join('')}
+      <div style='display:flex;align-items:flex-start;justify-content:center;gap:14px;margin:14px auto;width:fit-content'>
+        <!-- Puzzle board -->
+        <div id='jigBoard' style='display:grid;grid-template-columns:${ps}px ${ps}px;gap:3px;border-radius:14px;overflow:hidden;box-shadow:0 6px 28px rgba(0,0,0,.14)'>
+          ${[0,1,2,3].map(s=>`
+            <div id='jigSlot_${s}' data-slot='${s}'
+              style='width:${ps}px;height:${ps}px;background:${a.bg};border:3px dashed #c4b5fd;display:flex;align-items:center;justify-content:center;font-size:2rem;color:#c4b5fd;box-sizing:border-box;transition:all .25s'
+              ondragover='event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"'
+              ondragleave='this.style.borderColor="#c4b5fd";this.style.background="${a.bg}"'
+              ondrop='jigDrop(event,${s})'>?</div>`).join('')}
+        </div>
+        <!-- Reference image -->
+        <div style='display:flex;flex-direction:column;align-items:center;gap:5px'>
+          <div style='font-family:"Baloo 2",cursive;font-size:.68rem;font-weight:800;color:var(--purple);text-align:center;'>👀 Look here!</div>
+          <div style='width:${boardSize}px;height:${boardSize}px;border-radius:14px;overflow:hidden;box-shadow:0 4px 18px rgba(167,139,250,.35);border:3px solid #c4b5fd;flex-shrink:0'>
+            ${a.svg.replace("width='200'","width='"+boardSize+"'").replace("height='200'","height='"+boardSize+"'")}
+          </div>
+        </div>
       </div>
       <div style='font-family:"Baloo 2",cursive;font-size:.78rem;font-weight:700;color:var(--text3);text-align:center;margin-bottom:2px'>☝️ Drag the pieces below into the puzzle frame!</div>
-      <div style='font-family:"Baloo 2",cursive;font-size:.7rem;color:#a78bfa;text-align:center;margin-bottom:8px'>↩️ Tap a placed piece to take it back</div>
+      <div style='font-family:"Baloo 2",cursive;font-size:.7rem;color:#a78bfa;text-align:center;margin-bottom:8px'>↩️ Wrong piece in a slot? Drag it back out!</div>
       <div id='jigTray' style='display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:8px 4px;min-height:${ps+16}px'>
         ${scrambled.map(p=>`
           <div id='jigPiece_${p}' data-piece='${p}' draggable='true'
@@ -5833,99 +5844,173 @@ function jigTouchEnd(e){
   const hit=document.elementFromPoint(t.clientX,t.clientY);
   const slotEl=hit&&hit.closest('[data-slot]');
   if(slotEl)jigPlacePiece(_jigTouchPiece,parseInt(slotEl.getAttribute('data-slot')));
+  // if dropped outside a slot, piece stays in tray (already there)
   _jigTouchPiece=null;
 }
 
 function jigPlacePiece(pieceIdx,slotIdx){
-  if(jigPlacements[slotIdx]!==null)return; // slot already correctly filled
   const ps=88,a=_jigAnimal;
+  // If slot is already CORRECTLY filled, do nothing
+  if(jigPlacements[slotIdx]===slotIdx)return;
+  // If slot has a wrong piece in it already, kick it back to tray first
+  if(jigPlacements[slotIdx]!==null && jigPlacements[slotIdx]!==undefined){
+    _jigReturnToTray(jigPlacements[slotIdx]);
+    jigPlacements[slotIdx]=null;
+  }
   const correct=(pieceIdx===slotIdx);
   const slotEl=document.getElementById('jigSlot_'+slotIdx);
   const pieceEl=document.getElementById('jigPiece_'+pieceIdx);
   if(!slotEl)return;
 
+  // Remove piece from tray (hide it while in slot)
+  if(pieceEl)pieceEl.remove();
+
+  // Show piece image in slot
+  slotEl.innerHTML=_jigGetPiece(a,pieceIdx,ps);
+
   if(correct){
+    // ✅ Correct — lock it in green, not draggable
     jigPlacements[slotIdx]=pieceIdx;
-    slotEl.innerHTML=_jigGetPiece(a,pieceIdx,ps);
     slotEl.style.border='3px solid #56cf81';
     slotEl.style.background='#e8fff0';
-    slotEl.style.cursor='pointer';
-    slotEl.title='Tap to take back';
+    slotEl.style.cursor='default';
     slotEl.removeAttribute('ondragover');slotEl.removeAttribute('ondragleave');slotEl.removeAttribute('ondrop');
-    // Allow take-back by clicking/tapping the placed piece
-    slotEl.onclick=function(){jigTakeBack(slotIdx,pieceIdx);};
-    if(pieceEl)pieceEl.remove();
     playCorrect();
-    const allDone=Object.values(jigPlacements).every(v=>v!==null);
+    const allDone=Object.values(jigPlacements).every(v=>v===parseInt(Object.keys(jigPlacements).find(k=>jigPlacements[k]===v)||'-1')||v===0||v===1||v===2||v===3)
+      && [0,1,2,3].every(i=>jigPlacements[i]===i);
     if(allDone){
       jigScore++;
       burst();
       speakText('You built the '+a.name+'! Amazing job!');
       const fb=document.getElementById('gfb');
       if(fb)fb.innerHTML='<span style="color:var(--green);font-family:\'Baloo 2\',cursive;font-weight:800;font-size:1.05rem">🎉 Puzzle Complete! You\'re a star!</span>';
-      // Show full animal briefly
       const board=document.getElementById('jigBoard');
       if(board){board.style.borderRadius='16px';board.style.boxShadow='0 0 0 5px #56cf81, 0 8px 32px rgba(86,207,129,.4)';}
       setTimeout(nextJigRound,2800);
     } else {
       speakText('Great fit! Keep going!');
+      const fb=document.getElementById('gfb');
+      if(fb){fb.innerHTML='<span style="color:var(--green);font-family:\'Baloo 2\',cursive;font-weight:700">✅ Good one! Keep going!</span>';
+      setTimeout(()=>{if(fb)fb.innerHTML='';},1000);}
     }
   } else {
-    // Wrong slot — shake piece & flash slot red
-    slotEl.style.background='#ffe8f0';slotEl.style.borderColor='#ff6b9d';
-    setTimeout(()=>{slotEl.style.background=a.bg;slotEl.style.borderColor='#c4b5fd';},500);
-    if(pieceEl){
-      pieceEl.style.opacity='1';
-      pieceEl.style.animation='shake .4s';
-      setTimeout(()=>{if(pieceEl)pieceEl.style.animation='';},400);
-    }
+    // ❌ Wrong — place it in slot with red dashed border, but keep it draggable back out
+    jigPlacements[slotIdx]=pieceIdx; // track that this slot has a wrong piece
+    slotEl.style.border='3px dashed #ff6b9d';
+    slotEl.style.background='#ffe8f0';
+    slotEl.style.cursor='grab';
+    // Make the slot itself draggable so child can drag piece back out
+    slotEl.setAttribute('draggable','true');
+    slotEl.setAttribute('ondragstart','jigSlotDragStart(event,'+slotIdx+','+pieceIdx+')');
+    slotEl.setAttribute('ondragend','this.style.opacity="1"');
+    slotEl.setAttribute('ontouchstart','jigSlotTouchStart(event,'+slotIdx+','+pieceIdx+')');
+    slotEl.setAttribute('ontouchmove','jigTouchMove(event)');
+    slotEl.setAttribute('ontouchend','jigSlotTouchEnd(event,'+slotIdx+','+pieceIdx+')');
+    // Still allow dropping a different piece onto it
+    slotEl.setAttribute('ondragover','event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"');
+    slotEl.setAttribute('ondragleave','this.style.borderColor="#ff6b9d";this.style.background="#ffe8f0"');
+    slotEl.setAttribute('ondrop','jigDrop(event,'+slotIdx+')');
+    // Shake + feedback
+    slotEl.style.animation='shake .4s';
+    setTimeout(()=>{if(slotEl)slotEl.style.animation='';},400);
     playWrong();speakText('Not quite — try a different spot!');
     const fb=document.getElementById('gfb');
-    if(fb){fb.innerHTML='<span style="color:var(--pink);font-family:\'Baloo 2\',cursive;font-weight:700">Try a different spot! 🔄</span>';
-    setTimeout(()=>{if(fb)fb.innerHTML='';},1200);}
+    if(fb){fb.innerHTML='<span style="color:var(--pink);font-family:\'Baloo 2\',cursive;font-weight:700">↩️ Drag it back and try another spot!</span>';
+    setTimeout(()=>{if(fb)fb.innerHTML='';},1400);}
   }
 }
 
-function jigTakeBack(slotIdx,pieceIdx){
-  const a=_jigAnimal,ps=88;
-  // Don't allow take-back if puzzle is already complete
-  if(Object.values(jigPlacements).every(v=>v!==null))return;
-  // Reset the slot
+// Called when child drags a wrong piece OUT of a slot
+function jigSlotDragStart(e,slotIdx,pieceIdx){
+  _jigDragPiece=pieceIdx;
+  e.dataTransfer.setData('text',String(pieceIdx));
+  // Clear the slot immediately
   jigPlacements[slotIdx]=null;
   const slotEl=document.getElementById('jigSlot_'+slotIdx);
+  const a=_jigAnimal;
+  if(slotEl){
+    setTimeout(()=>{
+      slotEl.innerHTML='?';
+      slotEl.style.border='3px dashed #c4b5fd';
+      slotEl.style.background=a.bg;
+      slotEl.style.cursor='default';
+      slotEl.removeAttribute('draggable');
+      slotEl.removeAttribute('ondragstart');slotEl.removeAttribute('ondragend');
+      slotEl.removeAttribute('ontouchstart');slotEl.removeAttribute('ontouchmove');slotEl.removeAttribute('ontouchend');
+      slotEl.setAttribute('ondragover','event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"');
+      slotEl.setAttribute('ondragleave','this.style.borderColor="#c4b5fd";this.style.background="'+a.bg+'"');
+      slotEl.setAttribute('ondrop','jigDrop(event,'+slotIdx+')');
+      slotEl.style.opacity='1';
+    },0);
+  }
+}
+
+function jigSlotTouchStart(e,slotIdx,pieceIdx){
+  e.preventDefault();
+  _jigTouchPiece=pieceIdx;
+  // Clear slot right away
+  jigPlacements[slotIdx]=null;
+  const slotEl=document.getElementById('jigSlot_'+slotIdx);
+  const a=_jigAnimal,ps=88;
+  // Create ghost from the SVG in the slot
+  const g=document.createElement('div');
+  g.id='_jigGhost';
+  g.style.cssText='position:fixed;opacity:.88;pointer-events:none;z-index:9999;border-radius:12px;overflow:hidden;border:3px solid var(--purple);box-shadow:0 8px 28px rgba(167,139,250,.6);transform:scale(1.08);width:'+ps+'px;height:'+ps+'px';
+  g.innerHTML=_jigGetPiece(a,pieceIdx,ps);
+  document.body.appendChild(g);_jigGhost=g;
+  const t=e.touches[0];
+  g.style.left=(t.clientX-ps/2)+'px';
+  g.style.top=(t.clientY-ps/2)+'px';
+  // Reset slot visually
   if(slotEl){
     slotEl.innerHTML='?';
     slotEl.style.border='3px dashed #c4b5fd';
     slotEl.style.background=a.bg;
     slotEl.style.cursor='default';
-    slotEl.title='';
-    slotEl.onclick=null;
+    slotEl.removeAttribute('draggable');
+    slotEl.removeAttribute('ondragstart');slotEl.removeAttribute('ondragend');
+    slotEl.removeAttribute('ontouchstart');slotEl.removeAttribute('ontouchmove');slotEl.removeAttribute('ontouchend');
     slotEl.setAttribute('ondragover','event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"');
     slotEl.setAttribute('ondragleave','this.style.borderColor="#c4b5fd";this.style.background="'+a.bg+'"');
     slotEl.setAttribute('ondrop','jigDrop(event,'+slotIdx+')');
   }
-  // Return piece to tray
-  const tray=document.getElementById('jigTray');
-  if(tray){
-    const pieceDiv=document.createElement('div');
-    pieceDiv.id='jigPiece_'+pieceIdx;
-    pieceDiv.setAttribute('data-piece',pieceIdx);
-    pieceDiv.setAttribute('draggable','true');
-    pieceDiv.style.cssText='width:'+ps+'px;height:'+ps+'px;cursor:grab;border-radius:12px;border:3px solid var(--purple);overflow:hidden;box-shadow:0 4px 16px rgba(167,139,250,.45);touch-action:none;flex-shrink:0;transition:transform .15s';
-    pieceDiv.setAttribute('ondragstart','jigDragStart(event,'+pieceIdx+')');
-    pieceDiv.setAttribute('ondragend','this.style.opacity="1"');
-    pieceDiv.setAttribute('ontouchstart','jigTouchStart(event,'+pieceIdx+')');
-    pieceDiv.setAttribute('ontouchmove','jigTouchMove(event)');
-    pieceDiv.setAttribute('ontouchend','jigTouchEnd(event)');
-    pieceDiv.innerHTML=_jigGetPiece(a,pieceIdx,ps);
-    // Animate in
-    pieceDiv.style.animation='popIn .3s ease';
-    tray.appendChild(pieceDiv);
-  }
-  const fb=document.getElementById('gfb');
-  if(fb){fb.innerHTML='<span style="color:var(--purple);font-family:\'Baloo 2\',cursive;font-weight:700">↩️ Piece taken back — try again!</span>';
-  setTimeout(()=>{if(fb)fb.innerHTML='';},1200);}
 }
+
+function jigSlotTouchEnd(e,slotIdx,pieceIdx){
+  if(_jigGhost){_jigGhost.remove();_jigGhost=null;}
+  if(_jigTouchPiece===null)return;
+  const t=e.changedTouches[0];
+  const hit=document.elementFromPoint(t.clientX,t.clientY);
+  const targetSlot=hit&&hit.closest('[data-slot]');
+  if(targetSlot){
+    jigPlacePiece(_jigTouchPiece,parseInt(targetSlot.getAttribute('data-slot')));
+  } else {
+    // Dropped outside — return piece to tray
+    _jigReturnToTray(pieceIdx);
+  }
+  _jigTouchPiece=null;
+}
+
+// Put a piece back into the tray
+function _jigReturnToTray(pieceIdx){
+  const a=_jigAnimal,ps=88;
+  const tray=document.getElementById('jigTray');
+  if(!tray)return;
+  if(document.getElementById('jigPiece_'+pieceIdx))return; // already there
+  const pieceDiv=document.createElement('div');
+  pieceDiv.id='jigPiece_'+pieceIdx;
+  pieceDiv.setAttribute('data-piece',pieceIdx);
+  pieceDiv.setAttribute('draggable','true');
+  pieceDiv.style.cssText='width:'+ps+'px;height:'+ps+'px;cursor:grab;border-radius:12px;border:3px solid var(--purple);overflow:hidden;box-shadow:0 4px 16px rgba(167,139,250,.45);touch-action:none;flex-shrink:0;transition:transform .15s;animation:popIn .3s ease';
+  pieceDiv.setAttribute('ondragstart','jigDragStart(event,'+pieceIdx+')');
+  pieceDiv.setAttribute('ondragend','this.style.opacity="1"');
+  pieceDiv.setAttribute('ontouchstart','jigTouchStart(event,'+pieceIdx+')');
+  pieceDiv.setAttribute('ontouchmove','jigTouchMove(event)');
+  pieceDiv.setAttribute('ontouchend','jigTouchEnd(event)');
+  pieceDiv.innerHTML=_jigGetPiece(a,pieceIdx,ps);
+  tray.appendChild(pieceDiv);
+}
+
 
 function endGame(score,max,gid){
   const pct=Math.round(score/max*100);
