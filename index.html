@@ -527,17 +527,18 @@ body.bedtime .showme-btn{background:linear-gradient(135deg,#1a2e2a,#1a2a3e);bord
 .done-btn:active{transform:scale(.97);}
 
 /* ══ GAME PANEL ══ */
-.game-panel{background:var(--cardbg);border-radius:var(--r);padding:20px 16px;margin-bottom:12px;
+.game-panel{background:var(--cardbg);border-radius:var(--r);padding:12px 12px 14px;margin-bottom:10px;
   box-shadow:0 12px 36px var(--shadow);position:relative;overflow:hidden;}
 .game-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;
   background:linear-gradient(90deg,#ff6b9d,#ffb830,#a78bfa);}
-.game-title{font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:var(--text);margin-bottom:4px;}
-.game-inst{font-size:.88rem;color:var(--text3);margin-bottom:14px;line-height:1.4;}
+.game-title{font-family:'Baloo 2',cursive;font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:2px;}
+.game-inst{font-size:.82rem;color:var(--text3);margin-bottom:8px;line-height:1.3;}
 /* Number Match */
-.num-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
-.num-card{aspect-ratio:1;border-radius:14px;border:3px solid var(--border);background:var(--inputbg);
-  display:flex;align-items:center;justify-content:center;font-size:1.6rem;cursor:pointer;
-  transition:all .2s;font-family:'Baloo 2',cursive;font-weight:800;color:var(--text);}
+.num-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:8px;}
+.num-card{height:clamp(54px,12vw,78px);border-radius:12px;border:3px solid var(--border);background:var(--inputbg);
+  display:flex;align-items:center;justify-content:center;font-size:clamp(.8rem,3vw,1.3rem);cursor:pointer;
+  transition:all .2s;font-family:'Baloo 2',cursive;font-weight:800;color:var(--text);
+  overflow:hidden;line-height:1.1;padding:2px;word-break:break-all;}
 .num-card:active{transform:scale(.93);}
 .num-card.selected{border-color:var(--purple);background:#f0e8ff;}
 .num-card.matched{border-color:var(--green);background:#e8fff0;animation:matched .4s ease;}
@@ -594,9 +595,9 @@ canvas.trace-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:cros
 .shape-item.wrong  {border-color:var(--pink);background:#ffe8f0;}
 
 /* MEMORY FLIP */
-.memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
-.mem-card{aspect-ratio:1;border-radius:14px;border:3px solid var(--border);background:linear-gradient(135deg,var(--purple),var(--blue));
-  display:flex;align-items:center;justify-content:center;font-size:2rem;cursor:pointer;
+.memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:8px;}
+.mem-card{height:clamp(54px,12vw,78px);border-radius:12px;border:3px solid var(--border);background:linear-gradient(135deg,var(--purple),var(--blue));
+  display:flex;align-items:center;justify-content:center;font-size:clamp(1.2rem,4vw,1.8rem);cursor:pointer;
   transition:all .3s;color:#fff;font-family:'Baloo 2',cursive;}
 .mem-card.flipped{background:var(--inputbg);border-color:var(--sun);}
 .mem-card.matched{background:#e8fff0;border-color:var(--green);pointer-events:none;}
@@ -626,7 +627,7 @@ canvas.trace-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:cros
 .sound-prompt .sp-text{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;}
 
 /* Game score */
-.game-score{text-align:center;font-family:'Baloo 2',cursive;font-size:1rem;color:var(--purple);margin-bottom:10px;}
+.game-score{text-align:center;font-family:'Baloo 2',cursive;font-size:.88rem;color:var(--purple);margin-bottom:6px;}
 .game-feedback{text-align:center;font-family:'Baloo 2',cursive;font-size:1.1rem;
   min-height:28px;margin-bottom:10px;color:var(--green);}
 .game-next-btn{width:100%;padding:13px;border:none;border-radius:14px;
@@ -1199,8 +1200,8 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .aemoji{font-size:2.6rem;}
   .adesc,.game-inst{font-size:.82rem;}
   .done-btn,.game-next-btn,.game-done-btn{padding:11px;font-size:.95rem;}
-  .num-grid{grid-template-columns:repeat(4,1fr);gap:5px;}
-  .num-card{font-size:1.2rem;}
+  .num-grid{grid-template-columns:repeat(4,1fr);gap:4px;}
+  .num-card{font-size:clamp(.75rem,2.8vw,1.1rem);}
   .count-display{font-size:2.8rem;}
   .copt{padding:10px;font-size:1.2rem;}
   .letter-tile{width:36px;height:42px;font-size:1.1rem;}
@@ -1208,8 +1209,8 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .colour-blob{width:55px;height:55px;}
   .mix-result{width:70px;height:70px;}
   .shape-item{width:55px;height:55px;font-size:2.2rem;}
-  .memory-grid{grid-template-columns:repeat(3,1fr);gap:6px;}
-  .mem-card{font-size:1.4rem;}
+  .memory-grid{grid-template-columns:repeat(4,1fr);gap:4px;}
+  .mem-card{font-size:clamp(1rem,3.5vw,1.4rem);}
   .letter-search-grid{grid-template-columns:repeat(4,1fr);gap:4px;}
   .ls-cell{font-size:1rem;}
   .animal-grid{grid-template-columns:1fr 1fr;gap:6px;}
@@ -1248,7 +1249,7 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
 /* Standard phones (341px–480px) — default, minimal tweaks */
 @media(min-width:341px) and (max-width:480px){
   .main{padding:10px 12px 110px;}
-  .memory-grid{grid-template-columns:repeat(4,1fr);gap:7px;}
+  .memory-grid{grid-template-columns:repeat(4,1fr);gap:5px;}
 }
 
 /* Large phones / small tablets (481px–768px) */
@@ -1264,8 +1265,8 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .aemoji{font-size:4rem;}
   .adesc{font-size:.95rem;}
   .done-btn,.game-next-btn,.game-done-btn{padding:16px;font-size:1.15rem;border-radius:16px;}
-  .num-grid{gap:10px;}
-  .num-card{font-size:1.8rem;border-radius:16px;}
+  .num-grid{gap:6px;}
+  .num-card{font-size:clamp(.9rem,3vw,1.3rem);border-radius:14px;}
   .count-display{font-size:5rem;}
   .copt{padding:18px;font-size:1.8rem;border-radius:16px;}
   .letter-tile{width:52px;height:58px;font-size:1.6rem;border-radius:14px;}
@@ -1273,8 +1274,8 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .colour-blob{width:80px;height:80px;}
   .mix-result{width:100px;height:100px;}
   .shape-item{width:80px;height:80px;font-size:3.2rem;}
-  .memory-grid{gap:10px;}
-  .mem-card{font-size:2.4rem;border-radius:16px;}
+  .memory-grid{gap:6px;}
+  .mem-card{font-size:clamp(1.2rem,3.5vw,1.6rem);border-radius:14px;}
   .letter-search-grid{gap:8px;}
   .ls-cell{font-size:1.5rem;border-radius:12px;}
   .animal-grid{gap:12px;}
@@ -1313,10 +1314,10 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .acard,.game-panel,.create-panel,.parent-dash{padding:28px 24px;margin-bottom:16px;}
   .atitle,.game-title{font-size:1.65rem;}
   .aemoji{font-size:4.5rem;}
-  .num-grid{grid-template-columns:repeat(4,1fr);gap:12px;}
+  .num-grid{grid-template-columns:repeat(4,1fr);gap:8px;}
   .count-opts{gap:12px;}
   .copt{padding:20px;font-size:2rem;}
-  .memory-grid{grid-template-columns:repeat(4,1fr);gap:12px;}
+  .memory-grid{grid-template-columns:repeat(4,1fr);gap:8px;}
   .letter-search-grid{grid-template-columns:repeat(5,1fr);gap:10px;}
   .animal-grid{grid-template-columns:repeat(2,1fr);gap:14px;}
   .shop-grid{grid-template-columns:repeat(3,1fr);gap:12px;}
@@ -1349,7 +1350,7 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .acard,.game-panel,.create-panel,.parent-dash{padding:32px 28px;border-radius:28px;}
   .atitle,.game-title{font-size:1.8rem;}
   .done-btn,.game-next-btn,.game-done-btn{padding:18px;font-size:1.2rem;border-radius:18px;}
-  .num-card{border-radius:18px;}
+  .num-card{border-radius:14px;}
   .shape-item{width:90px;height:90px;font-size:3.6rem;border-radius:18px;}
   .colour-blob{width:90px;height:90px;}
   .mix-result{width:110px;height:110px;}
@@ -1398,7 +1399,7 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .sp{min-height:36px;display:flex;align-items:center;justify-content:center;}
   .done-btn,.game-next-btn,.game-done-btn{min-height:48px;}
   .copt{min-height:48px;}
-  .num-card{min-height:48px;}
+  .num-card{min-height:44px;}
   .shape-item{min-width:56px;min-height:56px;}
   .undo-btn{min-height:36px;}
   .listen-btn{min-height:40px;}
