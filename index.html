@@ -2216,7 +2216,7 @@ async function _pollFirebase(){
     }
   }catch(e){ /* silent — offline is fine */ }
 }
-setTimeout(()=>{ _pollFirebase(); setInterval(_pollFirebase, 10000); }, 5000);
+// Auto-polling REMOVED — use 📤 Force Upload / 📥 Force Download buttons in Parent Dashboard
 
 // ── Debug: show sync status ──
 function showSyncDebug(){
