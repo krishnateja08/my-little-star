@@ -5649,7 +5649,7 @@ function checkCW(idx,chosen){
 //  🧩 DRAG-AND-DROP JIGSAW PUZZLE
 // ══════════════════════════════════════
 let jigScore=0,jigRound=0,jigPlacements={};
-let _jigAnimal=null,_jigGhost=null,_jigTouchPiece=null,_jigDragPiece=null;
+let _jigAnimal=null,_jigGhost=null,_jigTouchPiece=null,_jigDragPiece=null,_jigDragFromSlot=null;
 
 const JIGSAW_ANIMALS=[
   {name:'Lion',emoji:'🦁',bg:'#fff3e0',
@@ -5799,6 +5799,7 @@ function _renderJigsaw(scrambled){
 
 function jigDragStart(e,p){
   _jigDragPiece=p;
+  _jigDragFromSlot=null; // coming from tray, not a slot
   e.dataTransfer.setData('text',String(p));
   setTimeout(()=>{const el=document.getElementById('jigPiece_'+p);if(el)el.style.opacity='.45';},0);
 }
@@ -5807,7 +5808,27 @@ function jigDrop(e,slot){
   const slotEl=document.getElementById('jigSlot_'+slot);
   if(slotEl){slotEl.style.borderColor='#c4b5fd';slotEl.style.background=_jigAnimal.bg;}
   const p=parseInt(e.dataTransfer.getData('text'));
-  if(!isNaN(p))jigPlacePiece(p,slot);
+  if(isNaN(p))return;
+  // If dragging from another slot, clear that slot first
+  const fromSlot=_jigDragFromSlot;
+  if(fromSlot!==null && fromSlot!==slot){
+    jigPlacements[fromSlot]=null;
+    const fromEl=document.getElementById('jigSlot_'+fromSlot);
+    const a=_jigAnimal;
+    if(fromEl){
+      fromEl.innerHTML='?';fromEl.style.opacity='1';
+      fromEl.style.border='3px dashed #c4b5fd';
+      fromEl.style.background=a.bg;fromEl.style.cursor='default';
+      fromEl.removeAttribute('draggable');
+      fromEl.removeAttribute('ondragstart');fromEl.removeAttribute('ondragend');
+      fromEl.removeAttribute('ontouchstart');fromEl.removeAttribute('ontouchmove');fromEl.removeAttribute('ontouchend');
+      fromEl.setAttribute('ondragover','event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"');
+      fromEl.setAttribute('ondragleave','this.style.borderColor="#c4b5fd";this.style.background="'+a.bg+'"');
+      fromEl.setAttribute('ondrop','jigDrop(event,'+fromSlot+')');
+    }
+  }
+  _jigDragFromSlot=null; // mark as handled so dragend doesn't double-reset
+  jigPlacePiece(p,slot);
 }
 
 function jigTouchStart(e,p){
@@ -5902,7 +5923,7 @@ function jigPlacePiece(pieceIdx,slotIdx){
     // Make the slot itself draggable so child can drag piece back out
     slotEl.setAttribute('draggable','true');
     slotEl.setAttribute('ondragstart','jigSlotDragStart(event,'+slotIdx+','+pieceIdx+')');
-    slotEl.setAttribute('ondragend','this.style.opacity="1"');
+    slotEl.setAttribute('ondragend','jigSlotDragEnd(event,'+slotIdx+','+pieceIdx+')');
     slotEl.setAttribute('ontouchstart','jigSlotTouchStart(event,'+slotIdx+','+pieceIdx+')');
     slotEl.setAttribute('ontouchmove','jigTouchMove(event)');
     slotEl.setAttribute('ontouchend','jigSlotTouchEnd(event,'+slotIdx+','+pieceIdx+')');
@@ -5923,26 +5944,36 @@ function jigPlacePiece(pieceIdx,slotIdx){
 // Called when child drags a wrong piece OUT of a slot
 function jigSlotDragStart(e,slotIdx,pieceIdx){
   _jigDragPiece=pieceIdx;
+  _jigDragFromSlot=slotIdx; // remember which slot we dragged from
   e.dataTransfer.setData('text',String(pieceIdx));
-  // Clear the slot immediately
-  jigPlacements[slotIdx]=null;
+  const slotEl=document.getElementById('jigSlot_'+slotIdx);
+  if(slotEl) setTimeout(()=>{ slotEl.style.opacity='.45'; },0);
+}
+
+function jigSlotDragEnd(e,slotIdx,pieceIdx){
   const slotEl=document.getElementById('jigSlot_'+slotIdx);
   const a=_jigAnimal;
-  if(slotEl){
-    setTimeout(()=>{
-      slotEl.innerHTML='?';
+  // Only reset slot if the piece was NOT successfully dropped on another slot
+  // (jigDrop sets _jigDragFromSlot=null when it handles the drop)
+  if(_jigDragFromSlot===slotIdx){
+    // Dropped outside any slot — reset slot & return piece to tray
+    jigPlacements[slotIdx]=null;
+    if(slotEl){
+      slotEl.innerHTML='?';slotEl.style.opacity='1';
       slotEl.style.border='3px dashed #c4b5fd';
-      slotEl.style.background=a.bg;
-      slotEl.style.cursor='default';
+      slotEl.style.background=a.bg;slotEl.style.cursor='default';
       slotEl.removeAttribute('draggable');
       slotEl.removeAttribute('ondragstart');slotEl.removeAttribute('ondragend');
       slotEl.removeAttribute('ontouchstart');slotEl.removeAttribute('ontouchmove');slotEl.removeAttribute('ontouchend');
       slotEl.setAttribute('ondragover','event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"');
       slotEl.setAttribute('ondragleave','this.style.borderColor="#c4b5fd";this.style.background="'+a.bg+'"');
       slotEl.setAttribute('ondrop','jigDrop(event,'+slotIdx+')');
-      slotEl.style.opacity='1';
-    },0);
+    }
+    _jigReturnToTray(pieceIdx);
+  } else {
+    if(slotEl) slotEl.style.opacity='1';
   }
+  _jigDragFromSlot=null;
 }
 
 function jigSlotTouchStart(e,slotIdx,pieceIdx){
