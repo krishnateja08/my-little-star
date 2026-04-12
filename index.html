@@ -2039,6 +2039,57 @@ async function signOutUser(){
   }catch(e){ console.error('Sign-out error:', e); }
 }
 
+// ── Force Upload: push ALL localStorage data to Firebase ──
+// Use this on the device that has the correct data (e.g. 11 stars)
+async function forceUploadAll(){
+  if(!_currentUser){
+    alert('❌ Not signed in! Please sign in first.');
+    return;
+  }
+  if(!confirm('This will upload ALL your local progress to Firebase.\n\nRun this on the device with the CORRECT data (most stars/progress).\n\nContinue?')) return;
+
+  try{
+    _authToken = await _currentUser.getIdToken();
+    const blob = {};
+    let count = 0;
+
+    // Scan all localStorage keys and collect syncable ones
+    for(let i = 0; i < localStorage.length; i++){
+      const key = localStorage.key(i);
+      if(_shouldSync(key)){
+        let val = _lsGet(key);
+        // Parse JSON values so Firebase stores them properly
+        try{ val = JSON.parse(val); }catch(e){ /* keep as string */ }
+        blob[_safeKey(key)] = val;
+        count++;
+      }
+    }
+
+    if(count === 0){
+      alert('No data found to upload!');
+      return;
+    }
+
+    // Upload entire blob at once with PATCH (merge, don't overwrite)
+    const res = await fetch(`${_DB_URL}/users/${_currentUser.uid}.json?auth=${_authToken}`,{
+      method:'PATCH',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(blob)
+    });
+
+    if(res.ok){
+      alert('✅ Upload complete! '+count+' keys pushed to Firebase.\n\nNow refresh your other device(s) and sign in with the same Google account.');
+      console.log('✅ Force upload done:', count, 'keys', Object.keys(blob));
+    } else {
+      const txt = await res.text();
+      alert('❌ Upload failed: '+txt);
+    }
+  }catch(e){
+    alert('❌ Upload error: '+e.message);
+    console.error('Force upload error:', e);
+  }
+}
+
 // ── Main init ──
 (async function _firebaseInit(){
   try{
@@ -7049,6 +7100,7 @@ function renderParentDash(){
             <button class="pd-set-btn" onclick="changeFamilyCode()">👤 Account: <strong style="color:var(--sun);margin-left:3px">${_currentUser?(_currentUser.email||'Signed in'):'not signed in'}</strong></button>
             <button class="pd-set-btn" onclick="signOutUser()" style="border-color:var(--pink);color:var(--pink)">🚪 Sign Out</button>
             <button class="pd-set-btn" onclick="showSyncDebug()" style="background:linear-gradient(135deg,#333,#555)">🔍 Debug Sync Status</button>
+            <button class="pd-set-btn" onclick="forceUploadAll()" style="border-color:var(--sun);color:var(--sun)">📤 Force Upload to Cloud</button>
             <button class="pd-set-btn" onclick="forceWeekSync()" style="border-color:var(--mint);color:var(--mint)">📅 Fix Week Sync</button>
             <button class="pd-set-btn danger" onclick="parentReset()">🔄 Reset journey</button>
           </div>
