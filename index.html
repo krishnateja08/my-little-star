@@ -5649,7 +5649,8 @@ function checkCW(idx,chosen){
 //  🧩 DRAG-AND-DROP JIGSAW PUZZLE
 // ══════════════════════════════════════
 let jigScore=0,jigRound=0,jigPlacements={};
-let _jigAnimal=null,_jigGhost=null,_jigTouchPiece=null,_jigDragPiece=null,_jigDragFromSlot=null;
+let _jigAnimal=null,_jigGhost=null,_jigTouchPiece=null,_jigTouchFromSlot=null,_jigDragPiece=null,_jigDragFromSlot=null;
+function _jigPs(){const maxW=Math.min(window.innerWidth,520);return Math.max(72,Math.min(96,Math.floor((maxW-80)/2.4)));}
 
 const JIGSAW_ANIMALS=[
   {name:'Lion',emoji:'🦁',bg:'#fff3e0',
@@ -5748,22 +5749,25 @@ function nextJigRound(){
   const total=5;jigRound++;
   if(jigRound>total){endGame(jigScore,total,'puzzleJigsaw');return;}
   jigPlacements={0:null,1:null,2:null,3:null};
-  _jigAnimal=JIGSAW_ANIMALS[(jigRound-1)%JIGSAW_ANIMALS.length];
+  // Skip animals already completed today
+  const doneToday=JSON.parse(localStorage.getItem('c_jig_done_'+todayKey())||'[]');
+  const available=JIGSAW_ANIMALS.filter(a=>!doneToday.includes(a.name));
+  const pool=available.length>0?available:JIGSAW_ANIMALS; // if all done today, use all
+  _jigAnimal=pool[(jigRound-1)%pool.length];
   const scrambled=[0,1,2,3].sort(()=>Math.random()-0.5);
   _renderJigsaw(scrambled);
   speakText('Build the '+_jigAnimal.name+'! Drag each piece into the puzzle!');
 }
 
 function _renderJigsaw(scrambled){
-  const ps=88,a=_jigAnimal;
-  const boardSize=(ps*2+3); // total board width/height (2 cells + gap)
+  const ps=_jigPs(),a=_jigAnimal;
+  const boardSize=(ps*2+3);
   document.getElementById('area').innerHTML=`
     <div class='game-panel' id='jigPanel'>
       <div class='game-title'>🧩 Jigsaw Puzzle!</div>
-      <div class='game-inst'>Drag the pieces to build the ${a.emoji} <strong>${a.name}</strong>!</div>
+      <div class='game-inst'>Build the ${a.emoji} <strong>${a.name}</strong>!</div>
       <div class='game-score'>Puzzle ${jigRound}/5 &nbsp;·&nbsp; ⭐ ${jigScore}</div>
-      <div style='display:flex;align-items:flex-start;justify-content:center;gap:14px;margin:14px auto;width:fit-content'>
-        <!-- Puzzle board -->
+      <div style='display:flex;align-items:flex-start;justify-content:center;gap:12px;margin:12px auto;width:fit-content'>
         <div id='jigBoard' style='display:grid;grid-template-columns:${ps}px ${ps}px;gap:3px;border-radius:14px;overflow:hidden;box-shadow:0 6px 28px rgba(0,0,0,.14)'>
           ${[0,1,2,3].map(s=>`
             <div id='jigSlot_${s}' data-slot='${s}'
@@ -5772,29 +5776,34 @@ function _renderJigsaw(scrambled){
               ondragleave='this.style.borderColor="#c4b5fd";this.style.background="${a.bg}"'
               ondrop='jigDrop(event,${s})'>?</div>`).join('')}
         </div>
-        <!-- Reference image -->
-        <div style='display:flex;flex-direction:column;align-items:center;gap:5px'>
-          <div style='font-family:"Baloo 2",cursive;font-size:.68rem;font-weight:800;color:var(--purple);text-align:center;'>👀 Look here!</div>
+        <div style='display:flex;flex-direction:column;align-items:center;gap:4px'>
+          <div style='font-family:"Baloo 2",cursive;font-size:.68rem;font-weight:800;color:var(--purple)'>👀 Look here!</div>
           <div style='width:${boardSize}px;height:${boardSize}px;border-radius:14px;overflow:hidden;box-shadow:0 4px 18px rgba(167,139,250,.35);border:3px solid #c4b5fd;flex-shrink:0'>
             ${a.svg.replace("width='200'","width='"+boardSize+"'").replace("height='200'","height='"+boardSize+"'")}
           </div>
         </div>
       </div>
-      <div style='font-family:"Baloo 2",cursive;font-size:.78rem;font-weight:700;color:var(--text3);text-align:center;margin-bottom:2px'>☝️ Drag the pieces below into the puzzle frame!</div>
-      <div style='font-family:"Baloo 2",cursive;font-size:.7rem;color:#a78bfa;text-align:center;margin-bottom:8px'>↩️ Wrong piece in a slot? Drag it back out!</div>
-      <div id='jigTray' style='display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:8px 4px;min-height:${ps+16}px'>
+      <div style='font-family:"Baloo 2",cursive;font-size:.75rem;font-weight:700;color:var(--text3);text-align:center;margin-bottom:2px'>☝️ Drag the pieces into the puzzle!</div>
+      <div style='font-family:"Baloo 2",cursive;font-size:.68rem;color:#a78bfa;text-align:center;margin-bottom:8px'>↩️ Wrong piece? Drag it back out!</div>
+      <div id='jigTray' style='display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:8px 4px;min-height:${ps+16}px'>
         ${scrambled.map(p=>`
           <div id='jigPiece_${p}' data-piece='${p}' draggable='true'
             style='width:${ps}px;height:${ps}px;cursor:grab;border-radius:12px;border:3px solid var(--purple);overflow:hidden;box-shadow:0 4px 16px rgba(167,139,250,.45);touch-action:none;flex-shrink:0;transition:transform .15s'
             ondragstart='jigDragStart(event,${p})'
             ondragend='this.style.opacity="1"'
-            ontouchstart='jigTouchStart(event,${p})'
-            ontouchmove='jigTouchMove(event)'
-            ontouchend='jigTouchEnd(event)'
           >${_jigGetPiece(a,p,ps)}</div>`).join('')}
       </div>
       <div class='game-feedback' id='gfb' style='min-height:28px;margin-top:4px'></div>
     </div>`;
+  // Attach touch listeners via JS (not inline attrs) so they always fire correctly on iPad
+  scrambled.forEach(p=>{
+    const el=document.getElementById('jigPiece_'+p);
+    if(el){
+      el.addEventListener('touchstart',e=>jigTouchStart(e,p),{passive:false});
+      el.addEventListener('touchmove',jigTouchMove,{passive:false});
+      el.addEventListener('touchend',jigTouchEnd,{passive:false});
+    }
+  });
 }
 
 function jigDragStart(e,p){
@@ -5809,10 +5818,10 @@ function jigDrop(e,slot){
   if(slotEl){slotEl.style.borderColor='#c4b5fd';slotEl.style.background=_jigAnimal.bg;}
   const p=parseInt(e.dataTransfer.getData('text'));
   if(isNaN(p))return;
-  // If dragging from another slot, clear that slot first
   const fromSlot=_jigDragFromSlot;
   if(fromSlot!==null && fromSlot!==slot){
     jigPlacements[fromSlot]=null;
+    _jigDetachSlotTouch(fromSlot);
     const fromEl=document.getElementById('jigSlot_'+fromSlot);
     const a=_jigAnimal;
     if(fromEl){
@@ -5821,31 +5830,31 @@ function jigDrop(e,slot){
       fromEl.style.background=a.bg;fromEl.style.cursor='default';
       fromEl.removeAttribute('draggable');
       fromEl.removeAttribute('ondragstart');fromEl.removeAttribute('ondragend');
-      fromEl.removeAttribute('ontouchstart');fromEl.removeAttribute('ontouchmove');fromEl.removeAttribute('ontouchend');
       fromEl.setAttribute('ondragover','event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"');
       fromEl.setAttribute('ondragleave','this.style.borderColor="#c4b5fd";this.style.background="'+a.bg+'"');
       fromEl.setAttribute('ondrop','jigDrop(event,'+fromSlot+')');
     }
   }
-  _jigDragFromSlot=null; // mark as handled so dragend doesn't double-reset
+  _jigDragFromSlot=null;
   jigPlacePiece(p,slot);
 }
 
 function jigTouchStart(e,p){
   e.preventDefault();
   _jigTouchPiece=p;
+  _jigTouchFromSlot=null;
   const src=document.getElementById('jigPiece_'+p);
   if(!src)return;
+  const ps=_jigPs();
   const g=src.cloneNode(true);
   g.id='_jigGhost';
-  g.removeAttribute('ontouchstart');g.removeAttribute('ontouchmove');g.removeAttribute('ontouchend');
-  g.style.cssText='position:fixed;opacity:.88;pointer-events:none;z-index:9999;border-radius:12px;overflow:hidden;border:3px solid var(--purple);box-shadow:0 8px 28px rgba(167,139,250,.6);transform:scale(1.08)';
-  g.style.width=src.offsetWidth+'px';g.style.height=src.offsetHeight+'px';
+  // Remove any cloned event listeners by replacing with clean div
+  g.style.cssText='position:fixed;opacity:.88;pointer-events:none;z-index:9999;border-radius:12px;overflow:hidden;border:3px solid var(--purple);box-shadow:0 8px 28px rgba(167,139,250,.6);transform:scale(1.08);width:'+ps+'px;height:'+ps+'px';
   document.body.appendChild(g);_jigGhost=g;
   src.style.opacity='.4';
   const t=e.touches[0];
-  g.style.left=(t.clientX-src.offsetWidth/2)+'px';
-  g.style.top=(t.clientY-src.offsetHeight/2)+'px';
+  g.style.left=(t.clientX-ps/2)+'px';
+  g.style.top=(t.clientY-ps/2)+'px';
 }
 function jigTouchMove(e){
   e.preventDefault();
@@ -5870,11 +5879,12 @@ function jigTouchEnd(e){
 }
 
 function jigPlacePiece(pieceIdx,slotIdx){
-  const ps=88,a=_jigAnimal;
-  // If slot is already CORRECTLY filled, do nothing
+  const ps=_jigPs(),a=_jigAnimal;
+  // If slot is already CORRECTLY filled, block it
   if(jigPlacements[slotIdx]===slotIdx)return;
-  // If slot has a wrong piece in it already, kick it back to tray first
+  // If slot already has a wrong piece, kick it back to tray first
   if(jigPlacements[slotIdx]!==null && jigPlacements[slotIdx]!==undefined){
+    _jigDetachSlotTouch(slotIdx);
     _jigReturnToTray(jigPlacements[slotIdx]);
     jigPlacements[slotIdx]=null;
   }
@@ -5882,31 +5892,34 @@ function jigPlacePiece(pieceIdx,slotIdx){
   const slotEl=document.getElementById('jigSlot_'+slotIdx);
   const pieceEl=document.getElementById('jigPiece_'+pieceIdx);
   if(!slotEl)return;
-
-  // Remove piece from tray (hide it while in slot)
   if(pieceEl)pieceEl.remove();
-
-  // Show piece image in slot
   slotEl.innerHTML=_jigGetPiece(a,pieceIdx,ps);
 
   if(correct){
-    // ✅ Correct — lock it in green, not draggable
     jigPlacements[slotIdx]=pieceIdx;
     slotEl.style.border='3px solid #56cf81';
     slotEl.style.background='#e8fff0';
     slotEl.style.cursor='default';
     slotEl.removeAttribute('ondragover');slotEl.removeAttribute('ondragleave');slotEl.removeAttribute('ondrop');
     playCorrect();
-    const allDone=Object.values(jigPlacements).every(v=>v===parseInt(Object.keys(jigPlacements).find(k=>jigPlacements[k]===v)||'-1')||v===0||v===1||v===2||v===3)
-      && [0,1,2,3].every(i=>jigPlacements[i]===i);
+    const allDone=[0,1,2,3].every(i=>jigPlacements[i]===i);
     if(allDone){
       jigScore++;
+      // Award star immediately
+      stars+=1;totalStarsEver+=1;
+      localStorage.setItem('cs_'+todayKey(),stars);
+      localStorage.setItem('c_total_stars',totalStarsEver);
+      showSpill();showToast('⭐ +1 star!');playStar();
+      renderStarPath();renderGoals();renderTabBadges();
       burst();
       speakText('You built the '+a.name+'! Amazing job!');
       const fb=document.getElementById('gfb');
-      if(fb)fb.innerHTML='<span style="color:var(--green);font-family:\'Baloo 2\',cursive;font-weight:800;font-size:1.05rem">🎉 Puzzle Complete! You\'re a star!</span>';
+      if(fb)fb.innerHTML='<span style="color:var(--green);font-family:\'Baloo 2\',cursive;font-weight:800;font-size:1.05rem">🎉 Puzzle Complete! ⭐ +1 Star!</span>';
       const board=document.getElementById('jigBoard');
       if(board){board.style.borderRadius='16px';board.style.boxShadow='0 0 0 5px #56cf81, 0 8px 32px rgba(86,207,129,.4)';}
+      // Remember this animal was done today so it won't repeat
+      const _doneToday=JSON.parse(localStorage.getItem('c_jig_done_'+todayKey())||'[]');
+      if(!_doneToday.includes(a.name)){_doneToday.push(a.name);localStorage.setItem('c_jig_done_'+todayKey(),JSON.stringify(_doneToday));}
       setTimeout(nextJigRound,2800);
     } else {
       speakText('Great fit! Keep going!');
@@ -5915,23 +5928,18 @@ function jigPlacePiece(pieceIdx,slotIdx){
       setTimeout(()=>{if(fb)fb.innerHTML='';},1000);}
     }
   } else {
-    // ❌ Wrong — place it in slot with red dashed border, but keep it draggable back out
-    jigPlacements[slotIdx]=pieceIdx; // track that this slot has a wrong piece
+    jigPlacements[slotIdx]=pieceIdx;
     slotEl.style.border='3px dashed #ff6b9d';
     slotEl.style.background='#ffe8f0';
     slotEl.style.cursor='grab';
-    // Make the slot itself draggable so child can drag piece back out
     slotEl.setAttribute('draggable','true');
     slotEl.setAttribute('ondragstart','jigSlotDragStart(event,'+slotIdx+','+pieceIdx+')');
     slotEl.setAttribute('ondragend','jigSlotDragEnd(event,'+slotIdx+','+pieceIdx+')');
-    slotEl.setAttribute('ontouchstart','jigSlotTouchStart(event,'+slotIdx+','+pieceIdx+')');
-    slotEl.setAttribute('ontouchmove','jigTouchMove(event)');
-    slotEl.setAttribute('ontouchend','jigSlotTouchEnd(event,'+slotIdx+','+pieceIdx+')');
-    // Still allow dropping a different piece onto it
     slotEl.setAttribute('ondragover','event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"');
     slotEl.setAttribute('ondragleave','this.style.borderColor="#ff6b9d";this.style.background="#ffe8f0"');
     slotEl.setAttribute('ondrop','jigDrop(event,'+slotIdx+')');
-    // Shake + feedback
+    // Attach touch via JS so iPad fires reliably
+    _jigAttachSlotTouch(slotEl,slotIdx,pieceIdx);
     slotEl.style.animation='shake .4s';
     setTimeout(()=>{if(slotEl)slotEl.style.animation='';},400);
     playWrong();speakText('Not quite — try a different spot!');
@@ -5939,6 +5947,24 @@ function jigPlacePiece(pieceIdx,slotIdx){
     if(fb){fb.innerHTML='<span style="color:var(--pink);font-family:\'Baloo 2\',cursive;font-weight:700">↩️ Drag it back and try another spot!</span>';
     setTimeout(()=>{if(fb)fb.innerHTML='';},1400);}
   }
+}
+
+// Attach/detach touch handlers on wrong-piece slots
+function _jigAttachSlotTouch(slotEl,slotIdx,pieceIdx){
+  slotEl._jigTS=e=>jigSlotTouchStart(e,slotIdx,pieceIdx);
+  slotEl._jigTM=jigTouchMove;
+  slotEl._jigTE=e=>jigSlotTouchEnd(e,slotIdx,pieceIdx);
+  slotEl.addEventListener('touchstart',slotEl._jigTS,{passive:false});
+  slotEl.addEventListener('touchmove',slotEl._jigTM,{passive:false});
+  slotEl.addEventListener('touchend',slotEl._jigTE,{passive:false});
+}
+function _jigDetachSlotTouch(slotIdx){
+  const el=document.getElementById('jigSlot_'+slotIdx);
+  if(!el)return;
+  if(el._jigTS)el.removeEventListener('touchstart',el._jigTS);
+  if(el._jigTM)el.removeEventListener('touchmove',el._jigTM);
+  if(el._jigTE)el.removeEventListener('touchend',el._jigTE);
+  el._jigTS=el._jigTM=el._jigTE=null;
 }
 
 // Called when child drags a wrong piece OUT of a slot
@@ -5953,18 +5979,16 @@ function jigSlotDragStart(e,slotIdx,pieceIdx){
 function jigSlotDragEnd(e,slotIdx,pieceIdx){
   const slotEl=document.getElementById('jigSlot_'+slotIdx);
   const a=_jigAnimal;
-  // Only reset slot if the piece was NOT successfully dropped on another slot
-  // (jigDrop sets _jigDragFromSlot=null when it handles the drop)
   if(_jigDragFromSlot===slotIdx){
-    // Dropped outside any slot — reset slot & return piece to tray
+    // Dropped outside any valid slot — reset and return to tray
     jigPlacements[slotIdx]=null;
+    _jigDetachSlotTouch(slotIdx);
     if(slotEl){
       slotEl.innerHTML='?';slotEl.style.opacity='1';
       slotEl.style.border='3px dashed #c4b5fd';
       slotEl.style.background=a.bg;slotEl.style.cursor='default';
       slotEl.removeAttribute('draggable');
       slotEl.removeAttribute('ondragstart');slotEl.removeAttribute('ondragend');
-      slotEl.removeAttribute('ontouchstart');slotEl.removeAttribute('ontouchmove');slotEl.removeAttribute('ontouchend');
       slotEl.setAttribute('ondragover','event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"');
       slotEl.setAttribute('ondragleave','this.style.borderColor="#c4b5fd";this.style.background="'+a.bg+'"');
       slotEl.setAttribute('ondrop','jigDrop(event,'+slotIdx+')');
@@ -5979,11 +6003,11 @@ function jigSlotDragEnd(e,slotIdx,pieceIdx){
 function jigSlotTouchStart(e,slotIdx,pieceIdx){
   e.preventDefault();
   _jigTouchPiece=pieceIdx;
-  // Clear slot right away
+  _jigTouchFromSlot=slotIdx;
   jigPlacements[slotIdx]=null;
+  _jigDetachSlotTouch(slotIdx);
   const slotEl=document.getElementById('jigSlot_'+slotIdx);
-  const a=_jigAnimal,ps=88;
-  // Create ghost from the SVG in the slot
+  const a=_jigAnimal,ps=_jigPs();
   const g=document.createElement('div');
   g.id='_jigGhost';
   g.style.cssText='position:fixed;opacity:.88;pointer-events:none;z-index:9999;border-radius:12px;overflow:hidden;border:3px solid var(--purple);box-shadow:0 8px 28px rgba(167,139,250,.6);transform:scale(1.08);width:'+ps+'px;height:'+ps+'px';
@@ -5992,7 +6016,6 @@ function jigSlotTouchStart(e,slotIdx,pieceIdx){
   const t=e.touches[0];
   g.style.left=(t.clientX-ps/2)+'px';
   g.style.top=(t.clientY-ps/2)+'px';
-  // Reset slot visually
   if(slotEl){
     slotEl.innerHTML='?';
     slotEl.style.border='3px dashed #c4b5fd';
@@ -6000,7 +6023,6 @@ function jigSlotTouchStart(e,slotIdx,pieceIdx){
     slotEl.style.cursor='default';
     slotEl.removeAttribute('draggable');
     slotEl.removeAttribute('ondragstart');slotEl.removeAttribute('ondragend');
-    slotEl.removeAttribute('ontouchstart');slotEl.removeAttribute('ontouchmove');slotEl.removeAttribute('ontouchend');
     slotEl.setAttribute('ondragover','event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"');
     slotEl.setAttribute('ondragleave','this.style.borderColor="#c4b5fd";this.style.background="'+a.bg+'"');
     slotEl.setAttribute('ondrop','jigDrop(event,'+slotIdx+')');
@@ -6016,18 +6038,18 @@ function jigSlotTouchEnd(e,slotIdx,pieceIdx){
   if(targetSlot){
     jigPlacePiece(_jigTouchPiece,parseInt(targetSlot.getAttribute('data-slot')));
   } else {
-    // Dropped outside — return piece to tray
     _jigReturnToTray(pieceIdx);
   }
   _jigTouchPiece=null;
+  _jigTouchFromSlot=null;
 }
 
 // Put a piece back into the tray
 function _jigReturnToTray(pieceIdx){
-  const a=_jigAnimal,ps=88;
+  const a=_jigAnimal,ps=_jigPs();
   const tray=document.getElementById('jigTray');
   if(!tray)return;
-  if(document.getElementById('jigPiece_'+pieceIdx))return; // already there
+  if(document.getElementById('jigPiece_'+pieceIdx))return;
   const pieceDiv=document.createElement('div');
   pieceDiv.id='jigPiece_'+pieceIdx;
   pieceDiv.setAttribute('data-piece',pieceIdx);
@@ -6035,10 +6057,11 @@ function _jigReturnToTray(pieceIdx){
   pieceDiv.style.cssText='width:'+ps+'px;height:'+ps+'px;cursor:grab;border-radius:12px;border:3px solid var(--purple);overflow:hidden;box-shadow:0 4px 16px rgba(167,139,250,.45);touch-action:none;flex-shrink:0;transition:transform .15s;animation:popIn .3s ease';
   pieceDiv.setAttribute('ondragstart','jigDragStart(event,'+pieceIdx+')');
   pieceDiv.setAttribute('ondragend','this.style.opacity="1"');
-  pieceDiv.setAttribute('ontouchstart','jigTouchStart(event,'+pieceIdx+')');
-  pieceDiv.setAttribute('ontouchmove','jigTouchMove(event)');
-  pieceDiv.setAttribute('ontouchend','jigTouchEnd(event)');
   pieceDiv.innerHTML=_jigGetPiece(a,pieceIdx,ps);
+  // JS touch listeners — reliable on iPad
+  pieceDiv.addEventListener('touchstart',e=>jigTouchStart(e,pieceIdx),{passive:false});
+  pieceDiv.addEventListener('touchmove',jigTouchMove,{passive:false});
+  pieceDiv.addEventListener('touchend',jigTouchEnd,{passive:false});
   tray.appendChild(pieceDiv);
 }
 
