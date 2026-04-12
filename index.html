@@ -1770,7 +1770,7 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
   <div id="hist"></div>
 </div>
 
-<div class="spill" id="spill" onclick="showShop()">⭐ 0 stars</div>
+<div class="spill" id="spill" onclick="showShop()">⭐ ... stars</div>
 <div class="toast" id="toast">⭐</div>
 
 <!-- Quick Create FAB (#5) -->
@@ -2782,7 +2782,7 @@ let busy=false;
 let currentlyPlaying=false; // true when user is actively inside a game/activity
 
 const ld=localStorage.getItem('cld');
-if(ld&&ld!==todayKey()){done=[];stars=0;localStorage.removeItem('cd_'+ld);localStorage.removeItem('c_skipped_'+ld);}
+if(ld&&ld!==todayKey()){done=[];stars=0;localStorage.removeItem('cd_'+ld);localStorage.removeItem('c_skipped_'+ld);/* totalStarsEver preserved — never reset on new day */}
 localStorage.setItem('cld',todayKey());
 
 // ══════════════════════════════════════
@@ -7518,7 +7518,7 @@ function switchGameCat(c){
 // ══════════════════════════════════════
 //  HELPERS
 // ══════════════════════════════════════
-function showSpill(){document.getElementById('spill').textContent=`⭐ ${stars} stars`;}
+function showSpill(){document.getElementById('spill').textContent=`⭐ ${totalStarsEver} stars`;}
 let tt;
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2500);}
 function burst(){
