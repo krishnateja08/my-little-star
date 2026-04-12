@@ -1851,8 +1851,10 @@ async function _loadFromFirebase(){
         _lsSet(k, typeof v === 'string' ? v : JSON.stringify(v));
       });
       console.log('✅ Firebase synced!', Object.keys(data).length, 'keys loaded');
-      // Refresh app variables and UI after Firebase data loads
-      _refreshAppFromStorage();
+      // NOTE: Do NOT call _refreshAppFromStorage() here — todayKey() and other
+      // functions are not yet defined at this point in the file. The boot sequence
+      // at the bottom of the file reads from localStorage AFTER Firebase has written
+      // all values above, so stars/done will already be correct on first render.
     }
   }catch(e){ console.warn('Firebase load error:',e); }
 }
@@ -9914,6 +9916,11 @@ function ftAutoInit(){
 // ══════════════════════════════════════
 //  BOOT
 // ══════════════════════════════════════
+// Re-read from localStorage now — Firebase has already written synced values above
+done          = JSON.parse(localStorage.getItem('cd_'+todayKey())||'[]');
+stars         = parseInt(localStorage.getItem('cs_'+todayKey())||'0');
+allUsed       = JSON.parse(localStorage.getItem('c_allused')||'[]');
+totalStarsEver= parseInt(localStorage.getItem('c_total_stars')||'0');
 setupHeader();showSpill();renderWbar();renderFact();renderStory();renderChallenge();applyRewards();renderTabBadges();
 renderStarPath();renderSpark();renderWeather();renderPhysBanner();renderTodayBar();renderBtt();renderGoals();
 // Check bedtime lock (delayed so other UI loads first)
