@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>🌟 My Little Star — Smart Learning Coach</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -5650,7 +5650,11 @@ function checkCW(idx,chosen){
 // ══════════════════════════════════════
 let jigScore=0,jigRound=0,jigPlacements={};
 let _jigAnimal=null,_jigGhost=null,_jigTouchPiece=null,_jigTouchFromSlot=null,_jigDragPiece=null,_jigDragFromSlot=null;
-function _jigPs(){const maxW=Math.min(window.innerWidth,520);return Math.max(72,Math.min(96,Math.floor((maxW-80)/2.4)));}
+function _jigPs(){
+  // Use the smaller viewport dimension to handle portrait & landscape on iPad
+  const vw=Math.min(window.innerWidth,window.innerHeight,520);
+  return Math.max(72,Math.min(100,Math.floor((vw-60)/2.3)));
+}
 
 const JIGSAW_ANIMALS=[
   {name:'Lion',emoji:'🦁',bg:'#fff3e0',
@@ -5784,7 +5788,7 @@ function _renderJigsaw(scrambled){
         </div>
       </div>
       <div style='font-family:"Baloo 2",cursive;font-size:.75rem;font-weight:700;color:var(--text3);text-align:center;margin-bottom:2px'>☝️ Drag the pieces into the puzzle!</div>
-      <div style='font-family:"Baloo 2",cursive;font-size:.68rem;color:#a78bfa;text-align:center;margin-bottom:8px'>↩️ Wrong piece? Drag it back out!</div>
+      <div style='font-family:"Baloo 2",cursive;font-size:.68rem;color:#a78bfa;text-align:center;margin-bottom:8px'>👆 Wrong piece in a slot? Tap it to take it back!</div>
       <div id='jigTray' style='display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:8px 4px;min-height:${ps+16}px'>
         ${scrambled.map(p=>`
           <div id='jigPiece_${p}' data-piece='${p}' draggable='true'
@@ -5885,6 +5889,12 @@ function jigPlacePiece(pieceIdx,slotIdx){
   // If slot already has a wrong piece, kick it back to tray first
   if(jigPlacements[slotIdx]!==null && jigPlacements[slotIdx]!==undefined){
     _jigDetachSlotTouch(slotIdx);
+    // Remove tap-back listener too
+    const _prevSlot=document.getElementById('jigSlot_'+slotIdx);
+    if(_prevSlot&&_prevSlot._jigTapBack){
+      _prevSlot.removeEventListener('click',_prevSlot._jigTapBack);
+      _prevSlot._jigTapBack=null;
+    }
     _jigReturnToTray(jigPlacements[slotIdx]);
     jigPlacements[slotIdx]=null;
   }
@@ -5905,16 +5915,10 @@ function jigPlacePiece(pieceIdx,slotIdx){
     const allDone=[0,1,2,3].every(i=>jigPlacements[i]===i);
     if(allDone){
       jigScore++;
-      // Award star immediately
-      stars+=1;totalStarsEver+=1;
-      localStorage.setItem('cs_'+todayKey(),stars);
-      localStorage.setItem('c_total_stars',totalStarsEver);
-      showSpill();showToast('⭐ +1 star!');playStar();
-      renderStarPath();renderGoals();renderTabBadges();
       burst();
       speakText('You built the '+a.name+'! Amazing job!');
       const fb=document.getElementById('gfb');
-      if(fb)fb.innerHTML='<span style="color:var(--green);font-family:\'Baloo 2\',cursive;font-weight:800;font-size:1.05rem">🎉 Puzzle Complete! ⭐ +1 Star!</span>';
+      if(fb)fb.innerHTML='<span style="color:var(--green);font-family:\'Baloo 2\',cursive;font-weight:800;font-size:1.05rem">🎉 '+a.name+' done! Keep going!</span>';
       const board=document.getElementById('jigBoard');
       if(board){board.style.borderRadius='16px';board.style.boxShadow='0 0 0 5px #56cf81, 0 8px 32px rgba(86,207,129,.4)';}
       // Remember this animal was done today so it won't repeat
@@ -5931,21 +5935,45 @@ function jigPlacePiece(pieceIdx,slotIdx){
     jigPlacements[slotIdx]=pieceIdx;
     slotEl.style.border='3px dashed #ff6b9d';
     slotEl.style.background='#ffe8f0';
-    slotEl.style.cursor='grab';
+    slotEl.style.cursor='pointer';
+    // TAP to return piece back to tray — works reliably on iPad
+    slotEl._jigTapBack=function(ev){
+      ev.stopPropagation();
+      // Only act if this slot still has this wrong piece
+      if(jigPlacements[slotIdx]!==pieceIdx)return;
+      jigPlacements[slotIdx]=null;
+      _jigDetachSlotTouch(slotIdx);
+      slotEl.removeEventListener('click',slotEl._jigTapBack);
+      slotEl._jigTapBack=null;
+      // Reset slot
+      slotEl.innerHTML='?';
+      slotEl.style.border='3px dashed #c4b5fd';
+      slotEl.style.background=a.bg;
+      slotEl.style.cursor='default';
+      slotEl.removeAttribute('draggable');
+      slotEl.removeAttribute('ondragstart');slotEl.removeAttribute('ondragend');
+      slotEl.setAttribute('ondragover','event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"');
+      slotEl.setAttribute('ondragleave','this.style.borderColor="#c4b5fd";this.style.background="'+a.bg+'"');
+      slotEl.setAttribute('ondrop','jigDrop(event,'+slotIdx+')');
+      _jigReturnToTray(pieceIdx);
+      const fb2=document.getElementById('gfb');
+      if(fb2){fb2.innerHTML='<span style="color:var(--purple);font-family:\'Baloo 2\',cursive;font-weight:700">↩️ Try a different spot!</span>';
+      setTimeout(()=>{if(fb2)fb2.innerHTML='';},1000);}
+    };
+    slotEl.addEventListener('click',slotEl._jigTapBack);
+    // Also keep drag-back for desktop
     slotEl.setAttribute('draggable','true');
     slotEl.setAttribute('ondragstart','jigSlotDragStart(event,'+slotIdx+','+pieceIdx+')');
     slotEl.setAttribute('ondragend','jigSlotDragEnd(event,'+slotIdx+','+pieceIdx+')');
     slotEl.setAttribute('ondragover','event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"');
     slotEl.setAttribute('ondragleave','this.style.borderColor="#ff6b9d";this.style.background="#ffe8f0"');
     slotEl.setAttribute('ondrop','jigDrop(event,'+slotIdx+')');
-    // Attach touch via JS so iPad fires reliably
-    _jigAttachSlotTouch(slotEl,slotIdx,pieceIdx);
     slotEl.style.animation='shake .4s';
     setTimeout(()=>{if(slotEl)slotEl.style.animation='';},400);
-    playWrong();speakText('Not quite — try a different spot!');
+    playWrong();speakText('Oops! Tap the piece to take it back!');
     const fb=document.getElementById('gfb');
-    if(fb){fb.innerHTML='<span style="color:var(--pink);font-family:\'Baloo 2\',cursive;font-weight:700">↩️ Drag it back and try another spot!</span>';
-    setTimeout(()=>{if(fb)fb.innerHTML='';},1400);}
+    if(fb){fb.innerHTML='<span style="color:var(--pink);font-family:\'Baloo 2\',cursive;font-weight:700">👆 Tap the piece to take it back!</span>';
+    setTimeout(()=>{if(fb)fb.innerHTML='';},2000);}
   }
 }
 
