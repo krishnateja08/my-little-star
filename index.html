@@ -2813,7 +2813,7 @@ const GAMES = [
   {id:'dotCard',      week:1,emoji:'🎯',title:'Dot Card Match!',          desc:'Find the card with the right number of dots!',       cat:'puzzle'},
   {id:'oppSnap',      week:1,emoji:'🔄',title:'Opposite Snap!',           desc:'Tap the card that is the opposite of the word shown!',cat:'puzzle'},
   {id:'colourWordMatch',week:1,emoji:'🌈',title:'Colour Word Match!',     desc:'Match the colour word to the right colour card!',    cat:'puzzle'},
-  {id:'puzzleJigsaw',   week:1,emoji:'🧩',title:'Animal Jigsaw Puzzle!', desc:'Drag the 4 pieces together to build the animal!',    cat:'puzzle'},
+  {id:'puzzleJigsaw',   week:1,emoji:'🧩',title:'TV Show Jigsaw Puzzle!', desc:'Drag the 4 pieces together to build your favourite TV show character! 5 new shows every day!',    cat:'puzzle'},
 ];
 
 // ══════════════════════════════════════
@@ -5736,88 +5736,524 @@ function _jigPs(){
   return Math.max(72,Math.min(100,Math.floor((vw-60)/2.3)));
 }
 
-const JIGSAW_ANIMALS=[
-  {name:'Lion',emoji:'🦁',bg:'#fff3e0',
+const JIGSAW_SHOWS=[
+  {name:'Bluey',emoji:'🐾',bg:'#e3f0ff',
    svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
-    <circle cx='100' cy='110' r='74' fill='#c77b2a'/>
-    <ellipse cx='100' cy='158' rx='52' ry='42' fill='#e8962e'/>
+    <rect width='200' height='200' fill='#e3f0ff' rx='18'/>
+    <ellipse cx='100' cy='155' rx='55' ry='42' fill='#4a90d9'/>
+    <circle cx='100' cy='92' r='55' fill='#4a90d9'/>
+    <ellipse cx='52' cy='68' rx='20' ry='32' fill='#2f6db5' transform='rotate(-15 52 68)'/>
+    <ellipse cx='148' cy='68' rx='20' ry='32' fill='#2f6db5' transform='rotate(15 148 68)'/>
+    <circle cx='78' cy='84' r='13' fill='#fff'/><circle cx='80' cy='86' r='8' fill='#1a1a2e'/>
+    <circle cx='77' cy='82' r='3' fill='#fff'/>
+    <circle cx='122' cy='84' r='13' fill='#fff'/><circle cx='124' cy='86' r='8' fill='#1a1a2e'/>
+    <circle cx='121' cy='82' r='3' fill='#fff'/>
+    <ellipse cx='100' cy='108' rx='14' ry='10' fill='#2f6db5'/>
+    <path d='M86,118 Q100,130 114,118' fill='none' stroke='#2f6db5' stroke-width='3'/>
+    <ellipse cx='100' cy='170' rx='22' ry='12' fill='#2f6db5'/>
+    <text x='100' y='196' font-size='11' fill='#2f6db5' text-anchor='middle' font-family='Arial' font-weight='bold'>Bluey</text>
+   </svg>`},
+  {name:'Daniel Tiger',emoji:'🐯',bg:'#fff8e1',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fff8e1' rx='18'/>
+    <ellipse cx='100' cy='155' rx='52' ry='42' fill='#e8962e'/>
     <circle cx='100' cy='90' r='54' fill='#e8962e'/>
-    <circle cx='60' cy='44' r='22' fill='#e8962e'/><circle cx='60' cy='44' r='13' fill='#c77b2a'/>
-    <circle cx='140' cy='44' r='22' fill='#e8962e'/><circle cx='140' cy='44' r='13' fill='#c77b2a'/>
-    <circle cx='78' cy='82' r='12' fill='#fff'/><circle cx='80' cy='83' r='7' fill='#2a1800'/>
-    <circle cx='122' cy='82' r='12' fill='#fff'/><circle cx='124' cy='83' r='7' fill='#2a1800'/>
-    <circle cx='77' cy='79' r='2.5' fill='#fff'/><circle cx='121' cy='79' r='2.5' fill='#fff'/>
-    <ellipse cx='100' cy='104' rx='11' ry='8' fill='#c77b2a'/>
-    <path d='M87,113 Q100,124 113,113' fill='none' stroke='#c77b2a' stroke-width='3'/>
-    <line x1='52' y1='104' x2='87' y2='109' stroke='#e8d5a0' stroke-width='2'/>
-    <line x1='52' y1='113' x2='87' y2='113' stroke='#e8d5a0' stroke-width='2'/>
-    <line x1='113' y1='109' x2='148' y2='104' stroke='#e8d5a0' stroke-width='2'/>
-    <line x1='113' y1='113' x2='148' y2='113' stroke='#e8d5a0' stroke-width='2'/>
+    <circle cx='60' cy='48' r='22' fill='#e8962e'/><circle cx='60' cy='46' r='12' fill='#c77b2a'/>
+    <circle cx='140' cy='48' r='22' fill='#e8962e'/><circle cx='140' cy='46' r='12' fill='#c77b2a'/>
+    <ellipse cx='100' cy='115' rx='36' ry='28' fill='#fde8c0'/>
+    <circle cx='78' cy='80' r='12' fill='#fff'/><circle cx='80' cy='82' r='7' fill='#3a2800'/>
+    <circle cx='77' cy='79' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='80' r='12' fill='#fff'/><circle cx='124' cy='82' r='7' fill='#3a2800'/>
+    <circle cx='121' cy='79' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='106' rx='10' ry='7' fill='#c77b2a'/>
+    <path d='M88,116 Q100,128 112,116' fill='none' stroke='#c77b2a' stroke-width='3'/>
+    <line x1='54' y1='108' x2='86' y2='112' stroke='#c8a06a' stroke-width='2'/>
+    <line x1='54' y1='116' x2='86' y2='116' stroke='#c8a06a' stroke-width='2'/>
+    <line x1='114' y1='112' x2='146' y2='108' stroke='#c8a06a' stroke-width='2'/>
+    <line x1='114' y1='116' x2='146' y2='116' stroke='#c8a06a' stroke-width='2'/>
+    <text x='100' y='196' font-size='9' fill='#c77b2a' text-anchor='middle' font-family='Arial' font-weight='bold'>Daniel Tiger</text>
    </svg>`},
-  {name:'Elephant',emoji:'🐘',bg:'#e8eaf6',
+  {name:'Octonauts',emoji:'🐙',bg:'#e0f7fa',
    svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
-    <ellipse cx='118' cy='148' rx='68' ry='50' fill='#8e8ea8'/>
-    <circle cx='90' cy='88' r='56' fill='#8e8ea8'/>
-    <ellipse cx='30' cy='84' rx='32' ry='44' fill='#b0a0c8'/>
-    <ellipse cx='32' cy='84' rx='22' ry='32' fill='#d4b8e8'/>
-    <path d='M58,122 Q22,150 34,182' fill='none' stroke='#8e8ea8' stroke-width='22' stroke-linecap='round'/>
-    <circle cx='106' cy='74' r='12' fill='#fff'/><circle cx='107' cy='75' r='7' fill='#1a1a2e'/>
-    <circle cx='105' cy='72' r='3' fill='#fff'/>
-    <path d='M62,116 Q44,130 50,152' fill='none' stroke='#f0e8d0' stroke-width='8' stroke-linecap='round'/>
-    <circle cx='148' cy='192' r='20' fill='#8e8ea8'/>
-    <circle cx='94' cy='194' r='20' fill='#8e8ea8'/>
+    <rect width='200' height='200' fill='#e0f7fa' rx='18'/>
+    <circle cx='100' cy='100' r='70' fill='#1565c0'/>
+    <circle cx='100' cy='95' r='48' fill='#fff'/>
+    <circle cx='100' cy='90' r='36' fill='#e3f2fd'/>
+    <circle cx='86' cy='84' r='11' fill='#fff'/><circle cx='87' cy='86' r='7' fill='#1a2a5e'/>
+    <circle cx='85' cy='83' r='2.5' fill='#fff'/>
+    <circle cx='114' cy='84' r='11' fill='#fff'/><circle cx='115' cy='86' r='7' fill='#1a2a5e'/>
+    <circle cx='113' cy='83' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='104' rx='8' ry='6' fill='#ffb830'/>
+    <path d='M90,112 Q100,122 110,112' fill='none' stroke='#1565c0' stroke-width='2.5'/>
+    <rect x='70' y='130' width='60' height='38' rx='12' fill='#ffb830'/>
+    <circle cx='68' cy='100' r='14' fill='#fff' stroke='#1565c0' stroke-width='3'/>
+    <circle cx='132' cy='100' r='14' fill='#fff' stroke='#1565c0' stroke-width='3'/>
+    <text x='100' y='196' font-size='10' fill='#1565c0' text-anchor='middle' font-family='Arial' font-weight='bold'>Octonauts</text>
    </svg>`},
-  {name:'Frog',emoji:'🐸',bg:'#e8f5e9',
+  {name:'Puffin Rock',emoji:'🐦',bg:'#e8f5e9',
    svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
-    <ellipse cx='100' cy='142' rx='70' ry='58' fill='#43b86c'/>
-    <circle cx='100' cy='80' r='64' fill='#43b86c'/>
-    <circle cx='64' cy='34' r='26' fill='#43b86c'/>
-    <circle cx='136' cy='34' r='26' fill='#43b86c'/>
-    <circle cx='64' cy='32' r='18' fill='#fff'/><circle cx='65' cy='33' r='11' fill='#1a1200'/>
-    <circle cx='136' cy='32' r='18' fill='#fff'/><circle cx='137' cy='33' r='11' fill='#1a1200'/>
-    <circle cx='62' cy='29' r='4' fill='#fff'/><circle cx='134' cy='29' r='4' fill='#fff'/>
-    <ellipse cx='100' cy='150' rx='42' ry='32' fill='#a8f0c0'/>
-    <path d='M72,108 Q100,130 128,108' fill='none' stroke='#1a7a38' stroke-width='3.5'/>
-    <ellipse cx='32' cy='188' rx='34' ry='16' fill='#43b86c'/>
-    <ellipse cx='168' cy='188' rx='34' ry='16' fill='#43b86c'/>
+    <rect width='200' height='200' fill='#e8f5e9' rx='18'/>
+    <ellipse cx='100' cy='155' rx='48' ry='38' fill='#1a1a2e'/>
+    <circle cx='100' cy='90' r='52' fill='#1a1a2e'/>
+    <ellipse cx='100' cy='92' rx='32' ry='36' fill='#fff'/>
+    <circle cx='82' cy='78' r='11' fill='#fff'/><circle cx='84' cy='80' r='7' fill='#1a1a2e'/>
+    <circle cx='82' cy='77' r='2.5' fill='#fff'/>
+    <circle cx='118' cy='78' r='11' fill='#fff'/><circle cx='120' cy='80' r='7' fill='#1a1a2e'/>
+    <circle cx='118' cy='77' r='2.5' fill='#fff'/>
+    <path d='M82,104 Q100,90 118,104 Q108,116 100,118 Q92,116 82,104Z' fill='#ff8c00'/>
+    <ellipse cx='100' cy='108' rx='10' ry='5' fill='#ffb830'/>
+    <ellipse cx='68' cy='52' rx='16' ry='24' fill='#1a1a2e'/>
+    <ellipse cx='132' cy='52' rx='16' ry='24' fill='#1a1a2e'/>
+    <text x='100' y='196' font-size='10' fill='#1a5e20' text-anchor='middle' font-family='Arial' font-weight='bold'>Puffin Rock</text>
    </svg>`},
-  {name:'Cat',emoji:'🐱',bg:'#fff8e1',
+  {name:'Trash Truck',emoji:'🚛',bg:'#f3e5f5',
    svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
-    <ellipse cx='100' cy='158' rx='58' ry='46' fill='#ff9f69'/>
-    <circle cx='100' cy='90' r='58' fill='#ff9f69'/>
-    <polygon points='50,54 36,12 78,46' fill='#ff9f69'/>
-    <polygon points='150,54 164,12 122,46' fill='#ff9f69'/>
-    <polygon points='54,50 43,18 75,43' fill='#ffc4a8'/>
-    <polygon points='146,50 157,18 125,43' fill='#ffc4a8'/>
-    <ellipse cx='77' cy='84' rx='13' ry='15' fill='#4a8800'/>
-    <ellipse cx='77' cy='84' rx='5' ry='13' fill='#1a1200'/>
-    <circle cx='75' cy='80' r='3' fill='#fff'/>
-    <ellipse cx='123' cy='84' rx='13' ry='15' fill='#4a8800'/>
-    <ellipse cx='123' cy='84' rx='5' ry='13' fill='#1a1200'/>
-    <circle cx='121' cy='80' r='3' fill='#fff'/>
-    <polygon points='100,102 92,112 108,112' fill='#ff6b9d'/>
-    <path d='M95,112 Q100,122 105,112' fill='none' stroke='#ff6b9d' stroke-width='2'/>
-    <line x1='50' y1='107' x2='90' y2='112' stroke='#e0c8b8' stroke-width='2'/>
-    <line x1='50' y1='116' x2='90' y2='116' stroke='#e0c8b8' stroke-width='2'/>
-    <line x1='110' y1='112' x2='150' y2='107' stroke='#e0c8b8' stroke-width='2'/>
-    <line x1='110' y1='116' x2='150' y2='116' stroke='#e0c8b8' stroke-width='2'/>
+    <rect width='200' height='200' fill='#f3e5f5' rx='18'/>
+    <rect x='20' y='110' width='160' height='62' rx='10' fill='#43b86c'/>
+    <rect x='20' y='90' width='80' height='50' rx='8' fill='#2e7d32'/>
+    <rect x='30' y='96' width='60' height='34' rx='6' fill='#b3e5fc'/>
+    <circle cx='55' cy='178' r='16' fill='#333'/><circle cx='55' cy='178' r='8' fill='#888'/>
+    <circle cx='145' cy='178' r='16' fill='#333'/><circle cx='145' cy='178' r='8' fill='#888'/>
+    <rect x='110' y='75' width='60' height='60' rx='8' fill='#66bb6a'/>
+    <circle cx='136' cy='98' r='11' fill='#fff'/><circle cx='138' cy='100' r='7' fill='#1a2e1a'/>
+    <circle cx='135' cy='97' r='2.5' fill='#fff'/>
+    <path d='M128,112 Q136,120 144,112' fill='none' stroke='#2e7d32' stroke-width='2.5'/>
+    <text x='100' y='196' font-size='9' fill='#2e7d32' text-anchor='middle' font-family='Arial' font-weight='bold'>Trash Truck</text>
    </svg>`},
-  {name:'Dog',emoji:'🐶',bg:'#fbe9e7',
+  {name:'StoryBots',emoji:'🤖',bg:'#fff3e0',
    svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
-    <ellipse cx='100' cy='155' rx='58' ry='46' fill='#c8a46e'/>
-    <circle cx='100' cy='88' r='58' fill='#c8a46e'/>
-    <ellipse cx='46' cy='82' rx='26' ry='44' fill='#a07840' transform='rotate(-18 46 82)'/>
-    <ellipse cx='154' cy='82' rx='26' ry='44' fill='#a07840' transform='rotate(18 154 82)'/>
-    <circle cx='77' cy='78' r='13' fill='#fff'/><circle cx='78' cy='79' r='7' fill='#2a1800'/>
-    <circle cx='76' cy='75' r='2.5' fill='#fff'/>
-    <circle cx='123' cy='78' r='13' fill='#fff'/><circle cx='124' cy='79' r='7' fill='#2a1800'/>
-    <circle cx='122' cy='75' r='2.5' fill='#fff'/>
-    <ellipse cx='100' cy='108' rx='16' ry='12' fill='#2a1800'/>
-    <ellipse cx='97' cy='105' rx='5' ry='3.5' fill='#555'/>
-    <path d='M86,120 Q100,136 114,120' fill='none' stroke='#a07840' stroke-width='3'/>
-    <ellipse cx='100' cy='132' rx='12' ry='10' fill='#ff6b9d'/>
+    <rect width='200' height='200' fill='#fff3e0' rx='18'/>
+    <rect x='50' y='60' width='100' height='100' rx='18' fill='#ff6b9d'/>
+    <rect x='62' y='72' width='76' height='56' rx='10' fill='#fff'/>
+    <circle cx='82' cy='95' r='13' fill='#4fa3e0'/><circle cx='84' cy='97' r='8' fill='#1a2a5e'/>
+    <circle cx='82' cy='93' r='3' fill='#fff'/>
+    <circle cx='118' cy='95' r='13' fill='#56cf81'/><circle cx='120' cy='97' r='8' fill='#1a2e1a'/>
+    <circle cx='118' cy='93' r='3' fill='#fff'/>
+    <rect x='78' y='116' width='44' height='8' rx='4' fill='#ffb830'/>
+    <rect x='88' y='40' width='24' height='22' rx='6' fill='#ff6b9d'/>
+    <circle cx='100' cy='36' r='8' fill='#ffb830'/>
+    <rect x='24' y='90' width='26' height='44' rx='8' fill='#ff6b9d'/>
+    <rect x='150' y='90' width='26' height='44' rx='8' fill='#ff6b9d'/>
+    <text x='100' y='196' font-size='9' fill='#ff6b9d' text-anchor='middle' font-family='Arial' font-weight='bold'>Ask the StoryBots</text>
+   </svg>`},
+  {name:'Ada Twist',emoji:'🔬',bg:'#fce4ec',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fce4ec' rx='18'/>
+    <ellipse cx='100' cy='155' rx='50' ry='40' fill='#8d5524'/>
+    <circle cx='100' cy='92' r='52' fill='#8d5524'/>
+    <circle cx='78' cy='82' r='12' fill='#fff'/><circle cx='80' cy='84' r='8' fill='#1a1a2e'/>
+    <circle cx='77' cy='81' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='82' r='12' fill='#fff'/><circle cx='124' cy='84' r='8' fill='#1a1a2e'/>
+    <circle cx='121' cy='81' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='106' rx='10' ry='7' fill='#5c3317'/>
+    <path d='M88,116 Q100,126 112,116' fill='none' stroke='#5c3317' stroke-width='2.5'/>
+    <rect x='60' y='60' width='80' height='14' rx='7' fill='#ff6b9d'/>
+    <ellipse cx='100' cy='56' rx='38' ry='10' fill='#1a1a2e'/>
+    <rect x='70' y='78' width='16' height='10' rx='2' fill='none' stroke='#4fa3e0' stroke-width='2.5'/>
+    <rect x='114' y='78' width='16' height='10' rx='2' fill='none' stroke='#4fa3e0' stroke-width='2.5'/>
+    <line x1='86' y1='83' x2='114' y2='83' stroke='#4fa3e0' stroke-width='2'/>
+    <text x='100' y='196' font-size='9' fill='#c2185b' text-anchor='middle' font-family='Arial' font-weight='bold'>Ada Twist</text>
+   </svg>`},
+  {name:'Magic School Bus',emoji:'🚌',bg:'#fff9c4',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fff9c4' rx='18'/>
+    <rect x='15' y='90' width='170' height='72' rx='12' fill='#ffb830'/>
+    <rect x='15' y='90' width='60' height='50' rx='10' fill='#ff8c00'/>
+    <rect x='22' y='96' width='46' height='36' rx='6' fill='#b3e5fc'/>
+    <circle cx='45' cy='168' r='16' fill='#333'/><circle cx='45' cy='168' r='8' fill='#888'/>
+    <circle cx='155' cy='168' r='16' fill='#333'/><circle cx='155' cy='168' r='8' fill='#888'/>
+    <rect x='85' y='96' width='90' height='54' rx='6' fill='#ffe082'/>
+    <circle cx='112' cy='118' r='11' fill='#fff'/><circle cx='113' cy='120' r='7' fill='#1a2e1a'/>
+    <circle cx='111' cy='117' r='2.5' fill='#fff'/>
+    <circle cx='158' cy='118' r='11' fill='#fff'/><circle cx='159' cy='120' r='7' fill='#1a2e1a'/>
+    <circle cx='157' cy='117' r='2.5' fill='#fff'/>
+    <text x='100' y='88' font-size='10' fill='#e65100' text-anchor='middle' font-family='Arial' font-weight='bold'>✨ MAGIC ✨</text>
+    <text x='100' y='196' font-size='8' fill='#e65100' text-anchor='middle' font-family='Arial' font-weight='bold'>Magic School Bus</text>
+   </svg>`},
+  {name:'Wild Kratts',emoji:'🦎',bg:'#e8f5e9',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e8f5e9' rx='18'/>
+    <ellipse cx='100' cy='155' rx='52' ry='40' fill='#2e7d32'/>
+    <circle cx='100' cy='90' r='52' fill='#388e3c'/>
+    <circle cx='78' cy='80' r='12' fill='#fff'/><circle cx='80' cy='82' r='8' fill='#1a2e1a'/>
+    <circle cx='77' cy='79' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='80' r='12' fill='#fff'/><circle cx='124' cy='82' r='8' fill='#1a2e1a'/>
+    <circle cx='121' cy='79' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='104' rx='10' ry='7' fill='#1b5e20'/>
+    <path d='M88,114 Q100,124 112,114' fill='none' stroke='#1b5e20' stroke-width='2.5'/>
+    <path d='M60,60 Q100,40 140,60' fill='none' stroke='#ffb830' stroke-width='6' stroke-linecap='round'/>
+    <circle cx='60' cy='60' r='8' fill='#ffb830'/>
+    <circle cx='140' cy='60' r='8' fill='#ffb830'/>
+    <text x='100' y='196' font-size='9' fill='#1b5e20' text-anchor='middle' font-family='Arial' font-weight='bold'>Wild Kratts</text>
+   </svg>`},
+  {name:'Blaze',emoji:'🔥',bg:'#fbe9e7',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fbe9e7' rx='18'/>
+    <rect x='30' y='100' width='140' height='70' rx='14' fill='#e53935'/>
+    <rect x='30' y='100' width='140' height='30' rx='10' fill='#ff7043'/>
+    <rect x='42' y='104' width='50' height='22' rx='6' fill='#b3e5fc'/>
+    <rect x='108' y='104' width='50' height='22' rx='6' fill='#b3e5fc'/>
+    <circle cx='55' cy='178' r='18' fill='#333'/><circle cx='55' cy='178' r='9' fill='#888'/>
+    <circle cx='145' cy='178' r='18' fill='#333'/><circle cx='145' cy='178' r='9' fill='#888'/>
+    <ellipse cx='100' cy='100' rx='36' ry='28' fill='#e53935'/>
+    <circle cx='88' cy='93' r='9' fill='#fff'/><circle cx='89' cy='95' r='6' fill='#1a1a2e'/>
+    <circle cx='87' cy='92' r='2' fill='#fff'/>
+    <circle cx='112' cy='93' r='9' fill='#fff'/><circle cx='113' cy='95' r='6' fill='#1a1a2e'/>
+    <circle cx='111' cy='92' r='2' fill='#fff'/>
+    <path d='M88,106 Q100,114 112,106' fill='none' stroke='#b71c1c' stroke-width='2.5'/>
+    <path d='M76,70 Q90,40 100,58 Q110,36 124,70' fill='#ffb830'/>
+    <text x='100' y='196' font-size='9' fill='#b71c1c' text-anchor='middle' font-family='Arial' font-weight='bold'>Blaze</text>
+   </svg>`},
+  {name:'Numberblocks',emoji:'🔢',bg:'#e3f2fd',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e3f2fd' rx='18'/>
+    <rect x='30' y='60' width='60' height='60' rx='10' fill='#e53935'/>
+    <text x='60' y='102' font-size='36' fill='#fff' text-anchor='middle' font-family='Arial' font-weight='bold'>1</text>
+    <rect x='110' y='60' width='60' height='60' rx='10' fill='#ff9800'/>
+    <text x='140' y='102' font-size='36' fill='#fff' text-anchor='middle' font-family='Arial' font-weight='bold'>2</text>
+    <rect x='60' y='120' width='80' height='30' rx='8' fill='#4caf50'/>
+    <circle cx='85' cy='84' r='7' fill='#fff'/><circle cx='87' cy='86' r='4' fill='#1a1a2e'/>
+    <circle cx='135' cy='84' r='7' fill='#fff'/><circle cx='137' cy='86' r='4' fill='#1a1a2e'/>
+    <text x='100' y='170' font-size='14' fill='#1565c0' text-anchor='middle' font-family='Arial' font-weight='bold'>= 3!</text>
+    <text x='100' y='196' font-size='9' fill='#1565c0' text-anchor='middle' font-family='Arial' font-weight='bold'>Numberblocks</text>
+   </svg>`},
+  {name:'Dinosaur Train',emoji:'🦕',bg:'#f1f8e9',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#f1f8e9' rx='18'/>
+    <rect x='20' y='110' width='160' height='52' rx='10' fill='#8d6e63'/>
+    <rect x='20' y='110' width='52' height='40' rx='8' fill='#6d4c41'/>
+    <rect x='26' y='116' width='40' height='28' rx='5' fill='#b3e5fc'/>
+    <circle cx='42' cy='168' r='14' fill='#333'/><circle cx='42' cy='168' r='7' fill='#888'/>
+    <circle cx='158' cy='168' r='14' fill='#333'/><circle cx='158' cy='168' r='7' fill='#888'/>
+    <ellipse cx='148' cy='90' rx='36' ry='28' fill='#8bc34a'/>
+    <circle cx='136' cy='78' r='10' fill='#fff'/><circle cx='137' cy='80' r='6' fill='#1a2e1a'/>
+    <circle cx='135' cy='77' r='2' fill='#fff'/>
+    <path d='M126,92 Q140,102 152,92' fill='none' stroke='#558b2f' stroke-width='2.5'/>
+    <path d='M174,88 Q192,70 186,50 Q180,40 168,58' fill='#8bc34a'/>
+    <text x='100' y='196' font-size='9' fill='#558b2f' text-anchor='middle' font-family='Arial' font-weight='bold'>Dinosaur Train</text>
+   </svg>`},
+  {name:"Gabby's Dollhouse",emoji:'🏠',bg:'#fce4ec',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fce4ec' rx='18'/>
+    <polygon points='100,22 180,80 20,80' fill='#ff6b9d'/>
+    <rect x='30' y='78' width='140' height='98' rx='6' fill='#ffb3c8'/>
+    <rect x='62' y='120' width='36' height='56' rx='4' fill='#ff6b9d'/>
+    <rect x='40' y='90' width='36' height='30' rx='4' fill='#b3e5fc'/>
+    <rect x='124' y='90' width='36' height='30' rx='4' fill='#b3e5fc'/>
+    <circle cx='100' cy='65' r='22' fill='#ffcc80'/>
+    <circle cx='90' cy='60' r='7' fill='#fff'/><circle cx='91' cy='62' r='4.5' fill='#1a1a2e'/>
+    <circle cx='89' cy='59' r='1.5' fill='#fff'/>
+    <circle cx='110' cy='60' r='7' fill='#fff'/><circle cx='111' cy='62' r='4.5' fill='#1a1a2e'/>
+    <circle cx='109' cy='59' r='1.5' fill='#fff'/>
+    <path d='M92,72 Q100,80 108,72' fill='none' stroke='#e57373' stroke-width='2'/>
+    <text x='100' y='196' font-size='9' fill='#c2185b' text-anchor='middle' font-family='Arial' font-weight='bold'>Gabby's Dollhouse</text>
+   </svg>`},
+  {name:'Beat Bugs',emoji:'🐛',bg:'#e8f5e9',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e8f5e9' rx='18'/>
+    <ellipse cx='100' cy='130' rx='58' ry='46' fill='#66bb6a'/>
+    <circle cx='100' cy='82' r='48' fill='#81c784'/>
+    <circle cx='78' cy='72' r='12' fill='#fff'/><circle cx='80' cy='74' r='8' fill='#1a2e1a'/>
+    <circle cx='77' cy='71' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='72' r='12' fill='#fff'/><circle cx='124' cy='74' r='8' fill='#1a2e1a'/>
+    <circle cx='121' cy='71' r='2.5' fill='#fff'/>
+    <path d='M88,94 Q100,106 112,94' fill='none' stroke='#2e7d32' stroke-width='3'/>
+    <line x1='78' y1='38' x2='68' y2='16' stroke='#388e3c' stroke-width='3'/>
+    <line x1='122' y1='38' x2='132' y2='16' stroke='#388e3c' stroke-width='3'/>
+    <circle cx='68' cy='14' r='5' fill='#ffb830'/>
+    <circle cx='132' cy='14' r='5' fill='#ffb830'/>
+    <ellipse cx='66' cy='160' rx='14' ry='8' fill='#43a047'/>
+    <ellipse cx='134' cy='160' rx='14' ry='8' fill='#43a047'/>
+    <text x='100' y='196' font-size='10' fill='#2e7d32' text-anchor='middle' font-family='Arial' font-weight='bold'>Beat Bugs</text>
+   </svg>`},
+  {name:'Mickey Mouse',emoji:'🐭',bg:'#fff3e0',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fff3e0' rx='18'/>
+    <circle cx='60' cy='52' r='34' fill='#1a1a2e'/>
+    <circle cx='140' cy='52' r='34' fill='#1a1a2e'/>
+    <circle cx='100' cy='108' r='62' fill='#1a1a2e'/>
+    <ellipse cx='100' cy='118' rx='42' ry='34' fill='#f5cba7'/>
+    <circle cx='78' cy='94' r='13' fill='#fff'/><circle cx='80' cy='96' r='8' fill='#1a1a2e'/>
+    <circle cx='77' cy='93' r='3' fill='#fff'/>
+    <circle cx='122' cy='94' r='13' fill='#fff'/><circle cx='124' cy='96' r='8' fill='#1a1a2e'/>
+    <circle cx='121' cy='93' r='3' fill='#fff'/>
+    <ellipse cx='100' cy='116' rx='10' ry='7' fill='#c0392b'/>
+    <path d='M88,126 Q100,138 112,126' fill='none' stroke='#1a1a2e' stroke-width='3'/>
+    <text x='100' y='196' font-size='9' fill='#1a1a2e' text-anchor='middle' font-family='Arial' font-weight='bold'>Mickey Mouse</text>
+   </svg>`},
+  {name:'PAW Patrol',emoji:'🐾',bg:'#e3f2fd',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e3f2fd' rx='18'/>
+    <ellipse cx='100' cy='150' rx='55' ry='44' fill='#c8a46e'/>
+    <circle cx='100' cy='88' r='56' fill='#c8a46e'/>
+    <ellipse cx='48' cy='80' rx='24' ry='42' fill='#a07840' transform='rotate(-18 48 80)'/>
+    <ellipse cx='152' cy='80' rx='24' ry='42' fill='#a07840' transform='rotate(18 152 80)'/>
+    <circle cx='78' cy='78' r='13' fill='#fff'/><circle cx='79' cy='80' r='8' fill='#1a2a5e'/>
+    <circle cx='77' cy='77' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='78' r='13' fill='#fff'/><circle cx='123' cy='80' r='8' fill='#1a2a5e'/>
+    <circle cx='121' cy='77' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='106' rx='14' ry='10' fill='#a07840'/>
+    <ellipse cx='95' cy='103' rx='4' ry='3' fill='#333'/>
+    <path d='M86,118 Q100,130 114,118' fill='none' stroke='#a07840' stroke-width='3'/>
+    <rect x='76' y='56' width='48' height='18' rx='9' fill='#e53935'/>
+    <text x='100' y='70' font-size='10' fill='#fff' text-anchor='middle' font-family='Arial' font-weight='bold'>PAW</text>
+    <text x='100' y='196' font-size='9' fill='#1565c0' text-anchor='middle' font-family='Arial' font-weight='bold'>PAW Patrol</text>
+   </svg>`},
+  {name:'Curious George',emoji:'🐵',bg:'#fff8e1',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fff8e1' rx='18'/>
+    <ellipse cx='100' cy='152' rx='52' ry='42' fill='#8d5524'/>
+    <circle cx='100' cy='90' r='56' fill='#8d5524'/>
+    <ellipse cx='100' cy='105' rx='38' ry='30' fill='#f5cba7'/>
+    <circle cx='78' cy='80' r='13' fill='#fff'/><circle cx='80' cy='82' r='8' fill='#1a1a2e'/>
+    <circle cx='77' cy='79' r='3' fill='#fff'/>
+    <circle cx='122' cy='80' r='13' fill='#fff'/><circle cx='124' cy='82' r='8' fill='#1a1a2e'/>
+    <circle cx='121' cy='79' r='3' fill='#fff'/>
+    <ellipse cx='100' cy='108' rx='10' ry='8' fill='#5c3317'/>
+    <path d='M88,120 Q100,132 112,120' fill='none' stroke='#5c3317' stroke-width='3'/>
+    <ellipse cx='52' cy='88' rx='14' ry='18' fill='#f5cba7'/>
+    <ellipse cx='148' cy='88' rx='14' ry='18' fill='#f5cba7'/>
+    <text x='100' y='196' font-size='9' fill='#6d4c41' text-anchor='middle' font-family='Arial' font-weight='bold'>Curious George</text>
+   </svg>`},
+  {name:"Blue's Clues",emoji:'🐶',bg:'#e3f2fd',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e3f2fd' rx='18'/>
+    <ellipse cx='100' cy='152' rx='55' ry='44' fill='#4a90d9'/>
+    <circle cx='100' cy='90' r='54' fill='#4a90d9'/>
+    <ellipse cx='48' cy='78' rx='24' ry='42' fill='#2f6db5' transform='rotate(-12 48 78)'/>
+    <ellipse cx='152' cy='78' rx='24' ry='42' fill='#2f6db5' transform='rotate(12 152 78)'/>
+    <ellipse cx='100' cy='110' rx='38' ry='28' fill='#fff'/>
+    <circle cx='78' cy='80' r='13' fill='#fff'/><circle cx='80' cy='82' r='8' fill='#1a2a5e'/>
+    <circle cx='77' cy='79' r='3' fill='#fff'/>
+    <circle cx='122' cy='80' r='13' fill='#fff'/><circle cx='124' cy='82' r='8' fill='#1a2a5e'/>
+    <circle cx='121' cy='79' r='3' fill='#fff'/>
+    <ellipse cx='100' cy='108' rx='12' ry='9' fill='#1a2a5e'/>
+    <path d='M88,120 Q100,132 112,120' fill='none' stroke='#2f6db5' stroke-width='3'/>
+    <path d='M152,120 Q172,134 168,155' fill='none' stroke='#4a90d9' stroke-width='10' stroke-linecap='round'/>
+    <text x='100' y='196' font-size='9' fill='#1565c0' text-anchor='middle' font-family='Arial' font-weight='bold'>Blue's Clues</text>
+   </svg>`},
+  {name:'Dora',emoji:'🎒',bg:'#fff9c4',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fff9c4' rx='18'/>
+    <ellipse cx='100' cy='152' rx='50' ry='40' fill='#c8a46e'/>
+    <circle cx='100' cy='90' r='52' fill='#c8a46e'/>
+    <path d='M54,80 Q54,30 100,28 Q146,30 146,80' fill='#1a1a2e'/>
+    <circle cx='78' cy='82' r='12' fill='#fff'/><circle cx='80' cy='84' r='8' fill='#3a2800'/>
+    <circle cx='77' cy='81' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='82' r='12' fill='#fff'/><circle cx='124' cy='84' r='8' fill='#3a2800'/>
+    <circle cx='121' cy='81' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='106' rx='10' ry='7' fill='#8d5524'/>
+    <path d='M88,116 Q100,128 112,116' fill='none' stroke='#8d5524' stroke-width='2.5'/>
+    <rect x='72' y='136' width='56' height='40' rx='10' fill='#ff6b9d'/>
+    <rect x='80' y='128' width='40' height='12' rx='6' fill='#ff6b9d'/>
+    <text x='100' y='196' font-size='10' fill='#e65100' text-anchor='middle' font-family='Arial' font-weight='bold'>Dora</text>
+   </svg>`},
+  {name:'Hilda',emoji:'🧝',bg:'#e8eaf6',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e8eaf6' rx='18'/>
+    <ellipse cx='100' cy='152' rx='48' ry='40' fill='#ffcc80'/>
+    <circle cx='100' cy='90' r='50' fill='#ffcc80'/>
+    <path d='M55,70 Q55,18 100,16 Q145,18 145,70' fill='#f5f5f5'/>
+    <ellipse cx='80' cy='58' rx='18' ry='26' fill='#f0f0f0'/>
+    <ellipse cx='120' cy='58' rx='18' ry='26' fill='#f0f0f0'/>
+    <circle cx='78' cy='82' r='11' fill='#fff'/><circle cx='80' cy='84' r='7' fill='#1a2e4a'/>
+    <circle cx='77' cy='81' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='82' r='11' fill='#fff'/><circle cx='124' cy='84' r='7' fill='#1a2e4a'/>
+    <circle cx='121' cy='81' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='105' rx='9' ry='7' fill='#e8a070'/>
+    <path d='M88,114 Q100,124 112,114' fill='none' stroke='#c87c50' stroke-width='2.5'/>
+    <rect x='72' y='130' width='56' height='46' rx='8' fill='#5c6bc0'/>
+    <text x='100' y='196' font-size='10' fill='#3949ab' text-anchor='middle' font-family='Arial' font-weight='bold'>Hilda</text>
+   </svg>`},
+  {name:'Super Why',emoji:'📖',bg:'#e3f2fd',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e3f2fd' rx='18'/>
+    <ellipse cx='100' cy='152' rx='50' ry='40' fill='#ffcc80'/>
+    <circle cx='100' cy='90' r='52' fill='#ffcc80'/>
+    <circle cx='78' cy='80' r='12' fill='#fff'/><circle cx='80' cy='82' r='8' fill='#1a2a5e'/>
+    <circle cx='77' cy='79' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='80' r='12' fill='#fff'/><circle cx='124' cy='82' r='8' fill='#1a2a5e'/>
+    <circle cx='121' cy='79' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='104' rx='9' ry='7' fill='#e8a070'/>
+    <path d='M88,114 Q100,126 112,114' fill='none' stroke='#c87c50' stroke-width='2.5'/>
+    <rect x='68' y='128' width='64' height='44' rx='8' fill='#e53935'/>
+    <text x='100' y='158' font-size='22' fill='#fff' text-anchor='middle' font-family='Arial' font-weight='bold'>W</text>
+    <ellipse cx='62' cy='70' rx='14' ry='30' fill='#e53935' transform='rotate(-20 62 70)'/>
+    <ellipse cx='138' cy='70' rx='14' ry='30' fill='#e53935' transform='rotate(20 138 70)'/>
+    <text x='100' y='196' font-size='10' fill='#b71c1c' text-anchor='middle' font-family='Arial' font-weight='bold'>Super Why!</text>
+   </svg>`},
+  {name:"Alma's Way",emoji:'🌺',bg:'#fce4ec',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fce4ec' rx='18'/>
+    <ellipse cx='100' cy='152' rx='50' ry='40' fill='#8d5524'/>
+    <circle cx='100' cy='90' r='52' fill='#8d5524'/>
+    <path d='M54,84 Q54,30 100,28 Q146,30 146,84' fill='#1a1a2e'/>
+    <circle cx='78' cy='82' r='12' fill='#fff'/><circle cx='80' cy='84' r='8' fill='#2a1a00'/>
+    <circle cx='77' cy='81' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='82' r='12' fill='#fff'/><circle cx='124' cy='84' r='8' fill='#2a1a00'/>
+    <circle cx='121' cy='81' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='106' rx='9' ry='7' fill='#5c3317'/>
+    <path d='M88,116 Q100,128 112,116' fill='none' stroke='#5c3317' stroke-width='2.5'/>
+    <circle cx='72' cy='44' r='10' fill='#ff6b9d'/>
+    <circle cx='90' cy='32' r='8' fill='#ff6b9d'/>
+    <circle cx='112' cy='32' r='8' fill='#ffb830'/>
+    <circle cx='128' cy='44' r='10' fill='#ffb830'/>
+    <text x='100' y='196' font-size='9' fill='#c2185b' text-anchor='middle' font-family='Arial' font-weight='bold'>Alma's Way</text>
+   </svg>`},
+  {name:'Pete the Cat',emoji:'🐱',bg:'#e3f2fd',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e3f2fd' rx='18'/>
+    <ellipse cx='100' cy='152' rx='52' ry='42' fill='#4a90d9'/>
+    <circle cx='100' cy='90' r='54' fill='#4a90d9'/>
+    <polygon points='52,56 38,14 80,46' fill='#4a90d9'/>
+    <polygon points='148,56 162,14 120,46' fill='#4a90d9'/>
+    <polygon points='56,52 46,20 76,44' fill='#5ba3e6'/>
+    <polygon points='144,52 154,20 124,44' fill='#5ba3e6'/>
+    <circle cx='78' cy='82' r='13' fill='#fff'/><circle cx='80' cy='84' r='8' fill='#1a2a5e'/>
+    <circle cx='77' cy='81' r='3' fill='#fff'/>
+    <circle cx='122' cy='82' r='13' fill='#fff'/><circle cx='124' cy='84' r='8' fill='#1a2a5e'/>
+    <circle cx='121' cy='81' r='3' fill='#fff'/>
+    <ellipse cx='100' cy='106' rx='9' ry='7' fill='#2f6db5'/>
+    <path d='M88,116 Q100,128 112,116' fill='none' stroke='#2f6db5' stroke-width='3'/>
+    <text x='100' y='196' font-size='9' fill='#1565c0' text-anchor='middle' font-family='Arial' font-weight='bold'>Pete the Cat</text>
+   </svg>`},
+  {name:'Go Dog Go',emoji:'🚗',bg:'#e8f5e9',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e8f5e9' rx='18'/>
+    <rect x='20' y='108' width='160' height='54' rx='14' fill='#ff6b9d'/>
+    <path d='M34,108 Q50,72 100,68 Q150,72 166,108Z' fill='#ff8cc0'/>
+    <rect x='48' y='78' width='44' height='28' rx='6' fill='#b3e5fc'/>
+    <rect x='108' y='78' width='44' height='28' rx='6' fill='#b3e5fc'/>
+    <circle cx='52' cy='168' r='17' fill='#333'/><circle cx='52' cy='168' r='8' fill='#888'/>
+    <circle cx='148' cy='168' r='17' fill='#333'/><circle cx='148' cy='168' r='8' fill='#888'/>
+    <circle cx='80' cy='90' r='10' fill='#c8a46e'/><circle cx='82' cy='92' r='6' fill='#2a1800'/>
+    <circle cx='120' cy='90' r='10' fill='#c8a46e'/><circle cx='122' cy='92' r='6' fill='#2a1800'/>
+    <path d='M88,104 Q100,114 112,104' fill='none' stroke='#a07840' stroke-width='2.5'/>
+    <text x='100' y='196' font-size='9' fill='#2e7d32' text-anchor='middle' font-family='Arial' font-weight='bold'>Go, Dog. Go!</text>
+   </svg>`},
+  {name:'Molly of Denali',emoji:'🏔️',bg:'#e8eaf6',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e8eaf6' rx='18'/>
+    <polygon points='100,20 180,170 20,170' fill='#5c6bc0'/>
+    <polygon points='100,20 170,170 30,170' fill='#7986cb'/>
+    <circle cx='100' cy='90' r='48' fill='#c8a46e'/>
+    <path d='M60,75 Q60,34 100,32 Q140,34 140,75' fill='#1a1a2e'/>
+    <circle cx='78' cy='80' r='11' fill='#fff'/><circle cx='80' cy='82' r='7' fill='#2a1a00'/>
+    <circle cx='77' cy='79' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='80' r='11' fill='#fff'/><circle cx='124' cy='82' r='7' fill='#2a1a00'/>
+    <circle cx='121' cy='79' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='103' rx='9' ry='7' fill='#8d5524'/>
+    <path d='M88,112 Q100,122 112,112' fill='none' stroke='#8d5524' stroke-width='2.5'/>
+    <text x='100' y='196' font-size='9' fill='#3949ab' text-anchor='middle' font-family='Arial' font-weight='bold'>Molly of Denali</text>
+   </svg>`},
+  {name:'Peg + Cat',emoji:'🔷',bg:'#fff9c4',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fff9c4' rx='18'/>
+    <circle cx='100' cy='92' r='52' fill='#ffcc80'/>
+    <ellipse cx='100' cy='152' rx='50' ry='40' fill='#ffcc80'/>
+    <path d='M57,78 Q50,34 100,30 Q150,34 143,78' fill='#c8a46e'/>
+    <circle cx='78' cy='80' r='12' fill='#fff'/><circle cx='80' cy='82' r='8' fill='#2a1800'/>
+    <circle cx='77' cy='79' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='80' r='12' fill='#fff'/><circle cx='124' cy='82' r='8' fill='#2a1800'/>
+    <circle cx='121' cy='79' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='104' rx='9' ry='7' fill='#e8a070'/>
+    <path d='M88,114 Q100,126 112,114' fill='none' stroke='#c87c50' stroke-width='2.5'/>
+    <polygon points='88,40 100,10 112,40' fill='#e53935'/>
+    <rect x='92' y='30' width='16' height='20' rx='4' fill='#e53935'/>
+    <text x='28' y='110' font-size='28' fill='#e53935' font-family='Arial' font-weight='bold'>+</text>
+    <text x='100' y='196' font-size='10' fill='#c62828' text-anchor='middle' font-family='Arial' font-weight='bold'>Peg + Cat</text>
+   </svg>`},
+  {name:'Sesame Street',emoji:'🌟',bg:'#fff9c4',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fff9c4' rx='18'/>
+    <circle cx='100' cy='88' r='56' fill='#ffb830'/>
+    <circle cx='78' cy='78' r='13' fill='#fff'/><circle cx='80' cy='80' r='9' fill='#1a1a2e'/>
+    <circle cx='77' cy='77' r='3' fill='#fff'/>
+    <circle cx='122' cy='78' r='13' fill='#fff'/><circle cx='124' cy='80' r='9' fill='#1a1a2e'/>
+    <circle cx='121' cy='77' r='3' fill='#fff'/>
+    <path d='M82,106 Q100,122 118,106' fill='none' stroke='#e65100' stroke-width='3.5'/>
+    <ellipse cx='100' cy='106' rx='6' ry='5' fill='#ff7043'/>
+    <ellipse cx='66' cy='62' rx='12' ry='18' fill='#ffa726'/>
+    <ellipse cx='134' cy='62' rx='12' ry='18' fill='#ffa726'/>
+    <circle cx='66' cy='52' r='8' fill='#ffb830'/>
+    <circle cx='134' cy='52' r='8' fill='#ffb830'/>
+    <ellipse cx='100' cy='160' rx='55' ry='36' fill='#ff7043'/>
+    <text x='100' y='170' font-size='11' fill='#fff' text-anchor='middle' font-family='Arial' font-weight='bold'>SESAME ST</text>
+    <text x='100' y='196' font-size='9' fill='#e65100' text-anchor='middle' font-family='Arial' font-weight='bold'>Sesame Street</text>
+   </svg>`},
+  {name:'Louie',emoji:'🦊',bg:'#fce4ec',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fce4ec' rx='18'/>
+    <ellipse cx='100' cy='152' rx='52' ry='40' fill='#ff8c00'/>
+    <circle cx='100' cy='90' r='54' fill='#ff8c00'/>
+    <polygon points='56,58 40,14 84,50' fill='#ff8c00'/>
+    <polygon points='144,58 160,14 116,50' fill='#ff8c00'/>
+    <polygon points='60,54 48,22 82,46' fill='#ffcc80'/>
+    <polygon points='140,54 152,22 118,46' fill='#ffcc80'/>
+    <ellipse cx='100' cy='110' rx='38' ry='28' fill='#ffcc80'/>
+    <circle cx='78' cy='82' r='12' fill='#fff'/><circle cx='80' cy='84' r='8' fill='#3a2800'/>
+    <circle cx='77' cy='81' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='82' r='12' fill='#fff'/><circle cx='124' cy='84' r='8' fill='#3a2800'/>
+    <circle cx='121' cy='81' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='107' rx='9' ry='7' fill='#e07000'/>
+    <path d='M88,118 Q100,130 112,118' fill='none' stroke='#e07000' stroke-width='2.5'/>
+    <text x='100' y='196' font-size='10' fill='#e65100' text-anchor='middle' font-family='Arial' font-weight='bold'>Louie</text>
+   </svg>`},
+  {name:'Creative Galaxy',emoji:'🎨',bg:'#f3e5f5',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#f3e5f5' rx='18'/>
+    <circle cx='100' cy='100' r='70' fill='#1a1a2e'/>
+    <circle cx='100' cy='100' r='52' fill='#4a3a8e'/>
+    <circle cx='76' cy='86' r='12' fill='#fff'/><circle cx='78' cy='88' r='8' fill='#1a1a2e'/>
+    <circle cx='75' cy='85' r='3' fill='#fff'/>
+    <circle cx='120' cy='86' r='12' fill='#fff'/><circle cx='122' cy='88' r='8' fill='#1a1a2e'/>
+    <circle cx='119' cy='85' r='3' fill='#fff'/>
+    <path d='M84,106 Q100,120 116,106' fill='none' stroke='#a78bfa' stroke-width='3'/>
+    <circle cx='50' cy='48' r='8' fill='#ffb830'/>
+    <circle cx='150' cy='48' r='8' fill='#ff6b9d'/>
+    <circle cx='30' cy='100' r='6' fill='#4ecdc4'/>
+    <circle cx='170' cy='100' r='6' fill='#56cf81'/>
+    <circle cx='50' cy='152' r='8' fill='#a78bfa'/>
+    <circle cx='150' cy='152' r='8' fill='#4fa3e0'/>
+    <text x='100' y='196' font-size='9' fill='#7c3aed' text-anchor='middle' font-family='Arial' font-weight='bold'>Creative Galaxy</text>
+   </svg>`},
+  {name:'True Rainbow Kingdom',emoji:'🌈',bg:'#e8f5e9',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e8f5e9' rx='18'/>
+    <path d='M10,150 Q10,50 100,50 Q190,50 190,150' fill='none' stroke='#e53935' stroke-width='10'/>
+    <path d='M22,150 Q22,66 100,66 Q178,66 178,150' fill='none' stroke='#ff9800' stroke-width='9'/>
+    <path d='M34,150 Q34,82 100,82 Q166,82 166,150' fill='none' stroke='#ffeb3b' stroke-width='8'/>
+    <path d='M46,150 Q46,96 100,96 Q154,96 154,150' fill='none' stroke='#4caf50' stroke-width='8'/>
+    <circle cx='100' cy='86' r='44' fill='#ffcc80'/>
+    <circle cx='82' cy='78' r='11' fill='#fff'/><circle cx='84' cy='80' r='7' fill='#2a1800'/>
+    <circle cx='81' cy='77' r='2.5' fill='#fff'/>
+    <circle cx='118' cy='78' r='11' fill='#fff'/><circle cx='120' cy='80' r='7' fill='#2a1800'/>
+    <circle cx='117' cy='77' r='2.5' fill='#fff'/>
+    <path d='M88,96 Q100,108 112,96' fill='none' stroke='#c87c50' stroke-width='2.5'/>
+    <text x='100' y='196' font-size='8' fill='#2e7d32' text-anchor='middle' font-family='Arial' font-weight='bold'>True &amp; Rainbow Kingdom</text>
    </svg>`},
 ];
+
+// Pick 5 shows for today using date as seed (consistent across the day)
+function _jigDailyShows(){
+  const key='c_jig_shows_'+todayKey();
+  const cached=localStorage.getItem(key);
+  if(cached){
+    try{
+      const indices=JSON.parse(cached);
+      return indices.map(i=>JIGSAW_SHOWS[i]);
+    }catch(e){}
+  }
+  // Seeded shuffle using today's date string
+  const seed=parseInt(todayKey().replace(/-/g,''))%999983;
+  let s=seed;function seededRand(){s=(s*16807+0)%2147483647;return(s-1)/2147483646;}
+  const arr=[...Array(JIGSAW_SHOWS.length).keys()];
+  for(let i=arr.length-1;i>0;i--){const j=Math.floor(seededRand()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  const picked=arr.slice(0,5);
+  localStorage.setItem(key,JSON.stringify(picked));
+  return picked.map(i=>JIGSAW_SHOWS[i]);
+}
+let _jigDailyPool=null;
 
 function _jigGetPiece(animal,pieceIdx,sz){
   const vbs=['0 0 100 100','100 0 100 100','0 100 100 100','100 100 100 100'];
@@ -5827,17 +6263,14 @@ function _jigGetPiece(animal,pieceIdx,sz){
     .replace("height='200'","height='"+sz+"'");
 }
 
-function buildPuzzleJigsaw(){jigScore=0;jigRound=0;nextJigRound();}
+function buildPuzzleJigsaw(){jigScore=0;jigRound=0;_jigDailyPool=_jigDailyShows();nextJigRound();}
 
 function nextJigRound(){
   const total=5;jigRound++;
   if(jigRound>total){endGame(jigScore,total,'puzzleJigsaw');return;}
   jigPlacements={0:null,1:null,2:null,3:null};
-  // Skip animals already completed today
-  const doneToday=JSON.parse(localStorage.getItem('c_jig_done_'+todayKey())||'[]');
-  const available=JIGSAW_ANIMALS.filter(a=>!doneToday.includes(a.name));
-  const pool=available.length>0?available:JIGSAW_ANIMALS; // if all done today, use all
-  _jigAnimal=pool[(jigRound-1)%pool.length];
+  if(!_jigDailyPool)_jigDailyPool=_jigDailyShows();
+  _jigAnimal=_jigDailyPool[(jigRound-1)%_jigDailyPool.length];
   const scrambled=[0,1,2,3].sort(()=>Math.random()-0.5);
   _renderJigsaw(scrambled);
   speakText('Build the '+_jigAnimal.name+'! Drag each piece into the puzzle!');
