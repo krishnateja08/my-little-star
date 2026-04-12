@@ -1996,6 +1996,35 @@ function _showFamilyCodeScreen(){
   }
 })();
 
+// ══════════════════════════════════════
+//  LIVE SYNC — poll Firebase every 30s so all devices stay up to date
+// ══════════════════════════════════════
+let _lastSyncHash = '';
+async function _pollFirebase(){
+  if(!_syncReady||!_familyCode) return;
+  try{
+    const res  = await fetch(`${_DB_URL}/families/${_familyCode}.json`);
+    const data = await res.json();
+    if(!data||typeof data !== 'object') return;
+    // Build a quick hash to detect if anything actually changed
+    const hash = JSON.stringify(data);
+    if(hash === _lastSyncHash) return; // nothing changed — skip refresh
+    _lastSyncHash = hash;
+    // Write all Firebase values into localStorage
+    Object.keys(data).forEach(k => {
+      const v = data[k];
+      _lsSet(k, typeof v === 'string' ? v : JSON.stringify(v));
+    });
+    // Only refresh UI if user is NOT mid-activity to avoid interruptions
+    if(!busy && !currentlyPlaying){
+      _refreshAppFromStorage();
+      console.log('🔄 Live sync: changes detected and applied');
+    }
+  }catch(e){ /* silent — offline is fine */ }
+}
+// Start polling 5s after boot (let initial load settle), then every 30s
+setTimeout(()=>{ _pollFirebase(); setInterval(_pollFirebase, 30000); }, 5000);
+
 // Helper to change family code from Parent Dashboard
 function changeFamilyCode(){
   const newCode = prompt('Enter new Family Code (use same on all devices):','');
@@ -7518,7 +7547,7 @@ function switchGameCat(c){
 // ══════════════════════════════════════
 //  HELPERS
 // ══════════════════════════════════════
-function showSpill(){document.getElementById('spill').textContent=`⭐ ${totalStarsEver} stars`;}
+function showSpill(){document.getElementById('spill').textContent=`⭐ ${stars} stars`;}
 let tt;
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2500);}
 function burst(){
