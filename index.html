@@ -1588,7 +1588,7 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
 </head>
 <body>
 
-<!-- Family Code Overlay (shown once per device) -->
+<!-- Auth Overlay (Google Sign-In) -->
 <div id="familyCodeOverlay"></div>
 
 <!-- App Loader (shown while Firebase syncs) -->
@@ -1786,12 +1786,35 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
 <div id="gateOverlay"></div>
 
 
+<!-- Firebase SDK (compat CDN — works with simple script tags) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
 <script>
 // ══════════════════════════════════════
-//  🔥 FIREBASE SYNC — REST API (no CDN needed!)
-//  Uses built-in fetch() — works on every browser/network
+//  🔥 FIREBASE SYNC — Google Auth + REST API
+//  Sign in with Google → data stored under /users/{uid}
 // ══════════════════════════════════════
-const _DB_URL = 'https://my-little-star-ef311-default-rtdb.firebaseio.com';
+
+// ┌─────────────────────────────────────────────────────┐
+// │  ⚠️  PASTE YOUR FIREBASE CONFIG VALUES BELOW  ⚠️     │
+// │  Get them from Firebase Console → Project Settings   │
+// └─────────────────────────────────────────────────────┘
+const _FIREBASE_CONFIG = {
+  apiKey:      "AIzaSyCFWkBSHzo4PzwYAQKvgXExMBCtX_HI2Ro",
+  authDomain:  "my-little-star-ef311.firebaseapp.com",
+  projectId:   "my-little-star-ef311",
+  databaseURL: "https://my-little-star-ef311-default-rtdb.firebaseio.com"
+};
+
+firebase.initializeApp(_FIREBASE_CONFIG);
+const _auth = firebase.auth();
+
+const _DB_URL = _FIREBASE_CONFIG.databaseURL;
+
+// Current authenticated user (set after sign-in)
+let _currentUser = null;
+let _authToken   = '';
 
 // Keys & prefixes that should sync across devices
 const SYNC_KEYS = [
@@ -1814,68 +1837,87 @@ const _lsSet    = localStorage.setItem.bind(localStorage);
 const _lsRemove = localStorage.removeItem.bind(localStorage);
 const _lsGet    = localStorage.getItem.bind(localStorage);
 
-let _familyCode = _lsGet('c_family_code')||'';
+let _familyCode = ''; // kept for backward compat — now unused for sync
 let _syncReady  = false;
 
-// ── REST helpers ──
-function _fbPath(key){ return `${_DB_URL}/families/${_familyCode}/${_safeKey(key)}.json`; }
+// ── REST helpers (now uses /users/{uid} + auth token) ──
+function _fbPath(key){
+  if(!_currentUser) return null;
+  return `${_DB_URL}/users/${_currentUser.uid}/${_safeKey(key)}.json?auth=${_authToken}`;
+}
 
 function fbWrite(key, value){
-  if(!_syncReady||!_familyCode) return;
+  if(!_syncReady||!_currentUser) return;
+  const path = _fbPath(key);
+  if(!path) return;
   let parsed = value;
-  try{ parsed = JSON.parse(value); }catch(e){ /* plain string — keep as-is */ }
-  fetch(_fbPath(key),{
+  try{ parsed = JSON.parse(value); }catch(e){ /* plain string */ }
+  fetch(path,{
     method:'PUT',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify(parsed)
   }).then(r=>{
-    if(!r.ok) r.text().then(t=>console.error('❌ Firebase write FAILED for key:',key,'status:',r.status,'response:',t));
-    else console.log('✅ Firebase wrote:',key,'=',parsed);
+    if(!r.ok) r.text().then(t=>console.error('❌ Firebase write FAILED:',key,r.status,t));
+    else console.log('✅ Firebase wrote:',key);
   }).catch(e=>console.error('❌ Firebase write ERROR:',key,e));
 }
 
 function fbDelete(key){
-  if(!_syncReady||!_familyCode) return;
-  fetch(_fbPath(key),{ method:'DELETE' }).catch(()=>{});
+  if(!_syncReady||!_currentUser) return;
+  const path = _fbPath(key);
+  if(!path) return;
+  fetch(path,{ method:'DELETE' }).catch(()=>{});
 }
 
 async function _loadFromFirebase(){
-  if(!_familyCode) return;
+  if(!_currentUser) return;
   try{
-    const res  = await fetch(`${_DB_URL}/families/${_familyCode}.json`);
+    const res  = await fetch(`${_DB_URL}/users/${_currentUser.uid}.json?auth=${_authToken}`);
     const data = await res.json();
     if(data && typeof data === 'object'){
       Object.keys(data).forEach(k => {
-        // Firebase returns parsed JSON (numbers, arrays, objects).
-        // localStorage only stores strings — so we must stringify non-strings.
         const v = data[k];
         _lsSet(k, typeof v === 'string' ? v : JSON.stringify(v));
       });
       console.log('✅ Firebase synced!', Object.keys(data).length, 'keys loaded');
-      // NOTE: Do NOT call _refreshAppFromStorage() here — todayKey() and other
-      // functions are not yet defined at this point in the file. The boot sequence
-      // at the bottom of the file reads from localStorage AFTER Firebase has written
-      // all values above, so stars/done will already be correct on first render.
     }
   }catch(e){ console.error('❌ Firebase LOAD error:',e); }
 }
 
+// ── One-time migration: copy old family code data → user's auth path ──
+async function _migrateFromFamilyCode(){
+  const oldCode = _lsGet('c_family_code');
+  if(!oldCode || !_currentUser) return;
+  console.log('🔄 Migrating data from family code:', oldCode, '→ user:', _currentUser.uid);
+  try{
+    const res  = await fetch(`${_DB_URL}/families/${oldCode}.json`);
+    const data = await res.json();
+    if(data && typeof data === 'object'){
+      await fetch(`${_DB_URL}/users/${_currentUser.uid}.json?auth=${_authToken}`,{
+        method:'PATCH',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(data)
+      });
+      console.log('✅ Migration complete!', Object.keys(data).length, 'keys copied');
+      Object.keys(data).forEach(k => {
+        const v = data[k];
+        _lsSet(k, typeof v === 'string' ? v : JSON.stringify(v));
+      });
+    }
+    _lsRemove('c_family_code');
+  }catch(e){ console.warn('Migration error (non-fatal):', e); }
+}
+
 // Re-read all key variables from localStorage and refresh UI
-// This fixes the mismatch between Firebase data and what the app shows
 function _refreshAppFromStorage(){
   try{
-    // Only refresh if app is already booted (functions exist)
     if(typeof todayKey !== 'function') return;
 
-    // Re-read core state from localStorage (now updated from Firebase)
     const fbDone  = JSON.parse(_lsGet('cd_'+todayKey())||'[]');
     const fbStars = parseInt(_lsGet('cs_'+todayKey())||'0');
     const fbAllUsed = JSON.parse(_lsGet('c_allused')||'[]');
     const fbTotalStars = parseInt(_lsGet('c_total_stars')||'0');
 
-    // ── KEY FIX: recalculate week from synced start-date ──
-    // On a new device, 'cs' (app start date) was just loaded from Firebase.
-    // We MUST recalculate week/day now so the correct games are unlocked.
     if(typeof getWeek === 'function'){
       const recalc = getWeek();
       if(typeof week !== 'undefined') week = recalc.week;
@@ -1884,12 +1926,10 @@ function _refreshAppFromStorage(){
       if(typeof renderTodayBar === 'function') renderTodayBar();
     }
 
-    // Re-read skipped list (may have changed on another device)
     if(typeof skippedToday !== 'undefined'){
       skippedToday = JSON.parse(_lsGet('c_skipped_'+todayKey())||'[]');
     }
 
-    // Re-read rewards/cosmetics
     if(typeof owned       !== 'undefined') owned       = JSON.parse(_lsGet('c_owned')||'[]');
     if(typeof activeHat   !== 'undefined') activeHat   = _lsGet('c_activeHat')||'';
     if(typeof activeChar  !== 'undefined') activeChar  = _lsGet('c_activeChar')||'';
@@ -1897,13 +1937,11 @@ function _refreshAppFromStorage(){
     if(typeof diffLevel   !== 'undefined') diffLevel   = parseInt(_lsGet('c_diff')||'1');
     if(typeof friendName  !== 'undefined') friendName  = _lsGet('c_friendName')||'';
 
-    // Update live variables — use higher value to never lose progress
     if(typeof done           !== 'undefined') done           = fbDone.length >= done.length ? fbDone : done;
     if(typeof stars          !== 'undefined') stars          = Math.max(fbStars, stars);
     if(typeof allUsed        !== 'undefined') allUsed        = fbAllUsed.length >= allUsed.length ? fbAllUsed : allUsed;
     if(typeof totalStarsEver !== 'undefined') totalStarsEver = Math.max(fbTotalStars, totalStarsEver);
 
-    // Refresh all visible UI elements
     if(typeof showSpill       === 'function') showSpill();
     if(typeof renderHist      === 'function') renderHist();
     if(typeof updateProg      === 'function') updateProg();
@@ -1914,15 +1952,11 @@ function _refreshAppFromStorage(){
     if(typeof renderGoals     === 'function') renderGoals();
     if(typeof renderTabBadges === 'function') renderTabBadges();
 
-    // Re-render the current activity/game with correct week data
-    // Only do this if user is NOT actively playing — don't interrupt mid-game!
     if(typeof fetchNext === 'function' && !busy && !currentlyPlaying){ fetchNext(); }
 
     console.log('🔄 App refreshed — Week:', week, '| Stars:', fbStars, '| Done:', fbDone.length);
   }catch(e){ console.warn('Refresh error:',e); }
 }
-
-
 
 // Override localStorage so every write also syncs to Firebase
 localStorage.setItem = function(key, value){
@@ -1934,8 +1968,8 @@ localStorage.removeItem = function(key){
   if(_shouldSync(key)) fbDelete(key);
 };
 
-// ── Family code screen ──
-function _showFamilyCodeScreen(){
+// ── Google Sign-In screen ──
+function _showSignInScreen(){
   return new Promise(resolve=>{
     document.getElementById('familyCodeOverlay').innerHTML=`
       <div style="position:fixed;inset:0;background:linear-gradient(135deg,#ff6b9d,#ffb830,#4ecdc4);
@@ -1945,86 +1979,134 @@ function _showFamilyCodeScreen(){
           <div style="font-size:3rem;margin-bottom:8px">⭐</div>
           <h2 style="font-family:'Baloo 2',cursive;color:#ff6b9d;margin-bottom:6px;font-size:1.4rem">My Little Star</h2>
           <p style="font-size:.85rem;color:#666;margin-bottom:16px;line-height:1.5">
-            Create a <strong>Family Code</strong> to sync baby's progress across all devices! 📱💻<br><br>
-            Use the <strong>same code</strong> on every phone, tablet and computer.
+            Sign in with your <strong>Google account</strong> to sync progress across all your devices! 📱💻<br><br>
+            Same Google account = same progress everywhere.
           </p>
-          <input id="fcInput" type="text" placeholder="e.g. krishna-baby-2024"
-            style="width:100%;padding:12px 14px;border:2px solid #e0d4ff;border-radius:12px;
-            font-size:1rem;font-family:'Nunito',sans-serif;margin-bottom:8px;outline:none;
-            text-align:center;box-sizing:border-box;">
-          <p style="font-size:.7rem;color:#bbb;margin-bottom:14px">
-            💡 Any word works! Keep it simple and easy to remember.
-          </p>
-          <button onclick="window.__setFC()"
-            style="width:100%;padding:13px;border:none;border-radius:12px;cursor:pointer;
-            background:linear-gradient(135deg,#ff6b9d,#a78bfa);color:#fff;
-            font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:700;">
-            🚀 Start Learning!
+          <button id="googleSignInBtn" onclick="window.__doGoogleSignIn()"
+            style="width:100%;padding:13px 16px;border:2px solid #e0d4ff;border-radius:12px;cursor:pointer;
+            background:#fff;color:#333;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;
+            display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;">
+            <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 010-9.18l-7.97-6.19a24.01 24.01 0 000 21.56l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+            Sign in with Google
           </button>
-          <p style="font-size:.65rem;color:#ccc;margin-top:10px">You can change this in Parent settings anytime</p>
+          <div id="signInError" style="margin-top:12px;font-size:.75rem;color:#ff5252;display:none"></div>
+          <p style="font-size:.65rem;color:#ccc;margin-top:14px">Your data is private and secure 🔒</p>
         </div>
       </div>`;
 
-    window.__setFC = function(){
-      const raw = document.getElementById('fcInput').value.trim();
-      if(!raw){ alert('Please enter a family code!'); return; }
-      const code = raw.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'');
-      if(!code){ alert('Please use letters and numbers only!'); return; }
-      _familyCode = code;
-      _lsSet('c_family_code', code);
-      document.getElementById('familyCodeOverlay').innerHTML='';
-      resolve(code);
+    window.__doGoogleSignIn = async function(){
+      const btn = document.getElementById('googleSignInBtn');
+      const errEl = document.getElementById('signInError');
+      btn.style.opacity='.6';btn.style.pointerEvents='none';
+      btn.innerHTML='<div style="width:20px;height:20px;border:2px solid #ccc;border-top-color:#ff6b9d;border-radius:50%;animation:spin 1s linear infinite"></div> Signing in...';
+      errEl.style.display='none';
+      try{
+        const provider = new firebase.auth.GoogleAuthProvider();
+        let result;
+        try{
+          result = await _auth.signInWithPopup(provider);
+        }catch(popupErr){
+          if(popupErr.code==='auth/popup-blocked'||popupErr.code==='auth/popup-closed-by-user'){
+            await _auth.signInWithRedirect(provider);
+            return;
+          }
+          throw popupErr;
+        }
+        _currentUser = result.user;
+        _authToken = await _currentUser.getIdToken();
+        document.getElementById('familyCodeOverlay').innerHTML='';
+        resolve(_currentUser);
+      }catch(e){
+        console.error('Sign-in error:', e);
+        errEl.textContent = 'Sign-in failed: '+(e.message||'Please try again');
+        errEl.style.display='block';
+        btn.style.opacity='1';btn.style.pointerEvents='auto';
+        btn.innerHTML='<svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 010-9.18l-7.97-6.19a24.01 24.01 0 000 21.56l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Sign in with Google';
+      }
     };
-    setTimeout(()=>{
-      const inp=document.getElementById('fcInput');
-      if(inp) inp.addEventListener('keydown',e=>{ if(e.key==='Enter') window.__setFC(); });
-    },100);
   });
+}
+
+// ── Sign out ──
+async function signOutUser(){
+  if(!confirm('Sign out? You can sign back in anytime to access your progress.')) return;
+  try{
+    await _auth.signOut();
+    _currentUser = null;
+    _authToken = '';
+    _syncReady = false;
+    location.reload();
+  }catch(e){ console.error('Sign-out error:', e); }
 }
 
 // ── Main init ──
 (async function _firebaseInit(){
   try{
-    if(!_familyCode) await _showFamilyCodeScreen();
+    // Check for redirect result first (mobile sign-in flow)
+    const redirectResult = await _auth.getRedirectResult();
+    if(redirectResult && redirectResult.user){
+      _currentUser = redirectResult.user;
+      _authToken = await _currentUser.getIdToken();
+    }
+
+    // If not signed in yet, check for persisted session
+    if(!_currentUser){
+      await new Promise((resolve)=>{
+        const unsub = _auth.onAuthStateChanged(async (user)=>{
+          unsub();
+          if(user){
+            _currentUser = user;
+            _authToken = await user.getIdToken();
+            document.getElementById('familyCodeOverlay').innerHTML='';
+            resolve();
+          } else {
+            await _showSignInScreen();
+            resolve();
+          }
+        });
+      });
+    }
+
+    // Migrate old family code data if present
+    const oldFamilyCode = _lsGet('c_family_code');
+    if(oldFamilyCode && _currentUser){
+      await _migrateFromFamilyCode();
+    }
+
     await _loadFromFirebase();
     _syncReady = true;
     document.getElementById('appLoader').style.display='none';
-    console.log('🔥 Firebase REST sync active! Family:', _familyCode);
+    console.log('🔥 Firebase Auth sync active! User:', _currentUser.email, 'UID:', _currentUser.uid);
   }catch(e){
     console.warn('Firebase init error, running offline:',e);
     _syncReady = true;
     document.getElementById('appLoader').style.display='none';
   }
-  // Boot the app NOW — after Firebase has loaded data into localStorage
   _bootApp();
 })();
 
 // ══════════════════════════════════════
-//  LIVE SYNC — poll Firebase every 30s so all devices stay up to date
+//  LIVE SYNC — poll Firebase every 10s so all devices stay up to date
 // ══════════════════════════════════════
 let _lastSyncHash = '';
 async function _pollFirebase(){
-  if(!_syncReady||!_familyCode) return;
+  if(!_syncReady||!_currentUser) return;
   try{
-    const res  = await fetch(`${_DB_URL}/families/${_familyCode}.json`);
+    _authToken = await _currentUser.getIdToken();
+    const res  = await fetch(`${_DB_URL}/users/${_currentUser.uid}.json?auth=${_authToken}`);
     const data = await res.json();
     if(!data||typeof data !== 'object') return;
-    // Build a quick hash to detect if anything actually changed
     const hash = JSON.stringify(data);
-    if(hash === _lastSyncHash) return; // nothing changed — skip refresh
+    if(hash === _lastSyncHash) return;
     _lastSyncHash = hash;
-    // Write all Firebase values into localStorage
     Object.keys(data).forEach(k => {
       const v = data[k];
       _lsSet(k, typeof v === 'string' ? v : JSON.stringify(v));
     });
-    // ALWAYS update stars + totalStarsEver + done — even mid-activity
-    // so the star button stays accurate on all devices
     if(typeof todayKey === 'function'){
       const syncedStars = parseInt(_lsGet('cs_'+todayKey())||'0');
       const syncedTotal = parseInt(_lsGet('c_total_stars')||'0');
       const syncedDone  = JSON.parse(_lsGet('cd_'+todayKey())||'[]');
-      // Only apply if synced value is HIGHER (never overwrite local progress)
       if(syncedStars > stars && typeof stars !== 'undefined'){
         stars = syncedStars;
         if(typeof showSpill === 'function') showSpill();
@@ -2038,21 +2120,19 @@ async function _pollFirebase(){
         if(typeof renderStarPath  === 'function') renderStarPath();
       }
     }
-    // Full UI refresh only when not mid-activity (avoids disrupting gameplay)
     if(!busy && !currentlyPlaying){
       _refreshAppFromStorage();
       console.log('🔄 Live sync: changes detected and applied');
     }
   }catch(e){ /* silent — offline is fine */ }
 }
-// Start polling 5s after boot (let initial load settle), then every 10s
 setTimeout(()=>{ _pollFirebase(); setInterval(_pollFirebase, 10000); }, 5000);
 
-// Helper to change family code from Parent Dashboard
 // ── Debug: show sync status ──
 function showSyncDebug(){
   const info = {
-    familyCode: _familyCode || '❌ NOT SET',
+    user: _currentUser ? (_currentUser.email || _currentUser.uid) : '❌ NOT SIGNED IN',
+    uid: _currentUser ? _currentUser.uid : '?',
     syncReady: _syncReady,
     todayKey: typeof todayKey==='function' ? todayKey() : '?',
     starsVar: typeof stars !== 'undefined' ? stars : '?',
@@ -2061,32 +2141,32 @@ function showSyncDebug(){
     lsTotal: localStorage.getItem('c_total_stars'),
     lsDone: (()=>{ try{ return JSON.parse(localStorage.getItem('cd_'+(typeof todayKey==='function'?todayKey():'?'))||'[]').length+' activities'; }catch(e){ return '?'; }})(),
     lsAllUsed: (()=>{ try{ return JSON.parse(localStorage.getItem('c_allused')||'[]').length+' items'; }catch(e){ return '?'; }})(),
-    firebasePath: typeof _familyCode!=='undefined' ? _DB_URL+'/families/'+_familyCode : '?',
+    firebasePath: _currentUser ? _DB_URL+'/users/'+_currentUser.uid : '?',
   };
   alert(
     '🔥 FIREBASE SYNC STATUS\n\n'+
-    '👨‍👩‍👧 Family Code: '+info.familyCode+'\n'+
+    '👤 User: '+info.user+'\n'+
+    '🆔 UID: '+info.uid+'\n'+
     '✅ Sync Ready: '+info.syncReady+'\n'+
     '📅 Today Key: '+info.todayKey+'\n\n'+
-    '⭐ stars variable: '+info.starsVar+'\n'+
-    '⭐ totalStarsEver: '+info.totalStarsVar+'\n'+
-    '💾 localStorage today stars (cs_): '+info.lsStars+'\n'+
-    '💾 localStorage total (c_total_stars): '+info.lsTotal+'\n'+
-    '📋 Done today: '+info.lsDone+'\n'+
-    '📋 All used ever: '+info.lsAllUsed+'\n\n'+
+    '⭐ Stars (var): '+info.starsVar+'\n'+
+    '🌟 Total Stars (var): '+info.totalStarsVar+'\n'+
+    '💾 localStorage today stars: '+info.lsStars+'\n'+
+    '💾 localStorage total: '+info.lsTotal+'\n'+
+    '📋 localStorage done: '+info.lsDone+'\n'+
+    '📋 localStorage allUsed: '+info.lsAllUsed+'\n\n'+
     '🔗 Firebase path: '+info.firebasePath+'\n\n'+
-    '👉 Open browser Console (F12) to see write logs'
+    'If stars don\'t match, try refreshing!'
   );
 }
 
+// Legacy compat — changeFamilyCode now shows user info
 function changeFamilyCode(){
-  const newCode = prompt('Enter new Family Code (use same on all devices):','');
-  if(!newCode) return;
-  const code = newCode.trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'');
-  if(!code){ alert('Invalid code!'); return; }
-  _familyCode = code;
-  _lsSet('c_family_code', code);
-  alert('✅ Family code updated to: '+code+'\n\nEnter this same code on all your devices!');
+  if(_currentUser){
+    alert('✅ Signed in as: '+(_currentUser.email||_currentUser.uid)+'\n\nYour progress syncs automatically across all devices where you sign in with this Google account.');
+  } else {
+    alert('Not signed in. Please refresh to sign in.');
+  }
 }
 
 // ══════════════════════════════════════
@@ -6966,7 +7046,8 @@ function renderParentDash(){
           <div class="pd-settings-row">
             <button class="pd-set-btn" onclick="toggleBedtime()">🌙 Bedtime: <strong style="color:var(--purple);margin-left:3px">${bedtimeMode?'ON':'OFF'}</strong></button>
             <button class="pd-set-btn" id="pdSoundBtn" onclick="toggleSound()">🔊 Sound: <strong id="pdSoundLabel" style="color:var(--green);margin-left:3px">${soundOn?'ON':'OFF'}</strong></button>
-            <button class="pd-set-btn" onclick="changeFamilyCode()">🔥 Family Code: <strong style="color:var(--sun);margin-left:3px">${_familyCode||'not set'}</strong></button>
+            <button class="pd-set-btn" onclick="changeFamilyCode()">👤 Account: <strong style="color:var(--sun);margin-left:3px">${_currentUser?(_currentUser.email||'Signed in'):'not signed in'}</strong></button>
+            <button class="pd-set-btn" onclick="signOutUser()" style="border-color:var(--pink);color:var(--pink)">🚪 Sign Out</button>
             <button class="pd-set-btn" onclick="showSyncDebug()" style="background:linear-gradient(135deg,#333,#555)">🔍 Debug Sync Status</button>
             <button class="pd-set-btn" onclick="forceWeekSync()" style="border-color:var(--mint);color:var(--mint)">📅 Fix Week Sync</button>
             <button class="pd-set-btn danger" onclick="parentReset()">🔄 Reset journey</button>
@@ -7285,8 +7366,8 @@ async function forceWeekSync(){
     alert('⚠️ No start date found on this device.\n\nRun this on the device that is already showing the CORRECT week (e.g. Week 2).');
     return;
   }
-  if(!_familyCode){
-    alert('⚠️ No Family Code set. Please set your Family Code first.');
+  if(!_currentUser){
+    alert('⚠️ Not signed in. Please sign in first.');
     return;
   }
   const {week:w, day:d} = getWeek();
@@ -7296,8 +7377,8 @@ async function forceWeekSync(){
   if(!confirmed) return;
 
   try{
-    // Directly PUT the start date to Firebase, bypassing the sync guard
-    const res = await fetch(`${_DB_URL}/families/${_familyCode}/cs.json`,{
+    _authToken = await _currentUser.getIdToken();
+    const res = await fetch(`${_DB_URL}/users/${_currentUser.uid}/cs.json?auth=${_authToken}`,{
       method:'PUT',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify(currentCs)
