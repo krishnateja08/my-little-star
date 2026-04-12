@@ -1649,8 +1649,17 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
   <button class="phys-banner-go">Let's Go!</button>
 </div>
 
-<div class="subj-row" id="subjRow" style="justify-content:center;padding:6px 12px 2px;">
-  <div style="font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800;color:var(--purple);letter-spacing:.5px;">🔤 A to Z Learning Journey</div>
+<div class="subj-row" id="subjRow">
+  <button class="sp active" data-s="all"      onclick="switchSubj('all')">🌈 All</button>
+  <button class="sp"        data-s="abc"      onclick="switchSubj('abc')">🔤 ABC</button>
+  <button class="sp"        data-s="maths"    onclick="switchSubj('maths')">🔢 Maths</button>
+  <button class="sp"        data-s="art"      onclick="switchSubj('art')">🎨 Art</button>
+  <button class="sp"        data-s="science"  onclick="switchSubj('science')">🔬 Science</button>
+  <button class="sp"        data-s="feelings" onclick="switchSubj('feelings')">💛 Feelings</button>
+  <button class="sp"        data-s="world"    onclick="switchSubj('world')">🌍 World</button>
+  <button class="sp"        data-s="body"     onclick="switchSubj('body')">🫀 My Body</button>
+  <button class="sp"        data-s="think"    onclick="switchSubj('think')">🧩 Think</button>
+  <button class="sp"        data-s="read"     onclick="switchSubj('read')">📖 Read</button>
 </div>
 
 <div class="think-row" id="thinkRow">
@@ -2838,7 +2847,7 @@ let {week,day}=getWeek();
 // Restore tab from saved activity if resuming, else auto-detect
 const _saved=localStorage.getItem('c_current');
 let tab=_saved?JSON.parse(_saved).tab:autoTime();
-let subj='abc'; // Learning tab locked to A-Z ABC journey
+let subj='all';
 let gameCat='all';
 let thinkCat='all';
 
@@ -2883,21 +2892,16 @@ function getPool(){
   }
   let pool=CUR[tab]||[];
   pool=pool.filter(a=>!a.w||a.w<=week);
-  // Learning tab: always show ABC activities in A→Z order (first unlocked, not done yet)
-  if(tab==='learning'){
-    pool=pool.filter(a=>a.subj==='abc');
-    pool.sort((a,b)=>(a.w||0)-(b.w||0)); // sort by week = A→Z sequence order
-  }
+  if(tab==='learning'&&subj!=='all'&&subj!=='think') pool=pool.filter(a=>a.subj===subj);
   // Activities done TODAY in this tab should not appear again today
   const doneTodayTitles=done.filter(d=>d.tab===tab).map(d=>d.title);
   const filtered=pool.filter(a=>!doneTodayTitles.includes(a.title)&&!skippedToday.includes(a.title));
   // If all activities for today are done, recycle allUsed for tomorrow rotation only
   // but do NOT recycle same-day — show empty so congrats shows
   if(!filtered.length) return [];
-  // For learning/abc: return the FIRST one in order (not random) so it's always A→Z
-  return tab==='learning' ? filtered : filtered;
+  return filtered;
 }
-function getNext(){const p=getPool();if(!p.length)return null;return tab==='learning'?p[0]:p[Math.floor(Math.random()*p.length)];}
+function getNext(){const p=getPool();return p.length?p[Math.floor(Math.random()*p.length)]:null;}
 
 // Returns pending count for ANY tab — exactly mirrors getPool() logic
 // Returns 0 when nothing left to do TODAY (show ✓ done)
@@ -2914,11 +2918,12 @@ function getPendingForTab(t){
     return doneTodayTitles.length>0 ? remaining.length : remaining.length;
   }
 
-  // Activity tabs (morning/learning/evening)
+  // Activity tabs (morning/learning/evening/think)
   let pool=(CUR[t]||[]).filter(a=>!a.w||a.w<=week);
-  // Learning tab: only count ABC activities (A→Z journey)
+  // Include think activities in learning tab badge count
   if(t==='learning'){
-    pool=pool.filter(a=>a.subj==='abc');
+    const thinkPool=(CUR.think||[]).filter(a=>!a.w||a.w<=week);
+    pool=[...pool,...thinkPool];
   }
   const doneTodayTitles=done.filter(d=>d.tab===t).map(d=>d.title);
   const pending=pool.filter(a=>!doneTodayTitles.includes(a.title)&&!skippedToday.includes(a.title));
@@ -7581,8 +7586,11 @@ function openParentTab(){
 }
 
 function switchSubj(s){
-  // Subject switching removed — learning is now always A→Z ABC
-  subj='abc'; playClick(); fetchNext();
+  subj=s;playClick();
+  document.querySelectorAll('.sp').forEach(b=>b.classList.toggle('active',b.dataset.s===s));
+  document.getElementById('thinkRow').classList.toggle('show', s==='think');
+  if(s!=='think') thinkCat='all';
+  fetchNext();
 }
 function switchGameCat(c){
   gameCat=c;playClick();
@@ -9973,7 +9981,7 @@ function _bootApp(){
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===tab));
   document.getElementById('subjRow').classList.toggle('show',tab==='learning');
   document.getElementById('gameRow').classList.toggle('show',tab==='games');
-  document.getElementById('thinkRow').classList.toggle('show',false); // think row hidden — learning is now A→Z only
+  document.getElementById('thinkRow').classList.toggle('show',tab==='learning'&&subj==='think');
   document.getElementById('weatherBar').classList.toggle('show',tab==='morning');
   document.getElementById('timerBar').classList.add('show');
 
