@@ -1676,6 +1676,7 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
   <button class="gp"        data-g="brain"    onclick="switchGameCat('brain')">🧠 Brain</button>
   <button class="gp"        data-g="time"     onclick="switchGameCat('time')">🕐 Time</button>
   <button class="gp"        data-g="money"    onclick="switchGameCat('money')">💰 Money</button>
+  <button class="gp"        data-g="puzzle"   onclick="switchGameCat('puzzle')">🧩 Puzzle</button>
 </div>
 
 <!-- Today is... Teaching Bar -->
@@ -2736,6 +2737,10 @@ const GAMES = [
   {id:'myShop',       week:2,emoji:'🏪',title:'My Little Shop!',          desc:'A customer is here — pick the best selling price!',   cat:'money'},
   {id:'lemonadeStand',week:3,emoji:'🍋',title:'Lemonade Stand!',          desc:'Run your stand — set your price and earn a profit!',  cat:'money'},
   {id:'changeMaker',  week:2,emoji:'💰',title:'Give the Change!',         desc:'The customer paid — how much change do you give back?',cat:'money'},
+  {id:'shadowMatch',  week:1,emoji:'🦁',title:'Animal Shadow Match!',    desc:'Look at the shadow and tap the correct animal!',     cat:'puzzle'},
+  {id:'dotCard',      week:1,emoji:'🎯',title:'Dot Card Match!',          desc:'Find the card with the right number of dots!',       cat:'puzzle'},
+  {id:'oppSnap',      week:1,emoji:'🔄',title:'Opposite Snap!',           desc:'Tap the card that is the opposite of the word shown!',cat:'puzzle'},
+  {id:'colourWordMatch',week:1,emoji:'🌈',title:'Colour Word Match!',     desc:'Match the colour word to the right colour card!',    cat:'puzzle'},
 ];
 
 // ══════════════════════════════════════
@@ -4679,7 +4684,8 @@ function renderGame(g){
     findLetter:buildFindLetter,animalSound:buildAnimalSound,phonicsMatch:buildPhonicsMatch,
     daysOrder:buildDaysOrder,clockGame:buildClockGame,simonSays:buildSimonSays,
     whatsMissing:buildWhatsMissing,colourPattern:buildColourPattern,numberMemory:buildNumberMemory,
-    coinCount:buildCoinCount,fairTrade:buildFairTrade,myShop:buildMyShop,lemonadeStand:buildLemonadeStand,changeMaker:buildChangeMaker};
+    coinCount:buildCoinCount,fairTrade:buildFairTrade,myShop:buildMyShop,lemonadeStand:buildLemonadeStand,changeMaker:buildChangeMaker,
+    shadowMatch:buildShadowMatch,dotCard:buildDotCard,oppSnap:buildOppSnap,colourWordMatch:buildColourWordMatch};
   (fns[g.id]||buildCountGame)();
   // Append skip button after game panel
   const area=document.getElementById('area');
@@ -5399,6 +5405,242 @@ function checkCM(el,chosen,ans){
   setTimeout(nextCMRound,1600);
 }
 
+
+// ══════════════════════════════════════
+//  🃏 PUZZLE CARD GAME 1 — Animal Shadow Match
+// ══════════════════════════════════════
+let shadowScore=0,shadowRound=0,shadowCurrent=null;
+const SHADOW_ANIMALS=[
+  {emoji:'🦁',name:'Lion',      wrong:['🐯','🐻','🦊']},
+  {emoji:'🐘',name:'Elephant',  wrong:['🦏','🐪','🦛']},
+  {emoji:'🐸',name:'Frog',      wrong:['🐢','🐊','🦎']},
+  {emoji:'🦋',name:'Butterfly', wrong:['🐝','🐛','🦗']},
+  {emoji:'🐬',name:'Dolphin',   wrong:['🐟','🦈','🐙']},
+  {emoji:'🦒',name:'Giraffe',   wrong:['🦓','🐆','🦌']},
+  {emoji:'🐧',name:'Penguin',   wrong:['🦅','🦆','🦉']},
+  {emoji:'🦄',name:'Unicorn',   wrong:['🐴','🦌','🐐']},
+  {emoji:'🦊',name:'Fox',       wrong:['🐺','🦝','🐱']},
+  {emoji:'🐊',name:'Crocodile', wrong:['🦎','🐍','🐢']},
+];
+function buildShadowMatch(){shadowScore=0;shadowRound=0;nextShadowRound();}
+function nextShadowRound(){
+  const totalRounds=6;
+  shadowRound++;
+  if(shadowRound>totalRounds){endGame(shadowScore,totalRounds,'shadowMatch');return;}
+  const used=[];
+  let a;do{a=SHADOW_ANIMALS[Math.floor(Math.random()*SHADOW_ANIMALS.length)];}while(used.includes(a.emoji)&&used.length<SHADOW_ANIMALS.length);
+  used.push(a.emoji);
+  shadowCurrent=a;
+  const opts=[a.emoji,...a.wrong.sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🦁 Animal Shadow Match!</div>
+      <div class="game-inst">Which animal makes this shadow? Tap your answer!</div>
+      <div class="game-score">Round ${shadowRound}/${totalRounds} &nbsp;·&nbsp; ⭐ ${shadowScore}</div>
+      <div style="font-size:5.5rem;filter:brightness(0);text-align:center;margin:18px 0;animation:float 2s ease-in-out infinite;user-select:none">${a.emoji}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:280px;margin:0 auto">
+        ${opts.map((e,i)=>`<button id="sh_opt_${i}" onclick="checkShadow(${i})" style="font-size:2.8rem;padding:14px;border-radius:18px;border:3px solid var(--border);background:var(--cardbg);cursor:pointer;transition:all .25s;box-shadow:0 4px 12px var(--shadow)">${e}</button>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb" style="margin-top:12px;min-height:28px"></div>
+    </div>`;
+  speakText('Which animal makes this shadow?');
+}
+window._shadowOpts=[];
+function checkShadow(idx){
+  const opts=Array.from(document.querySelectorAll('[id^="sh_opt_"]'));
+  opts.forEach(b=>b.disabled=true);
+  const chosen=opts[idx].textContent.trim();
+  const correct=shadowCurrent.emoji;
+  const ok=chosen===correct;
+  if(ok){
+    shadowScore++;
+    opts[idx].style.cssText+=';background:linear-gradient(135deg,#56cf81,#4ecdc4);border-color:#56cf81;transform:scale(1.12)';
+    playCorrect();speakText('Yes! Correct! Well done!');
+    document.getElementById('gfb').innerHTML='<span style="color:var(--green);font-family:\'Baloo 2\',cursive;font-weight:700">⭐ Correct! Amazing!</span>';
+  } else {
+    opts[idx].style.cssText+=';background:linear-gradient(135deg,#ff6b9d,#ff8c69);border-color:#ff6b9d';
+    opts.forEach(b=>{if(b.textContent.trim()===correct)b.style.cssText+=';background:linear-gradient(135deg,#56cf81,#4ecdc4);border-color:#56cf81';});
+    playWrong();speakText('Not quite! Look at the shadow again!');
+    document.getElementById('gfb').innerHTML='<span style="color:var(--pink);font-family:\'Baloo 2\',cursive;font-weight:700">Not this time — keep going!</span>';
+  }
+  setTimeout(nextShadowRound,1600);
+}
+
+// ══════════════════════════════════════
+//  🃏 PUZZLE CARD GAME 2 — Dot Card Match
+// ══════════════════════════════════════
+let dotScore=0,dotRound=0,dotAnswer=0;
+function buildDotCard(){dotScore=0;dotRound=0;nextDotRound();}
+function nextDotRound(){
+  const totalRounds=7;
+  dotRound++;
+  if(dotRound>totalRounds){endGame(dotScore,totalRounds,'dotCard');return;}
+  const ans=Math.floor(Math.random()*8)+1;
+  dotAnswer=ans;
+  const wrongs=[];
+  while(wrongs.length<3){const w=Math.floor(Math.random()*9)+1;if(w!==ans&&!wrongs.includes(w))wrongs.push(w);}
+  const opts=[ans,...wrongs].sort(()=>Math.random()-.5);
+  function dotGrid(n){
+    const dots=Array.from({length:n},()=>'<span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:var(--purple);margin:3px"></span>').join('');
+    return `<div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px;min-height:60px;max-width:80px;margin:0 auto">${dots}</div>`;
+  }
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🎯 Dot Card Match!</div>
+      <div class="game-inst">Find the card with this many dots!</div>
+      <div class="game-score">Round ${dotRound}/${totalRounds} &nbsp;·&nbsp; ⭐ ${dotScore}</div>
+      <div style="background:linear-gradient(135deg,#f0e8ff,#e8f5ff);border-radius:20px;padding:18px 24px;text-align:center;margin:14px auto;max-width:180px;box-shadow:0 6px 20px rgba(167,139,250,.2)">
+        <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple);margin-bottom:4px">This number:</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:3.5rem;font-weight:800;color:var(--purple);line-height:1">${ans}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:300px;margin:0 auto">
+        ${opts.map((n,i)=>`<button id="dc_opt_${i}" onclick="checkDot(${i},${n})" style="padding:12px 8px;border-radius:16px;border:3px solid var(--border);background:var(--cardbg);cursor:pointer;transition:all .25s;box-shadow:0 4px 12px var(--shadow)">${dotGrid(n)}<div style="font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:700;color:var(--text3);margin-top:4px">${n} dot${n>1?'s':''}</div></button>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb" style="margin-top:12px;min-height:28px"></div>
+    </div>`;
+  speakText('How many dots? Find number '+ans+'!');
+}
+function checkDot(idx,chosen){
+  document.querySelectorAll('[id^="dc_opt_"]').forEach(b=>b.disabled=true);
+  const ok=chosen===dotAnswer;
+  const btn=document.getElementById('dc_opt_'+idx);
+  if(ok){
+    dotScore++;
+    btn.style.cssText+=';background:linear-gradient(135deg,#56cf81,#4ecdc4);border-color:#56cf81;transform:scale(1.08)';
+    playCorrect();speakText('Brilliant! You found it!');
+    document.getElementById('gfb').innerHTML='<span style="color:var(--green);font-family:\'Baloo 2\',cursive;font-weight:700">⭐ Brilliant! Right answer!</span>';
+  } else {
+    btn.style.cssText+=';background:linear-gradient(135deg,#ff6b9d,#ff8c69);border-color:#ff6b9d';
+    document.querySelectorAll('[id^="dc_opt_"]').forEach((b,i)=>{if(parseInt(b.querySelector('div:last-child').textContent)===dotAnswer)b.style.cssText+=';background:linear-gradient(135deg,#56cf81,#4ecdc4);border-color:#56cf81';});
+    playWrong();speakText('Not quite! Look for '+dotAnswer+' dots!');
+    document.getElementById('gfb').innerHTML='<span style="color:var(--pink);font-family:\'Baloo 2\',cursive;font-weight:700">Keep looking — you can do it!</span>';
+  }
+  setTimeout(nextDotRound,1600);
+}
+
+// ══════════════════════════════════════
+//  🃏 PUZZLE CARD GAME 3 — Opposite Snap!
+// ══════════════════════════════════════
+let oppScore=0,oppRound=0;
+const OPP_PAIRS=[
+  {word:'BIG 🐘',answer:'SMALL 🐭',wrong:['FAST 🚀','TALL 🏔️','LOUD 📢']},
+  {word:'HOT 🔥',answer:'COLD ❄️',wrong:['WET 💧','DARK 🌑','HEAVY 🏋️']},
+  {word:'HAPPY 😄',answer:'SAD 😢',wrong:['TIRED 😴','LOUD 📢','FAST 🚀']},
+  {word:'DAY ☀️',answer:'NIGHT 🌙',wrong:['RAIN 🌧️','COLD ❄️','QUIET 🤫']},
+  {word:'UP ⬆️',answer:'DOWN ⬇️',wrong:['LEFT ⬅️','FAST 🚀','LOUD 📢']},
+  {word:'FAST 🐆',answer:'SLOW 🐌',wrong:['BIG 🐘','HOT 🔥','SAD 😢']},
+  {word:'LIGHT 🪶',answer:'HEAVY 🏋️',wrong:['COLD ❄️','HAPPY 😄','LOUD 📢']},
+  {word:'TALL 🦒',answer:'SHORT 🐛',wrong:['FAST 🐆','COLD ❄️','NIGHT 🌙']},
+  {word:'LOUD 📢',answer:'QUIET 🤫',wrong:['BIG 🐘','FAST 🐆','HOT 🔥']},
+  {word:'OPEN 🚪',answer:'CLOSED 🔒',wrong:['FAST 🐆','COLD ❄️','TALL 🦒']},
+];
+let oppUsed=[];
+function buildOppSnap(){oppScore=0;oppRound=0;oppUsed=[];nextOppRound();}
+function nextOppRound(){
+  const totalRounds=6;
+  oppRound++;
+  if(oppRound>totalRounds){endGame(oppScore,totalRounds,'oppSnap');return;}
+  const available=OPP_PAIRS.filter(p=>!oppUsed.includes(p.word));
+  const pair=available[Math.floor(Math.random()*available.length)];
+  oppUsed.push(pair.word);
+  const opts=[pair.answer,...pair.wrong.sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔄 Opposite Snap!</div>
+      <div class="game-inst">Tap the opposite of the word on the card!</div>
+      <div class="game-score">Round ${oppRound}/${totalRounds} &nbsp;·&nbsp; ⭐ ${oppScore}</div>
+      <div style="background:linear-gradient(135deg,#fff5d4,#ffe0f0);border-radius:22px;padding:20px 28px;text-align:center;margin:14px auto;max-width:200px;box-shadow:0 8px 24px rgba(255,184,48,.25);border:3px solid #ffb830">
+        <div style="font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:700;color:var(--sun);margin-bottom:6px">WHAT IS THE OPPOSITE OF?</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;color:#333">${pair.word}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:300px;margin:0 auto">
+        ${opts.map((o,i)=>`<button id="opp_opt_${i}" onclick="checkOpp(${i},'${o.replace(/'/g,'\\\'')}')" style="padding:12px 8px;border-radius:16px;border:3px solid var(--border);background:var(--cardbg);font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;color:var(--text);cursor:pointer;transition:all .25s;box-shadow:0 4px 12px var(--shadow)">${o}</button>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb" style="margin-top:12px;min-height:28px"></div>
+    </div>`;
+  speakText('What is the opposite of '+pair.word.replace(/[^\w\s]/g,'').trim()+'?');
+  window._oppCorrect=pair.answer;
+}
+function checkOpp(idx,chosen){
+  document.querySelectorAll('[id^="opp_opt_"]').forEach(b=>b.disabled=true);
+  const correct=window._oppCorrect;
+  const ok=chosen===correct;
+  const btn=document.getElementById('opp_opt_'+idx);
+  if(ok){
+    oppScore++;
+    btn.style.cssText+=';background:linear-gradient(135deg,#56cf81,#4ecdc4);border-color:#56cf81;transform:scale(1.08)';
+    playCorrect();speakText('Yes! Perfect opposite!');
+    document.getElementById('gfb').innerHTML='<span style="color:var(--green);font-family:\'Baloo 2\',cursive;font-weight:700">⭐ Perfect! Correct opposite!</span>';
+  } else {
+    btn.style.cssText+=';background:linear-gradient(135deg,#ff6b9d,#ff8c69);border-color:#ff6b9d';
+    document.querySelectorAll('[id^="opp_opt_"]').forEach(b=>{if(b.textContent.trim()===correct)b.style.cssText+=';background:linear-gradient(135deg,#56cf81,#4ecdc4);border-color:#56cf81';});
+    playWrong();speakText('Not quite! The opposite is '+correct.replace(/[^\w\s]/g,'').trim());
+    document.getElementById('gfb').innerHTML='<span style="color:var(--pink);font-family:\'Baloo 2\',cursive;font-weight:700">Nearly! Keep trying!</span>';
+  }
+  setTimeout(nextOppRound,1600);
+}
+
+// ══════════════════════════════════════
+//  🃏 PUZZLE CARD GAME 4 — Colour Word Match
+// ══════════════════════════════════════
+let cwScore=0,cwRound=0,cwAnswer='';
+const COLOUR_CARDS=[
+  {word:'RED',   colour:'#e53935',text:'#fff'},
+  {word:'BLUE',  colour:'#1e88e5',text:'#fff'},
+  {word:'GREEN', colour:'#43a047',text:'#fff'},
+  {word:'YELLOW',colour:'#fdd835',text:'#333'},
+  {word:'ORANGE',colour:'#fb8c00',text:'#fff'},
+  {word:'PINK',  colour:'#e91e8c',text:'#fff'},
+  {word:'PURPLE',colour:'#8e24aa',text:'#fff'},
+  {word:'BLACK', colour:'#222',   text:'#fff'},
+  {word:'WHITE', colour:'#f5f5f5',text:'#333'},
+  {word:'BROWN', colour:'#6d4c41',text:'#fff'},
+];
+let cwUsed=[];
+function buildColourWordMatch(){cwScore=0;cwRound=0;cwUsed=[];nextCWRound();}
+function nextCWRound(){
+  const totalRounds=7;
+  cwRound++;
+  if(cwRound>totalRounds){endGame(cwScore,totalRounds,'colourWordMatch');return;}
+  const available=COLOUR_CARDS.filter(c=>!cwUsed.includes(c.word));
+  const correct=available[Math.floor(Math.random()*available.length)];
+  cwUsed.push(correct.word);
+  cwAnswer=correct.word;
+  const wrongPool=COLOUR_CARDS.filter(c=>c.word!==correct.word).sort(()=>Math.random()-.5).slice(0,3);
+  const opts=[correct,...wrongPool].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🌈 Colour Word Match!</div>
+      <div class="game-inst">Tap the colour card that matches the word!</div>
+      <div class="game-score">Round ${cwRound}/${totalRounds} &nbsp;·&nbsp; ⭐ ${cwScore}</div>
+      <div style="background:var(--cardbg);border-radius:22px;padding:20px 28px;text-align:center;margin:14px auto;max-width:200px;box-shadow:0 8px 24px var(--shadow);border:3px solid var(--border)">
+        <div style="font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:700;color:var(--text3);margin-bottom:6px">FIND THIS COLOUR:</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:1.9rem;font-weight:800;color:var(--text)">${correct.word}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:300px;margin:0 auto">
+        ${opts.map((c,i)=>`<button id="cw_opt_${i}" onclick="checkCW(${i},'${c.word}')" style="height:72px;border-radius:18px;border:3px solid var(--border);background:${c.colour};color:${c.text};font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;cursor:pointer;transition:all .25s;box-shadow:0 4px 14px rgba(0,0,0,.15)">${c.word}</button>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb" style="margin-top:12px;min-height:28px"></div>
+    </div>`;
+  speakText('Find the colour '+correct.word+'!');
+}
+function checkCW(idx,chosen){
+  document.querySelectorAll('[id^="cw_opt_"]').forEach(b=>b.disabled=true);
+  const ok=chosen===cwAnswer;
+  const btn=document.getElementById('cw_opt_'+idx);
+  if(ok){
+    cwScore++;
+    btn.style.outline='5px solid #56cf81';btn.style.transform='scale(1.1)';
+    playCorrect();speakText('Yes! That is '+chosen+'! Brilliant!');
+    document.getElementById('gfb').innerHTML='<span style="color:var(--green);font-family:\'Baloo 2\',cursive;font-weight:700">⭐ Brilliant! Colour matched!</span>';
+  } else {
+    btn.style.outline='5px solid #ff6b9d';
+    document.querySelectorAll('[id^="cw_opt_"]').forEach(b=>{if(b.textContent.trim()===cwAnswer)b.style.outline='5px solid #56cf81';});
+    playWrong();speakText('Not quite! Find the colour '+cwAnswer);
+    document.getElementById('gfb').innerHTML='<span style="color:var(--pink);font-family:\'Baloo 2\',cursive;font-weight:700">Look for '+cwAnswer+'! Try again next round!</span>';
+  }
+  setTimeout(nextCWRound,1600);
+}
 
 function endGame(score,max,gid){
   const pct=Math.round(score/max*100);
