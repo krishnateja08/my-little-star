@@ -1868,14 +1868,21 @@ function fbDelete(key){
   fetch(path,{ method:'DELETE' }).catch(()=>{});
 }
 
-async function _loadFromFirebase(){
+async function _loadFromFirebase(retryCount){
   if(!_currentUser) return;
+  const attempt = retryCount || 0;
   try{
     _authToken = await _currentUser.getIdToken(true); // force fresh token
     const res  = await fetch(`${_DB_URL}/users/${_currentUser.uid}.json?auth=${_authToken}`);
     const data = await res.json();
     if(data && data.error){
       console.error('❌ Firebase permission error:', data.error);
+      // Retry once on permission errors (token may have been stale)
+      if(attempt < 2){
+        console.log('🔄 Retrying Firebase load... attempt', attempt+2);
+        await new Promise(r=>setTimeout(r, 1000));
+        return _loadFromFirebase(attempt+1);
+      }
       return;
     }
     if(data && typeof data === 'object'){
@@ -1889,7 +1896,15 @@ async function _loadFromFirebase(){
     } else {
       console.warn('⚠️ Firebase returned empty/null data');
     }
-  }catch(e){ console.error('❌ Firebase LOAD error:',e); }
+  }catch(e){
+    console.error('❌ Firebase LOAD error:',e);
+    // Retry on network errors (common on mobile)
+    if(attempt < 2){
+      console.log('🔄 Retrying Firebase load after error... attempt', attempt+2);
+      await new Promise(r=>setTimeout(r, 1500));
+      return _loadFromFirebase(attempt+1);
+    }
+  }
 }
 
 // ── Force Download: pull ALL data from Firebase → localStorage → refresh UI ──
@@ -2930,8 +2945,10 @@ let busy=false;
 let currentlyPlaying=false; // true when user is actively inside a game/activity
 
 const ld=localStorage.getItem('cld');
-if(ld&&ld!==todayKey()){done=[];stars=0;localStorage.removeItem('cd_'+ld);localStorage.removeItem('c_skipped_'+ld);/* totalStarsEver preserved — never reset on new day */}
-localStorage.setItem('cld',todayKey());
+if(ld&&ld!==todayKey()){done=[];stars=0;_lsRemove('cd_'+ld);_lsRemove('c_skipped_'+ld);/* totalStarsEver preserved — never reset on new day */}
+// Use _lsSet (original) so cld is set locally only — _bootApp() will handle Firebase sync
+// after data is loaded. Using overridden setItem here would write to Firebase before data loads.
+_lsSet('cld',todayKey());
 
 // ══════════════════════════════════════
 //  POOL + NEXT
@@ -10485,6 +10502,35 @@ function _bootApp(){
   stars         = parseInt(localStorage.getItem('cs_'+todayKey())||'0');
   allUsed       = JSON.parse(localStorage.getItem('c_allused')||'[]');
   totalStarsEver= parseInt(localStorage.getItem('c_total_stars')||'0');
+
+  // ── SAFETY: Ensure start date (cs) exists ──
+  // Mobile browsers can clear localStorage. If cs is still missing after Firebase
+  // loaded, create it NOW so the child doesn't get stuck on "Day 1" forever.
+  if(!_lsGet('cs')){
+    console.warn('⚠️ Start date (cs) missing after Firebase load — creating it now');
+    localStorage.setItem('cs', todayKey());   // uses overridden setItem → syncs to Firebase
+  }
+
+  // ── SAFETY: Re-run day-reset with Firebase data ──
+  // The initial day-reset (line ~2933) ran BEFORE Firebase loaded, possibly with
+  // stale/empty localStorage. Now that Firebase data is in localStorage, re-check.
+  const _cld = _lsGet('cld');
+  if(_cld && _cld !== todayKey()){
+    // It's a new day — reset today's in-memory counters (per-day data is date-keyed,
+    // so today's keys start fresh automatically; we just clean up yesterday's local copy)
+    _lsRemove('cd_'+_cld);
+    _lsRemove('c_skipped_'+_cld);
+    done = [];
+    stars = 0;
+  }
+  // Always ensure cld is set to today AFTER Firebase data has been applied
+  _lsSet('cld', todayKey());
+  // Also sync cld to Firebase so the next load doesn't re-trigger day-reset
+  if(_syncReady && _currentUser) fbWrite('cld', todayKey());
+
+  // Re-read today's data (may have been loaded from Firebase)
+  done          = JSON.parse(localStorage.getItem('cd_'+todayKey())||'[]');
+  stars         = parseInt(localStorage.getItem('cs_'+todayKey())||'0');
 
   // ── Re-read ALL synced variables (these are initialized before Firebase loads) ──
   skippedToday  = JSON.parse(localStorage.getItem('c_skipped_'+todayKey())||'[]');
