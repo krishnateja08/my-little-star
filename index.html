@@ -1838,6 +1838,8 @@ const _lsRemove = localStorage.removeItem.bind(localStorage);
 const _lsGet    = localStorage.getItem.bind(localStorage);
 
 let _syncReady  = false;
+let _diagLog    = [];  // Visible diagnostic log for debugging on mobile
+function _diag(msg){ _diagLog.push(new Date().toLocaleTimeString()+' '+msg); console.log(msg); }
 
 // ── REST helpers (now uses /users/{uid} + auth token) ──
 function _fbPath(key){
@@ -1869,26 +1871,30 @@ function fbDelete(key){
 }
 
 async function _loadFromFirebase(retryCount){
-  if(!_currentUser) { console.warn('❌ _loadFromFirebase: no user'); return false; }
+  if(!_currentUser) { _diag('❌ LOAD: no user'); return false; }
   const attempt = retryCount || 0;
+  _diag('📡 LOAD attempt '+(attempt+1)+' starting...');
   try{
     // Get auth token — try force refresh, fall back to cached token
+    let tokenSource = 'none';
     try{
       _authToken = await _currentUser.getIdToken(true);
+      tokenSource = 'fresh (forced)';
     }catch(tokenErr){
-      console.warn('⚠️ Token refresh failed, trying cached token:', tokenErr.message);
-      try{ _authToken = await _currentUser.getIdToken(false); }
-      catch(e2){ console.error('❌ No token available at all'); return false; }
+      _diag('⚠️ Token refresh failed: '+tokenErr.message);
+      try{ _authToken = await _currentUser.getIdToken(false); tokenSource = 'cached'; }
+      catch(e2){ _diag('❌ No token at all: '+e2.message); return false; }
     }
+    _diag('🔑 Token obtained: '+tokenSource+', length='+(_authToken?_authToken.length:'null'));
+
     const url = `${_DB_URL}/users/${_currentUser.uid}.json?auth=${_authToken}`;
-    console.log('📡 Loading from Firebase... attempt', attempt+1, 'URL length:', url.length);
+    _diag('📡 Fetching data... URL length='+url.length);
     const res  = await fetch(url);
-    console.log('📡 Firebase response status:', res.status);
+    _diag('📡 Response: status='+res.status+' ok='+res.ok);
     const data = await res.json();
     if(data && data.error){
-      console.error('❌ Firebase permission error:', data.error);
+      _diag('❌ Firebase error response: '+data.error);
       if(attempt < 3){
-        console.log('🔄 Retrying Firebase load... attempt', attempt+2);
         await new Promise(r=>setTimeout(r, 1000 + attempt*500));
         return _loadFromFirebase(attempt+1);
       }
@@ -1901,16 +1907,15 @@ async function _loadFromFirebase(retryCount){
         _lsSet(k, typeof v === 'string' ? v : JSON.stringify(v));
         count++;
       });
-      console.log('✅ Firebase synced!', count, 'keys loaded');
-      return true;   // ← SUCCESS: Firebase is the source of truth
+      _diag('✅ SUCCESS! '+count+' keys loaded from Firebase');
+      return true;
     } else {
-      console.warn('⚠️ Firebase returned empty/null data');
+      _diag('⚠️ Firebase returned empty/null: '+JSON.stringify(data));
       return false;
     }
   }catch(e){
-    console.error('❌ Firebase LOAD error (attempt '+(attempt+1)+'):', e.message || e);
+    _diag('❌ LOAD error (attempt '+(attempt+1)+'): '+e.message);
     if(attempt < 3){
-      console.log('🔄 Retrying Firebase load after error... attempt', attempt+2);
       await new Promise(r=>setTimeout(r, 1500 + attempt*500));
       return _loadFromFirebase(attempt+1);
     }
@@ -2108,32 +2113,37 @@ let _firebaseLoaded = false;   // true ONLY if cloud data was successfully downl
 
 // ── Main init ──
 (async function _firebaseInit(){
+  _diag('🚀 Firebase init starting...');
   try{
-    // ── Step 1: Check for redirect result (mobile sign-in flow) ──
-    // Wrapped in its OWN try-catch because getRedirectResult() can throw
-    // on iOS/iPad without affecting the rest of the init.
+    // ── Step 1: Check for redirect result ──
     try{
+      _diag('Step 1: getRedirectResult...');
       const redirectResult = await _auth.getRedirectResult();
       if(redirectResult && redirectResult.user){
         _currentUser = redirectResult.user;
         _authToken = await _currentUser.getIdToken();
+        _diag('Step 1: Got user from redirect: '+_currentUser.email);
+      } else {
+        _diag('Step 1: No redirect result (normal)');
       }
     }catch(redirectErr){
-      console.warn('⚠️ getRedirectResult failed (common on iOS/iPad):', redirectErr.code || redirectErr.message);
-      // Not fatal — onAuthStateChanged below will still find the user
+      _diag('Step 1 FAILED: '+(redirectErr.code||redirectErr.message));
     }
 
-    // ── Step 2: If not signed in yet, check for persisted session ──
+    // ── Step 2: Check for persisted session ──
     if(!_currentUser){
+      _diag('Step 2: Checking onAuthStateChanged...');
       await new Promise((resolve)=>{
         const unsub = _auth.onAuthStateChanged(async (user)=>{
           unsub();
           if(user){
             _currentUser = user;
-            try{ _authToken = await user.getIdToken(); }catch(e){ console.warn('Token error:', e); }
+            try{ _authToken = await user.getIdToken(); }catch(e){ _diag('Step 2 token error: '+e.message); }
+            _diag('Step 2: Got user: '+_currentUser.email);
             document.getElementById('familyCodeOverlay').innerHTML='';
             resolve();
           } else {
+            _diag('Step 2: No user — showing sign-in');
             await _showSignInScreen();
             resolve();
           }
@@ -2143,28 +2153,25 @@ let _firebaseLoaded = false;   // true ONLY if cloud data was successfully downl
 
     // Migrate old family code data if present
     const oldFamilyCode = _lsGet('c_family_code');
-    if(oldFamilyCode && _currentUser){
-      await _migrateFromFamilyCode();
-    }
+    if(oldFamilyCode && _currentUser){ await _migrateFromFamilyCode(); }
 
     // ── Step 3: FIREBASE-FIRST — Load cloud data ──
-    // This is in its OWN try-catch so auth issues don't prevent data loading.
     if(_currentUser){
+      _diag('Step 3: Loading data from Firebase...');
       try{
         _firebaseLoaded = await _loadFromFirebase();
       }catch(loadErr){
-        console.error('❌ Data load failed:', loadErr);
+        _diag('Step 3 crashed: '+loadErr.message);
         _firebaseLoaded = false;
       }
 
-      // If first load failed, try once more with a fresh token
       if(!_firebaseLoaded){
-        console.log('🔄 First load failed — refreshing token and retrying...');
+        _diag('Step 3b: Retrying with fresh token...');
         try{
           _authToken = await _currentUser.getIdToken(true);
           _firebaseLoaded = await _loadFromFirebase();
         }catch(retryErr){
-          console.error('❌ Retry also failed:', retryErr);
+          _diag('Step 3b failed: '+retryErr.message);
           _firebaseLoaded = false;
         }
       }
@@ -2172,21 +2179,16 @@ let _firebaseLoaded = false;   // true ONLY if cloud data was successfully downl
 
     _syncReady = true;
     document.getElementById('appLoader').style.display='none';
+    _diag('Init done. firebaseLoaded='+_firebaseLoaded);
 
-    if(_firebaseLoaded){
-      console.log('🔥 Firebase Auth sync active! User:', _currentUser.email, 'UID:', _currentUser.uid);
-    } else {
-      console.warn('⚠️ Firebase load failed — running with localStorage (may be stale on mobile)');
-    }
   }catch(e){
-    console.warn('Firebase init error, running offline:',e);
-    // ── LAST RESORT: even if init crashed, try to load data if we have a user ──
+    _diag('Init CRASHED: '+e.message);
     if(_currentUser && !_firebaseLoaded){
       try{
         _authToken = await _currentUser.getIdToken(true);
         _firebaseLoaded = await _loadFromFirebase();
-        console.log('🔥 Last-resort load succeeded!');
-      }catch(e2){ console.error('Last-resort load also failed:', e2); }
+        _diag('Last-resort: '+(_firebaseLoaded?'SUCCESS':'FAILED'));
+      }catch(e2){ _diag('Last-resort error: '+e2.message); }
     }
     _firebaseLoaded = _firebaseLoaded || false;
     _syncReady = true;
@@ -2232,6 +2234,7 @@ function showSyncDebug(){
     '📋 localStorage done: '+info.lsDone+'\n'+
     '📋 localStorage allUsed: '+info.lsAllUsed+'\n\n'+
     '🔗 Firebase path: '+info.firebasePath+'\n\n'+
+    '📝 DIAGNOSTIC LOG:\n'+_diagLog.join('\n')+'\n\n'+
     'If stars don\'t match, try refreshing!'
   );
 }
