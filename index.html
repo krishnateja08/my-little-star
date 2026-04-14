@@ -10503,12 +10503,15 @@ function _bootApp(){
   allUsed       = JSON.parse(localStorage.getItem('c_allused')||'[]');
   totalStarsEver= parseInt(localStorage.getItem('c_total_stars')||'0');
 
-  // ── SAFETY: Ensure start date (cs) exists ──
+  // ── SAFETY: Ensure start date (cs) exists locally ──
   // Mobile browsers can clear localStorage. If cs is still missing after Firebase
-  // loaded, create it NOW so the child doesn't get stuck on "Day 1" forever.
+  // loaded, set a LOCAL-ONLY fallback so the UI doesn't break this session.
+  // CRITICAL: Use _lsSet (NOT the overridden localStorage.setItem) so we do NOT
+  // push today's date to Firebase — that would overwrite the real start date.
+  // On next reload, Firebase will hopefully restore the correct cs.
   if(!_lsGet('cs')){
-    console.warn('⚠️ Start date (cs) missing after Firebase load — creating it now');
-    localStorage.setItem('cs', todayKey());   // uses overridden setItem → syncs to Firebase
+    console.warn('⚠️ Start date (cs) missing after Firebase load — setting local-only fallback');
+    _lsSet('cs', todayKey());   // local only — does NOT sync to Firebase
   }
 
   // ── SAFETY: Re-run day-reset with Firebase data ──
