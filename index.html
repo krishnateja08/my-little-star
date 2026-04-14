@@ -2177,6 +2177,8 @@ let _firebaseLoaded = false;   // true ONLY if cloud data was successfully downl
     if(oldFamilyCode && _currentUser){ await _migrateFromFamilyCode(); }
 
     // ── Step 3: FIREBASE-FIRST — Load cloud data ──
+    // _loadFromFirebase() handles all retries internally with exponential backoff.
+    // We call it ONCE only — no outer Step 3b or last-resort wrappers needed.
     if(_currentUser){
       _diag('Step 3: Loading data from Firebase...');
       try{
@@ -2184,17 +2186,6 @@ let _firebaseLoaded = false;   // true ONLY if cloud data was successfully downl
       }catch(loadErr){
         _diag('Step 3 crashed: '+loadErr.message);
         _firebaseLoaded = false;
-      }
-
-      if(!_firebaseLoaded){
-        _diag('Step 3b: Retrying with fresh token...');
-        try{
-          _authToken = await _currentUser.getIdToken(true);
-          _firebaseLoaded = await _loadFromFirebase();
-        }catch(retryErr){
-          _diag('Step 3b failed: '+retryErr.message);
-          _firebaseLoaded = false;
-        }
       }
     }
 
@@ -2204,13 +2195,7 @@ let _firebaseLoaded = false;   // true ONLY if cloud data was successfully downl
 
   }catch(e){
     _diag('Init CRASHED: '+e.message);
-    if(_currentUser && !_firebaseLoaded){
-      try{
-        _authToken = await _currentUser.getIdToken(true);
-        _firebaseLoaded = await _loadFromFirebase();
-        _diag('Last-resort: '+(_firebaseLoaded?'SUCCESS':'FAILED'));
-      }catch(e2){ _diag('Last-resort error: '+e2.message); }
-    }
+    // _loadFromFirebase() already retried internally — no extra call here.
     _firebaseLoaded = _firebaseLoaded || false;
     _syncReady = true;
     document.getElementById('appLoader').style.display='none';
