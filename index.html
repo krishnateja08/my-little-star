@@ -1878,8 +1878,8 @@ async function _loadFromFirebase(retryCount){
     // Get auth token — try force refresh, fall back to cached token
     let tokenSource = 'none';
     try{
-      _authToken = await _currentUser.getIdToken(true);
-      tokenSource = 'fresh (forced)';
+      _authToken = await _currentUser.getIdToken(attempt === 0);
+      tokenSource = attempt === 0 ? 'fresh (forced)' : 'cached';
     }catch(tokenErr){
       _diag('⚠️ Token refresh failed: '+tokenErr.message);
       try{ _authToken = await _currentUser.getIdToken(false); tokenSource = 'cached'; }
@@ -1895,7 +1895,7 @@ async function _loadFromFirebase(retryCount){
     if(data && data.error){
       _diag('❌ Firebase error response: '+data.error);
       if(attempt < 3){
-        await new Promise(r=>setTimeout(r, 1000 + attempt*500));
+        await new Promise(r=>setTimeout(r, 3000 + attempt*2000)); // 3s, 5s, 7s
         return _loadFromFirebase(attempt+1);
       }
       return false;
@@ -1916,7 +1916,7 @@ async function _loadFromFirebase(retryCount){
   }catch(e){
     _diag('❌ LOAD error (attempt '+(attempt+1)+'): '+e.message);
     if(attempt < 3){
-      await new Promise(r=>setTimeout(r, 1500 + attempt*500));
+      await new Promise(r=>setTimeout(r, 3000 + attempt*2000));
       return _loadFromFirebase(attempt+1);
     }
     return false;
@@ -1930,7 +1930,7 @@ async function forceDownloadAll(){
     return;
   }
   try{
-    _authToken = await _currentUser.getIdToken(true);
+    _authToken = await _currentUser.getIdToken(false);
     const res = await fetch(`${_DB_URL}/users/${_currentUser.uid}.json?auth=${_authToken}`);
     const data = await res.json();
 
