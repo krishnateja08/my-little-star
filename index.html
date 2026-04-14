@@ -10654,6 +10654,55 @@ function _bootApp(){
 
   // Start activities
   fetchNext();
+
+  // ══════════════════════════════════════════════════════════════
+  //  AUTO-RETRY: If Firebase failed to load (common on iOS/iPad),
+  //  wait a few seconds for the auth token to fully settle, then
+  //  try again. If it succeeds, reload all state and refresh UI.
+  // ══════════════════════════════════════════════════════════════
+  if(!_firebaseLoaded && _currentUser){
+    console.log('⏳ Firebase failed on first try — scheduling auto-retry in 3 seconds...');
+    setTimeout(async ()=>{
+      try{
+        console.log('🔄 Auto-retry: loading from Firebase...');
+        _authToken = await _currentUser.getIdToken(true);
+        const success = await _loadFromFirebase();
+        if(success){
+          _firebaseLoaded = true;
+          console.log('✅ Auto-retry succeeded! Refreshing all data...');
+          // Remove offline warning if shown
+          const w = document.getElementById('offlineWarning');
+          if(w) w.remove();
+          // Re-read all state from now-populated localStorage
+          done          = JSON.parse(localStorage.getItem('cd_'+todayKey())||'[]');
+          stars         = parseInt(localStorage.getItem('cs_'+todayKey())||'0');
+          allUsed       = JSON.parse(localStorage.getItem('c_allused')||'[]');
+          totalStarsEver= parseInt(localStorage.getItem('c_total_stars')||'0');
+          skippedToday  = JSON.parse(localStorage.getItem('c_skipped_'+todayKey())||'[]');
+          owned         = JSON.parse(localStorage.getItem('c_owned')||'[]');
+          diffLevel     = parseInt(localStorage.getItem('c_diff')||'1');
+          friendName    = localStorage.getItem('c_friendName')||'';
+          activeHat     = localStorage.getItem('c_activeHat')||'';
+          activeChar    = localStorage.getItem('c_activeChar')||'';
+          activeTheme   = localStorage.getItem('c_activeTheme')||'';
+          // Re-read start date and recalculate week/day
+          const recalc2 = getWeek();
+          week = recalc2.week;
+          day  = recalc2.day;
+          // Refresh UI with correct data
+          setupHeader();showSpill();renderWbar();renderFact();renderStory();
+          renderChallenge();applyRewards();renderTabBadges();renderStarPath();
+          renderSpark();renderPhysBanner();renderTodayBar();renderBtt();renderGoals();
+          fetchNext();
+          console.log('✅ UI refreshed! Now showing Week '+week+', Day '+day);
+        } else {
+          console.warn('❌ Auto-retry also failed');
+        }
+      }catch(e){
+        console.error('❌ Auto-retry error:', e);
+      }
+    }, 3000);
+  }
 }
 </script>
 </body>
