@@ -1869,7 +1869,7 @@ function fbDelete(key){
 }
 
 async function _loadFromFirebase(retryCount){
-  if(!_currentUser) return;
+  if(!_currentUser) return false;
   const attempt = retryCount || 0;
   try{
     _authToken = await _currentUser.getIdToken(true); // force fresh token
@@ -1877,13 +1877,12 @@ async function _loadFromFirebase(retryCount){
     const data = await res.json();
     if(data && data.error){
       console.error('❌ Firebase permission error:', data.error);
-      // Retry once on permission errors (token may have been stale)
-      if(attempt < 2){
+      if(attempt < 3){
         console.log('🔄 Retrying Firebase load... attempt', attempt+2);
-        await new Promise(r=>setTimeout(r, 1000));
+        await new Promise(r=>setTimeout(r, 1000 + attempt*500));
         return _loadFromFirebase(attempt+1);
       }
-      return;
+      return false;
     }
     if(data && typeof data === 'object'){
       let count = 0;
@@ -1893,17 +1892,19 @@ async function _loadFromFirebase(retryCount){
         count++;
       });
       console.log('✅ Firebase synced!', count, 'keys loaded');
+      return true;   // ← SUCCESS: Firebase is the source of truth
     } else {
       console.warn('⚠️ Firebase returned empty/null data');
+      return false;
     }
   }catch(e){
     console.error('❌ Firebase LOAD error:',e);
-    // Retry on network errors (common on mobile)
-    if(attempt < 2){
+    if(attempt < 3){
       console.log('🔄 Retrying Firebase load after error... attempt', attempt+2);
-      await new Promise(r=>setTimeout(r, 1500));
+      await new Promise(r=>setTimeout(r, 1500 + attempt*500));
       return _loadFromFirebase(attempt+1);
     }
+    return false;
   }
 }
 
@@ -2093,6 +2094,8 @@ async function forceUploadAll(){
   }
 }
 
+let _firebaseLoaded = false;   // true ONLY if cloud data was successfully downloaded
+
 // ── Main init ──
 (async function _firebaseInit(){
   try{
@@ -2127,12 +2130,19 @@ async function forceUploadAll(){
       await _migrateFromFamilyCode();
     }
 
-    await _loadFromFirebase();
+    // ── FIREBASE-FIRST: Load cloud data — this is the source of truth ──
+    _firebaseLoaded = await _loadFromFirebase();
     _syncReady = true;
     document.getElementById('appLoader').style.display='none';
-    console.log('🔥 Firebase Auth sync active! User:', _currentUser.email, 'UID:', _currentUser.uid);
+
+    if(_firebaseLoaded){
+      console.log('🔥 Firebase Auth sync active! User:', _currentUser.email, 'UID:', _currentUser.uid);
+    } else {
+      console.warn('⚠️ Firebase load failed — running with localStorage (may be stale on mobile)');
+    }
   }catch(e){
     console.warn('Firebase init error, running offline:',e);
+    _firebaseLoaded = false;
     _syncReady = true;
     document.getElementById('appLoader').style.display='none';
   }
@@ -2142,11 +2152,16 @@ async function forceUploadAll(){
 
 // ── Debug: show sync status ──
 function showSyncDebug(){
+  const csVal = _lsGet('cs');
+  const weekInfo = typeof getWeek==='function' ? getWeek() : {week:'?',day:'?'};
   const info = {
     user: _currentUser ? (_currentUser.email || _currentUser.uid) : '❌ NOT SIGNED IN',
     uid: _currentUser ? _currentUser.uid : '?',
     syncReady: _syncReady,
+    firebaseLoaded: _firebaseLoaded,
     todayKey: typeof todayKey==='function' ? todayKey() : '?',
+    startDate: csVal || '❌ MISSING',
+    weekDay: 'Week '+weekInfo.week+', Day '+weekInfo.day,
     starsVar: typeof stars !== 'undefined' ? stars : '?',
     totalStarsVar: typeof totalStarsEver !== 'undefined' ? totalStarsEver : '?',
     lsStars: localStorage.getItem('cs_'+(typeof todayKey==='function'?todayKey():'?')),
@@ -2160,7 +2175,10 @@ function showSyncDebug(){
     '👤 User: '+info.user+'\n'+
     '🆔 UID: '+info.uid+'\n'+
     '✅ Sync Ready: '+info.syncReady+'\n'+
-    '📅 Today Key: '+info.todayKey+'\n\n'+
+    '☁️ Firebase Loaded: '+info.firebaseLoaded+'\n'+
+    '📅 Today Key: '+info.todayKey+'\n'+
+    '📅 Start Date (cs): '+info.startDate+'\n'+
+    '📆 '+info.weekDay+'\n\n'+
     '⭐ Stars (var): '+info.starsVar+'\n'+
     '🌟 Total Stars (var): '+info.totalStarsVar+'\n'+
     '💾 localStorage today stars: '+info.lsStars+'\n'+
@@ -10497,45 +10515,57 @@ function ftAutoInit(){
 //  BOOT — called by _firebaseInit after Firebase has loaded
 // ══════════════════════════════════════
 function _bootApp(){
-  // Re-read everything from localStorage — Firebase has already written synced values
+  // ══════════════════════════════════════════════════════════════
+  //  FIREBASE-FIRST ARCHITECTURE
+  //  Firebase is the SOURCE OF TRUTH. localStorage is just a fast cache.
+  //  By this point, _loadFromFirebase() has already written cloud data
+  //  into localStorage via _lsSet(). We now read from localStorage
+  //  knowing it reflects the cloud state (if Firebase loaded successfully).
+  // ══════════════════════════════════════════════════════════════
+
+  // ── Step 1: Handle start date (cs) — the most critical key ──
+  const csValue = _lsGet('cs');
+  if(!csValue && _firebaseLoaded){
+    // Firebase loaded but cs is not there — this is a brand new user.
+    // Set today as start date and sync to Firebase (legitimate first use).
+    console.log('📅 First-time user — setting start date to today');
+    localStorage.setItem('cs', todayKey());   // syncs to Firebase via override
+  } else if(!csValue && !_firebaseLoaded){
+    // Firebase FAILED and cs is missing locally — we truly don't know the start date.
+    // Do NOT guess or set today's date — that would show wrong progress.
+    // Set a local-only temporary fallback so the UI doesn't crash,
+    // but warn the user that data couldn't load.
+    console.error('❌ Cannot determine start date — Firebase failed and localStorage empty');
+    _lsSet('cs', todayKey());   // local-only, does NOT touch Firebase
+    // Show a non-blocking warning so the child can still play
+    setTimeout(()=>{
+      const bar = document.createElement('div');
+      bar.id = 'offlineWarning';
+      bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#ff5252;color:#fff;text-align:center;padding:10px 16px;font-family:Nunito,sans-serif;font-size:.82rem;font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,.2);';
+      bar.innerHTML = '⚠️ Could not load from cloud — progress may be incomplete. Please check your internet and refresh. <button onclick="location.reload()" style="margin-left:8px;background:#fff;color:#ff5252;border:none;border-radius:8px;padding:4px 12px;font-weight:700;cursor:pointer;">Refresh</button>';
+      document.body.prepend(bar);
+      // Auto-dismiss after 15 seconds
+      setTimeout(()=>{ const w=document.getElementById('offlineWarning'); if(w)w.remove(); }, 15000);
+    }, 500);
+  }
+  // If csValue exists (either from Firebase or from localStorage on laptops), use it as-is
+
+  // ── Step 2: Proper day-reset AFTER Firebase data is in localStorage ──
+  const _cld = _lsGet('cld');
+  if(_cld && _cld !== todayKey()){
+    // New day — clean up yesterday's local copy (per-day data is date-keyed)
+    _lsRemove('cd_'+_cld);
+    _lsRemove('c_skipped_'+_cld);
+  }
+  // Set cld to today (locally + Firebase)
+  _lsSet('cld', todayKey());
+  if(_syncReady && _currentUser) fbWrite('cld', todayKey());
+
+  // ── Step 3: Read ALL state from localStorage (now populated by Firebase) ──
   done          = JSON.parse(localStorage.getItem('cd_'+todayKey())||'[]');
   stars         = parseInt(localStorage.getItem('cs_'+todayKey())||'0');
   allUsed       = JSON.parse(localStorage.getItem('c_allused')||'[]');
   totalStarsEver= parseInt(localStorage.getItem('c_total_stars')||'0');
-
-  // ── SAFETY: Ensure start date (cs) exists locally ──
-  // Mobile browsers can clear localStorage. If cs is still missing after Firebase
-  // loaded, set a LOCAL-ONLY fallback so the UI doesn't break this session.
-  // CRITICAL: Use _lsSet (NOT the overridden localStorage.setItem) so we do NOT
-  // push today's date to Firebase — that would overwrite the real start date.
-  // On next reload, Firebase will hopefully restore the correct cs.
-  if(!_lsGet('cs')){
-    console.warn('⚠️ Start date (cs) missing after Firebase load — setting local-only fallback');
-    _lsSet('cs', todayKey());   // local only — does NOT sync to Firebase
-  }
-
-  // ── SAFETY: Re-run day-reset with Firebase data ──
-  // The initial day-reset (line ~2933) ran BEFORE Firebase loaded, possibly with
-  // stale/empty localStorage. Now that Firebase data is in localStorage, re-check.
-  const _cld = _lsGet('cld');
-  if(_cld && _cld !== todayKey()){
-    // It's a new day — reset today's in-memory counters (per-day data is date-keyed,
-    // so today's keys start fresh automatically; we just clean up yesterday's local copy)
-    _lsRemove('cd_'+_cld);
-    _lsRemove('c_skipped_'+_cld);
-    done = [];
-    stars = 0;
-  }
-  // Always ensure cld is set to today AFTER Firebase data has been applied
-  _lsSet('cld', todayKey());
-  // Also sync cld to Firebase so the next load doesn't re-trigger day-reset
-  if(_syncReady && _currentUser) fbWrite('cld', todayKey());
-
-  // Re-read today's data (may have been loaded from Firebase)
-  done          = JSON.parse(localStorage.getItem('cd_'+todayKey())||'[]');
-  stars         = parseInt(localStorage.getItem('cs_'+todayKey())||'0');
-
-  // ── Re-read ALL synced variables (these are initialized before Firebase loads) ──
   skippedToday  = JSON.parse(localStorage.getItem('c_skipped_'+todayKey())||'[]');
   owned         = JSON.parse(localStorage.getItem('c_owned')||'[]');
   diffLevel     = parseInt(localStorage.getItem('c_diff')||'1');
