@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>🌟 My Little Star — Smart Learning Coach</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -52,6 +52,7 @@ header::before{content:'';position:absolute;inset:0;
   animation:float 3s ease-in-out infinite;pointer-events:none;}
 .mascot-wrap:active .mascot{transform:scale(1.3);}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes popIn{0%{transform:scale(0.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
 
 /* SPEECH BUBBLE */
 .speech-bubble{position:absolute;top:-38px;left:50%;transform:translateX(-50%);
@@ -526,17 +527,18 @@ body.bedtime .showme-btn{background:linear-gradient(135deg,#1a2e2a,#1a2a3e);bord
 .done-btn:active{transform:scale(.97);}
 
 /* ══ GAME PANEL ══ */
-.game-panel{background:var(--cardbg);border-radius:var(--r);padding:20px 16px;margin-bottom:12px;
+.game-panel{background:var(--cardbg);border-radius:var(--r);padding:12px 12px 14px;margin-bottom:10px;
   box-shadow:0 12px 36px var(--shadow);position:relative;overflow:hidden;}
 .game-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;
   background:linear-gradient(90deg,#ff6b9d,#ffb830,#a78bfa);}
-.game-title{font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:var(--text);margin-bottom:4px;}
-.game-inst{font-size:.88rem;color:var(--text3);margin-bottom:14px;line-height:1.4;}
+.game-title{font-family:'Baloo 2',cursive;font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:2px;}
+.game-inst{font-size:.82rem;color:var(--text3);margin-bottom:8px;line-height:1.3;}
 /* Number Match */
-.num-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
-.num-card{aspect-ratio:1;border-radius:14px;border:3px solid var(--border);background:var(--inputbg);
-  display:flex;align-items:center;justify-content:center;font-size:1.6rem;cursor:pointer;
-  transition:all .2s;font-family:'Baloo 2',cursive;font-weight:800;color:var(--text);}
+.num-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:8px;}
+.num-card{height:clamp(54px,12vw,78px);border-radius:12px;border:3px solid var(--border);background:var(--inputbg);
+  display:flex;align-items:center;justify-content:center;font-size:clamp(.8rem,3vw,1.3rem);cursor:pointer;
+  transition:all .2s;font-family:'Baloo 2',cursive;font-weight:800;color:var(--text);
+  overflow:hidden;line-height:1.1;padding:2px;word-break:break-all;}
 .num-card:active{transform:scale(.93);}
 .num-card.selected{border-color:var(--purple);background:#f0e8ff;}
 .num-card.matched{border-color:var(--green);background:#e8fff0;animation:matched .4s ease;}
@@ -593,9 +595,9 @@ canvas.trace-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:cros
 .shape-item.wrong  {border-color:var(--pink);background:#ffe8f0;}
 
 /* MEMORY FLIP */
-.memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
-.mem-card{aspect-ratio:1;border-radius:14px;border:3px solid var(--border);background:linear-gradient(135deg,var(--purple),var(--blue));
-  display:flex;align-items:center;justify-content:center;font-size:2rem;cursor:pointer;
+.memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:8px;}
+.mem-card{height:clamp(54px,12vw,78px);border-radius:12px;border:3px solid var(--border);background:linear-gradient(135deg,var(--purple),var(--blue));
+  display:flex;align-items:center;justify-content:center;font-size:clamp(1.2rem,4vw,1.8rem);cursor:pointer;
   transition:all .3s;color:#fff;font-family:'Baloo 2',cursive;}
 .mem-card.flipped{background:var(--inputbg);border-color:var(--sun);}
 .mem-card.matched{background:#e8fff0;border-color:var(--green);pointer-events:none;}
@@ -625,7 +627,7 @@ canvas.trace-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:cros
 .sound-prompt .sp-text{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;}
 
 /* Game score */
-.game-score{text-align:center;font-family:'Baloo 2',cursive;font-size:1rem;color:var(--purple);margin-bottom:10px;}
+.game-score{text-align:center;font-family:'Baloo 2',cursive;font-size:.88rem;color:var(--purple);margin-bottom:6px;}
 .game-feedback{text-align:center;font-family:'Baloo 2',cursive;font-size:1.1rem;
   min-height:28px;margin-bottom:10px;color:var(--green);}
 .game-next-btn{width:100%;padding:13px;border:none;border-radius:14px;
@@ -1198,8 +1200,8 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .aemoji{font-size:2.6rem;}
   .adesc,.game-inst{font-size:.82rem;}
   .done-btn,.game-next-btn,.game-done-btn{padding:11px;font-size:.95rem;}
-  .num-grid{grid-template-columns:repeat(4,1fr);gap:5px;}
-  .num-card{font-size:1.2rem;}
+  .num-grid{grid-template-columns:repeat(4,1fr);gap:4px;}
+  .num-card{font-size:clamp(.75rem,2.8vw,1.1rem);}
   .count-display{font-size:2.8rem;}
   .copt{padding:10px;font-size:1.2rem;}
   .letter-tile{width:36px;height:42px;font-size:1.1rem;}
@@ -1207,8 +1209,8 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .colour-blob{width:55px;height:55px;}
   .mix-result{width:70px;height:70px;}
   .shape-item{width:55px;height:55px;font-size:2.2rem;}
-  .memory-grid{grid-template-columns:repeat(3,1fr);gap:6px;}
-  .mem-card{font-size:1.4rem;}
+  .memory-grid{grid-template-columns:repeat(4,1fr);gap:4px;}
+  .mem-card{font-size:clamp(1rem,3.5vw,1.4rem);}
   .letter-search-grid{grid-template-columns:repeat(4,1fr);gap:4px;}
   .ls-cell{font-size:1rem;}
   .animal-grid{grid-template-columns:1fr 1fr;gap:6px;}
@@ -1247,7 +1249,7 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
 /* Standard phones (341px–480px) — default, minimal tweaks */
 @media(min-width:341px) and (max-width:480px){
   .main{padding:10px 12px 110px;}
-  .memory-grid{grid-template-columns:repeat(4,1fr);gap:7px;}
+  .memory-grid{grid-template-columns:repeat(4,1fr);gap:5px;}
 }
 
 /* Large phones / small tablets (481px–768px) */
@@ -1263,8 +1265,8 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .aemoji{font-size:4rem;}
   .adesc{font-size:.95rem;}
   .done-btn,.game-next-btn,.game-done-btn{padding:16px;font-size:1.15rem;border-radius:16px;}
-  .num-grid{gap:10px;}
-  .num-card{font-size:1.8rem;border-radius:16px;}
+  .num-grid{gap:6px;}
+  .num-card{font-size:clamp(.9rem,3vw,1.3rem);border-radius:14px;}
   .count-display{font-size:5rem;}
   .copt{padding:18px;font-size:1.8rem;border-radius:16px;}
   .letter-tile{width:52px;height:58px;font-size:1.6rem;border-radius:14px;}
@@ -1272,8 +1274,8 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .colour-blob{width:80px;height:80px;}
   .mix-result{width:100px;height:100px;}
   .shape-item{width:80px;height:80px;font-size:3.2rem;}
-  .memory-grid{gap:10px;}
-  .mem-card{font-size:2.4rem;border-radius:16px;}
+  .memory-grid{gap:6px;}
+  .mem-card{font-size:clamp(1.2rem,3.5vw,1.6rem);border-radius:14px;}
   .letter-search-grid{gap:8px;}
   .ls-cell{font-size:1.5rem;border-radius:12px;}
   .animal-grid{gap:12px;}
@@ -1312,10 +1314,10 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .acard,.game-panel,.create-panel,.parent-dash{padding:28px 24px;margin-bottom:16px;}
   .atitle,.game-title{font-size:1.65rem;}
   .aemoji{font-size:4.5rem;}
-  .num-grid{grid-template-columns:repeat(4,1fr);gap:12px;}
+  .num-grid{grid-template-columns:repeat(4,1fr);gap:8px;}
   .count-opts{gap:12px;}
   .copt{padding:20px;font-size:2rem;}
-  .memory-grid{grid-template-columns:repeat(4,1fr);gap:12px;}
+  .memory-grid{grid-template-columns:repeat(4,1fr);gap:8px;}
   .letter-search-grid{grid-template-columns:repeat(5,1fr);gap:10px;}
   .animal-grid{grid-template-columns:repeat(2,1fr);gap:14px;}
   .shop-grid{grid-template-columns:repeat(3,1fr);gap:12px;}
@@ -1348,7 +1350,7 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .acard,.game-panel,.create-panel,.parent-dash{padding:32px 28px;border-radius:28px;}
   .atitle,.game-title{font-size:1.8rem;}
   .done-btn,.game-next-btn,.game-done-btn{padding:18px;font-size:1.2rem;border-radius:18px;}
-  .num-card{border-radius:18px;}
+  .num-card{border-radius:14px;}
   .shape-item{width:90px;height:90px;font-size:3.6rem;border-radius:18px;}
   .colour-blob{width:90px;height:90px;}
   .mix-result{width:110px;height:110px;}
@@ -1397,7 +1399,7 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .sp{min-height:36px;display:flex;align-items:center;justify-content:center;}
   .done-btn,.game-next-btn,.game-done-btn{min-height:48px;}
   .copt{min-height:48px;}
-  .num-card{min-height:48px;}
+  .num-card{min-height:44px;}
   .shape-item{min-width:56px;min-height:56px;}
   .undo-btn{min-height:36px;}
   .listen-btn{min-height:40px;}
@@ -1586,11 +1588,11 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
 </head>
 <body>
 
-<!-- Family Code Overlay (shown once per device) -->
+<!-- Auth Overlay (Google Sign-In) -->
 <div id="familyCodeOverlay"></div>
 
 <!-- App Loader (shown while Firebase syncs) -->
-<div id="appLoader" style="display:none;position:fixed;inset:0;background:linear-gradient(135deg,#ff6b9d,#ffb830,#4ecdc4);z-index:99998;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+<div id="appLoader" style="display:flex;position:fixed;inset:0;background:linear-gradient(135deg,#ff6b9d,#ffb830,#4ecdc4);z-index:99998;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
   <div style="font-size:3.5rem;animation:float 1.5s ease-in-out infinite">⭐</div>
   <div style="font-family:'Baloo 2',cursive;font-size:1.3rem;color:#fff;font-weight:700">Syncing your progress...</div>
   <div style="width:48px;height:48px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite"></div>
@@ -1622,7 +1624,6 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
 <div class="tabs">
   <button class="tab active" data-t="morning"  onclick="switchTab('morning')"><span class="tab-icon">🌅</span><span class="tab-label">Morning</span></button>
   <button class="tab"        data-t="learning" onclick="switchTab('learning')"><span class="tab-icon">📚</span><span class="tab-label">Learn</span></button>
-  <button class="tab"        data-t="think"    onclick="switchTab('think')"><span class="tab-icon">🧩</span><span class="tab-label">Think</span></button>
   <button class="tab"        data-t="games"    onclick="switchTab('games')"><span class="tab-icon">🎮</span><span class="tab-label">Games</span></button>
   <button class="tab"        data-t="create"   onclick="switchTab('create')"><span class="tab-icon">🎨</span><span class="tab-label">Create</span></button>
   <button class="tab"        data-t="evening"  onclick="switchTab('evening')"><span class="tab-icon">🌙</span><span class="tab-label">Evening</span></button>
@@ -1657,6 +1658,7 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
   <button class="sp"        data-s="feelings" onclick="switchSubj('feelings')">💛 Feelings</button>
   <button class="sp"        data-s="world"    onclick="switchSubj('world')">🌍 World</button>
   <button class="sp"        data-s="body"     onclick="switchSubj('body')">🫀 My Body</button>
+  <button class="sp"        data-s="think"    onclick="switchSubj('think')">🧩 Think</button>
   <button class="sp"        data-s="read"     onclick="switchSubj('read')">📖 Read</button>
 </div>
 
@@ -1676,6 +1678,7 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
   <button class="gp"        data-g="brain"    onclick="switchGameCat('brain')">🧠 Brain</button>
   <button class="gp"        data-g="time"     onclick="switchGameCat('time')">🕐 Time</button>
   <button class="gp"        data-g="money"    onclick="switchGameCat('money')">💰 Money</button>
+  <button class="gp"        data-g="puzzle"   onclick="switchGameCat('puzzle')">🧩 Puzzle</button>
 </div>
 
 <!-- Today is... Teaching Bar -->
@@ -1768,7 +1771,7 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
   <div id="hist"></div>
 </div>
 
-<div class="spill" id="spill" onclick="showShop()">⭐ 0 stars</div>
+<div class="spill" id="spill" onclick="showShop()">⭐ ... stars</div>
 <div class="toast" id="toast">⭐</div>
 
 <!-- Quick Create FAB (#5) -->
@@ -1783,12 +1786,35 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
 <div id="gateOverlay"></div>
 
 
+<!-- Firebase SDK (compat CDN — works with simple script tags) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
 <script>
 // ══════════════════════════════════════
-//  🔥 FIREBASE SYNC — REST API (no CDN needed!)
-//  Uses built-in fetch() — works on every browser/network
+//  🔥 FIREBASE SYNC — Google Auth + REST API
+//  Sign in with Google → data stored under /users/{uid}
 // ══════════════════════════════════════
-const _DB_URL = 'https://my-little-star-ef311-default-rtdb.firebaseio.com';
+
+// ┌─────────────────────────────────────────────────────┐
+// │  ⚠️  PASTE YOUR FIREBASE CONFIG VALUES BELOW  ⚠️     │
+// │  Get them from Firebase Console → Project Settings   │
+// └─────────────────────────────────────────────────────┘
+const _FIREBASE_CONFIG = {
+  apiKey:      "AIzaSyCFWkBSHzo4PzwYAQKvgXExMBCtX_HI2Ro",
+  authDomain:  "my-little-star-ef311.firebaseapp.com",
+  projectId:   "my-little-star-ef311",
+  databaseURL: "https://my-little-star-ef311-default-rtdb.firebaseio.com"
+};
+
+firebase.initializeApp(_FIREBASE_CONFIG);
+const _auth = firebase.auth();
+
+const _DB_URL = _FIREBASE_CONFIG.databaseURL;
+
+// Current authenticated user (set after sign-in)
+let _currentUser = null;
+let _authToken   = '';
 
 // Keys & prefixes that should sync across devices
 const SYNC_KEYS = [
@@ -1811,113 +1837,145 @@ const _lsSet    = localStorage.setItem.bind(localStorage);
 const _lsRemove = localStorage.removeItem.bind(localStorage);
 const _lsGet    = localStorage.getItem.bind(localStorage);
 
-let _familyCode = _lsGet('c_family_code')||'';
 let _syncReady  = false;
+let _diagLog    = [];  // Visible diagnostic log for debugging on mobile
+function _diag(msg){ _diagLog.push(new Date().toLocaleTimeString()+' '+msg); console.log(msg); }
 
-// ── REST helpers ──
-function _fbPath(key){ return `${_DB_URL}/families/${_familyCode}/${_safeKey(key)}.json`; }
+// ── REST helpers (now uses /users/{uid} + auth token) ──
+function _fbPath(key){
+  if(!_currentUser) return null;
+  return `${_DB_URL}/users/${_currentUser.uid}/${_safeKey(key)}.json?auth=${_authToken}`;
+}
 
 function fbWrite(key, value){
-  if(!_syncReady||!_familyCode) return;
-  // localStorage values are always strings; try to parse them back to
-  // their real type (number, array, object) before storing in Firebase.
-  // This ensures they round-trip correctly when loaded back on other devices.
+  if(!_syncReady||!_currentUser) return;
+  const path = _fbPath(key);
+  if(!path) return;
   let parsed = value;
-  try{ parsed = JSON.parse(value); }catch(e){ /* plain string — keep as-is */ }
-  fetch(_fbPath(key),{
+  try{ parsed = JSON.parse(value); }catch(e){ /* plain string */ }
+  fetch(path,{
     method:'PUT',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify(parsed)
-  }).catch(()=>{});
+  }).then(r=>{
+    if(!r.ok) r.text().then(t=>console.error('❌ Firebase write FAILED:',key,r.status,t));
+    else console.log('✅ Firebase wrote:',key);
+  }).catch(e=>console.error('❌ Firebase write ERROR:',key,e));
 }
 
 function fbDelete(key){
-  if(!_syncReady||!_familyCode) return;
-  fetch(_fbPath(key),{ method:'DELETE' }).catch(()=>{});
+  if(!_syncReady||!_currentUser) return;
+  const path = _fbPath(key);
+  if(!path) return;
+  fetch(path,{ method:'DELETE' }).catch(()=>{});
 }
 
-async function _loadFromFirebase(){
-  if(!_familyCode) return;
+async function _loadFromFirebase(retryCount){
+  if(!_currentUser) { _diag('❌ LOAD: no user'); return false; }
+  const attempt = retryCount || 0;
+  _diag('📡 LOAD attempt '+(attempt+1)+' starting...');
   try{
-    const res  = await fetch(`${_DB_URL}/families/${_familyCode}.json`);
+    // Get auth token — try force refresh, fall back to cached token
+    let tokenSource = 'none';
+    try{
+      _authToken = await _currentUser.getIdToken(true);
+      tokenSource = 'fresh (forced)';
+    }catch(tokenErr){
+      _diag('⚠️ Token refresh failed: '+tokenErr.message);
+      try{ _authToken = await _currentUser.getIdToken(false); tokenSource = 'cached'; }
+      catch(e2){ _diag('❌ No token at all: '+e2.message); return false; }
+    }
+    _diag('🔑 Token obtained: '+tokenSource+', length='+(_authToken?_authToken.length:'null'));
+
+    const url = `${_DB_URL}/users/${_currentUser.uid}.json?auth=${_authToken}`;
+    _diag('📡 Fetching data... URL length='+url.length);
+    const res  = await fetch(url);
+    _diag('📡 Response: status='+res.status+' ok='+res.ok);
+    const data = await res.json();
+    if(data && data.error){
+      _diag('❌ Firebase error response: '+data.error);
+      if(attempt < 3){
+        await new Promise(r=>setTimeout(r, 1000 + attempt*500));
+        return _loadFromFirebase(attempt+1);
+      }
+      return false;
+    }
+    if(data && typeof data === 'object'){
+      let count = 0;
+      Object.keys(data).forEach(k => {
+        const v = data[k];
+        _lsSet(k, typeof v === 'string' ? v : JSON.stringify(v));
+        count++;
+      });
+      _diag('✅ SUCCESS! '+count+' keys loaded from Firebase');
+      return true;
+    } else {
+      _diag('⚠️ Firebase returned empty/null: '+JSON.stringify(data));
+      return false;
+    }
+  }catch(e){
+    _diag('❌ LOAD error (attempt '+(attempt+1)+'): '+e.message);
+    if(attempt < 3){
+      await new Promise(r=>setTimeout(r, 1500 + attempt*500));
+      return _loadFromFirebase(attempt+1);
+    }
+    return false;
+  }
+}
+
+// ── Force Download: pull ALL data from Firebase → localStorage → refresh UI ──
+async function forceDownloadAll(){
+  if(!_currentUser){
+    alert('❌ Not signed in!');
+    return;
+  }
+  try{
+    _authToken = await _currentUser.getIdToken(true);
+    const res = await fetch(`${_DB_URL}/users/${_currentUser.uid}.json?auth=${_authToken}`);
+    const data = await res.json();
+
+    if(!data || data.error){
+      alert('❌ No data in cloud or permission error.\n\n'+(data?.error||'Empty database'));
+      return;
+    }
+
+    let count = 0;
+    Object.keys(data).forEach(k => {
+      const v = data[k];
+      _lsSet(k, typeof v === 'string' ? v : JSON.stringify(v));
+      count++;
+    });
+
+    alert('✅ Downloaded '+count+' keys from cloud!\n\nPage will reload now.');
+    location.reload();
+  }catch(e){
+    alert('❌ Download error: '+e.message);
+  }
+}
+
+// ── One-time migration: copy old family code data → user's auth path ──
+async function _migrateFromFamilyCode(){
+  const oldCode = _lsGet('c_family_code');
+  if(!oldCode || !_currentUser) return;
+  console.log('🔄 Migrating data from family code:', oldCode, '→ user:', _currentUser.uid);
+  try{
+    const res  = await fetch(`${_DB_URL}/families/${oldCode}.json`);
     const data = await res.json();
     if(data && typeof data === 'object'){
+      await fetch(`${_DB_URL}/users/${_currentUser.uid}.json?auth=${_authToken}`,{
+        method:'PATCH',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(data)
+      });
+      console.log('✅ Migration complete!', Object.keys(data).length, 'keys copied');
       Object.keys(data).forEach(k => {
-        // Firebase returns parsed JSON (numbers, arrays, objects).
-        // localStorage only stores strings — so we must stringify non-strings.
         const v = data[k];
         _lsSet(k, typeof v === 'string' ? v : JSON.stringify(v));
       });
-      console.log('✅ Firebase synced!', Object.keys(data).length, 'keys loaded');
-      // Refresh app variables and UI after Firebase data loads
-      _refreshAppFromStorage();
     }
-  }catch(e){ console.warn('Firebase load error:',e); }
+    _lsRemove('c_family_code');
+  }catch(e){ console.warn('Migration error (non-fatal):', e); }
 }
-
-// Re-read all key variables from localStorage and refresh UI
-// This fixes the mismatch between Firebase data and what the app shows
-function _refreshAppFromStorage(){
-  try{
-    // Only refresh if app is already booted (functions exist)
-    if(typeof todayKey !== 'function') return;
-
-    // Re-read core state from localStorage (now updated from Firebase)
-    const fbDone  = JSON.parse(_lsGet('cd_'+todayKey())||'[]');
-    const fbStars = parseInt(_lsGet('cs_'+todayKey())||'0');
-    const fbAllUsed = JSON.parse(_lsGet('c_allused')||'[]');
-    const fbTotalStars = parseInt(_lsGet('c_total_stars')||'0');
-
-    // ── KEY FIX: recalculate week from synced start-date ──
-    // On a new device, 'cs' (app start date) was just loaded from Firebase.
-    // We MUST recalculate week/day now so the correct games are unlocked.
-    if(typeof getWeek === 'function'){
-      const recalc = getWeek();
-      if(typeof week !== 'undefined') week = recalc.week;
-      if(typeof day  !== 'undefined') day  = recalc.day;
-      if(typeof setupHeader    === 'function') setupHeader();
-      if(typeof renderTodayBar === 'function') renderTodayBar();
-    }
-
-    // Re-read skipped list (may have changed on another device)
-    if(typeof skippedToday !== 'undefined'){
-      skippedToday = JSON.parse(_lsGet('c_skipped_'+todayKey())||'[]');
-    }
-
-    // Re-read rewards/cosmetics
-    if(typeof owned       !== 'undefined') owned       = JSON.parse(_lsGet('c_owned')||'[]');
-    if(typeof activeHat   !== 'undefined') activeHat   = _lsGet('c_activeHat')||'';
-    if(typeof activeChar  !== 'undefined') activeChar  = _lsGet('c_activeChar')||'';
-    if(typeof activeTheme !== 'undefined') activeTheme = _lsGet('c_activeTheme')||'';
-    if(typeof diffLevel   !== 'undefined') diffLevel   = parseInt(_lsGet('c_diff')||'1');
-    if(typeof friendName  !== 'undefined') friendName  = _lsGet('c_friendName')||'';
-
-    // Update live variables
-    if(typeof done           !== 'undefined') done           = fbDone;
-    if(typeof stars          !== 'undefined') stars          = fbStars;
-    if(typeof allUsed        !== 'undefined') allUsed        = fbAllUsed;
-    if(typeof totalStarsEver !== 'undefined') totalStarsEver = fbTotalStars;
-
-    // Refresh all visible UI elements
-    if(typeof showSpill       === 'function') showSpill();
-    if(typeof renderHist      === 'function') renderHist();
-    if(typeof updateProg      === 'function') updateProg();
-    if(typeof renderWbar      === 'function') renderWbar();
-    if(typeof renderChallenge === 'function') renderChallenge();
-    if(typeof renderStarPath  === 'function') renderStarPath();
-    if(typeof applyRewards    === 'function') applyRewards();
-    if(typeof renderGoals     === 'function') renderGoals();
-    if(typeof renderTabBadges === 'function') renderTabBadges();
-
-    // Re-render the current activity/game with correct week data
-    // Only do this if user is NOT actively playing — don't interrupt mid-game!
-    if(typeof fetchNext === 'function' && !busy && !currentlyPlaying){ fetchNext(); }
-
-    console.log('🔄 App refreshed — Week:', week, '| Stars:', fbStars, '| Done:', fbDone.length);
-  }catch(e){ console.warn('Refresh error:',e); }
-}
-
-
 
 // Override localStorage so every write also syncs to Firebase
 localStorage.setItem = function(key, value){
@@ -1929,8 +1987,8 @@ localStorage.removeItem = function(key){
   if(_shouldSync(key)) fbDelete(key);
 };
 
-// ── Family code screen ──
-function _showFamilyCodeScreen(){
+// ── Google Sign-In screen ──
+function _showSignInScreen(){
   return new Promise(resolve=>{
     document.getElementById('familyCodeOverlay').innerHTML=`
       <div style="position:fixed;inset:0;background:linear-gradient(135deg,#ff6b9d,#ffb830,#4ecdc4);
@@ -1940,69 +1998,254 @@ function _showFamilyCodeScreen(){
           <div style="font-size:3rem;margin-bottom:8px">⭐</div>
           <h2 style="font-family:'Baloo 2',cursive;color:#ff6b9d;margin-bottom:6px;font-size:1.4rem">My Little Star</h2>
           <p style="font-size:.85rem;color:#666;margin-bottom:16px;line-height:1.5">
-            Create a <strong>Family Code</strong> to sync baby's progress across all devices! 📱💻<br><br>
-            Use the <strong>same code</strong> on every phone, tablet and computer.
+            Sign in with your <strong>Google account</strong> to sync progress across all your devices! 📱💻<br><br>
+            Same Google account = same progress everywhere.
           </p>
-          <input id="fcInput" type="text" placeholder="e.g. krishna-baby-2024"
-            style="width:100%;padding:12px 14px;border:2px solid #e0d4ff;border-radius:12px;
-            font-size:1rem;font-family:'Nunito',sans-serif;margin-bottom:8px;outline:none;
-            text-align:center;box-sizing:border-box;">
-          <p style="font-size:.7rem;color:#bbb;margin-bottom:14px">
-            💡 Any word works! Keep it simple and easy to remember.
-          </p>
-          <button onclick="window.__setFC()"
-            style="width:100%;padding:13px;border:none;border-radius:12px;cursor:pointer;
-            background:linear-gradient(135deg,#ff6b9d,#a78bfa);color:#fff;
-            font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:700;">
-            🚀 Start Learning!
+          <button id="googleSignInBtn" onclick="window.__doGoogleSignIn()"
+            style="width:100%;padding:13px 16px;border:2px solid #e0d4ff;border-radius:12px;cursor:pointer;
+            background:#fff;color:#333;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;
+            display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;">
+            <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 010-9.18l-7.97-6.19a24.01 24.01 0 000 21.56l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+            Sign in with Google
           </button>
-          <p style="font-size:.65rem;color:#ccc;margin-top:10px">You can change this in Parent settings anytime</p>
+          <div id="signInError" style="margin-top:12px;font-size:.75rem;color:#ff5252;display:none"></div>
+          <p style="font-size:.65rem;color:#ccc;margin-top:14px">Your data is private and secure 🔒</p>
         </div>
       </div>`;
 
-    window.__setFC = function(){
-      const raw = document.getElementById('fcInput').value.trim();
-      if(!raw){ alert('Please enter a family code!'); return; }
-      const code = raw.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'');
-      if(!code){ alert('Please use letters and numbers only!'); return; }
-      _familyCode = code;
-      _lsSet('c_family_code', code);
-      document.getElementById('familyCodeOverlay').innerHTML='';
-      resolve(code);
+    window.__doGoogleSignIn = async function(){
+      const btn = document.getElementById('googleSignInBtn');
+      const errEl = document.getElementById('signInError');
+      btn.style.opacity='.6';btn.style.pointerEvents='none';
+      btn.innerHTML='<div style="width:20px;height:20px;border:2px solid #ccc;border-top-color:#ff6b9d;border-radius:50%;animation:spin 1s linear infinite"></div> Signing in...';
+      errEl.style.display='none';
+      try{
+        const provider = new firebase.auth.GoogleAuthProvider();
+        let result;
+        try{
+          result = await _auth.signInWithPopup(provider);
+        }catch(popupErr){
+          if(popupErr.code==='auth/popup-blocked'||popupErr.code==='auth/popup-closed-by-user'){
+            await _auth.signInWithRedirect(provider);
+            return;
+          }
+          throw popupErr;
+        }
+        _currentUser = result.user;
+        _authToken = await _currentUser.getIdToken();
+        document.getElementById('familyCodeOverlay').innerHTML='';
+        resolve(_currentUser);
+      }catch(e){
+        console.error('Sign-in error:', e);
+        errEl.textContent = 'Sign-in failed: '+(e.message||'Please try again');
+        errEl.style.display='block';
+        btn.style.opacity='1';btn.style.pointerEvents='auto';
+        btn.innerHTML='<svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 010-9.18l-7.97-6.19a24.01 24.01 0 000 21.56l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Sign in with Google';
+      }
     };
-    setTimeout(()=>{
-      const inp=document.getElementById('fcInput');
-      if(inp) inp.addEventListener('keydown',e=>{ if(e.key==='Enter') window.__setFC(); });
-    },100);
   });
 }
 
+// ── Sign out ──
+async function signOutUser(){
+  if(!confirm('Sign out? You can sign back in anytime to access your progress.')) return;
+  try{
+    await _auth.signOut();
+    _currentUser = null;
+    _authToken = '';
+    _syncReady = false;
+    location.reload();
+  }catch(e){ console.error('Sign-out error:', e); }
+}
+
+// ── Force Upload: push ALL localStorage data to Firebase ──
+// Use this on the device that has the correct data (e.g. 11 stars)
+async function forceUploadAll(){
+  if(!_currentUser){
+    alert('❌ Not signed in! Please sign in first.');
+    return;
+  }
+  if(!confirm('This will upload ALL your local progress to Firebase.\n\nRun this on the device with the CORRECT data (most stars/progress).\n\nContinue?')) return;
+
+  try{
+    _authToken = await _currentUser.getIdToken();
+    const blob = {};
+    let count = 0;
+
+    // Scan all localStorage keys and collect syncable ones
+    for(let i = 0; i < localStorage.length; i++){
+      const key = localStorage.key(i);
+      if(_shouldSync(key)){
+        let val = _lsGet(key);
+        // Parse JSON values so Firebase stores them properly
+        try{ val = JSON.parse(val); }catch(e){ /* keep as string */ }
+        blob[_safeKey(key)] = val;
+        count++;
+      }
+    }
+
+    if(count === 0){
+      alert('No data found to upload!');
+      return;
+    }
+
+    // Upload entire blob at once with PATCH (merge, don't overwrite)
+    const res = await fetch(`${_DB_URL}/users/${_currentUser.uid}.json?auth=${_authToken}`,{
+      method:'PATCH',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(blob)
+    });
+
+    if(res.ok){
+      alert('✅ Upload complete! '+count+' keys pushed to Firebase.\n\nNow refresh your other device(s) and sign in with the same Google account.');
+      console.log('✅ Force upload done:', count, 'keys', Object.keys(blob));
+    } else {
+      const txt = await res.text();
+      alert('❌ Upload failed: '+txt);
+    }
+  }catch(e){
+    alert('❌ Upload error: '+e.message);
+    console.error('Force upload error:', e);
+  }
+}
+
+let _firebaseLoaded = false;   // true ONLY if cloud data was successfully downloaded
+
 // ── Main init ──
 (async function _firebaseInit(){
+  _diag('🚀 Firebase init starting...');
   try{
-    if(!_familyCode) await _showFamilyCodeScreen();
+    // ── Step 1: Check for redirect result ──
+    try{
+      _diag('Step 1: getRedirectResult...');
+      const redirectResult = await _auth.getRedirectResult();
+      if(redirectResult && redirectResult.user){
+        _currentUser = redirectResult.user;
+        _authToken = await _currentUser.getIdToken();
+        _diag('Step 1: Got user from redirect: '+_currentUser.email);
+      } else {
+        _diag('Step 1: No redirect result (normal)');
+      }
+    }catch(redirectErr){
+      _diag('Step 1 FAILED: '+(redirectErr.code||redirectErr.message));
+    }
 
-    document.getElementById('appLoader').style.display='flex';
-    await _loadFromFirebase();
+    // ── Step 2: Check for persisted session ──
+    if(!_currentUser){
+      _diag('Step 2: Checking onAuthStateChanged...');
+      await new Promise((resolve)=>{
+        const unsub = _auth.onAuthStateChanged(async (user)=>{
+          unsub();
+          if(user){
+            _currentUser = user;
+            try{ _authToken = await user.getIdToken(); }catch(e){ _diag('Step 2 token error: '+e.message); }
+            _diag('Step 2: Got user: '+_currentUser.email);
+            document.getElementById('familyCodeOverlay').innerHTML='';
+            resolve();
+          } else {
+            _diag('Step 2: No user — showing sign-in');
+            await _showSignInScreen();
+            resolve();
+          }
+        });
+      });
+    }
+
+    // Migrate old family code data if present
+    const oldFamilyCode = _lsGet('c_family_code');
+    if(oldFamilyCode && _currentUser){ await _migrateFromFamilyCode(); }
+
+    // ── Step 3: FIREBASE-FIRST — Load cloud data ──
+    if(_currentUser){
+      _diag('Step 3: Loading data from Firebase...');
+      try{
+        _firebaseLoaded = await _loadFromFirebase();
+      }catch(loadErr){
+        _diag('Step 3 crashed: '+loadErr.message);
+        _firebaseLoaded = false;
+      }
+
+      if(!_firebaseLoaded){
+        _diag('Step 3b: Retrying with fresh token...');
+        try{
+          _authToken = await _currentUser.getIdToken(true);
+          _firebaseLoaded = await _loadFromFirebase();
+        }catch(retryErr){
+          _diag('Step 3b failed: '+retryErr.message);
+          _firebaseLoaded = false;
+        }
+      }
+    }
+
     _syncReady = true;
     document.getElementById('appLoader').style.display='none';
-    console.log('🔥 Firebase REST sync active! Family:', _familyCode);
+    _diag('Init done. firebaseLoaded='+_firebaseLoaded);
+
   }catch(e){
-    console.warn('Firebase init error, running offline:',e);
-    _syncReady = true; // still let app work offline
+    _diag('Init CRASHED: '+e.message);
+    if(_currentUser && !_firebaseLoaded){
+      try{
+        _authToken = await _currentUser.getIdToken(true);
+        _firebaseLoaded = await _loadFromFirebase();
+        _diag('Last-resort: '+(_firebaseLoaded?'SUCCESS':'FAILED'));
+      }catch(e2){ _diag('Last-resort error: '+e2.message); }
+    }
+    _firebaseLoaded = _firebaseLoaded || false;
+    _syncReady = true;
     document.getElementById('appLoader').style.display='none';
   }
+  _bootApp();
 })();
 
-// Helper to change family code from Parent Dashboard
+
+// ── Debug: show sync status ──
+function showSyncDebug(){
+  const csVal = _lsGet('cs');
+  const weekInfo = typeof getWeek==='function' ? getWeek() : {week:'?',day:'?'};
+  const info = {
+    user: _currentUser ? (_currentUser.email || _currentUser.uid) : '❌ NOT SIGNED IN',
+    uid: _currentUser ? _currentUser.uid : '?',
+    syncReady: _syncReady,
+    firebaseLoaded: _firebaseLoaded,
+    todayKey: typeof todayKey==='function' ? todayKey() : '?',
+    startDate: csVal || '❌ MISSING',
+    weekDay: 'Week '+weekInfo.week+', Day '+weekInfo.day,
+    starsVar: typeof stars !== 'undefined' ? stars : '?',
+    totalStarsVar: typeof totalStarsEver !== 'undefined' ? totalStarsEver : '?',
+    lsStars: localStorage.getItem('cs_'+(typeof todayKey==='function'?todayKey():'?')),
+    lsTotal: localStorage.getItem('c_total_stars'),
+    lsDone: (()=>{ try{ return JSON.parse(localStorage.getItem('cd_'+(typeof todayKey==='function'?todayKey():'?'))||'[]').length+' activities'; }catch(e){ return '?'; }})(),
+    lsAllUsed: (()=>{ try{ return JSON.parse(localStorage.getItem('c_allused')||'[]').length+' items'; }catch(e){ return '?'; }})(),
+    firebasePath: _currentUser ? _DB_URL+'/users/'+_currentUser.uid : '?',
+  };
+  alert(
+    '🔥 FIREBASE SYNC STATUS\n\n'+
+    '👤 User: '+info.user+'\n'+
+    '🆔 UID: '+info.uid+'\n'+
+    '✅ Sync Ready: '+info.syncReady+'\n'+
+    '☁️ Firebase Loaded: '+info.firebaseLoaded+'\n'+
+    '📅 Today Key: '+info.todayKey+'\n'+
+    '📅 Start Date (cs): '+info.startDate+'\n'+
+    '📆 '+info.weekDay+'\n\n'+
+    '⭐ Stars (var): '+info.starsVar+'\n'+
+    '🌟 Total Stars (var): '+info.totalStarsVar+'\n'+
+    '💾 localStorage today stars: '+info.lsStars+'\n'+
+    '💾 localStorage total: '+info.lsTotal+'\n'+
+    '📋 localStorage done: '+info.lsDone+'\n'+
+    '📋 localStorage allUsed: '+info.lsAllUsed+'\n\n'+
+    '🔗 Firebase path: '+info.firebasePath+'\n\n'+
+    '📝 DIAGNOSTIC LOG:\n'+_diagLog.join('\n')+'\n\n'+
+    'If stars don\'t match, try refreshing!'
+  );
+}
+
+// Legacy compat — changeFamilyCode now shows user info
 function changeFamilyCode(){
-  const newCode = prompt('Enter new Family Code (use same on all devices):','');
-  if(!newCode) return;
-  const code = newCode.trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'');
-  if(!code){ alert('Invalid code!'); return; }
-  _familyCode = code;
-  _lsSet('c_family_code', code);
-  alert('✅ Family code updated to: '+code+'\n\nEnter this same code on all your devices!');
+  if(_currentUser){
+    alert('✅ Signed in as: '+(_currentUser.email||_currentUser.uid)+'\n\nYour progress syncs automatically across all devices where you sign in with this Google account.');
+  } else {
+    alert('Not signed in. Please refresh to sign in.');
+  }
 }
 
 // ══════════════════════════════════════
@@ -2421,22 +2664,11 @@ const CUR = {
     {w:8,emoji:'📓',title:'My Daily Journal Drawing',desc:'Draw the most exciting thing that happened today!',learn:'Keeping a journal is something many great people in history did every day!',why:'Journaling builds reflection and language development.',steps:['Get your notebook','Think: best thing today?','Draw it carefully!','Write one sentence about it with Mummy'],stars:3},
   ],
   learning:[
-    {w:1,subj:'abc',emoji:'✋',title:'Finger Tracing Fun',desc:'Trace big letters with your finger — no pencil needed yet!',learn:'Tracing builds the hand muscles you need for writing! Your fingers learn the shape before the pencil does.',why:'Finger tracing is the very first step to writing — it builds fine motor memory safely at age 4.',steps:['Draw a big letter A on paper','Now trace it slowly with your finger','Try B, C, D, E, F, G, H — you know these!','Trace in sand or flour for extra fun!'],stars:3,tag:'🔤 ABC'},
-    {w:1,subj:'abc',emoji:'🍦',title:'Learn Letter I',desc:'I is for Ice cream, Insect, Island — and ME!',learn:'I is a VOWEL! It says "ih" like in Insect, or "eye" like in Ice cream. I is also the word for yourself!',why:'I is a vowel that appears in almost every sentence — mastering it early is powerful.',steps:['Say "I" out loud — "eye!"','Trace letter I in the air with your finger','Find 3 things starting with I at home','Draw an ice cream and write I beside it!'],stars:3,tag:'🔤 ABC'},
-    {w:1,subj:'abc',emoji:'🤸',title:'Phonics Sounds — A to H',desc:'A says "aah", B says "buh", C says "kuh"… can you do all 8?',learn:'Every letter has a SOUND. Knowing the sound is how you read and write words. A=aah, B=buh, C=kuh, D=duh, E=eh, F=fff, G=guh, H=huh!',why:'Phonics is the #1 skill for reading. She knows the letters — now linking sounds unlocks reading!',steps:['Point to A — say its sound: "aah!"','Go through B C D E F G H the same way','Clap once for each sound','Say a word for each sound: A=Apple, B=Ball...'],stars:3,tag:'🔤 ABC'},
-    {w:2,subj:'abc',emoji:'🌈',title:'Learn Letters J & K',desc:'J for Jelly, Jump, Jungle! K for Kite, King, Kangaroo!',learn:'J says "juh" — like a jump! K says "kuh" — a strong sharp sound.',why:'J and K are fun letters that appear in many action words children love.',steps:['Say "J" — jump as you say it!','Say "K" — kick as you say it!','Trace J and K with your finger 3 times each','Find 2 words starting with J and 2 with K!'],stars:3,tag:'🔤 ABC'},
-    {w:2,subj:'abc',emoji:'🦁',title:'Learn Letters L & M',desc:'L for Lion, Lemon, Leaf! M for Moon, Monkey, Mango!',learn:'L says "lll" — hold it out long! M says "mmm" — like humming!',why:'L and M are very common letters — they appear in hundreds of everyday words.',steps:['Hum "mmm" for M — feel it in your lips!','Say "lll" for L — tongue on roof of mouth','Trace L and M in flour or sand','Draw a lion (L) and a monkey (M)!'],stars:3,tag:'🔤 ABC'},
-    {w:3,subj:'abc',emoji:'✏️',title:'Pencil Practice — Straight Lines',desc:'Draw rows of straight lines — up-down and across!',learn:'Before writing letters, we practice LINES! Straight lines make letters like I, H, T, L, E, F.',why:'Controlled line drawing is the foundation of neat handwriting — key for school readiness.',steps:['Hold pencil between thumb and two fingers','Draw 5 lines going down the page','Draw 5 lines going across the page','Make a ladder shape — lines + rungs!'],stars:3,tag:'🔤 ABC'},
-    {w:3,subj:'abc',emoji:'🐍',title:'Learn Letters N & O',desc:'N for Nest, Night, Nose! O for Orange, Owl, Ocean!',learn:'N says "nnn". O is a VOWEL — it says "oh" like in Open or "uh" like in October!',why:'O is one of the most used vowels — it appears in thousands of words.',steps:['Say "nnn" — can you feel your tongue?','Draw the letter O — perfect circle!','Say 3 N words and 3 O words','O is a vowel — find 5 words with O at home!'],stars:3,tag:'🔤 ABC'},
-    {w:4,subj:'abc',emoji:'🦜',title:'Learn Letters P & Q',desc:'P for Parrot, Pizza, Park! Q for Queen, Quiet, Quiz!',learn:'P says "puh" — blow out a puff of air! Q almost always goes with U to make "kw".',why:'P is very common. Q is rare but memorable — great for building letter curiosity!',steps:['Say "P" — feel the puff of air on your hand!','Q is special — it always brings U along!','Trace P and Q with your finger','Draw a queen wearing a P crown!'],stars:3,tag:'🔤 ABC'},
-    {w:4,subj:'abc',emoji:'✏️',title:'Pencil Practice — Curves & Circles',desc:'Draw rows of C shapes, O shapes and wavy lines!',learn:'Curved strokes make letters like C, O, G, D, B, P, R, S, U. Practice curves before writing them!',why:'Curve control is harder than straight lines — this practice directly improves letter writing.',steps:['Draw a row of C shapes along the page','Draw a row of full circles','Now try: small c, small o','Connect circles: ooooo — like a bead chain!'],stars:3,tag:'🔤 ABC'},
-    {w:5,subj:'abc',emoji:'🚀',title:'Learn Letters R & S',desc:'R for Rocket, Rainbow, Run! S for Star, Sun, Snake!',learn:'R says "rrr" — like a growl! S says "sss" — like a snake hissing!',why:'R and S are two of the most frequently used letters in English.',steps:['Growl "rrr" for R like a tiger!','Hiss "sss" for S like a snake!','Wiggle your body like a snake for S!','Write R and S 3 times each with your finger'],stars:3,tag:'🔤 ABC'},
-    {w:5,subj:'abc',emoji:'🗣️',title:'Phonics Sounds — I to P',desc:'I says "ih", J says "juh", K says "kuh"… can you do all 8?',learn:'I=ih, J=juh, K=kuh, L=lll, M=mmm, N=nnn, O=oh, P=puh. Say them all in order!',why:'Extending phonics from H to P doubles her reading readiness — sounds unlock words!',steps:['Point to I — say "ih!"','Go through J K L M N O P','Clap once for each sound','Say a word for each: I=Insect, J=Jelly...'],stars:3,tag:'🔤 ABC'},
-    {w:6,subj:'abc',emoji:'🌟',title:'Learn Letters T, U & V',desc:'T for Tiger, Tree! U for Umbrella! V for Van, Violin!',learn:'T says "tuh". U is a VOWEL — it says "uh" like in Under. V says "vvv" — feel your teeth on your lip!',why:'T is one of the most common letters in English. U is a vowel found in hundreds of words.',steps:['Touch your teeth with your lip — say "vvv"!','T — tap your tongue on roof of mouth: "tuh"','U is a vowel — draw a cup shape for U!','Write T U V three times each with finger'],stars:4,tag:'🔤 ABC'},
-    {w:6,subj:'abc',emoji:'✏️',title:'My Name in Letters',desc:'Learn to write YOUR name — the most special word!',learn:'Your name starts with a capital letter. All the other letters are small. Writing your name is the first thing children learn to write!',why:'Writing their own name is the most motivating writing task for children — it is personal and meaningful.',steps:['Ask Mummy to write your name big','Look at each letter carefully','Trace each letter with your finger','Now try writing your name yourself!'],stars:4,tag:'🔤 ABC'},
-    {w:7,subj:'abc',emoji:'🦊',title:'Learn Letters W, X, Y & Z',desc:'W for Wolf! X for X-ray! Y for Yellow! Z for Zebra!',learn:'W says "wuh". X says "ks" — like in box! Y says "yuh". Z says "zzz" — like sleeping!',why:'Completing the alphabet from W to Z gives her the full set — a huge milestone!',steps:['Snore "zzz" for Z — very funny!','Say "yuh yuh yuh" for Y','W looks like two V shapes joined!','You now know ALL 26 letters! 🎉'],stars:4,tag:'🔤 ABC'},
-    {w:7,subj:'abc',emoji:'📖',title:'Phonics — Sound Out Words',desc:'Sound out: CAT, DOG, HAT, SUN, PIG, BIG, CUP!',learn:'Sounding out letters to make words is called PHONICS. C+A+T = CAT!',why:'Blending letter sounds into words is how reading begins — she is ready for this!',steps:['Look at the word CAT','Sound out slowly: C...A...T','Blend together: "kuh-aah-tuh" = CAT!','Try DOG, HAT, SUN, PIG, CUP!'],stars:4,tag:'🔤 ABC'},
-    {w:8,subj:'abc',emoji:'🗣️',title:'Sight Words — Top 6',desc:'Learn by sight: THE, IS, A, AND, IN, IT',learn:'Sight words are so common we just REMEMBER them — we do not sound them out!',why:'Knowing sight words unlocks 50% of all reading — they appear on every page.',steps:['Read each word: THE IS A AND IN IT','Cover one and try to remember it','Make flash cards with Mummy!','Use each word in a sentence!'],stars:4,tag:'🔤 ABC'},
+    {w:1,subj:'abc',emoji:'🔤',title:'Learn A to Z — All 26 Letters!',desc:'Tap every letter from A to Z, hear its sound and see its word!',learn:'There are 26 letters in the alphabet — A B C D E F G H I J K L M N O P Q R S T U V W X Y Z! Every word you read or write uses these letters. Vowels (A E I O U) are extra special!',why:'Knowing all 26 letters and their sounds is the foundation of reading and writing.',steps:['Tap each letter to hear its sound','Say the letter, its sound and its word out loud','Find the 5 vowels — A, E, I, O, U!','Try to say the whole alphabet by heart: A B C...'],stars:5,tag:'🔤 ABC'},
+    {w:2,subj:'abc',emoji:'📖',title:'Phonics — Sound Out Words',desc:'Sound out: CAT, DOG, HAT, SUN, PIG, BIG, CUP!',learn:'Sounding out letters to make words is called PHONICS. C+A+T = CAT!',why:'Blending letter sounds into words is how reading begins — she is ready for this!',steps:['Look at the word CAT','Sound out slowly: C...A...T','Blend together: "kuh-aah-tuh" = CAT!','Try DOG, HAT, SUN, PIG, CUP!'],stars:4,tag:'🔤 ABC'},
+    {w:3,subj:'abc',emoji:'🗣️',title:'Sight Words — Top 6',desc:'Learn by sight: THE, IS, A, AND, IN, IT',learn:'Sight words are so common we just REMEMBER them — we do not sound them out!',why:'Knowing sight words unlocks 50% of all reading — they appear on every page.',steps:['Read each word: THE IS A AND IN IT','Cover one and try to remember it','Make flash cards with Mummy!','Use each word in a sentence!'],stars:4,tag:'🔤 ABC'},
+    {w:4,subj:'abc',emoji:'✋',title:'Finger Tracing Fun — A to Z',desc:'Trace big letters A to Z with your finger — no pencil needed yet!',learn:'Tracing builds the hand muscles you need for writing! Your fingers learn the shape before the pencil does.',why:'Finger tracing is the very first step to writing — it builds fine motor memory safely at age 4.',steps:['Draw a big letter A on paper','Trace it slowly with your finger','Go through every letter A B C D... to Z!','Trace in sand or flour for extra fun!'],stars:3,tag:'🔤 ABC'},
+    {w:5,subj:'abc',emoji:'✏️',title:'My Name in Letters',desc:'Learn to write YOUR name — the most special word!',learn:'Your name starts with a capital letter. All the other letters are small. Writing your name is the first thing children learn to write!',why:'Writing their own name is the most motivating writing task for children — it is personal and meaningful.',steps:['Ask Mummy to write your name big','Look at each letter carefully','Trace each letter with your finger','Now try writing your name yourself!'],stars:4,tag:'🔤 ABC'},
     // MATHS
     {w:1,subj:'maths',emoji:'🔢',title:'Count 1 to 10 — With Actions!',desc:'Count loud and show fingers — then jump, clap and stomp!',learn:'She already knows 1–10! Now we make it fun with movement — jump on each number!',why:'Adding actions to counting strengthens number memory and makes it joyful.',steps:['Count 1 to 10 showing fingers','Now jump once for each number!','Clap and count backwards: 10, 9, 8…','How fast can you count to 10?'],stars:2,tag:'🔢 Maths'},
     {w:1,subj:'maths',emoji:'🔟',title:'Numbers 11 to 20',desc:'After 10 come the teens — eleven, twelve, thirteen…',learn:'11=eleven, 12=twelve, 13=thirteen, 14=fourteen, 15=fifteen, 16=sixteen, 17=seventeen, 18=eighteen, 19=nineteen, 20=twenty!',why:'Counting to 20 fluently is a key milestone for starting school — she is ready for this!',steps:['Count from 10 — what comes next? Eleven!','Continue: twelve, thirteen, fourteen…','Count objects around the house up to 20','Count backwards from 20 to 1!'],stars:3,tag:'🔢 Maths'},
@@ -2736,6 +2968,11 @@ const GAMES = [
   {id:'myShop',       week:2,emoji:'🏪',title:'My Little Shop!',          desc:'A customer is here — pick the best selling price!',   cat:'money'},
   {id:'lemonadeStand',week:3,emoji:'🍋',title:'Lemonade Stand!',          desc:'Run your stand — set your price and earn a profit!',  cat:'money'},
   {id:'changeMaker',  week:2,emoji:'💰',title:'Give the Change!',         desc:'The customer paid — how much change do you give back?',cat:'money'},
+  {id:'shadowMatch',  week:1,emoji:'🦁',title:'Animal Shadow Match!',    desc:'Look at the shadow and tap the correct animal!',     cat:'puzzle'},
+  {id:'dotCard',      week:1,emoji:'🎯',title:'Dot Card Match!',          desc:'Find the card with the right number of dots!',       cat:'puzzle'},
+  {id:'oppSnap',      week:1,emoji:'🔄',title:'Opposite Snap!',           desc:'Tap the card that is the opposite of the word shown!',cat:'puzzle'},
+  {id:'colourWordMatch',week:1,emoji:'🌈',title:'Colour Word Match!',     desc:'Match the colour word to the right colour card!',    cat:'puzzle'},
+  {id:'puzzleJigsaw',   week:1,emoji:'🧩',title:'TV Show Jigsaw Puzzle!', desc:'Drag the 4 pieces together to build your favourite TV show character! 5 new shows every day!',    cat:'puzzle'},
 ];
 
 // ══════════════════════════════════════
@@ -2775,8 +3012,10 @@ let busy=false;
 let currentlyPlaying=false; // true when user is actively inside a game/activity
 
 const ld=localStorage.getItem('cld');
-if(ld&&ld!==todayKey()){done=[];stars=0;localStorage.removeItem('cd_'+ld);localStorage.removeItem('c_skipped_'+ld);}
-localStorage.setItem('cld',todayKey());
+if(ld&&ld!==todayKey()){done=[];stars=0;_lsRemove('cd_'+ld);_lsRemove('c_skipped_'+ld);/* totalStarsEver preserved — never reset on new day */}
+// Use _lsSet (original) so cld is set locally only — _bootApp() will handle Firebase sync
+// after data is loaded. Using overridden setItem here would write to Firebase before data loads.
+_lsSet('cld',todayKey());
 
 // ══════════════════════════════════════
 //  POOL + NEXT
@@ -2791,10 +3030,19 @@ function getPool(){
     return pool;
   }
   if(tab==='create'||tab==='parent') return [];
+  // Think is now a subject within learning
+  if(tab==='learning'&&subj==='think'){
+    let pool=CUR.think||[];
+    pool=pool.filter(a=>!a.w||a.w<=week);
+    if(thinkCat!=='all') pool=pool.filter(a=>a.cat===thinkCat);
+    const doneTodayTitles=done.filter(d=>d.tab==='learning').map(d=>d.title);
+    const filtered=pool.filter(a=>!doneTodayTitles.includes(a.title)&&!skippedToday.includes(a.title));
+    if(!filtered.length) return [];
+    return filtered;
+  }
   let pool=CUR[tab]||[];
   pool=pool.filter(a=>!a.w||a.w<=week);
-  if(tab==='learning'&&subj!=='all') pool=pool.filter(a=>a.subj===subj);
-  if(tab==='think'&&thinkCat!=='all') pool=pool.filter(a=>a.cat===thinkCat);
+  if(tab==='learning'&&subj!=='all'&&subj!=='think') pool=pool.filter(a=>a.subj===subj);
   // Activities done TODAY in this tab should not appear again today
   const doneTodayTitles=done.filter(d=>d.tab===tab).map(d=>d.title);
   const filtered=pool.filter(a=>!doneTodayTitles.includes(a.title)&&!skippedToday.includes(a.title));
@@ -2822,6 +3070,11 @@ function getPendingForTab(t){
 
   // Activity tabs (morning/learning/evening/think)
   let pool=(CUR[t]||[]).filter(a=>!a.w||a.w<=week);
+  // Include think activities in learning tab badge count
+  if(t==='learning'){
+    const thinkPool=(CUR.think||[]).filter(a=>!a.w||a.w<=week);
+    pool=[...pool,...thinkPool];
+  }
   const doneTodayTitles=done.filter(d=>d.tab===t).map(d=>d.title);
   const pending=pool.filter(a=>!doneTodayTitles.includes(a.title)&&!skippedToday.includes(a.title));
   return pending.length;
@@ -2907,8 +3160,10 @@ async function fetchNext(forceAct){
 //  ACTIVITY PICKER — browse & choose
 // ══════════════════════════════════════
 function showActivityPicker(pool){
-  const tabName=tab.charAt(0).toUpperCase()+tab.slice(1);
-  const tabEmojis={morning:'🌅',learning:'📚',games:'🎮',evening:'🌙',think:'🧩'};
+  const isThinkView=tab==='learning'&&subj==='think';
+  const tabName=isThinkView?'Think':(tab.charAt(0).toUpperCase()+tab.slice(1));
+  const tabEmojis={morning:'🌅',learning:'📚',games:'🎮',evening:'🌙'};
+  const tabEmoji=isThinkView?'🧩':(tabEmojis[tab]||'📋');
   document.getElementById('hsub').textContent=`📋 Pick your ${tabName} ${tab==='games'?'game':'activity'}!`;
 
   const catColors={maths:'linear-gradient(135deg,#ffb830,#ff8c69)',letters:'linear-gradient(135deg,#a78bfa,#4fa3e0)',
@@ -2950,15 +3205,18 @@ function showActivityPicker(pool){
 
   // Done items — all games/activities completed today in this tab
   const doneTodayTitles=done.filter(d=>d.tab===tab).map(d=>d.title);
-  const allPool=tab==='games'?GAMES.filter(g=>g.week<=week):((CUR[tab]||[]).filter(a=>!a.w||a.w<=week));
+  const isThinkSubj=tab==='learning'&&subj==='think';
+  const allPool=tab==='games'?GAMES.filter(g=>g.week<=week)
+    :isThinkSubj?(CUR.think||[]).filter(a=>!a.w||a.w<=week)
+    :((CUR[tab]||[]).filter(a=>!a.w||a.w<=week));
   const doneGames=allPool.filter(g=>doneTodayTitles.includes(g.title));
   // Filter by current gameCat / thinkCat if applicable
   const filteredDone=tab==='games'&&gameCat!=='all'?doneGames.filter(g=>g.cat===gameCat)
-    :tab==='think'&&thinkCat!=='all'?doneGames.filter(g=>g.cat===thinkCat)
+    :(isThinkSubj)&&thinkCat!=='all'?doneGames.filter(g=>g.cat===thinkCat)
     :doneGames;
   const filteredSkipped=tab==='games'&&gameCat!=='all'
     ?allPool.filter(g=>skippedToday.includes(g.title)&&g.cat===gameCat)
-    :tab==='think'&&thinkCat!=='all'
+    :(isThinkSubj)&&thinkCat!=='all'
     ?allPool.filter(g=>skippedToday.includes(g.title)&&g.cat===thinkCat)
     :allPool.filter(g=>skippedToday.includes(g.title));
 
@@ -2970,7 +3228,7 @@ function showActivityPicker(pool){
   document.getElementById('area').innerHTML=`
     <div class="picker-panel">
       <div class="picker-header">
-        <span class="picker-title">${tabEmojis[tab]||'📋'} Pick your ${tabName} ${tab==='games'?'game':'activity'}</span>
+        <span class="picker-title">${tabEmoji} Pick your ${tabName} ${tab==='games'?'game':'activity'}</span>
         <button class="picker-random" onclick="pickRandom()">🎲 Surprise me!</button>
       </div>
       ${allDoneToday?`<div style="text-align:center;padding:14px 12px;background:linear-gradient(135deg,#e8fff0,#f0fff4);border-radius:16px;margin-bottom:10px;border:2px dashed var(--green)"><div style="font-size:1.8rem">🎉</div><div style="font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--green)">All ${tabName} ${tab==='games'?'games':'activities'} done for today!</div><div style="font-size:.8rem;color:var(--text3);margin-top:4px">Amazing work! Everything comes back fresh tomorrow 🌟</div></div>`:''}
@@ -3213,47 +3471,56 @@ function buildVisualPanel(a){
     </div>`;
   }
 
-  // ── LEARN A LETTER (I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z) ──
-  if(t.match(/Learn Letter[s]? /)){
-    const letters=t.replace(/Learn Letters? /,'').replace(/ &/g,'').replace(/,/g,'').split(' ').filter(l=>l.length===1);
-    const wordMap={I:['🍦','Ice cream'],J:['🍭','Jelly'],K:['🪁','Kite'],L:['🦁','Lion'],
-      M:['🌙','Moon'],N:['👃','Nose'],O:['🍊','Orange'],P:['🍕','Pizza'],
-      Q:['👑','Queen'],R:['🚀','Rocket'],S:['⭐','Star'],T:['🌳','Tree'],
-      U:['☂️','Umbrella'],V:['🚐','Van'],W:['🐺','Wolf'],X:['🔬','X-ray'],Y:['🟡','Yellow'],Z:['🦓','Zebra']};
-    const colors=['#ff6b9d','#ffb830','#a78bfa','#4ecdc4','#56cf81','#4fa3e0'];
+  // ── LEARN A TO Z — ALL 26 LETTERS ──
+  if(t.includes('Learn A to Z')||t.match(/Learn Letter[s]? /)){
+    const allLetters='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    const wordMap={
+      A:['🍎','Apple'],B:['🏀','Ball'],C:['🐱','Cat'],D:['🐶','Dog'],E:['🥚','Egg'],
+      F:['🐟','Fish'],G:['🐐','Goat'],H:['🎩','Hat'],I:['🍦','Ice cream'],J:['🍭','Jelly'],
+      K:['🪁','Kite'],L:['🦁','Lion'],M:['🌙','Moon'],N:['👃','Nose'],O:['🍊','Orange'],
+      P:['🍕','Pizza'],Q:['👑','Queen'],R:['🚀','Rocket'],S:['⭐','Star'],T:['🌳','Tree'],
+      U:['☂️','Umbrella'],V:['🚐','Van'],W:['🐺','Wolf'],X:['🔬','X-ray'],Y:['🌻','Yellow'],Z:['🦓','Zebra']};
+    const sounds={A:'aah',B:'buh',C:'kuh',D:'duh',E:'eh',F:'fff',G:'guh',H:'huh',I:'ih',
+      J:'juh',K:'kuh',L:'lll',M:'mmm',N:'nnn',O:'oh',P:'puh',Q:'kwuh',R:'rrr',S:'sss',
+      T:'tuh',U:'uh',V:'vvv',W:'wuh',X:'ks',Y:'yuh',Z:'zzz'};
+    const vowels=new Set(['A','E','I','O','U']);
+    const colors=['#ff6b9d','#ffb830','#a78bfa','#4ecdc4','#56cf81','#4fa3e0','#ff8c69','#7c3aed','#06b6d4','#f59e0b'];
+    const letters=t.includes('Learn A to Z')?allLetters:t.replace(/Learn Letters? /,'').replace(/ &/g,'').replace(/,/g,'').split(' ').filter(l=>l.length===1);
     return `<div style="margin:12px 0">
-      <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple);margin-bottom:8px;text-align:center">👆 Tap the letter to hear its sound!</div>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple);margin-bottom:6px;text-align:center">👆 Tap any letter to hear its sound!</div>
+      <div style="font-size:.7rem;color:var(--text3);text-align:center;margin-bottom:10px">⭐ Vowels glow gold — A E I O U!</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px">
         ${letters.map((l,i)=>{
           const [em,word]=wordMap[l]||['🔤',l+' word'];
-          return `<div onclick="speakText('The letter ${l}. It says its sound. ${l} is for ${word}!');this.style.transform='scale(1.15)';setTimeout(()=>this.style.transform='',400)"
-            style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 18px;border-radius:18px;background:${colors[i%colors.length]};color:#fff;cursor:pointer;transition:transform .2s;min-width:90px;text-align:center">
-            <span style="font-family:'Baloo 2',cursive;font-size:3rem;font-weight:800;line-height:1">${l}</span>
-            <span style="font-size:1.8rem">${em}</span>
-            <span style="font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:700">${l} for ${word}</span>
+          const isVowel=vowels.has(l);
+          return `<div onclick="speakText('The letter ${l}. It says ${sounds[l]||'its sound'}. ${l} is for ${word}!');this.style.transform='scale(1.18)';setTimeout(()=>this.style.transform='',400)"
+            style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 3px;border-radius:14px;background:${isVowel?'linear-gradient(135deg,#ffb830,#ff6b9d)':colors[i%colors.length]};border:${isVowel?'3px solid #fff':'3px solid transparent'};color:#fff;cursor:pointer;transition:transform .2s;text-align:center;${isVowel?'box-shadow:0 0 10px rgba(255,184,48,.5)':''}">
+            <span style="font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;line-height:1">${l}</span>
+            <span style="font-size:1rem">${em}</span>
+            <span style="font-size:.52rem;font-weight:700;opacity:.95">"${sounds[l]||''}"</span>
+            <span style="font-size:.48rem;opacity:.9;line-height:1.2">${word}</span>
           </div>`;
         }).join('')}
       </div>
     </div>`;
   }
 
-  // ── PHONICS SOUNDS ──
-  if(t.includes('Phonics Sounds')){
-    const isAtoH=t.includes('A to H');
-    const letters=isAtoH?['A','B','C','D','E','F','G','H']:['I','J','K','L','M','N','O','P'];
-    const sounds={A:'aah',B:'buh',C:'kuh',D:'duh',E:'eh',F:'fff',G:'guh',H:'huh',I:'ih',J:'juh',K:'kuh',L:'lll',M:'mmm',N:'nnn',O:'oh',P:'puh'};
-    const words={A:'Apple',B:'Ball',C:'Cat',D:'Dog',E:'Egg',F:'Fish',G:'Goat',H:'Hat',I:'Insect',J:'Jelly',K:'Kite',L:'Lion',M:'Moon',N:'Nose',O:'Orange',P:'Pizza'};
-    const emojis={A:'🍎',B:'🏀',C:'🐱',D:'🐶',E:'🥚',F:'🐟',G:'🐐',H:'🎩',I:'🐛',J:'🍭',K:'🪁',L:'🦁',M:'🌙',N:'👃',O:'🍊',P:'🍕'};
-    const colors=['#ff6b9d','#ffb830','#a78bfa','#4ecdc4','#56cf81','#4fa3e0','#ff8c69','#a78bfa'];
+  // ── PHONICS SOUNDS — A TO Z ──
+  if(t.includes('Phonics')){
+    const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    const sounds={A:'aah',B:'buh',C:'kuh',D:'duh',E:'eh',F:'fff',G:'guh',H:'huh',I:'ih',J:'juh',K:'kuh',L:'lll',M:'mmm',N:'nnn',O:'oh',P:'puh',Q:'kwuh',R:'rrr',S:'sss',T:'tuh',U:'uh',V:'vvv',W:'wuh',X:'ks',Y:'yuh',Z:'zzz'};
+    const words={A:'Apple',B:'Ball',C:'Cat',D:'Dog',E:'Egg',F:'Fish',G:'Goat',H:'Hat',I:'Insect',J:'Jelly',K:'Kite',L:'Lion',M:'Moon',N:'Nose',O:'Orange',P:'Pizza',Q:'Queen',R:'Rocket',S:'Star',T:'Tree',U:'Umbrella',V:'Van',W:'Wolf',X:'X-ray',Y:'Yellow',Z:'Zebra'};
+    const emojis={A:'🍎',B:'🏀',C:'🐱',D:'🐶',E:'🥚',F:'🐟',G:'🐐',H:'🎩',I:'🐛',J:'🍭',K:'🪁',L:'🦁',M:'🌙',N:'👃',O:'🍊',P:'🍕',Q:'👑',R:'🚀',S:'⭐',T:'🌳',U:'☂️',V:'🚐',W:'🐺',X:'🔬',Y:'🌻',Z:'🦓'};
+    const colors=['#ff6b9d','#ffb830','#a78bfa','#4ecdc4','#56cf81','#4fa3e0','#ff8c69','#7c3aed','#06b6d4','#f59e0b'];
     return `<div style="margin:12px 0">
       <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple);margin-bottom:8px;text-align:center">👆 Tap each letter to hear its sound!</div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px">
         ${letters.map((l,i)=>`<div onclick="speakText('${l} says ${sounds[l]}. ${l} is for ${words[l]}!');this.style.transform='scale(1.1)';setTimeout(()=>this.style.transform='',400)"
-          style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:14px;background:${colors[i]};color:#fff;cursor:pointer;transition:transform .2s;text-align:center">
-          <span style="font-family:'Baloo 2',cursive;font-size:1.6rem;font-weight:800;line-height:1">${l}</span>
-          <span style="font-size:1.2rem">${emojis[l]}</span>
-          <span style="font-size:.62rem;font-weight:700;opacity:.9">"${sounds[l]}"</span>
-          <span style="font-size:.58rem;opacity:.85">${words[l]}</span>
+          style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 3px;border-radius:14px;background:${colors[i%colors.length]};color:#fff;cursor:pointer;transition:transform .2s;text-align:center">
+          <span style="font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;line-height:1">${l}</span>
+          <span style="font-size:1rem">${emojis[l]}</span>
+          <span style="font-size:.56rem;font-weight:700;opacity:.9">"${sounds[l]}"</span>
+          <span style="font-size:.52rem;opacity:.85">${words[l]}</span>
         </div>`).join('')}
       </div>
     </div>`;
@@ -4593,7 +4860,7 @@ function showAct(a){
     </div>`:'';
 
   // Build visual interactive panel based on activity type
-  const visualPanel=tab==='think'?buildThinkPanel(a):buildVisualPanel(a);
+  const visualPanel=(tab==='learning'&&subj==='think')?buildThinkPanel(a):buildVisualPanel(a);
 
   document.getElementById('area').innerHTML=`
     <div class="acard" id="ac">
@@ -4660,7 +4927,9 @@ function renderGame(g){
     findLetter:buildFindLetter,animalSound:buildAnimalSound,phonicsMatch:buildPhonicsMatch,
     daysOrder:buildDaysOrder,clockGame:buildClockGame,simonSays:buildSimonSays,
     whatsMissing:buildWhatsMissing,colourPattern:buildColourPattern,numberMemory:buildNumberMemory,
-    coinCount:buildCoinCount,fairTrade:buildFairTrade,myShop:buildMyShop,lemonadeStand:buildLemonadeStand,changeMaker:buildChangeMaker};
+    coinCount:buildCoinCount,fairTrade:buildFairTrade,myShop:buildMyShop,lemonadeStand:buildLemonadeStand,changeMaker:buildChangeMaker,
+    shadowMatch:buildShadowMatch,dotCard:buildDotCard,oppSnap:buildOppSnap,colourWordMatch:buildColourWordMatch,
+    puzzleJigsaw:buildPuzzleJigsaw};
   (fns[g.id]||buildCountGame)();
   // Append skip button after game panel
   const area=document.getElementById('area');
@@ -5381,6 +5650,1124 @@ function checkCM(el,chosen,ans){
 }
 
 
+// ══════════════════════════════════════
+//  🃏 PUZZLE CARD GAME 1 — Animal Shadow Match
+// ══════════════════════════════════════
+let shadowScore=0,shadowRound=0,shadowCurrent=null;
+const SHADOW_ANIMALS=[
+  {emoji:'🦁',name:'Lion',      wrong:['🐯','🐻','🦊']},
+  {emoji:'🐘',name:'Elephant',  wrong:['🦏','🐪','🦛']},
+  {emoji:'🐸',name:'Frog',      wrong:['🐢','🐊','🦎']},
+  {emoji:'🦋',name:'Butterfly', wrong:['🐝','🐛','🦗']},
+  {emoji:'🐬',name:'Dolphin',   wrong:['🐟','🦈','🐙']},
+  {emoji:'🦒',name:'Giraffe',   wrong:['🦓','🐆','🦌']},
+  {emoji:'🐧',name:'Penguin',   wrong:['🦅','🦆','🦉']},
+  {emoji:'🦄',name:'Unicorn',   wrong:['🐴','🦌','🐐']},
+  {emoji:'🦊',name:'Fox',       wrong:['🐺','🦝','🐱']},
+  {emoji:'🐊',name:'Crocodile', wrong:['🦎','🐍','🐢']},
+];
+function buildShadowMatch(){shadowScore=0;shadowRound=0;nextShadowRound();}
+function nextShadowRound(){
+  const totalRounds=6;
+  shadowRound++;
+  if(shadowRound>totalRounds){endGame(shadowScore,totalRounds,'shadowMatch');return;}
+  const used=[];
+  let a;do{a=SHADOW_ANIMALS[Math.floor(Math.random()*SHADOW_ANIMALS.length)];}while(used.includes(a.emoji)&&used.length<SHADOW_ANIMALS.length);
+  used.push(a.emoji);
+  shadowCurrent=a;
+  const opts=[a.emoji,...a.wrong.sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🦁 Animal Shadow Match!</div>
+      <div class="game-inst">Which animal makes this shadow? Tap your answer!</div>
+      <div class="game-score">Round ${shadowRound}/${totalRounds} &nbsp;·&nbsp; ⭐ ${shadowScore}</div>
+      <div style="font-size:5.5rem;filter:brightness(0);text-align:center;margin:18px 0;animation:float 2s ease-in-out infinite;user-select:none">${a.emoji}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:280px;margin:0 auto">
+        ${opts.map((e,i)=>`<button id="sh_opt_${i}" onclick="checkShadow(${i})" style="font-size:2.8rem;padding:14px;border-radius:18px;border:3px solid var(--border);background:var(--cardbg);cursor:pointer;transition:all .25s;box-shadow:0 4px 12px var(--shadow)">${e}</button>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb" style="margin-top:12px;min-height:28px"></div>
+    </div>`;
+  speakText('Which animal makes this shadow?');
+}
+window._shadowOpts=[];
+function checkShadow(idx){
+  const opts=Array.from(document.querySelectorAll('[id^="sh_opt_"]'));
+  opts.forEach(b=>b.disabled=true);
+  const chosen=opts[idx].textContent.trim();
+  const correct=shadowCurrent.emoji;
+  const ok=chosen===correct;
+  if(ok){
+    shadowScore++;
+    opts[idx].style.cssText+=';background:linear-gradient(135deg,#56cf81,#4ecdc4);border-color:#56cf81;transform:scale(1.12)';
+    playCorrect();speakText('Yes! Correct! Well done!');
+    document.getElementById('gfb').innerHTML='<span style="color:var(--green);font-family:\'Baloo 2\',cursive;font-weight:700">⭐ Correct! Amazing!</span>';
+  } else {
+    opts[idx].style.cssText+=';background:linear-gradient(135deg,#ff6b9d,#ff8c69);border-color:#ff6b9d';
+    opts.forEach(b=>{if(b.textContent.trim()===correct)b.style.cssText+=';background:linear-gradient(135deg,#56cf81,#4ecdc4);border-color:#56cf81';});
+    playWrong();speakText('Not quite! Look at the shadow again!');
+    document.getElementById('gfb').innerHTML='<span style="color:var(--pink);font-family:\'Baloo 2\',cursive;font-weight:700">Not this time — keep going!</span>';
+  }
+  setTimeout(nextShadowRound,1600);
+}
+
+// ══════════════════════════════════════
+//  🃏 PUZZLE CARD GAME 2 — Dot Card Match
+// ══════════════════════════════════════
+let dotScore=0,dotRound=0,dotAnswer=0;
+function buildDotCard(){dotScore=0;dotRound=0;nextDotRound();}
+function nextDotRound(){
+  const totalRounds=7;
+  dotRound++;
+  if(dotRound>totalRounds){endGame(dotScore,totalRounds,'dotCard');return;}
+  const ans=Math.floor(Math.random()*8)+1;
+  dotAnswer=ans;
+  const wrongs=[];
+  while(wrongs.length<3){const w=Math.floor(Math.random()*9)+1;if(w!==ans&&!wrongs.includes(w))wrongs.push(w);}
+  const opts=[ans,...wrongs].sort(()=>Math.random()-.5);
+  function dotGrid(n){
+    const dots=Array.from({length:n},()=>'<span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:var(--purple);margin:3px"></span>').join('');
+    return `<div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px;min-height:60px;max-width:80px;margin:0 auto">${dots}</div>`;
+  }
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🎯 Dot Card Match!</div>
+      <div class="game-inst">Find the card with this many dots!</div>
+      <div class="game-score">Round ${dotRound}/${totalRounds} &nbsp;·&nbsp; ⭐ ${dotScore}</div>
+      <div style="background:linear-gradient(135deg,#f0e8ff,#e8f5ff);border-radius:20px;padding:18px 24px;text-align:center;margin:14px auto;max-width:180px;box-shadow:0 6px 20px rgba(167,139,250,.2)">
+        <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple);margin-bottom:4px">This number:</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:3.5rem;font-weight:800;color:var(--purple);line-height:1">${ans}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:300px;margin:0 auto">
+        ${opts.map((n,i)=>`<button id="dc_opt_${i}" onclick="checkDot(${i},${n})" style="padding:12px 8px;border-radius:16px;border:3px solid var(--border);background:var(--cardbg);cursor:pointer;transition:all .25s;box-shadow:0 4px 12px var(--shadow)">${dotGrid(n)}<div style="font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:700;color:var(--text3);margin-top:4px">${n} dot${n>1?'s':''}</div></button>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb" style="margin-top:12px;min-height:28px"></div>
+    </div>`;
+  speakText('How many dots? Find number '+ans+'!');
+}
+function checkDot(idx,chosen){
+  document.querySelectorAll('[id^="dc_opt_"]').forEach(b=>b.disabled=true);
+  const ok=chosen===dotAnswer;
+  const btn=document.getElementById('dc_opt_'+idx);
+  if(ok){
+    dotScore++;
+    btn.style.cssText+=';background:linear-gradient(135deg,#56cf81,#4ecdc4);border-color:#56cf81;transform:scale(1.08)';
+    playCorrect();speakText('Brilliant! You found it!');
+    document.getElementById('gfb').innerHTML='<span style="color:var(--green);font-family:\'Baloo 2\',cursive;font-weight:700">⭐ Brilliant! Right answer!</span>';
+  } else {
+    btn.style.cssText+=';background:linear-gradient(135deg,#ff6b9d,#ff8c69);border-color:#ff6b9d';
+    document.querySelectorAll('[id^="dc_opt_"]').forEach((b,i)=>{if(parseInt(b.querySelector('div:last-child').textContent)===dotAnswer)b.style.cssText+=';background:linear-gradient(135deg,#56cf81,#4ecdc4);border-color:#56cf81';});
+    playWrong();speakText('Not quite! Look for '+dotAnswer+' dots!');
+    document.getElementById('gfb').innerHTML='<span style="color:var(--pink);font-family:\'Baloo 2\',cursive;font-weight:700">Keep looking — you can do it!</span>';
+  }
+  setTimeout(nextDotRound,1600);
+}
+
+// ══════════════════════════════════════
+//  🃏 PUZZLE CARD GAME 3 — Opposite Snap!
+// ══════════════════════════════════════
+let oppScore=0,oppRound=0;
+const OPP_PAIRS=[
+  {word:'BIG 🐘',answer:'SMALL 🐭',wrong:['FAST 🚀','TALL 🏔️','LOUD 📢']},
+  {word:'HOT 🔥',answer:'COLD ❄️',wrong:['WET 💧','DARK 🌑','HEAVY 🏋️']},
+  {word:'HAPPY 😄',answer:'SAD 😢',wrong:['TIRED 😴','LOUD 📢','FAST 🚀']},
+  {word:'DAY ☀️',answer:'NIGHT 🌙',wrong:['RAIN 🌧️','COLD ❄️','QUIET 🤫']},
+  {word:'UP ⬆️',answer:'DOWN ⬇️',wrong:['LEFT ⬅️','FAST 🚀','LOUD 📢']},
+  {word:'FAST 🐆',answer:'SLOW 🐌',wrong:['BIG 🐘','HOT 🔥','SAD 😢']},
+  {word:'LIGHT 🪶',answer:'HEAVY 🏋️',wrong:['COLD ❄️','HAPPY 😄','LOUD 📢']},
+  {word:'TALL 🦒',answer:'SHORT 🐛',wrong:['FAST 🐆','COLD ❄️','NIGHT 🌙']},
+  {word:'LOUD 📢',answer:'QUIET 🤫',wrong:['BIG 🐘','FAST 🐆','HOT 🔥']},
+  {word:'OPEN 🚪',answer:'CLOSED 🔒',wrong:['FAST 🐆','COLD ❄️','TALL 🦒']},
+];
+let oppUsed=[];
+function buildOppSnap(){oppScore=0;oppRound=0;oppUsed=[];nextOppRound();}
+function nextOppRound(){
+  const totalRounds=6;
+  oppRound++;
+  if(oppRound>totalRounds){endGame(oppScore,totalRounds,'oppSnap');return;}
+  const available=OPP_PAIRS.filter(p=>!oppUsed.includes(p.word));
+  const pair=available[Math.floor(Math.random()*available.length)];
+  oppUsed.push(pair.word);
+  const opts=[pair.answer,...pair.wrong.sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔄 Opposite Snap!</div>
+      <div class="game-inst">Tap the opposite of the word on the card!</div>
+      <div class="game-score">Round ${oppRound}/${totalRounds} &nbsp;·&nbsp; ⭐ ${oppScore}</div>
+      <div style="background:linear-gradient(135deg,#fff5d4,#ffe0f0);border-radius:22px;padding:20px 28px;text-align:center;margin:14px auto;max-width:200px;box-shadow:0 8px 24px rgba(255,184,48,.25);border:3px solid #ffb830">
+        <div style="font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:700;color:var(--sun);margin-bottom:6px">WHAT IS THE OPPOSITE OF?</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;color:#333">${pair.word}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:300px;margin:0 auto">
+        ${opts.map((o,i)=>`<button id="opp_opt_${i}" onclick="checkOpp(${i},'${o.replace(/'/g,'\\\'')}')" style="padding:12px 8px;border-radius:16px;border:3px solid var(--border);background:var(--cardbg);font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;color:var(--text);cursor:pointer;transition:all .25s;box-shadow:0 4px 12px var(--shadow)">${o}</button>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb" style="margin-top:12px;min-height:28px"></div>
+    </div>`;
+  speakText('What is the opposite of '+pair.word.replace(/[^\w\s]/g,'').trim()+'?');
+  window._oppCorrect=pair.answer;
+}
+function checkOpp(idx,chosen){
+  document.querySelectorAll('[id^="opp_opt_"]').forEach(b=>b.disabled=true);
+  const correct=window._oppCorrect;
+  const ok=chosen===correct;
+  const btn=document.getElementById('opp_opt_'+idx);
+  if(ok){
+    oppScore++;
+    btn.style.cssText+=';background:linear-gradient(135deg,#56cf81,#4ecdc4);border-color:#56cf81;transform:scale(1.08)';
+    playCorrect();speakText('Yes! Perfect opposite!');
+    document.getElementById('gfb').innerHTML='<span style="color:var(--green);font-family:\'Baloo 2\',cursive;font-weight:700">⭐ Perfect! Correct opposite!</span>';
+  } else {
+    btn.style.cssText+=';background:linear-gradient(135deg,#ff6b9d,#ff8c69);border-color:#ff6b9d';
+    document.querySelectorAll('[id^="opp_opt_"]').forEach(b=>{if(b.textContent.trim()===correct)b.style.cssText+=';background:linear-gradient(135deg,#56cf81,#4ecdc4);border-color:#56cf81';});
+    playWrong();speakText('Not quite! The opposite is '+correct.replace(/[^\w\s]/g,'').trim());
+    document.getElementById('gfb').innerHTML='<span style="color:var(--pink);font-family:\'Baloo 2\',cursive;font-weight:700">Nearly! Keep trying!</span>';
+  }
+  setTimeout(nextOppRound,1600);
+}
+
+// ══════════════════════════════════════
+//  🃏 PUZZLE CARD GAME 4 — Colour Word Match
+// ══════════════════════════════════════
+let cwScore=0,cwRound=0,cwAnswer='';
+const COLOUR_CARDS=[
+  {word:'RED',   colour:'#e53935',text:'#fff'},
+  {word:'BLUE',  colour:'#1e88e5',text:'#fff'},
+  {word:'GREEN', colour:'#43a047',text:'#fff'},
+  {word:'YELLOW',colour:'#fdd835',text:'#333'},
+  {word:'ORANGE',colour:'#fb8c00',text:'#fff'},
+  {word:'PINK',  colour:'#e91e8c',text:'#fff'},
+  {word:'PURPLE',colour:'#8e24aa',text:'#fff'},
+  {word:'BLACK', colour:'#222',   text:'#fff'},
+  {word:'WHITE', colour:'#f5f5f5',text:'#333'},
+  {word:'BROWN', colour:'#6d4c41',text:'#fff'},
+];
+let cwUsed=[];
+function buildColourWordMatch(){cwScore=0;cwRound=0;cwUsed=[];nextCWRound();}
+function nextCWRound(){
+  const totalRounds=7;
+  cwRound++;
+  if(cwRound>totalRounds){endGame(cwScore,totalRounds,'colourWordMatch');return;}
+  const available=COLOUR_CARDS.filter(c=>!cwUsed.includes(c.word));
+  const correct=available[Math.floor(Math.random()*available.length)];
+  cwUsed.push(correct.word);
+  cwAnswer=correct.word;
+  const wrongPool=COLOUR_CARDS.filter(c=>c.word!==correct.word).sort(()=>Math.random()-.5).slice(0,3);
+  const opts=[correct,...wrongPool].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🌈 Colour Word Match!</div>
+      <div class="game-inst">Tap the colour card that matches the word!</div>
+      <div class="game-score">Round ${cwRound}/${totalRounds} &nbsp;·&nbsp; ⭐ ${cwScore}</div>
+      <div style="background:var(--cardbg);border-radius:22px;padding:20px 28px;text-align:center;margin:14px auto;max-width:200px;box-shadow:0 8px 24px var(--shadow);border:3px solid var(--border)">
+        <div style="font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:700;color:var(--text3);margin-bottom:6px">FIND THIS COLOUR:</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:1.9rem;font-weight:800;color:var(--text)">${correct.word}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:300px;margin:0 auto">
+        ${opts.map((c,i)=>`<button id="cw_opt_${i}" onclick="checkCW(${i},'${c.word}')" style="height:72px;border-radius:18px;border:3px solid var(--border);background:${c.colour};color:${c.text};font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;cursor:pointer;transition:all .25s;box-shadow:0 4px 14px rgba(0,0,0,.15)">${c.word}</button>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb" style="margin-top:12px;min-height:28px"></div>
+    </div>`;
+  speakText('Find the colour '+correct.word+'!');
+}
+function checkCW(idx,chosen){
+  document.querySelectorAll('[id^="cw_opt_"]').forEach(b=>b.disabled=true);
+  const ok=chosen===cwAnswer;
+  const btn=document.getElementById('cw_opt_'+idx);
+  if(ok){
+    cwScore++;
+    btn.style.outline='5px solid #56cf81';btn.style.transform='scale(1.1)';
+    playCorrect();speakText('Yes! That is '+chosen+'! Brilliant!');
+    document.getElementById('gfb').innerHTML='<span style="color:var(--green);font-family:\'Baloo 2\',cursive;font-weight:700">⭐ Brilliant! Colour matched!</span>';
+  } else {
+    btn.style.outline='5px solid #ff6b9d';
+    document.querySelectorAll('[id^="cw_opt_"]').forEach(b=>{if(b.textContent.trim()===cwAnswer)b.style.outline='5px solid #56cf81';});
+    playWrong();speakText('Not quite! Find the colour '+cwAnswer);
+    document.getElementById('gfb').innerHTML='<span style="color:var(--pink);font-family:\'Baloo 2\',cursive;font-weight:700">Look for '+cwAnswer+'! Try again next round!</span>';
+  }
+  setTimeout(nextCWRound,1600);
+}
+
+// ══════════════════════════════════════
+//  🧩 DRAG-AND-DROP JIGSAW PUZZLE
+// ══════════════════════════════════════
+let jigScore=0,jigRound=0,jigPlacements={};
+let _jigAnimal=null,_jigGhost=null,_jigTouchPiece=null,_jigTouchFromSlot=null,_jigDragPiece=null,_jigDragFromSlot=null;
+function _jigPs(){
+  // Use the smaller viewport dimension to handle portrait & landscape on iPad
+  const vw=Math.min(window.innerWidth,window.innerHeight,520);
+  return Math.max(72,Math.min(100,Math.floor((vw-60)/2.3)));
+}
+
+const JIGSAW_SHOWS=[
+  {name:'Bluey',emoji:'🐾',bg:'#e3f0ff',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e3f0ff' rx='18'/>
+    <ellipse cx='100' cy='155' rx='55' ry='42' fill='#4a90d9'/>
+    <circle cx='100' cy='92' r='55' fill='#4a90d9'/>
+    <ellipse cx='52' cy='68' rx='20' ry='32' fill='#2f6db5' transform='rotate(-15 52 68)'/>
+    <ellipse cx='148' cy='68' rx='20' ry='32' fill='#2f6db5' transform='rotate(15 148 68)'/>
+    <circle cx='78' cy='84' r='13' fill='#fff'/><circle cx='80' cy='86' r='8' fill='#1a1a2e'/>
+    <circle cx='77' cy='82' r='3' fill='#fff'/>
+    <circle cx='122' cy='84' r='13' fill='#fff'/><circle cx='124' cy='86' r='8' fill='#1a1a2e'/>
+    <circle cx='121' cy='82' r='3' fill='#fff'/>
+    <ellipse cx='100' cy='108' rx='14' ry='10' fill='#2f6db5'/>
+    <path d='M86,118 Q100,130 114,118' fill='none' stroke='#2f6db5' stroke-width='3'/>
+    <ellipse cx='100' cy='170' rx='22' ry='12' fill='#2f6db5'/>
+    <text x='100' y='196' font-size='11' fill='#2f6db5' text-anchor='middle' font-family='Arial' font-weight='bold'>Bluey</text>
+   </svg>`},
+  {name:'Daniel Tiger',emoji:'🐯',bg:'#fff8e1',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fff8e1' rx='18'/>
+    <ellipse cx='100' cy='155' rx='52' ry='42' fill='#e8962e'/>
+    <circle cx='100' cy='90' r='54' fill='#e8962e'/>
+    <circle cx='60' cy='48' r='22' fill='#e8962e'/><circle cx='60' cy='46' r='12' fill='#c77b2a'/>
+    <circle cx='140' cy='48' r='22' fill='#e8962e'/><circle cx='140' cy='46' r='12' fill='#c77b2a'/>
+    <ellipse cx='100' cy='115' rx='36' ry='28' fill='#fde8c0'/>
+    <circle cx='78' cy='80' r='12' fill='#fff'/><circle cx='80' cy='82' r='7' fill='#3a2800'/>
+    <circle cx='77' cy='79' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='80' r='12' fill='#fff'/><circle cx='124' cy='82' r='7' fill='#3a2800'/>
+    <circle cx='121' cy='79' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='106' rx='10' ry='7' fill='#c77b2a'/>
+    <path d='M88,116 Q100,128 112,116' fill='none' stroke='#c77b2a' stroke-width='3'/>
+    <line x1='54' y1='108' x2='86' y2='112' stroke='#c8a06a' stroke-width='2'/>
+    <line x1='54' y1='116' x2='86' y2='116' stroke='#c8a06a' stroke-width='2'/>
+    <line x1='114' y1='112' x2='146' y2='108' stroke='#c8a06a' stroke-width='2'/>
+    <line x1='114' y1='116' x2='146' y2='116' stroke='#c8a06a' stroke-width='2'/>
+    <text x='100' y='196' font-size='9' fill='#c77b2a' text-anchor='middle' font-family='Arial' font-weight='bold'>Daniel Tiger</text>
+   </svg>`},
+  {name:'Octonauts',emoji:'🐙',bg:'#e0f7fa',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e0f7fa' rx='18'/>
+    <circle cx='100' cy='100' r='70' fill='#1565c0'/>
+    <circle cx='100' cy='95' r='48' fill='#fff'/>
+    <circle cx='100' cy='90' r='36' fill='#e3f2fd'/>
+    <circle cx='86' cy='84' r='11' fill='#fff'/><circle cx='87' cy='86' r='7' fill='#1a2a5e'/>
+    <circle cx='85' cy='83' r='2.5' fill='#fff'/>
+    <circle cx='114' cy='84' r='11' fill='#fff'/><circle cx='115' cy='86' r='7' fill='#1a2a5e'/>
+    <circle cx='113' cy='83' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='104' rx='8' ry='6' fill='#ffb830'/>
+    <path d='M90,112 Q100,122 110,112' fill='none' stroke='#1565c0' stroke-width='2.5'/>
+    <rect x='70' y='130' width='60' height='38' rx='12' fill='#ffb830'/>
+    <circle cx='68' cy='100' r='14' fill='#fff' stroke='#1565c0' stroke-width='3'/>
+    <circle cx='132' cy='100' r='14' fill='#fff' stroke='#1565c0' stroke-width='3'/>
+    <text x='100' y='196' font-size='10' fill='#1565c0' text-anchor='middle' font-family='Arial' font-weight='bold'>Octonauts</text>
+   </svg>`},
+  {name:'Puffin Rock',emoji:'🐦',bg:'#e8f5e9',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e8f5e9' rx='18'/>
+    <ellipse cx='100' cy='155' rx='48' ry='38' fill='#1a1a2e'/>
+    <circle cx='100' cy='90' r='52' fill='#1a1a2e'/>
+    <ellipse cx='100' cy='92' rx='32' ry='36' fill='#fff'/>
+    <circle cx='82' cy='78' r='11' fill='#fff'/><circle cx='84' cy='80' r='7' fill='#1a1a2e'/>
+    <circle cx='82' cy='77' r='2.5' fill='#fff'/>
+    <circle cx='118' cy='78' r='11' fill='#fff'/><circle cx='120' cy='80' r='7' fill='#1a1a2e'/>
+    <circle cx='118' cy='77' r='2.5' fill='#fff'/>
+    <path d='M82,104 Q100,90 118,104 Q108,116 100,118 Q92,116 82,104Z' fill='#ff8c00'/>
+    <ellipse cx='100' cy='108' rx='10' ry='5' fill='#ffb830'/>
+    <ellipse cx='68' cy='52' rx='16' ry='24' fill='#1a1a2e'/>
+    <ellipse cx='132' cy='52' rx='16' ry='24' fill='#1a1a2e'/>
+    <text x='100' y='196' font-size='10' fill='#1a5e20' text-anchor='middle' font-family='Arial' font-weight='bold'>Puffin Rock</text>
+   </svg>`},
+  {name:'Trash Truck',emoji:'🚛',bg:'#f3e5f5',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#f3e5f5' rx='18'/>
+    <rect x='20' y='110' width='160' height='62' rx='10' fill='#43b86c'/>
+    <rect x='20' y='90' width='80' height='50' rx='8' fill='#2e7d32'/>
+    <rect x='30' y='96' width='60' height='34' rx='6' fill='#b3e5fc'/>
+    <circle cx='55' cy='178' r='16' fill='#333'/><circle cx='55' cy='178' r='8' fill='#888'/>
+    <circle cx='145' cy='178' r='16' fill='#333'/><circle cx='145' cy='178' r='8' fill='#888'/>
+    <rect x='110' y='75' width='60' height='60' rx='8' fill='#66bb6a'/>
+    <circle cx='136' cy='98' r='11' fill='#fff'/><circle cx='138' cy='100' r='7' fill='#1a2e1a'/>
+    <circle cx='135' cy='97' r='2.5' fill='#fff'/>
+    <path d='M128,112 Q136,120 144,112' fill='none' stroke='#2e7d32' stroke-width='2.5'/>
+    <text x='100' y='196' font-size='9' fill='#2e7d32' text-anchor='middle' font-family='Arial' font-weight='bold'>Trash Truck</text>
+   </svg>`},
+  {name:'StoryBots',emoji:'🤖',bg:'#fff3e0',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fff3e0' rx='18'/>
+    <rect x='50' y='60' width='100' height='100' rx='18' fill='#ff6b9d'/>
+    <rect x='62' y='72' width='76' height='56' rx='10' fill='#fff'/>
+    <circle cx='82' cy='95' r='13' fill='#4fa3e0'/><circle cx='84' cy='97' r='8' fill='#1a2a5e'/>
+    <circle cx='82' cy='93' r='3' fill='#fff'/>
+    <circle cx='118' cy='95' r='13' fill='#56cf81'/><circle cx='120' cy='97' r='8' fill='#1a2e1a'/>
+    <circle cx='118' cy='93' r='3' fill='#fff'/>
+    <rect x='78' y='116' width='44' height='8' rx='4' fill='#ffb830'/>
+    <rect x='88' y='40' width='24' height='22' rx='6' fill='#ff6b9d'/>
+    <circle cx='100' cy='36' r='8' fill='#ffb830'/>
+    <rect x='24' y='90' width='26' height='44' rx='8' fill='#ff6b9d'/>
+    <rect x='150' y='90' width='26' height='44' rx='8' fill='#ff6b9d'/>
+    <text x='100' y='196' font-size='9' fill='#ff6b9d' text-anchor='middle' font-family='Arial' font-weight='bold'>Ask the StoryBots</text>
+   </svg>`},
+  {name:'Ada Twist',emoji:'🔬',bg:'#fce4ec',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fce4ec' rx='18'/>
+    <ellipse cx='100' cy='155' rx='50' ry='40' fill='#8d5524'/>
+    <circle cx='100' cy='92' r='52' fill='#8d5524'/>
+    <circle cx='78' cy='82' r='12' fill='#fff'/><circle cx='80' cy='84' r='8' fill='#1a1a2e'/>
+    <circle cx='77' cy='81' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='82' r='12' fill='#fff'/><circle cx='124' cy='84' r='8' fill='#1a1a2e'/>
+    <circle cx='121' cy='81' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='106' rx='10' ry='7' fill='#5c3317'/>
+    <path d='M88,116 Q100,126 112,116' fill='none' stroke='#5c3317' stroke-width='2.5'/>
+    <rect x='60' y='60' width='80' height='14' rx='7' fill='#ff6b9d'/>
+    <ellipse cx='100' cy='56' rx='38' ry='10' fill='#1a1a2e'/>
+    <rect x='70' y='78' width='16' height='10' rx='2' fill='none' stroke='#4fa3e0' stroke-width='2.5'/>
+    <rect x='114' y='78' width='16' height='10' rx='2' fill='none' stroke='#4fa3e0' stroke-width='2.5'/>
+    <line x1='86' y1='83' x2='114' y2='83' stroke='#4fa3e0' stroke-width='2'/>
+    <text x='100' y='196' font-size='9' fill='#c2185b' text-anchor='middle' font-family='Arial' font-weight='bold'>Ada Twist</text>
+   </svg>`},
+  {name:'Magic School Bus',emoji:'🚌',bg:'#fff9c4',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fff9c4' rx='18'/>
+    <rect x='15' y='90' width='170' height='72' rx='12' fill='#ffb830'/>
+    <rect x='15' y='90' width='60' height='50' rx='10' fill='#ff8c00'/>
+    <rect x='22' y='96' width='46' height='36' rx='6' fill='#b3e5fc'/>
+    <circle cx='45' cy='168' r='16' fill='#333'/><circle cx='45' cy='168' r='8' fill='#888'/>
+    <circle cx='155' cy='168' r='16' fill='#333'/><circle cx='155' cy='168' r='8' fill='#888'/>
+    <rect x='85' y='96' width='90' height='54' rx='6' fill='#ffe082'/>
+    <circle cx='112' cy='118' r='11' fill='#fff'/><circle cx='113' cy='120' r='7' fill='#1a2e1a'/>
+    <circle cx='111' cy='117' r='2.5' fill='#fff'/>
+    <circle cx='158' cy='118' r='11' fill='#fff'/><circle cx='159' cy='120' r='7' fill='#1a2e1a'/>
+    <circle cx='157' cy='117' r='2.5' fill='#fff'/>
+    <text x='100' y='88' font-size='10' fill='#e65100' text-anchor='middle' font-family='Arial' font-weight='bold'>✨ MAGIC ✨</text>
+    <text x='100' y='196' font-size='8' fill='#e65100' text-anchor='middle' font-family='Arial' font-weight='bold'>Magic School Bus</text>
+   </svg>`},
+  {name:'Wild Kratts',emoji:'🦎',bg:'#e8f5e9',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e8f5e9' rx='18'/>
+    <ellipse cx='100' cy='155' rx='52' ry='40' fill='#2e7d32'/>
+    <circle cx='100' cy='90' r='52' fill='#388e3c'/>
+    <circle cx='78' cy='80' r='12' fill='#fff'/><circle cx='80' cy='82' r='8' fill='#1a2e1a'/>
+    <circle cx='77' cy='79' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='80' r='12' fill='#fff'/><circle cx='124' cy='82' r='8' fill='#1a2e1a'/>
+    <circle cx='121' cy='79' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='104' rx='10' ry='7' fill='#1b5e20'/>
+    <path d='M88,114 Q100,124 112,114' fill='none' stroke='#1b5e20' stroke-width='2.5'/>
+    <path d='M60,60 Q100,40 140,60' fill='none' stroke='#ffb830' stroke-width='6' stroke-linecap='round'/>
+    <circle cx='60' cy='60' r='8' fill='#ffb830'/>
+    <circle cx='140' cy='60' r='8' fill='#ffb830'/>
+    <text x='100' y='196' font-size='9' fill='#1b5e20' text-anchor='middle' font-family='Arial' font-weight='bold'>Wild Kratts</text>
+   </svg>`},
+  {name:'Blaze',emoji:'🔥',bg:'#fbe9e7',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fbe9e7' rx='18'/>
+    <rect x='30' y='100' width='140' height='70' rx='14' fill='#e53935'/>
+    <rect x='30' y='100' width='140' height='30' rx='10' fill='#ff7043'/>
+    <rect x='42' y='104' width='50' height='22' rx='6' fill='#b3e5fc'/>
+    <rect x='108' y='104' width='50' height='22' rx='6' fill='#b3e5fc'/>
+    <circle cx='55' cy='178' r='18' fill='#333'/><circle cx='55' cy='178' r='9' fill='#888'/>
+    <circle cx='145' cy='178' r='18' fill='#333'/><circle cx='145' cy='178' r='9' fill='#888'/>
+    <ellipse cx='100' cy='100' rx='36' ry='28' fill='#e53935'/>
+    <circle cx='88' cy='93' r='9' fill='#fff'/><circle cx='89' cy='95' r='6' fill='#1a1a2e'/>
+    <circle cx='87' cy='92' r='2' fill='#fff'/>
+    <circle cx='112' cy='93' r='9' fill='#fff'/><circle cx='113' cy='95' r='6' fill='#1a1a2e'/>
+    <circle cx='111' cy='92' r='2' fill='#fff'/>
+    <path d='M88,106 Q100,114 112,106' fill='none' stroke='#b71c1c' stroke-width='2.5'/>
+    <path d='M76,70 Q90,40 100,58 Q110,36 124,70' fill='#ffb830'/>
+    <text x='100' y='196' font-size='9' fill='#b71c1c' text-anchor='middle' font-family='Arial' font-weight='bold'>Blaze</text>
+   </svg>`},
+  {name:'Numberblocks',emoji:'🔢',bg:'#e3f2fd',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e3f2fd' rx='18'/>
+    <rect x='30' y='60' width='60' height='60' rx='10' fill='#e53935'/>
+    <text x='60' y='102' font-size='36' fill='#fff' text-anchor='middle' font-family='Arial' font-weight='bold'>1</text>
+    <rect x='110' y='60' width='60' height='60' rx='10' fill='#ff9800'/>
+    <text x='140' y='102' font-size='36' fill='#fff' text-anchor='middle' font-family='Arial' font-weight='bold'>2</text>
+    <rect x='60' y='120' width='80' height='30' rx='8' fill='#4caf50'/>
+    <circle cx='85' cy='84' r='7' fill='#fff'/><circle cx='87' cy='86' r='4' fill='#1a1a2e'/>
+    <circle cx='135' cy='84' r='7' fill='#fff'/><circle cx='137' cy='86' r='4' fill='#1a1a2e'/>
+    <text x='100' y='170' font-size='14' fill='#1565c0' text-anchor='middle' font-family='Arial' font-weight='bold'>= 3!</text>
+    <text x='100' y='196' font-size='9' fill='#1565c0' text-anchor='middle' font-family='Arial' font-weight='bold'>Numberblocks</text>
+   </svg>`},
+  {name:'Dinosaur Train',emoji:'🦕',bg:'#f1f8e9',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#f1f8e9' rx='18'/>
+    <rect x='20' y='110' width='160' height='52' rx='10' fill='#8d6e63'/>
+    <rect x='20' y='110' width='52' height='40' rx='8' fill='#6d4c41'/>
+    <rect x='26' y='116' width='40' height='28' rx='5' fill='#b3e5fc'/>
+    <circle cx='42' cy='168' r='14' fill='#333'/><circle cx='42' cy='168' r='7' fill='#888'/>
+    <circle cx='158' cy='168' r='14' fill='#333'/><circle cx='158' cy='168' r='7' fill='#888'/>
+    <ellipse cx='148' cy='90' rx='36' ry='28' fill='#8bc34a'/>
+    <circle cx='136' cy='78' r='10' fill='#fff'/><circle cx='137' cy='80' r='6' fill='#1a2e1a'/>
+    <circle cx='135' cy='77' r='2' fill='#fff'/>
+    <path d='M126,92 Q140,102 152,92' fill='none' stroke='#558b2f' stroke-width='2.5'/>
+    <path d='M174,88 Q192,70 186,50 Q180,40 168,58' fill='#8bc34a'/>
+    <text x='100' y='196' font-size='9' fill='#558b2f' text-anchor='middle' font-family='Arial' font-weight='bold'>Dinosaur Train</text>
+   </svg>`},
+  {name:"Gabby's Dollhouse",emoji:'🏠',bg:'#fce4ec',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fce4ec' rx='18'/>
+    <polygon points='100,22 180,80 20,80' fill='#ff6b9d'/>
+    <rect x='30' y='78' width='140' height='98' rx='6' fill='#ffb3c8'/>
+    <rect x='62' y='120' width='36' height='56' rx='4' fill='#ff6b9d'/>
+    <rect x='40' y='90' width='36' height='30' rx='4' fill='#b3e5fc'/>
+    <rect x='124' y='90' width='36' height='30' rx='4' fill='#b3e5fc'/>
+    <circle cx='100' cy='65' r='22' fill='#ffcc80'/>
+    <circle cx='90' cy='60' r='7' fill='#fff'/><circle cx='91' cy='62' r='4.5' fill='#1a1a2e'/>
+    <circle cx='89' cy='59' r='1.5' fill='#fff'/>
+    <circle cx='110' cy='60' r='7' fill='#fff'/><circle cx='111' cy='62' r='4.5' fill='#1a1a2e'/>
+    <circle cx='109' cy='59' r='1.5' fill='#fff'/>
+    <path d='M92,72 Q100,80 108,72' fill='none' stroke='#e57373' stroke-width='2'/>
+    <text x='100' y='196' font-size='9' fill='#c2185b' text-anchor='middle' font-family='Arial' font-weight='bold'>Gabby's Dollhouse</text>
+   </svg>`},
+  {name:'Beat Bugs',emoji:'🐛',bg:'#e8f5e9',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e8f5e9' rx='18'/>
+    <ellipse cx='100' cy='130' rx='58' ry='46' fill='#66bb6a'/>
+    <circle cx='100' cy='82' r='48' fill='#81c784'/>
+    <circle cx='78' cy='72' r='12' fill='#fff'/><circle cx='80' cy='74' r='8' fill='#1a2e1a'/>
+    <circle cx='77' cy='71' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='72' r='12' fill='#fff'/><circle cx='124' cy='74' r='8' fill='#1a2e1a'/>
+    <circle cx='121' cy='71' r='2.5' fill='#fff'/>
+    <path d='M88,94 Q100,106 112,94' fill='none' stroke='#2e7d32' stroke-width='3'/>
+    <line x1='78' y1='38' x2='68' y2='16' stroke='#388e3c' stroke-width='3'/>
+    <line x1='122' y1='38' x2='132' y2='16' stroke='#388e3c' stroke-width='3'/>
+    <circle cx='68' cy='14' r='5' fill='#ffb830'/>
+    <circle cx='132' cy='14' r='5' fill='#ffb830'/>
+    <ellipse cx='66' cy='160' rx='14' ry='8' fill='#43a047'/>
+    <ellipse cx='134' cy='160' rx='14' ry='8' fill='#43a047'/>
+    <text x='100' y='196' font-size='10' fill='#2e7d32' text-anchor='middle' font-family='Arial' font-weight='bold'>Beat Bugs</text>
+   </svg>`},
+  {name:'Mickey Mouse',emoji:'🐭',bg:'#fff3e0',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fff3e0' rx='18'/>
+    <circle cx='60' cy='52' r='34' fill='#1a1a2e'/>
+    <circle cx='140' cy='52' r='34' fill='#1a1a2e'/>
+    <circle cx='100' cy='108' r='62' fill='#1a1a2e'/>
+    <ellipse cx='100' cy='118' rx='42' ry='34' fill='#f5cba7'/>
+    <circle cx='78' cy='94' r='13' fill='#fff'/><circle cx='80' cy='96' r='8' fill='#1a1a2e'/>
+    <circle cx='77' cy='93' r='3' fill='#fff'/>
+    <circle cx='122' cy='94' r='13' fill='#fff'/><circle cx='124' cy='96' r='8' fill='#1a1a2e'/>
+    <circle cx='121' cy='93' r='3' fill='#fff'/>
+    <ellipse cx='100' cy='116' rx='10' ry='7' fill='#c0392b'/>
+    <path d='M88,126 Q100,138 112,126' fill='none' stroke='#1a1a2e' stroke-width='3'/>
+    <text x='100' y='196' font-size='9' fill='#1a1a2e' text-anchor='middle' font-family='Arial' font-weight='bold'>Mickey Mouse</text>
+   </svg>`},
+  {name:'PAW Patrol',emoji:'🐾',bg:'#e3f2fd',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e3f2fd' rx='18'/>
+    <ellipse cx='100' cy='150' rx='55' ry='44' fill='#c8a46e'/>
+    <circle cx='100' cy='88' r='56' fill='#c8a46e'/>
+    <ellipse cx='48' cy='80' rx='24' ry='42' fill='#a07840' transform='rotate(-18 48 80)'/>
+    <ellipse cx='152' cy='80' rx='24' ry='42' fill='#a07840' transform='rotate(18 152 80)'/>
+    <circle cx='78' cy='78' r='13' fill='#fff'/><circle cx='79' cy='80' r='8' fill='#1a2a5e'/>
+    <circle cx='77' cy='77' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='78' r='13' fill='#fff'/><circle cx='123' cy='80' r='8' fill='#1a2a5e'/>
+    <circle cx='121' cy='77' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='106' rx='14' ry='10' fill='#a07840'/>
+    <ellipse cx='95' cy='103' rx='4' ry='3' fill='#333'/>
+    <path d='M86,118 Q100,130 114,118' fill='none' stroke='#a07840' stroke-width='3'/>
+    <rect x='76' y='56' width='48' height='18' rx='9' fill='#e53935'/>
+    <text x='100' y='70' font-size='10' fill='#fff' text-anchor='middle' font-family='Arial' font-weight='bold'>PAW</text>
+    <text x='100' y='196' font-size='9' fill='#1565c0' text-anchor='middle' font-family='Arial' font-weight='bold'>PAW Patrol</text>
+   </svg>`},
+  {name:'Curious George',emoji:'🐵',bg:'#fff8e1',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fff8e1' rx='18'/>
+    <ellipse cx='100' cy='152' rx='52' ry='42' fill='#8d5524'/>
+    <circle cx='100' cy='90' r='56' fill='#8d5524'/>
+    <ellipse cx='100' cy='105' rx='38' ry='30' fill='#f5cba7'/>
+    <circle cx='78' cy='80' r='13' fill='#fff'/><circle cx='80' cy='82' r='8' fill='#1a1a2e'/>
+    <circle cx='77' cy='79' r='3' fill='#fff'/>
+    <circle cx='122' cy='80' r='13' fill='#fff'/><circle cx='124' cy='82' r='8' fill='#1a1a2e'/>
+    <circle cx='121' cy='79' r='3' fill='#fff'/>
+    <ellipse cx='100' cy='108' rx='10' ry='8' fill='#5c3317'/>
+    <path d='M88,120 Q100,132 112,120' fill='none' stroke='#5c3317' stroke-width='3'/>
+    <ellipse cx='52' cy='88' rx='14' ry='18' fill='#f5cba7'/>
+    <ellipse cx='148' cy='88' rx='14' ry='18' fill='#f5cba7'/>
+    <text x='100' y='196' font-size='9' fill='#6d4c41' text-anchor='middle' font-family='Arial' font-weight='bold'>Curious George</text>
+   </svg>`},
+  {name:"Blue's Clues",emoji:'🐶',bg:'#e3f2fd',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e3f2fd' rx='18'/>
+    <ellipse cx='100' cy='152' rx='55' ry='44' fill='#4a90d9'/>
+    <circle cx='100' cy='90' r='54' fill='#4a90d9'/>
+    <ellipse cx='48' cy='78' rx='24' ry='42' fill='#2f6db5' transform='rotate(-12 48 78)'/>
+    <ellipse cx='152' cy='78' rx='24' ry='42' fill='#2f6db5' transform='rotate(12 152 78)'/>
+    <ellipse cx='100' cy='110' rx='38' ry='28' fill='#fff'/>
+    <circle cx='78' cy='80' r='13' fill='#fff'/><circle cx='80' cy='82' r='8' fill='#1a2a5e'/>
+    <circle cx='77' cy='79' r='3' fill='#fff'/>
+    <circle cx='122' cy='80' r='13' fill='#fff'/><circle cx='124' cy='82' r='8' fill='#1a2a5e'/>
+    <circle cx='121' cy='79' r='3' fill='#fff'/>
+    <ellipse cx='100' cy='108' rx='12' ry='9' fill='#1a2a5e'/>
+    <path d='M88,120 Q100,132 112,120' fill='none' stroke='#2f6db5' stroke-width='3'/>
+    <path d='M152,120 Q172,134 168,155' fill='none' stroke='#4a90d9' stroke-width='10' stroke-linecap='round'/>
+    <text x='100' y='196' font-size='9' fill='#1565c0' text-anchor='middle' font-family='Arial' font-weight='bold'>Blue's Clues</text>
+   </svg>`},
+  {name:'Dora',emoji:'🎒',bg:'#fff9c4',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fff9c4' rx='18'/>
+    <ellipse cx='100' cy='152' rx='50' ry='40' fill='#c8a46e'/>
+    <circle cx='100' cy='90' r='52' fill='#c8a46e'/>
+    <path d='M54,80 Q54,30 100,28 Q146,30 146,80' fill='#1a1a2e'/>
+    <circle cx='78' cy='82' r='12' fill='#fff'/><circle cx='80' cy='84' r='8' fill='#3a2800'/>
+    <circle cx='77' cy='81' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='82' r='12' fill='#fff'/><circle cx='124' cy='84' r='8' fill='#3a2800'/>
+    <circle cx='121' cy='81' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='106' rx='10' ry='7' fill='#8d5524'/>
+    <path d='M88,116 Q100,128 112,116' fill='none' stroke='#8d5524' stroke-width='2.5'/>
+    <rect x='72' y='136' width='56' height='40' rx='10' fill='#ff6b9d'/>
+    <rect x='80' y='128' width='40' height='12' rx='6' fill='#ff6b9d'/>
+    <text x='100' y='196' font-size='10' fill='#e65100' text-anchor='middle' font-family='Arial' font-weight='bold'>Dora</text>
+   </svg>`},
+  {name:'Hilda',emoji:'🧝',bg:'#e8eaf6',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e8eaf6' rx='18'/>
+    <ellipse cx='100' cy='152' rx='48' ry='40' fill='#ffcc80'/>
+    <circle cx='100' cy='90' r='50' fill='#ffcc80'/>
+    <path d='M55,70 Q55,18 100,16 Q145,18 145,70' fill='#f5f5f5'/>
+    <ellipse cx='80' cy='58' rx='18' ry='26' fill='#f0f0f0'/>
+    <ellipse cx='120' cy='58' rx='18' ry='26' fill='#f0f0f0'/>
+    <circle cx='78' cy='82' r='11' fill='#fff'/><circle cx='80' cy='84' r='7' fill='#1a2e4a'/>
+    <circle cx='77' cy='81' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='82' r='11' fill='#fff'/><circle cx='124' cy='84' r='7' fill='#1a2e4a'/>
+    <circle cx='121' cy='81' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='105' rx='9' ry='7' fill='#e8a070'/>
+    <path d='M88,114 Q100,124 112,114' fill='none' stroke='#c87c50' stroke-width='2.5'/>
+    <rect x='72' y='130' width='56' height='46' rx='8' fill='#5c6bc0'/>
+    <text x='100' y='196' font-size='10' fill='#3949ab' text-anchor='middle' font-family='Arial' font-weight='bold'>Hilda</text>
+   </svg>`},
+  {name:'Super Why',emoji:'📖',bg:'#e3f2fd',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e3f2fd' rx='18'/>
+    <ellipse cx='100' cy='152' rx='50' ry='40' fill='#ffcc80'/>
+    <circle cx='100' cy='90' r='52' fill='#ffcc80'/>
+    <circle cx='78' cy='80' r='12' fill='#fff'/><circle cx='80' cy='82' r='8' fill='#1a2a5e'/>
+    <circle cx='77' cy='79' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='80' r='12' fill='#fff'/><circle cx='124' cy='82' r='8' fill='#1a2a5e'/>
+    <circle cx='121' cy='79' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='104' rx='9' ry='7' fill='#e8a070'/>
+    <path d='M88,114 Q100,126 112,114' fill='none' stroke='#c87c50' stroke-width='2.5'/>
+    <rect x='68' y='128' width='64' height='44' rx='8' fill='#e53935'/>
+    <text x='100' y='158' font-size='22' fill='#fff' text-anchor='middle' font-family='Arial' font-weight='bold'>W</text>
+    <ellipse cx='62' cy='70' rx='14' ry='30' fill='#e53935' transform='rotate(-20 62 70)'/>
+    <ellipse cx='138' cy='70' rx='14' ry='30' fill='#e53935' transform='rotate(20 138 70)'/>
+    <text x='100' y='196' font-size='10' fill='#b71c1c' text-anchor='middle' font-family='Arial' font-weight='bold'>Super Why!</text>
+   </svg>`},
+  {name:"Alma's Way",emoji:'🌺',bg:'#fce4ec',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fce4ec' rx='18'/>
+    <ellipse cx='100' cy='152' rx='50' ry='40' fill='#8d5524'/>
+    <circle cx='100' cy='90' r='52' fill='#8d5524'/>
+    <path d='M54,84 Q54,30 100,28 Q146,30 146,84' fill='#1a1a2e'/>
+    <circle cx='78' cy='82' r='12' fill='#fff'/><circle cx='80' cy='84' r='8' fill='#2a1a00'/>
+    <circle cx='77' cy='81' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='82' r='12' fill='#fff'/><circle cx='124' cy='84' r='8' fill='#2a1a00'/>
+    <circle cx='121' cy='81' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='106' rx='9' ry='7' fill='#5c3317'/>
+    <path d='M88,116 Q100,128 112,116' fill='none' stroke='#5c3317' stroke-width='2.5'/>
+    <circle cx='72' cy='44' r='10' fill='#ff6b9d'/>
+    <circle cx='90' cy='32' r='8' fill='#ff6b9d'/>
+    <circle cx='112' cy='32' r='8' fill='#ffb830'/>
+    <circle cx='128' cy='44' r='10' fill='#ffb830'/>
+    <text x='100' y='196' font-size='9' fill='#c2185b' text-anchor='middle' font-family='Arial' font-weight='bold'>Alma's Way</text>
+   </svg>`},
+  {name:'Pete the Cat',emoji:'🐱',bg:'#e3f2fd',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e3f2fd' rx='18'/>
+    <ellipse cx='100' cy='152' rx='52' ry='42' fill='#4a90d9'/>
+    <circle cx='100' cy='90' r='54' fill='#4a90d9'/>
+    <polygon points='52,56 38,14 80,46' fill='#4a90d9'/>
+    <polygon points='148,56 162,14 120,46' fill='#4a90d9'/>
+    <polygon points='56,52 46,20 76,44' fill='#5ba3e6'/>
+    <polygon points='144,52 154,20 124,44' fill='#5ba3e6'/>
+    <circle cx='78' cy='82' r='13' fill='#fff'/><circle cx='80' cy='84' r='8' fill='#1a2a5e'/>
+    <circle cx='77' cy='81' r='3' fill='#fff'/>
+    <circle cx='122' cy='82' r='13' fill='#fff'/><circle cx='124' cy='84' r='8' fill='#1a2a5e'/>
+    <circle cx='121' cy='81' r='3' fill='#fff'/>
+    <ellipse cx='100' cy='106' rx='9' ry='7' fill='#2f6db5'/>
+    <path d='M88,116 Q100,128 112,116' fill='none' stroke='#2f6db5' stroke-width='3'/>
+    <text x='100' y='196' font-size='9' fill='#1565c0' text-anchor='middle' font-family='Arial' font-weight='bold'>Pete the Cat</text>
+   </svg>`},
+  {name:'Go Dog Go',emoji:'🚗',bg:'#e8f5e9',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e8f5e9' rx='18'/>
+    <rect x='20' y='108' width='160' height='54' rx='14' fill='#ff6b9d'/>
+    <path d='M34,108 Q50,72 100,68 Q150,72 166,108Z' fill='#ff8cc0'/>
+    <rect x='48' y='78' width='44' height='28' rx='6' fill='#b3e5fc'/>
+    <rect x='108' y='78' width='44' height='28' rx='6' fill='#b3e5fc'/>
+    <circle cx='52' cy='168' r='17' fill='#333'/><circle cx='52' cy='168' r='8' fill='#888'/>
+    <circle cx='148' cy='168' r='17' fill='#333'/><circle cx='148' cy='168' r='8' fill='#888'/>
+    <circle cx='80' cy='90' r='10' fill='#c8a46e'/><circle cx='82' cy='92' r='6' fill='#2a1800'/>
+    <circle cx='120' cy='90' r='10' fill='#c8a46e'/><circle cx='122' cy='92' r='6' fill='#2a1800'/>
+    <path d='M88,104 Q100,114 112,104' fill='none' stroke='#a07840' stroke-width='2.5'/>
+    <text x='100' y='196' font-size='9' fill='#2e7d32' text-anchor='middle' font-family='Arial' font-weight='bold'>Go, Dog. Go!</text>
+   </svg>`},
+  {name:'Molly of Denali',emoji:'🏔️',bg:'#e8eaf6',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e8eaf6' rx='18'/>
+    <polygon points='100,20 180,170 20,170' fill='#5c6bc0'/>
+    <polygon points='100,20 170,170 30,170' fill='#7986cb'/>
+    <circle cx='100' cy='90' r='48' fill='#c8a46e'/>
+    <path d='M60,75 Q60,34 100,32 Q140,34 140,75' fill='#1a1a2e'/>
+    <circle cx='78' cy='80' r='11' fill='#fff'/><circle cx='80' cy='82' r='7' fill='#2a1a00'/>
+    <circle cx='77' cy='79' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='80' r='11' fill='#fff'/><circle cx='124' cy='82' r='7' fill='#2a1a00'/>
+    <circle cx='121' cy='79' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='103' rx='9' ry='7' fill='#8d5524'/>
+    <path d='M88,112 Q100,122 112,112' fill='none' stroke='#8d5524' stroke-width='2.5'/>
+    <text x='100' y='196' font-size='9' fill='#3949ab' text-anchor='middle' font-family='Arial' font-weight='bold'>Molly of Denali</text>
+   </svg>`},
+  {name:'Peg + Cat',emoji:'🔷',bg:'#fff9c4',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fff9c4' rx='18'/>
+    <circle cx='100' cy='92' r='52' fill='#ffcc80'/>
+    <ellipse cx='100' cy='152' rx='50' ry='40' fill='#ffcc80'/>
+    <path d='M57,78 Q50,34 100,30 Q150,34 143,78' fill='#c8a46e'/>
+    <circle cx='78' cy='80' r='12' fill='#fff'/><circle cx='80' cy='82' r='8' fill='#2a1800'/>
+    <circle cx='77' cy='79' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='80' r='12' fill='#fff'/><circle cx='124' cy='82' r='8' fill='#2a1800'/>
+    <circle cx='121' cy='79' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='104' rx='9' ry='7' fill='#e8a070'/>
+    <path d='M88,114 Q100,126 112,114' fill='none' stroke='#c87c50' stroke-width='2.5'/>
+    <polygon points='88,40 100,10 112,40' fill='#e53935'/>
+    <rect x='92' y='30' width='16' height='20' rx='4' fill='#e53935'/>
+    <text x='28' y='110' font-size='28' fill='#e53935' font-family='Arial' font-weight='bold'>+</text>
+    <text x='100' y='196' font-size='10' fill='#c62828' text-anchor='middle' font-family='Arial' font-weight='bold'>Peg + Cat</text>
+   </svg>`},
+  {name:'Sesame Street',emoji:'🌟',bg:'#fff9c4',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fff9c4' rx='18'/>
+    <circle cx='100' cy='88' r='56' fill='#ffb830'/>
+    <circle cx='78' cy='78' r='13' fill='#fff'/><circle cx='80' cy='80' r='9' fill='#1a1a2e'/>
+    <circle cx='77' cy='77' r='3' fill='#fff'/>
+    <circle cx='122' cy='78' r='13' fill='#fff'/><circle cx='124' cy='80' r='9' fill='#1a1a2e'/>
+    <circle cx='121' cy='77' r='3' fill='#fff'/>
+    <path d='M82,106 Q100,122 118,106' fill='none' stroke='#e65100' stroke-width='3.5'/>
+    <ellipse cx='100' cy='106' rx='6' ry='5' fill='#ff7043'/>
+    <ellipse cx='66' cy='62' rx='12' ry='18' fill='#ffa726'/>
+    <ellipse cx='134' cy='62' rx='12' ry='18' fill='#ffa726'/>
+    <circle cx='66' cy='52' r='8' fill='#ffb830'/>
+    <circle cx='134' cy='52' r='8' fill='#ffb830'/>
+    <ellipse cx='100' cy='160' rx='55' ry='36' fill='#ff7043'/>
+    <text x='100' y='170' font-size='11' fill='#fff' text-anchor='middle' font-family='Arial' font-weight='bold'>SESAME ST</text>
+    <text x='100' y='196' font-size='9' fill='#e65100' text-anchor='middle' font-family='Arial' font-weight='bold'>Sesame Street</text>
+   </svg>`},
+  {name:'Louie',emoji:'🦊',bg:'#fce4ec',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#fce4ec' rx='18'/>
+    <ellipse cx='100' cy='152' rx='52' ry='40' fill='#ff8c00'/>
+    <circle cx='100' cy='90' r='54' fill='#ff8c00'/>
+    <polygon points='56,58 40,14 84,50' fill='#ff8c00'/>
+    <polygon points='144,58 160,14 116,50' fill='#ff8c00'/>
+    <polygon points='60,54 48,22 82,46' fill='#ffcc80'/>
+    <polygon points='140,54 152,22 118,46' fill='#ffcc80'/>
+    <ellipse cx='100' cy='110' rx='38' ry='28' fill='#ffcc80'/>
+    <circle cx='78' cy='82' r='12' fill='#fff'/><circle cx='80' cy='84' r='8' fill='#3a2800'/>
+    <circle cx='77' cy='81' r='2.5' fill='#fff'/>
+    <circle cx='122' cy='82' r='12' fill='#fff'/><circle cx='124' cy='84' r='8' fill='#3a2800'/>
+    <circle cx='121' cy='81' r='2.5' fill='#fff'/>
+    <ellipse cx='100' cy='107' rx='9' ry='7' fill='#e07000'/>
+    <path d='M88,118 Q100,130 112,118' fill='none' stroke='#e07000' stroke-width='2.5'/>
+    <text x='100' y='196' font-size='10' fill='#e65100' text-anchor='middle' font-family='Arial' font-weight='bold'>Louie</text>
+   </svg>`},
+  {name:'Creative Galaxy',emoji:'🎨',bg:'#f3e5f5',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#f3e5f5' rx='18'/>
+    <circle cx='100' cy='100' r='70' fill='#1a1a2e'/>
+    <circle cx='100' cy='100' r='52' fill='#4a3a8e'/>
+    <circle cx='76' cy='86' r='12' fill='#fff'/><circle cx='78' cy='88' r='8' fill='#1a1a2e'/>
+    <circle cx='75' cy='85' r='3' fill='#fff'/>
+    <circle cx='120' cy='86' r='12' fill='#fff'/><circle cx='122' cy='88' r='8' fill='#1a1a2e'/>
+    <circle cx='119' cy='85' r='3' fill='#fff'/>
+    <path d='M84,106 Q100,120 116,106' fill='none' stroke='#a78bfa' stroke-width='3'/>
+    <circle cx='50' cy='48' r='8' fill='#ffb830'/>
+    <circle cx='150' cy='48' r='8' fill='#ff6b9d'/>
+    <circle cx='30' cy='100' r='6' fill='#4ecdc4'/>
+    <circle cx='170' cy='100' r='6' fill='#56cf81'/>
+    <circle cx='50' cy='152' r='8' fill='#a78bfa'/>
+    <circle cx='150' cy='152' r='8' fill='#4fa3e0'/>
+    <text x='100' y='196' font-size='9' fill='#7c3aed' text-anchor='middle' font-family='Arial' font-weight='bold'>Creative Galaxy</text>
+   </svg>`},
+  {name:'True Rainbow Kingdom',emoji:'🌈',bg:'#e8f5e9',
+   svg:`<svg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <rect width='200' height='200' fill='#e8f5e9' rx='18'/>
+    <path d='M10,150 Q10,50 100,50 Q190,50 190,150' fill='none' stroke='#e53935' stroke-width='10'/>
+    <path d='M22,150 Q22,66 100,66 Q178,66 178,150' fill='none' stroke='#ff9800' stroke-width='9'/>
+    <path d='M34,150 Q34,82 100,82 Q166,82 166,150' fill='none' stroke='#ffeb3b' stroke-width='8'/>
+    <path d='M46,150 Q46,96 100,96 Q154,96 154,150' fill='none' stroke='#4caf50' stroke-width='8'/>
+    <circle cx='100' cy='86' r='44' fill='#ffcc80'/>
+    <circle cx='82' cy='78' r='11' fill='#fff'/><circle cx='84' cy='80' r='7' fill='#2a1800'/>
+    <circle cx='81' cy='77' r='2.5' fill='#fff'/>
+    <circle cx='118' cy='78' r='11' fill='#fff'/><circle cx='120' cy='80' r='7' fill='#2a1800'/>
+    <circle cx='117' cy='77' r='2.5' fill='#fff'/>
+    <path d='M88,96 Q100,108 112,96' fill='none' stroke='#c87c50' stroke-width='2.5'/>
+    <text x='100' y='196' font-size='8' fill='#2e7d32' text-anchor='middle' font-family='Arial' font-weight='bold'>True &amp; Rainbow Kingdom</text>
+   </svg>`},
+];
+
+// Pick 5 shows for today using date as seed (consistent across the day)
+function _jigDailyShows(){
+  const key='c_jig_shows_'+todayKey();
+  const cached=localStorage.getItem(key);
+  if(cached){
+    try{
+      const indices=JSON.parse(cached);
+      return indices.map(i=>JIGSAW_SHOWS[i]);
+    }catch(e){}
+  }
+  // Seeded shuffle using today's date string
+  const seed=parseInt(todayKey().replace(/-/g,''))%999983;
+  let s=seed;function seededRand(){s=(s*16807+0)%2147483647;return(s-1)/2147483646;}
+  const arr=[...Array(JIGSAW_SHOWS.length).keys()];
+  for(let i=arr.length-1;i>0;i--){const j=Math.floor(seededRand()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  const picked=arr.slice(0,5);
+  localStorage.setItem(key,JSON.stringify(picked));
+  return picked.map(i=>JIGSAW_SHOWS[i]);
+}
+let _jigDailyPool=null;
+
+function _jigGetPiece(animal,pieceIdx,sz){
+  const vbs=['0 0 100 100','100 0 100 100','0 100 100 100','100 100 100 100'];
+  return animal.svg
+    .replace("viewBox='0 0 200 200'","viewBox='"+vbs[pieceIdx]+"'")
+    .replace("width='200'","width='"+sz+"'")
+    .replace("height='200'","height='"+sz+"'");
+}
+
+function buildPuzzleJigsaw(){jigScore=0;jigRound=0;_jigDailyPool=_jigDailyShows();nextJigRound();}
+
+function nextJigRound(){
+  const total=5;jigRound++;
+  if(jigRound>total){endGame(jigScore,total,'puzzleJigsaw');return;}
+  jigPlacements={0:null,1:null,2:null,3:null};
+  if(!_jigDailyPool)_jigDailyPool=_jigDailyShows();
+  _jigAnimal=_jigDailyPool[(jigRound-1)%_jigDailyPool.length];
+  const scrambled=[0,1,2,3].sort(()=>Math.random()-0.5);
+  _renderJigsaw(scrambled);
+  speakText('Build the '+_jigAnimal.name+'! Drag each piece into the puzzle!');
+}
+
+function _renderJigsaw(scrambled){
+  const ps=_jigPs(),a=_jigAnimal;
+  const boardSize=(ps*2+3);
+  document.getElementById('area').innerHTML=`
+    <div class='game-panel' id='jigPanel'>
+      <div class='game-title'>🧩 Jigsaw Puzzle!</div>
+      <div class='game-inst'>Build the ${a.emoji} <strong>${a.name}</strong>!</div>
+      <div class='game-score'>Puzzle ${jigRound}/5 &nbsp;·&nbsp; ⭐ ${jigScore}</div>
+      <div style='display:flex;align-items:flex-start;justify-content:center;gap:12px;margin:12px auto;width:fit-content'>
+        <div id='jigBoard' style='display:grid;grid-template-columns:${ps}px ${ps}px;gap:3px;border-radius:14px;overflow:hidden;box-shadow:0 6px 28px rgba(0,0,0,.14)'>
+          ${[0,1,2,3].map(s=>`
+            <div id='jigSlot_${s}' data-slot='${s}'
+              style='width:${ps}px;height:${ps}px;background:${a.bg};border:3px dashed #c4b5fd;display:flex;align-items:center;justify-content:center;font-size:2rem;color:#c4b5fd;box-sizing:border-box;transition:all .25s'
+              ondragover='event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"'
+              ondragleave='this.style.borderColor="#c4b5fd";this.style.background="${a.bg}"'
+              ondrop='jigDrop(event,${s})'>?</div>`).join('')}
+        </div>
+        <div style='display:flex;flex-direction:column;align-items:center;gap:4px'>
+          <div style='font-family:"Baloo 2",cursive;font-size:.68rem;font-weight:800;color:var(--purple)'>👀 Look here!</div>
+          <div style='width:${boardSize}px;height:${boardSize}px;border-radius:14px;overflow:hidden;box-shadow:0 4px 18px rgba(167,139,250,.35);border:3px solid #c4b5fd;flex-shrink:0'>
+            ${a.svg.replace("width='200'","width='"+boardSize+"'").replace("height='200'","height='"+boardSize+"'")}
+          </div>
+        </div>
+      </div>
+      <div style='font-family:"Baloo 2",cursive;font-size:.75rem;font-weight:700;color:var(--text3);text-align:center;margin-bottom:2px'>☝️ Drag the pieces into the puzzle!</div>
+      <div style='font-family:"Baloo 2",cursive;font-size:.68rem;color:#a78bfa;text-align:center;margin-bottom:8px'>👆 Wrong piece in a slot? Tap it to take it back!</div>
+      <div id='jigTray' style='display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:8px 4px;min-height:${ps+16}px'>
+        ${scrambled.map(p=>`
+          <div id='jigPiece_${p}' data-piece='${p}' draggable='true'
+            style='width:${ps}px;height:${ps}px;cursor:grab;border-radius:12px;border:3px solid var(--purple);overflow:hidden;box-shadow:0 4px 16px rgba(167,139,250,.45);touch-action:none;flex-shrink:0;transition:transform .15s'
+            ondragstart='jigDragStart(event,${p})'
+            ondragend='this.style.opacity="1"'
+          >${_jigGetPiece(a,p,ps)}</div>`).join('')}
+      </div>
+      <div class='game-feedback' id='gfb' style='min-height:28px;margin-top:4px'></div>
+    </div>`;
+  // Attach touch listeners via JS (not inline attrs) so they always fire correctly on iPad
+  scrambled.forEach(p=>{
+    const el=document.getElementById('jigPiece_'+p);
+    if(el){
+      el.addEventListener('touchstart',e=>jigTouchStart(e,p),{passive:false});
+      el.addEventListener('touchmove',jigTouchMove,{passive:false});
+      el.addEventListener('touchend',jigTouchEnd,{passive:false});
+    }
+  });
+}
+
+function jigDragStart(e,p){
+  _jigDragPiece=p;
+  _jigDragFromSlot=null; // coming from tray, not a slot
+  e.dataTransfer.setData('text',String(p));
+  setTimeout(()=>{const el=document.getElementById('jigPiece_'+p);if(el)el.style.opacity='.45';},0);
+}
+function jigDrop(e,slot){
+  e.preventDefault();
+  const slotEl=document.getElementById('jigSlot_'+slot);
+  if(slotEl){slotEl.style.borderColor='#c4b5fd';slotEl.style.background=_jigAnimal.bg;}
+  const p=parseInt(e.dataTransfer.getData('text'));
+  if(isNaN(p))return;
+  const fromSlot=_jigDragFromSlot;
+  if(fromSlot!==null && fromSlot!==slot){
+    jigPlacements[fromSlot]=null;
+    _jigDetachSlotTouch(fromSlot);
+    const fromEl=document.getElementById('jigSlot_'+fromSlot);
+    const a=_jigAnimal;
+    if(fromEl){
+      fromEl.innerHTML='?';fromEl.style.opacity='1';
+      fromEl.style.border='3px dashed #c4b5fd';
+      fromEl.style.background=a.bg;fromEl.style.cursor='default';
+      fromEl.removeAttribute('draggable');
+      fromEl.removeAttribute('ondragstart');fromEl.removeAttribute('ondragend');
+      fromEl.setAttribute('ondragover','event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"');
+      fromEl.setAttribute('ondragleave','this.style.borderColor="#c4b5fd";this.style.background="'+a.bg+'"');
+      fromEl.setAttribute('ondrop','jigDrop(event,'+fromSlot+')');
+    }
+  }
+  _jigDragFromSlot=null;
+  jigPlacePiece(p,slot);
+}
+
+function jigTouchStart(e,p){
+  e.preventDefault();
+  _jigTouchPiece=p;
+  _jigTouchFromSlot=null;
+  const src=document.getElementById('jigPiece_'+p);
+  if(!src)return;
+  const ps=_jigPs();
+  const g=src.cloneNode(true);
+  g.id='_jigGhost';
+  // Remove any cloned event listeners by replacing with clean div
+  g.style.cssText='position:fixed;opacity:.88;pointer-events:none;z-index:9999;border-radius:12px;overflow:hidden;border:3px solid var(--purple);box-shadow:0 8px 28px rgba(167,139,250,.6);transform:scale(1.08);width:'+ps+'px;height:'+ps+'px';
+  document.body.appendChild(g);_jigGhost=g;
+  src.style.opacity='.4';
+  const t=e.touches[0];
+  g.style.left=(t.clientX-ps/2)+'px';
+  g.style.top=(t.clientY-ps/2)+'px';
+}
+function jigTouchMove(e){
+  e.preventDefault();
+  if(!_jigGhost)return;
+  const t=e.touches[0];
+  const w=parseInt(_jigGhost.style.width)||88;
+  const h=parseInt(_jigGhost.style.height)||88;
+  _jigGhost.style.left=(t.clientX-w/2)+'px';
+  _jigGhost.style.top=(t.clientY-h/2)+'px';
+}
+function jigTouchEnd(e){
+  if(_jigGhost){_jigGhost.remove();_jigGhost=null;}
+  const src=_jigTouchPiece!==null?document.getElementById('jigPiece_'+_jigTouchPiece):null;
+  if(src)src.style.opacity='1';
+  if(_jigTouchPiece===null)return;
+  const t=e.changedTouches[0];
+  const hit=document.elementFromPoint(t.clientX,t.clientY);
+  const slotEl=hit&&hit.closest('[data-slot]');
+  if(slotEl)jigPlacePiece(_jigTouchPiece,parseInt(slotEl.getAttribute('data-slot')));
+  // if dropped outside a slot, piece stays in tray (already there)
+  _jigTouchPiece=null;
+}
+
+function jigPlacePiece(pieceIdx,slotIdx){
+  const ps=_jigPs(),a=_jigAnimal;
+  // If slot is already CORRECTLY filled, block it
+  if(jigPlacements[slotIdx]===slotIdx)return;
+  // If slot already has a wrong piece, kick it back to tray first
+  if(jigPlacements[slotIdx]!==null && jigPlacements[slotIdx]!==undefined){
+    _jigDetachSlotTouch(slotIdx);
+    // Remove tap-back listener too
+    const _prevSlot=document.getElementById('jigSlot_'+slotIdx);
+    if(_prevSlot&&_prevSlot._jigTapBack){
+      _prevSlot.removeEventListener('click',_prevSlot._jigTapBack);
+      _prevSlot._jigTapBack=null;
+    }
+    _jigReturnToTray(jigPlacements[slotIdx]);
+    jigPlacements[slotIdx]=null;
+  }
+  const correct=(pieceIdx===slotIdx);
+  const slotEl=document.getElementById('jigSlot_'+slotIdx);
+  const pieceEl=document.getElementById('jigPiece_'+pieceIdx);
+  if(!slotEl)return;
+  if(pieceEl)pieceEl.remove();
+  slotEl.innerHTML=_jigGetPiece(a,pieceIdx,ps);
+
+  if(correct){
+    jigPlacements[slotIdx]=pieceIdx;
+    slotEl.style.border='3px solid #56cf81';
+    slotEl.style.background='#e8fff0';
+    slotEl.style.cursor='default';
+    slotEl.removeAttribute('ondragover');slotEl.removeAttribute('ondragleave');slotEl.removeAttribute('ondrop');
+    playCorrect();
+    const allDone=[0,1,2,3].every(i=>jigPlacements[i]===i);
+    if(allDone){
+      jigScore++;
+      burst();
+      speakText('You built the '+a.name+'! Amazing job!');
+      const fb=document.getElementById('gfb');
+      if(fb)fb.innerHTML='<span style="color:var(--green);font-family:\'Baloo 2\',cursive;font-weight:800;font-size:1.05rem">🎉 '+a.name+' done! Keep going!</span>';
+      const board=document.getElementById('jigBoard');
+      if(board){board.style.borderRadius='16px';board.style.boxShadow='0 0 0 5px #56cf81, 0 8px 32px rgba(86,207,129,.4)';}
+      // Remember this animal was done today so it won't repeat
+      const _doneToday=JSON.parse(localStorage.getItem('c_jig_done_'+todayKey())||'[]');
+      if(!_doneToday.includes(a.name)){_doneToday.push(a.name);localStorage.setItem('c_jig_done_'+todayKey(),JSON.stringify(_doneToday));}
+      setTimeout(nextJigRound,2800);
+    } else {
+      speakText('Great fit! Keep going!');
+      const fb=document.getElementById('gfb');
+      if(fb){fb.innerHTML='<span style="color:var(--green);font-family:\'Baloo 2\',cursive;font-weight:700">✅ Good one! Keep going!</span>';
+      setTimeout(()=>{if(fb)fb.innerHTML='';},1000);}
+    }
+  } else {
+    jigPlacements[slotIdx]=pieceIdx;
+    slotEl.style.border='3px dashed #ff6b9d';
+    slotEl.style.background='#ffe8f0';
+    slotEl.style.cursor='pointer';
+    // TAP to return piece back to tray — works reliably on iPad
+    slotEl._jigTapBack=function(ev){
+      ev.stopPropagation();
+      // Only act if this slot still has this wrong piece
+      if(jigPlacements[slotIdx]!==pieceIdx)return;
+      jigPlacements[slotIdx]=null;
+      _jigDetachSlotTouch(slotIdx);
+      slotEl.removeEventListener('click',slotEl._jigTapBack);
+      slotEl._jigTapBack=null;
+      // Reset slot
+      slotEl.innerHTML='?';
+      slotEl.style.border='3px dashed #c4b5fd';
+      slotEl.style.background=a.bg;
+      slotEl.style.cursor='default';
+      slotEl.removeAttribute('draggable');
+      slotEl.removeAttribute('ondragstart');slotEl.removeAttribute('ondragend');
+      slotEl.setAttribute('ondragover','event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"');
+      slotEl.setAttribute('ondragleave','this.style.borderColor="#c4b5fd";this.style.background="'+a.bg+'"');
+      slotEl.setAttribute('ondrop','jigDrop(event,'+slotIdx+')');
+      _jigReturnToTray(pieceIdx);
+      const fb2=document.getElementById('gfb');
+      if(fb2){fb2.innerHTML='<span style="color:var(--purple);font-family:\'Baloo 2\',cursive;font-weight:700">↩️ Try a different spot!</span>';
+      setTimeout(()=>{if(fb2)fb2.innerHTML='';},1000);}
+    };
+    slotEl.addEventListener('click',slotEl._jigTapBack);
+    // Also keep drag-back for desktop
+    slotEl.setAttribute('draggable','true');
+    slotEl.setAttribute('ondragstart','jigSlotDragStart(event,'+slotIdx+','+pieceIdx+')');
+    slotEl.setAttribute('ondragend','jigSlotDragEnd(event,'+slotIdx+','+pieceIdx+')');
+    slotEl.setAttribute('ondragover','event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"');
+    slotEl.setAttribute('ondragleave','this.style.borderColor="#ff6b9d";this.style.background="#ffe8f0"');
+    slotEl.setAttribute('ondrop','jigDrop(event,'+slotIdx+')');
+    slotEl.style.animation='shake .4s';
+    setTimeout(()=>{if(slotEl)slotEl.style.animation='';},400);
+    playWrong();speakText('Oops! Tap the piece to take it back!');
+    const fb=document.getElementById('gfb');
+    if(fb){fb.innerHTML='<span style="color:var(--pink);font-family:\'Baloo 2\',cursive;font-weight:700">👆 Tap the piece to take it back!</span>';
+    setTimeout(()=>{if(fb)fb.innerHTML='';},2000);}
+  }
+}
+
+// Attach/detach touch handlers on wrong-piece slots
+function _jigAttachSlotTouch(slotEl,slotIdx,pieceIdx){
+  slotEl._jigTS=e=>jigSlotTouchStart(e,slotIdx,pieceIdx);
+  slotEl._jigTM=jigTouchMove;
+  slotEl._jigTE=e=>jigSlotTouchEnd(e,slotIdx,pieceIdx);
+  slotEl.addEventListener('touchstart',slotEl._jigTS,{passive:false});
+  slotEl.addEventListener('touchmove',slotEl._jigTM,{passive:false});
+  slotEl.addEventListener('touchend',slotEl._jigTE,{passive:false});
+}
+function _jigDetachSlotTouch(slotIdx){
+  const el=document.getElementById('jigSlot_'+slotIdx);
+  if(!el)return;
+  if(el._jigTS)el.removeEventListener('touchstart',el._jigTS);
+  if(el._jigTM)el.removeEventListener('touchmove',el._jigTM);
+  if(el._jigTE)el.removeEventListener('touchend',el._jigTE);
+  el._jigTS=el._jigTM=el._jigTE=null;
+}
+
+// Called when child drags a wrong piece OUT of a slot
+function jigSlotDragStart(e,slotIdx,pieceIdx){
+  _jigDragPiece=pieceIdx;
+  _jigDragFromSlot=slotIdx; // remember which slot we dragged from
+  e.dataTransfer.setData('text',String(pieceIdx));
+  const slotEl=document.getElementById('jigSlot_'+slotIdx);
+  if(slotEl) setTimeout(()=>{ slotEl.style.opacity='.45'; },0);
+}
+
+function jigSlotDragEnd(e,slotIdx,pieceIdx){
+  const slotEl=document.getElementById('jigSlot_'+slotIdx);
+  const a=_jigAnimal;
+  if(_jigDragFromSlot===slotIdx){
+    // Dropped outside any valid slot — reset and return to tray
+    jigPlacements[slotIdx]=null;
+    _jigDetachSlotTouch(slotIdx);
+    if(slotEl){
+      slotEl.innerHTML='?';slotEl.style.opacity='1';
+      slotEl.style.border='3px dashed #c4b5fd';
+      slotEl.style.background=a.bg;slotEl.style.cursor='default';
+      slotEl.removeAttribute('draggable');
+      slotEl.removeAttribute('ondragstart');slotEl.removeAttribute('ondragend');
+      slotEl.setAttribute('ondragover','event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"');
+      slotEl.setAttribute('ondragleave','this.style.borderColor="#c4b5fd";this.style.background="'+a.bg+'"');
+      slotEl.setAttribute('ondrop','jigDrop(event,'+slotIdx+')');
+    }
+    _jigReturnToTray(pieceIdx);
+  } else {
+    if(slotEl) slotEl.style.opacity='1';
+  }
+  _jigDragFromSlot=null;
+}
+
+function jigSlotTouchStart(e,slotIdx,pieceIdx){
+  e.preventDefault();
+  _jigTouchPiece=pieceIdx;
+  _jigTouchFromSlot=slotIdx;
+  jigPlacements[slotIdx]=null;
+  _jigDetachSlotTouch(slotIdx);
+  const slotEl=document.getElementById('jigSlot_'+slotIdx);
+  const a=_jigAnimal,ps=_jigPs();
+  const g=document.createElement('div');
+  g.id='_jigGhost';
+  g.style.cssText='position:fixed;opacity:.88;pointer-events:none;z-index:9999;border-radius:12px;overflow:hidden;border:3px solid var(--purple);box-shadow:0 8px 28px rgba(167,139,250,.6);transform:scale(1.08);width:'+ps+'px;height:'+ps+'px';
+  g.innerHTML=_jigGetPiece(a,pieceIdx,ps);
+  document.body.appendChild(g);_jigGhost=g;
+  const t=e.touches[0];
+  g.style.left=(t.clientX-ps/2)+'px';
+  g.style.top=(t.clientY-ps/2)+'px';
+  if(slotEl){
+    slotEl.innerHTML='?';
+    slotEl.style.border='3px dashed #c4b5fd';
+    slotEl.style.background=a.bg;
+    slotEl.style.cursor='default';
+    slotEl.removeAttribute('draggable');
+    slotEl.removeAttribute('ondragstart');slotEl.removeAttribute('ondragend');
+    slotEl.setAttribute('ondragover','event.preventDefault();this.style.borderColor="#a78bfa";this.style.background="#f0e8ff"');
+    slotEl.setAttribute('ondragleave','this.style.borderColor="#c4b5fd";this.style.background="'+a.bg+'"');
+    slotEl.setAttribute('ondrop','jigDrop(event,'+slotIdx+')');
+  }
+}
+
+function jigSlotTouchEnd(e,slotIdx,pieceIdx){
+  if(_jigGhost){_jigGhost.remove();_jigGhost=null;}
+  if(_jigTouchPiece===null)return;
+  const t=e.changedTouches[0];
+  const hit=document.elementFromPoint(t.clientX,t.clientY);
+  const targetSlot=hit&&hit.closest('[data-slot]');
+  if(targetSlot){
+    jigPlacePiece(_jigTouchPiece,parseInt(targetSlot.getAttribute('data-slot')));
+  } else {
+    _jigReturnToTray(pieceIdx);
+  }
+  _jigTouchPiece=null;
+  _jigTouchFromSlot=null;
+}
+
+// Put a piece back into the tray
+function _jigReturnToTray(pieceIdx){
+  const a=_jigAnimal,ps=_jigPs();
+  const tray=document.getElementById('jigTray');
+  if(!tray)return;
+  if(document.getElementById('jigPiece_'+pieceIdx))return;
+  const pieceDiv=document.createElement('div');
+  pieceDiv.id='jigPiece_'+pieceIdx;
+  pieceDiv.setAttribute('data-piece',pieceIdx);
+  pieceDiv.setAttribute('draggable','true');
+  pieceDiv.style.cssText='width:'+ps+'px;height:'+ps+'px;cursor:grab;border-radius:12px;border:3px solid var(--purple);overflow:hidden;box-shadow:0 4px 16px rgba(167,139,250,.45);touch-action:none;flex-shrink:0;transition:transform .15s;animation:popIn .3s ease';
+  pieceDiv.setAttribute('ondragstart','jigDragStart(event,'+pieceIdx+')');
+  pieceDiv.setAttribute('ondragend','this.style.opacity="1"');
+  pieceDiv.innerHTML=_jigGetPiece(a,pieceIdx,ps);
+  // JS touch listeners — reliable on iPad
+  pieceDiv.addEventListener('touchstart',e=>jigTouchStart(e,pieceIdx),{passive:false});
+  pieceDiv.addEventListener('touchmove',jigTouchMove,{passive:false});
+  pieceDiv.addEventListener('touchend',jigTouchEnd,{passive:false});
+  tray.appendChild(pieceDiv);
+}
+
+
 function endGame(score,max,gid){
   const pct=Math.round(score/max*100);
   const msg=pct>=80?'🏆 AMAZING!':pct>=50?'👏 Great job!':'🌱 Keep practising!';
@@ -5740,7 +7127,11 @@ function renderParentDash(){
           <div class="pd-settings-row">
             <button class="pd-set-btn" onclick="toggleBedtime()">🌙 Bedtime: <strong style="color:var(--purple);margin-left:3px">${bedtimeMode?'ON':'OFF'}</strong></button>
             <button class="pd-set-btn" id="pdSoundBtn" onclick="toggleSound()">🔊 Sound: <strong id="pdSoundLabel" style="color:var(--green);margin-left:3px">${soundOn?'ON':'OFF'}</strong></button>
-            <button class="pd-set-btn" onclick="changeFamilyCode()">🔥 Family Code: <strong style="color:var(--sun);margin-left:3px">${_familyCode||'not set'}</strong></button>
+            <button class="pd-set-btn" onclick="changeFamilyCode()">👤 Account: <strong style="color:var(--sun);margin-left:3px">${_currentUser?(_currentUser.email||'Signed in'):'not signed in'}</strong></button>
+            <button class="pd-set-btn" onclick="signOutUser()" style="border-color:var(--pink);color:var(--pink)">🚪 Sign Out</button>
+            <button class="pd-set-btn" onclick="showSyncDebug()" style="background:linear-gradient(135deg,#333,#555)">🔍 Debug Sync Status</button>
+            <button class="pd-set-btn" onclick="forceUploadAll()" style="border-color:var(--sun);color:var(--sun)">📤 Force Upload to Cloud</button>
+            <button class="pd-set-btn" onclick="forceDownloadAll()" style="border-color:var(--blue);color:var(--blue)">📥 Force Download from Cloud</button>
             <button class="pd-set-btn" onclick="forceWeekSync()" style="border-color:var(--mint);color:var(--mint)">📅 Fix Week Sync</button>
             <button class="pd-set-btn danger" onclick="parentReset()">🔄 Reset journey</button>
           </div>
@@ -6058,8 +7449,8 @@ async function forceWeekSync(){
     alert('⚠️ No start date found on this device.\n\nRun this on the device that is already showing the CORRECT week (e.g. Week 2).');
     return;
   }
-  if(!_familyCode){
-    alert('⚠️ No Family Code set. Please set your Family Code first.');
+  if(!_currentUser){
+    alert('⚠️ Not signed in. Please sign in first.');
     return;
   }
   const {week:w, day:d} = getWeek();
@@ -6069,8 +7460,8 @@ async function forceWeekSync(){
   if(!confirmed) return;
 
   try{
-    // Directly PUT the start date to Firebase, bypassing the sync guard
-    const res = await fetch(`${_DB_URL}/families/${_familyCode}/cs.json`,{
+    _authToken = await _currentUser.getIdToken();
+    const res = await fetch(`${_DB_URL}/users/${_currentUser.uid}/cs.json?auth=${_authToken}`,{
       method:'PUT',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify(currentCs)
@@ -6167,7 +7558,8 @@ function switchTab(t){
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===t));
   document.getElementById('subjRow').classList.toggle('show',t==='learning');
   document.getElementById('gameRow').classList.toggle('show',t==='games');
-  document.getElementById('thinkRow').classList.toggle('show',t==='think');
+  document.getElementById('thinkRow').classList.remove('show');
+  if(t!=='learning') subj='all';
 
   // Show/hide elements based on tab
   const isSpecial=t==='create'||t==='parent'||t==='stories'||t==='hearts';
@@ -6791,6 +8183,8 @@ function openParentTab(){
 function switchSubj(s){
   subj=s;playClick();
   document.querySelectorAll('.sp').forEach(b=>b.classList.toggle('active',b.dataset.s===s));
+  document.getElementById('thinkRow').classList.toggle('show', s==='think');
+  if(s!=='think') thinkCat='all';
   fetchNext();
 }
 function switchGameCat(c){
@@ -6820,7 +8214,7 @@ function setupHeader(){
 }
 
 // ══════════════════════════════════════
-//  DAILY FACTS — 60 facts (trimmed for space)
+//  DAILY FACTS — 60 facts
 // ══════════════════════════════════════
 const FACTS=[
   {emoji:'🌍',topic:'Earth',title:'Earth Spins at 1,670 km/h!',body:'The Earth is always spinning but we cannot feel it because everything around us is spinning too! It takes exactly 24 hours to complete one full spin — that is why we have day and night.',q:'Ask Mummy: Why do we have day and night?'},
@@ -6837,6 +8231,52 @@ const FACTS=[
   {emoji:'🌻',topic:'Nature',title:'Sunflowers Face the Sun!',body:'Young sunflowers slowly turn to face the Sun as it moves across the sky each day! This is called heliotropism.',q:'Ask Mummy: Can we grow a sunflower at home?'},
   {emoji:'🦓',topic:'Animals',title:'Every Zebra is Unique!',body:'Just like your fingerprints, every zebra has a completely unique pattern of stripes! No two zebras look the same.',q:'Ask Mummy: Are zebras white with black stripes or black with white stripes?'},
   {emoji:'🔭',topic:'Space',title:'Mars is the Red Planet!',body:'Mars looks red because its surface is covered in reddish dust containing iron — like rust! Scientists want to send humans there.',q:'Ask Mummy: How long would it take to travel to Mars?'},
+  {emoji:'🦋',topic:'Animals',title:'Butterflies Taste With Their Feet!',body:'Butterflies have tiny taste sensors on their feet! When they land on a leaf or flower, they can immediately taste whether it is good to eat.',q:'Ask Mummy: How does a caterpillar turn into a butterfly?'},
+  {emoji:'☀️',topic:'Space',title:'The Sun is a Giant Star!',body:'Our Sun is actually a huge ball of hot gas — a star! It is so big that about one million Earths could fit inside it.',q:'Ask Mummy: How far away is the Sun?'},
+  {emoji:'🔊',topic:'Science',title:'Sound Travels Faster in Water!',body:'Sound moves about four times faster through water than through air. That is why whales can communicate with each other across entire oceans!',q:'Ask Mummy: What is the loudest sound you have ever heard?'},
+  {emoji:'🌳',topic:'Nature',title:'Trees Talk to Each Other!',body:'Trees send signals and nutrients to each other through tiny threads called mycelium under the soil — like an underground internet for forests!',q:'Ask Mummy: Why do leaves change colour in autumn?'},
+  {emoji:'🦥',topic:'Animals',title:'Sloths Are Super Slow!',body:'A sloth moves so slowly that green algae actually grows on its fur! They only come down from trees about once a week to go to the toilet.',q:'Ask Mummy: Why do sloths hang upside down?'},
+  {emoji:'🪼',topic:'Ocean',title:'Jellyfish Have No Brain!',body:'Jellyfish have no brain, no heart and no blood — and they have been drifting through the oceans for over 500 million years!',q:'Ask Mummy: Can jellyfish sting you?'},
+  {emoji:'🐱',topic:'Animals',title:'Cats Sleep 16 Hours a Day!',body:'Cats spend about two thirds of their lives sleeping! A 9-year-old cat has been awake for only about 3 years of its life.',q:'Ask Mummy: Why do cats purr?'},
+  {emoji:'👣',topic:'Space',title:'Moon Footprints Last Forever!',body:'Because there is no wind or rain on the Moon, the footprints left by astronauts in 1969 are still there today — and will be for millions of years!',q:'Ask Mummy: Who was the first person to walk on the Moon?'},
+  {emoji:'🍌',topic:'Science',title:'Bananas Are Slightly Radioactive!',body:'Bananas contain a tiny amount of a natural radioactive material called potassium-40. But do not worry — it is far too little to ever harm you!',q:'Ask Mummy: Why are bananas yellow?'},
+  {emoji:'🦩',topic:'Nature',title:'Flamingos Are Born White!',body:'Baby flamingos are born white or grey. They only turn pink because of special pigments in the shrimp and algae they eat!',q:'Ask Mummy: Why do flamingos stand on one leg?'},
+  {emoji:'🐄',topic:'Animals',title:'Cows Have Best Friends!',body:'Cows form close friendships with other cows. When they are separated from their best friend, they become stressed and unhappy.',q:'Ask Mummy: What sound does a cow make in other languages?'},
+  {emoji:'🐠',topic:'Ocean',title:'Clownfish Can Change Gender!',body:'All clownfish are born male. If the female in a group dies, the biggest male can change and become a female to lead the group!',q:'Ask Mummy: Why do clownfish live in anemones?'},
+  {emoji:'🐻‍❄️',topic:'Animals',title:'Polar Bears Have Black Skin!',body:'Although polar bear fur looks white, each hair is actually a clear hollow tube — and their skin underneath is completely black to absorb heat from the Sun!',q:'Ask Mummy: How do polar bears stay warm?'},
+  {emoji:'🪐',topic:'Space',title:'Saturn Would Float on Water!',body:'Saturn is so big but so light that if you could find a bathtub large enough, Saturn would actually float in it like a giant rubber duck!',q:'Ask Mummy: What are Saturnos rings made of?'},
+  {emoji:'🍯',topic:'Nature',title:'Honey Never Goes Bad!',body:'Archaeologists found honey in ancient Egyptian tombs that was over 3,000 years old — and it was still perfectly good to eat!',q:'Ask Mummy: How do bees make honey?'},
+  {emoji:'🐬',topic:'Ocean',title:'Dolphins Have Names for Each Other!',body:'Dolphins give each other unique whistle sounds that work like names! They call out to their friends by using that friend s special whistle.',q:'Ask Mummy: How smart are dolphins?'},
+  {emoji:'🐧',topic:'Animals',title:'Penguins Propose With Pebbles!',body:'Male penguins search for the perfect pebble and present it to a female they like. If she accepts it and puts it in her nest, they become partners!',q:'Ask Mummy: Can penguins fly?'},
+  {emoji:'🐋',topic:'Ocean',title:'Whales Sing Beautiful Songs!',body:'Humpback whales sing long, complex songs that can last for hours. These songs travel thousands of kilometres through the ocean.',q:'Ask Mummy: How big is a blue whale?'},
+  {emoji:'🦜',topic:'Animals',title:'Crows Are Incredibly Clever!',body:'Crows can remember human faces for years, hold grudges, and even leave gifts for people who are kind to them. They are one of the smartest animals on Earth!',q:'Ask Mummy: What other clever animals can you think of?'},
+  {emoji:'⭐',topic:'Space',title:'Starfish Have No Brain or Blood!',body:'Starfish have no brain and no blood. They pump sea water around their bodies instead of blood, and sense the world through tiny eye-spots at the tips of their arms.',q:'Ask Mummy: Can a starfish grow back its arms?'},
+  {emoji:'🎍',topic:'Nature',title:'Bamboo is the Fastest-Growing Plant!',body:'Some types of bamboo can grow nearly one metre in a single day! You could almost sit and watch it growing if you were very patient.',q:'Ask Mummy: What animals eat bamboo?'},
+  {emoji:'🐌',topic:'Animals',title:'A Snail Can Sleep for 3 Years!',body:'When the weather is too hot or too cold, a snail can seal itself inside its shell and go into a very deep sleep — called hibernation — for up to three years!',q:'Ask Mummy: Why do snails have shells?'},
+  {emoji:'🌋',topic:'Earth',title:'There Are Volcanoes Under the Sea!',body:'Most of Earth s volcanoes are hidden under the ocean! In fact, the longest mountain range on Earth is completely underwater.',q:'Ask Mummy: What comes out of a volcano?'},
+  {emoji:'🐎',topic:'Animals',title:'Horses Can Sleep Standing Up!',body:'Horses can lock their legs in place so they can doze while standing. This helped their wild ancestors stay safe from predators!',q:'Ask Mummy: How fast can a horse run?'},
+  {emoji:'🌊',topic:'Ocean',title:'Most of the Ocean is Unexplored!',body:'More than 80% of our oceans have never been explored! We know more about the surface of the Moon than about the deep ocean floor.',q:'Ask Mummy: What might be living in the deep ocean?'},
+  {emoji:'🧲',topic:'Science',title:'The Earth is a Giant Magnet!',body:'The Earth has a giant iron core that acts like a magnet, creating an invisible magnetic field all around us. This is what makes compasses always point north!',q:'Ask Mummy: How does a compass work?'},
+  {emoji:'🦎',topic:'Animals',title:'Chameleons Change Colour with Mood!',body:'Chameleons do not change colour to match their surroundings — they change colour to show their feelings! Bright colours mean they are excited or happy.',q:'Ask Mummy: What is the most colourful animal you can think of?'},
+  {emoji:'👃',topic:'Science',title:'Your Nose Can Smell 1 Trillion Things!',body:'Scientists used to think humans could only detect about 10,000 different smells. New research shows we can actually detect over one trillion different scents!',q:'Ask Mummy: What is your favourite smell?'},
+  {emoji:'🌰',topic:'Nature',title:'A Mighty Oak Grows From a Tiny Acorn!',body:'An oak tree can live for over 1,000 years and grow taller than a house — and every single one starts from a tiny acorn small enough to fit in your hand.',q:'Ask Mummy: Can we find any acorns near our home?'},
+  {emoji:'🐴',topic:'Ocean',title:'Seahorses Are the Slowest Fish!',body:'Seahorses are the slowest fish in the ocean. They swim upright using tiny fins that flutter up to 35 times per second — and the daddy seahorse carries the babies!',q:'Ask Mummy: Why does the dad seahorse carry the babies?'},
+  {emoji:'💎',topic:'Earth',title:'Diamonds Come From Deep Inside the Earth!',body:'Diamonds form about 150 kilometres below the Earth s surface, under enormous heat and pressure. They are then blasted upward by volcanoes!',q:'Ask Mummy: What is the hardest material in the world?'},
+  {emoji:'🌡️',topic:'Weather',title:'Snowflakes Each Have a Unique Shape!',body:'Every single snowflake has six sides, but no two snowflakes in the history of the Earth have ever been exactly the same shape!',q:'Ask Mummy: What is snow made of?'},
+  {emoji:'🐸',topic:'Animals',title:'Frogs Drink Through Their Skin!',body:'Frogs do not drink water through their mouths at all! They absorb water directly through their skin. That is why they must always stay moist.',q:'Ask Mummy: What is the difference between a frog and a toad?'},
+  {emoji:'🌌',topic:'Space',title:'There Are More Stars Than Grains of Sand!',body:'There are more stars in the universe than grains of sand on all of Earth s beaches put together. That is a number too big to even imagine!',q:'Ask Mummy: Can we see stars in the daytime?'},
+  {emoji:'🦟',topic:'Nature',title:'Mosquitoes Are the Deadliest Animal!',body:'Despite being tiny, mosquitoes affect more people than any other animal because they can spread diseases. But only female mosquitoes bite!',q:'Ask Mummy: Why do mosquito bites itch?'},
+  {emoji:'🧠',topic:'Science',title:'Your Brain Never Stops Working!',body:'Even when you are fast asleep, your brain is incredibly busy — sorting memories, solving problems, and making sure your body keeps breathing and your heart keeps beating.',q:'Ask Mummy: Why do we dream?'},
+  {emoji:'🦁',topic:'Animals',title:'Lions Sleep 20 Hours a Day!',body:'Lions rest or sleep for up to 20 hours a day to save energy. When they do hunt, they can run at speeds of up to 80 kilometres per hour!',q:'Ask Mummy: Do lions live in groups?'},
+  {emoji:'🌿',topic:'Nature',title:'Plants Breathe in What We Breathe Out!',body:'When we breathe out, we release carbon dioxide. Plants take in that carbon dioxide and use sunlight to turn it into food — and release fresh oxygen for us to breathe!',q:'Ask Mummy: Why do we need trees to survive?'},
+  {emoji:'🚀',topic:'Space',title:'Space is Completely Silent!',body:'In space there is no air, so sound has nothing to travel through. Explosions, rockets, and even the biggest stars are all completely silent from a distance!',q:'Ask Mummy: What would it feel like to float in space?'},
+  {emoji:'🐜',topic:'Animals',title:'Ants Can Carry 50 Times Their Own Weight!',body:'An ant can lift and carry objects up to 50 times heavier than its own body. If you could do the same, you could lift a small car!',q:'Ask Mummy: How do ants find their way home?'},
+  {emoji:'❄️',topic:'Earth',title:'Antarctica is a Desert!',body:'Although Antarctica is covered in ice, it is technically a desert because it gets very little rain or snow. It is actually the largest desert on Earth!',q:'Ask Mummy: Who lives in Antarctica?'},
+  {emoji:'🐦',topic:'Animals',title:'Hummingbirds Are Tiny Superheroes!',body:'Hummingbirds flap their wings up to 80 times every second — so fast you can only see a blur! They are the only birds that can fly backwards.',q:'Ask Mummy: What do hummingbirds eat?'},
+  {emoji:'🌐',topic:'Science',title:'The Internet Weighs About 50 Grams!',body:'All the electrons moving through the internet at any one time have a combined weight of roughly 50 grams — about the same as a small egg!',q:'Ask Mummy: How does the internet work?'},
+  {emoji:'🦴',topic:'Science',title:'Babies Have More Bones Than Adults!',body:'You were born with about 270 bones, but adults only have 206! As you grow up, many smaller bones slowly join together to form bigger ones.',q:'Ask Mummy: What is your biggest bone?'},
+  {emoji:'🐳',topic:'Ocean',title:'The Blue Whale is the Biggest Animal Ever!',body:'The blue whale is the largest animal ever known to have lived on Earth — bigger than any dinosaur! Its heart is the size of a small car.',q:'Ask Mummy: How do whales breathe?'},
+  {emoji:'🌏',topic:'Earth',title:'All Continents Were Once Joined Together!',body:'About 250 million years ago, all the land on Earth was one giant supercontinent called Pangaea. It slowly broke apart into the continents we have today!',q:'Ask Mummy: Can you find all the continents on a map?'},
 ];
 
 function renderFact(){
@@ -9121,36 +10561,152 @@ function ftAutoInit(){
 }
 
 // ══════════════════════════════════════
-//  BOOT
+//  BOOT — called by _firebaseInit after Firebase has loaded
 // ══════════════════════════════════════
-setupHeader();showSpill();renderWbar();renderFact();renderStory();renderChallenge();applyRewards();renderTabBadges();
-renderStarPath();renderSpark();renderWeather();renderPhysBanner();renderTodayBar();renderBtt();renderGoals();
-// Check bedtime lock (delayed so other UI loads first)
-setTimeout(checkBedtimeLock,1500);
-document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===tab));
-document.getElementById('subjRow').classList.toggle('show',tab==='learning');
-document.getElementById('gameRow').classList.toggle('show',tab==='games');
-document.getElementById('thinkRow').classList.toggle('show',tab==='think');
-document.getElementById('weatherBar').classList.toggle('show',tab==='morning');
-document.getElementById('timerBar').classList.add('show');
+function _bootApp(){
+  // ══════════════════════════════════════════════════════════════
+  //  FIREBASE-FIRST ARCHITECTURE
+  //  Firebase is the SOURCE OF TRUTH. localStorage is just a fast cache.
+  //  By this point, _loadFromFirebase() has already written cloud data
+  //  into localStorage via _lsSet(). We now read from localStorage
+  //  knowing it reflects the cloud state (if Firebase loaded successfully).
+  // ══════════════════════════════════════════════════════════════
 
-// Morning tune + feelings check-in
-setTimeout(()=>{
-  if(!morningTunePlayed&&new Date().getHours()<12){
-    playMorningTune();morningTunePlayed=true;localStorage.setItem('c_tune_'+todayKey(),'1');
+  // ── Step 1: Handle start date (cs) — the most critical key ──
+  const csValue = _lsGet('cs');
+  if(!csValue && _firebaseLoaded){
+    // Firebase loaded but cs is not there — this is a brand new user.
+    // Set today as start date and sync to Firebase (legitimate first use).
+    console.log('📅 First-time user — setting start date to today');
+    localStorage.setItem('cs', todayKey());   // syncs to Firebase via override
+  } else if(!csValue && !_firebaseLoaded){
+    // Firebase FAILED and cs is missing locally — we truly don't know the start date.
+    // Do NOT guess or set today's date — that would show wrong progress.
+    // Set a local-only temporary fallback so the UI doesn't crash,
+    // but warn the user that data couldn't load.
+    console.error('❌ Cannot determine start date — Firebase failed and localStorage empty');
+    _lsSet('cs', todayKey());   // local-only, does NOT touch Firebase
+    // Show a non-blocking warning so the child can still play
+    setTimeout(()=>{
+      const bar = document.createElement('div');
+      bar.id = 'offlineWarning';
+      bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#ff5252;color:#fff;text-align:center;padding:10px 16px;font-family:Nunito,sans-serif;font-size:.82rem;font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,.2);';
+      bar.innerHTML = '⚠️ Could not load from cloud — progress may be incomplete. Please check your internet and refresh. <button onclick="location.reload()" style="margin-left:8px;background:#fff;color:#ff5252;border:none;border-radius:8px;padding:4px 12px;font-weight:700;cursor:pointer;">Refresh</button>';
+      document.body.prepend(bar);
+      // Auto-dismiss after 15 seconds
+      setTimeout(()=>{ const w=document.getElementById('offlineWarning'); if(w)w.remove(); }, 15000);
+    }, 500);
   }
-},1200);
-setTimeout(()=>showFeelingsCheckIn(),2000);
-setTimeout(()=>checkWeeklySurprise(),3000);
+  // If csValue exists (either from Firebase or from localStorage on laptops), use it as-is
 
-// Show friend name in mascot bubble if named
-if(friendName)setTimeout(()=>mascotSay('Hi '+friendName+'! Let\'s go! 💛'),1500);
+  // ── Step 2: Proper day-reset AFTER Firebase data is in localStorage ──
+  const _cld = _lsGet('cld');
+  if(_cld && _cld !== todayKey()){
+    // New day — clean up yesterday's local copy (per-day data is date-keyed)
+    _lsRemove('cd_'+_cld);
+    _lsRemove('c_skipped_'+_cld);
+  }
+  // Set cld to today (locally + Firebase)
+  _lsSet('cld', todayKey());
+  if(_syncReady && _currentUser) fbWrite('cld', todayKey());
 
-// Wait for Firebase sync before starting
-(function waitForSync(){
-  if(_syncReady){ fetchNext(); }
-  else { setTimeout(waitForSync, 100); }
-})();
+  // ── Step 3: Read ALL state from localStorage (now populated by Firebase) ──
+  done          = JSON.parse(localStorage.getItem('cd_'+todayKey())||'[]');
+  stars         = parseInt(localStorage.getItem('cs_'+todayKey())||'0');
+  allUsed       = JSON.parse(localStorage.getItem('c_allused')||'[]');
+  totalStarsEver= parseInt(localStorage.getItem('c_total_stars')||'0');
+  skippedToday  = JSON.parse(localStorage.getItem('c_skipped_'+todayKey())||'[]');
+  owned         = JSON.parse(localStorage.getItem('c_owned')||'[]');
+  diffLevel     = parseInt(localStorage.getItem('c_diff')||'1');
+  friendName    = localStorage.getItem('c_friendName')||'';
+  activeHat     = localStorage.getItem('c_activeHat')||'';
+  activeChar    = localStorage.getItem('c_activeChar')||'';
+  activeTheme   = localStorage.getItem('c_activeTheme')||'';
+  bedtimeMode   = localStorage.getItem('c_bedtime')==='on';
+  if(bedtimeMode) document.body.classList.add('bedtime');
+
+  // Re-read week/day from synced start date
+  if(typeof getWeek === 'function'){
+    const recalc = getWeek();
+    week = recalc.week;
+    day  = recalc.day;
+  }
+
+  setupHeader();showSpill();renderWbar();renderFact();renderStory();renderChallenge();applyRewards();renderTabBadges();
+  renderStarPath();renderSpark();renderWeather();renderPhysBanner();renderTodayBar();renderBtt();renderGoals();
+// Check bedtime lock (delayed so other UI loads first)
+  setTimeout(checkBedtimeLock,1500);
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===tab));
+  document.getElementById('subjRow').classList.toggle('show',tab==='learning');
+  document.getElementById('gameRow').classList.toggle('show',tab==='games');
+  document.getElementById('thinkRow').classList.toggle('show',tab==='learning'&&subj==='think');
+  document.getElementById('weatherBar').classList.toggle('show',tab==='morning');
+  document.getElementById('timerBar').classList.add('show');
+
+  // Morning tune + feelings check-in
+  setTimeout(()=>{
+    if(!morningTunePlayed&&new Date().getHours()<12){
+      playMorningTune();morningTunePlayed=true;localStorage.setItem('c_tune_'+todayKey(),'1');
+    }
+  },1200);
+  setTimeout(()=>showFeelingsCheckIn(),2000);
+  setTimeout(()=>checkWeeklySurprise(),3000);
+
+  // Show friend name in mascot bubble if named
+  if(friendName)setTimeout(()=>mascotSay('Hi '+friendName+'! Let\'s go! 💛'),1500);
+
+  // Start activities
+  fetchNext();
+
+  // ══════════════════════════════════════════════════════════════
+  //  AUTO-RETRY: If Firebase failed to load (common on iOS/iPad),
+  //  wait a few seconds for the auth token to fully settle, then
+  //  try again. If it succeeds, reload all state and refresh UI.
+  // ══════════════════════════════════════════════════════════════
+  if(!_firebaseLoaded && _currentUser){
+    console.log('⏳ Firebase failed on first try — scheduling auto-retry in 3 seconds...');
+    setTimeout(async ()=>{
+      try{
+        console.log('🔄 Auto-retry: loading from Firebase...');
+        _authToken = await _currentUser.getIdToken(true);
+        const success = await _loadFromFirebase();
+        if(success){
+          _firebaseLoaded = true;
+          console.log('✅ Auto-retry succeeded! Refreshing all data...');
+          // Remove offline warning if shown
+          const w = document.getElementById('offlineWarning');
+          if(w) w.remove();
+          // Re-read all state from now-populated localStorage
+          done          = JSON.parse(localStorage.getItem('cd_'+todayKey())||'[]');
+          stars         = parseInt(localStorage.getItem('cs_'+todayKey())||'0');
+          allUsed       = JSON.parse(localStorage.getItem('c_allused')||'[]');
+          totalStarsEver= parseInt(localStorage.getItem('c_total_stars')||'0');
+          skippedToday  = JSON.parse(localStorage.getItem('c_skipped_'+todayKey())||'[]');
+          owned         = JSON.parse(localStorage.getItem('c_owned')||'[]');
+          diffLevel     = parseInt(localStorage.getItem('c_diff')||'1');
+          friendName    = localStorage.getItem('c_friendName')||'';
+          activeHat     = localStorage.getItem('c_activeHat')||'';
+          activeChar    = localStorage.getItem('c_activeChar')||'';
+          activeTheme   = localStorage.getItem('c_activeTheme')||'';
+          // Re-read start date and recalculate week/day
+          const recalc2 = getWeek();
+          week = recalc2.week;
+          day  = recalc2.day;
+          // Refresh UI with correct data
+          setupHeader();showSpill();renderWbar();renderFact();renderStory();
+          renderChallenge();applyRewards();renderTabBadges();renderStarPath();
+          renderSpark();renderPhysBanner();renderTodayBar();renderBtt();renderGoals();
+          fetchNext();
+          console.log('✅ UI refreshed! Now showing Week '+week+', Day '+day);
+        } else {
+          console.warn('❌ Auto-retry also failed');
+        }
+      }catch(e){
+        console.error('❌ Auto-retry error:', e);
+      }
+    }, 3000);
+  }
+}
 </script>
 </body>
 </html>
