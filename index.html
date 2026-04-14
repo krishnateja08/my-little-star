@@ -1833,9 +1833,49 @@ function _shouldSync(key){ return SYNC_KEYS.includes(key)||SYNC_PREFIXES.some(p=
 function _safeKey(key){ return key.replace(/[.#$[\]/]/g,'_'); }
 
 // Keep originals before overriding
-const _lsSet    = localStorage.setItem.bind(localStorage);
+const _lsSetRaw    = localStorage.setItem.bind(localStorage);
 const _lsRemove = localStorage.removeItem.bind(localStorage);
 const _lsGet    = localStorage.getItem.bind(localStorage);
+
+// ── Quota-safe localStorage writer ──
+// Prunes old date-keyed entries first if quota is exceeded, then retries.
+function _pruneOldLocalStorage(){
+  const todayStr = (typeof todayKey === 'function') ? todayKey() : new Date().toISOString().slice(0,10).replace(/-/g,'');
+  const DATE_PREFIXES = ['cd_','cs_','c_skipped_','c_jig_done_'];
+  let pruned = 0;
+  for(let i = localStorage.length - 1; i >= 0; i--){
+    const k = localStorage.key(i);
+    if(!k) continue;
+    const isOldDate = DATE_PREFIXES.some(p => k.startsWith(p) && !k.includes(todayStr));
+    if(isOldDate){ _lsRemove(k); pruned++; }
+  }
+  console.log('🧹 Pruned '+pruned+' old date-keyed localStorage entries');
+  return pruned;
+}
+
+function _lsSet(key, value){
+  try{
+    _lsSetRaw(key, value);
+  }catch(e){
+    if(e && (e.name === 'QuotaExceededError' || e.code === 22 || e.code === 1014)){
+      console.warn('⚠️ localStorage quota hit — pruning old entries and retrying...');
+      _pruneOldLocalStorage();
+      try{ _lsSetRaw(key, value); }
+      catch(e2){
+        // Last resort: clear everything non-critical and retry
+        console.error('❌ Still over quota after pruning — clearing non-sync keys');
+        const KEEP_PREFIXES = ['c_','cs','cld'];
+        for(let i = localStorage.length - 1; i >= 0; i--){
+          const k = localStorage.key(i);
+          if(k && !KEEP_PREFIXES.some(p => k.startsWith(p))){ _lsRemove(k); }
+        }
+        try{ _lsSetRaw(key, value); }catch(e3){ console.error('❌ Cannot write to localStorage at all:', key, e3); }
+      }
+    } else {
+      console.error('❌ localStorage write error:', key, e);
+    }
+  }
+}
 
 let _syncReady  = false;
 let _diagLog    = [];  // Visible diagnostic log for debugging on mobile
@@ -1901,6 +1941,8 @@ async function _loadFromFirebase(retryCount){
       return false;
     }
     if(data && typeof data === 'object'){
+      // Prune old date-keyed entries BEFORE bulk-writing Firebase data to avoid quota errors
+      _pruneOldLocalStorage();
       let count = 0;
       Object.keys(data).forEach(k => {
         const v = data[k];
@@ -1939,6 +1981,7 @@ async function forceDownloadAll(){
       return;
     }
 
+    _pruneOldLocalStorage();
     let count = 0;
     Object.keys(data).forEach(k => {
       const v = data[k];
