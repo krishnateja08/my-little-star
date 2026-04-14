@@ -1869,11 +1869,21 @@ function fbDelete(key){
 }
 
 async function _loadFromFirebase(retryCount){
-  if(!_currentUser) return false;
+  if(!_currentUser) { console.warn('❌ _loadFromFirebase: no user'); return false; }
   const attempt = retryCount || 0;
   try{
-    _authToken = await _currentUser.getIdToken(true); // force fresh token
-    const res  = await fetch(`${_DB_URL}/users/${_currentUser.uid}.json?auth=${_authToken}`);
+    // Get auth token — try force refresh, fall back to cached token
+    try{
+      _authToken = await _currentUser.getIdToken(true);
+    }catch(tokenErr){
+      console.warn('⚠️ Token refresh failed, trying cached token:', tokenErr.message);
+      try{ _authToken = await _currentUser.getIdToken(false); }
+      catch(e2){ console.error('❌ No token available at all'); return false; }
+    }
+    const url = `${_DB_URL}/users/${_currentUser.uid}.json?auth=${_authToken}`;
+    console.log('📡 Loading from Firebase... attempt', attempt+1, 'URL length:', url.length);
+    const res  = await fetch(url);
+    console.log('📡 Firebase response status:', res.status);
     const data = await res.json();
     if(data && data.error){
       console.error('❌ Firebase permission error:', data.error);
@@ -1898,7 +1908,7 @@ async function _loadFromFirebase(retryCount){
       return false;
     }
   }catch(e){
-    console.error('❌ Firebase LOAD error:',e);
+    console.error('❌ Firebase LOAD error (attempt '+(attempt+1)+'):', e.message || e);
     if(attempt < 3){
       console.log('🔄 Retrying Firebase load after error... attempt', attempt+2);
       await new Promise(r=>setTimeout(r, 1500 + attempt*500));
@@ -2099,21 +2109,28 @@ let _firebaseLoaded = false;   // true ONLY if cloud data was successfully downl
 // ── Main init ──
 (async function _firebaseInit(){
   try{
-    // Check for redirect result first (mobile sign-in flow)
-    const redirectResult = await _auth.getRedirectResult();
-    if(redirectResult && redirectResult.user){
-      _currentUser = redirectResult.user;
-      _authToken = await _currentUser.getIdToken();
+    // ── Step 1: Check for redirect result (mobile sign-in flow) ──
+    // Wrapped in its OWN try-catch because getRedirectResult() can throw
+    // on iOS/iPad without affecting the rest of the init.
+    try{
+      const redirectResult = await _auth.getRedirectResult();
+      if(redirectResult && redirectResult.user){
+        _currentUser = redirectResult.user;
+        _authToken = await _currentUser.getIdToken();
+      }
+    }catch(redirectErr){
+      console.warn('⚠️ getRedirectResult failed (common on iOS/iPad):', redirectErr.code || redirectErr.message);
+      // Not fatal — onAuthStateChanged below will still find the user
     }
 
-    // If not signed in yet, check for persisted session
+    // ── Step 2: If not signed in yet, check for persisted session ──
     if(!_currentUser){
       await new Promise((resolve)=>{
         const unsub = _auth.onAuthStateChanged(async (user)=>{
           unsub();
           if(user){
             _currentUser = user;
-            _authToken = await user.getIdToken();
+            try{ _authToken = await user.getIdToken(); }catch(e){ console.warn('Token error:', e); }
             document.getElementById('familyCodeOverlay').innerHTML='';
             resolve();
           } else {
@@ -2130,8 +2147,29 @@ let _firebaseLoaded = false;   // true ONLY if cloud data was successfully downl
       await _migrateFromFamilyCode();
     }
 
-    // ── FIREBASE-FIRST: Load cloud data — this is the source of truth ──
-    _firebaseLoaded = await _loadFromFirebase();
+    // ── Step 3: FIREBASE-FIRST — Load cloud data ──
+    // This is in its OWN try-catch so auth issues don't prevent data loading.
+    if(_currentUser){
+      try{
+        _firebaseLoaded = await _loadFromFirebase();
+      }catch(loadErr){
+        console.error('❌ Data load failed:', loadErr);
+        _firebaseLoaded = false;
+      }
+
+      // If first load failed, try once more with a fresh token
+      if(!_firebaseLoaded){
+        console.log('🔄 First load failed — refreshing token and retrying...');
+        try{
+          _authToken = await _currentUser.getIdToken(true);
+          _firebaseLoaded = await _loadFromFirebase();
+        }catch(retryErr){
+          console.error('❌ Retry also failed:', retryErr);
+          _firebaseLoaded = false;
+        }
+      }
+    }
+
     _syncReady = true;
     document.getElementById('appLoader').style.display='none';
 
@@ -2142,7 +2180,15 @@ let _firebaseLoaded = false;   // true ONLY if cloud data was successfully downl
     }
   }catch(e){
     console.warn('Firebase init error, running offline:',e);
-    _firebaseLoaded = false;
+    // ── LAST RESORT: even if init crashed, try to load data if we have a user ──
+    if(_currentUser && !_firebaseLoaded){
+      try{
+        _authToken = await _currentUser.getIdToken(true);
+        _firebaseLoaded = await _loadFromFirebase();
+        console.log('🔥 Last-resort load succeeded!');
+      }catch(e2){ console.error('Last-resort load also failed:', e2); }
+    }
+    _firebaseLoaded = _firebaseLoaded || false;
     _syncReady = true;
     document.getElementById('appLoader').style.display='none';
   }
