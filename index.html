@@ -1832,8 +1832,32 @@ const SYNC_PREFIXES = [
 function _shouldSync(key){ return SYNC_KEYS.includes(key)||SYNC_PREFIXES.some(p=>key.startsWith(p)); }
 function _safeKey(key){ return key.replace(/[.#$[\]/]/g,'_'); }
 
-// Keep originals before overriding
-const _lsSet    = localStorage.setItem.bind(localStorage);
+// ── localStorage helpers with QuotaExceededError protection ──
+function cleanupLocalStorage(){
+  // Remove old day-keyed entries — these are the #1 cause of quota issues on mobile
+  const today = todayKey ? todayKey() : (()=>{const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;})();
+  const prefixes = ['cd_','cs_','c_skipped_','_fbLoaded_'];
+  Object.keys(localStorage).forEach(k=>{
+    if(prefixes.some(p=>k.startsWith(p)) && !k.endsWith(today)){
+      localStorage.removeItem(k);
+    }
+  });
+  console.log('🧹 localStorage cleanup done');
+}
+
+function _lsSet(k, v){
+  try{
+    localStorage.setItem(k, v);
+  }catch(e){
+    if(e.name==='QuotaExceededError'||e.code===22||e.code===1014){
+      console.warn('⚠️ localStorage quota hit — running cleanup, then retrying:', k);
+      cleanupLocalStorage();
+      try{ localStorage.setItem(k, v); }catch(e2){ console.error('❌ Still full after cleanup:', k); }
+    } else {
+      throw e;
+    }
+  }
+}
 const _lsRemove = localStorage.removeItem.bind(localStorage);
 const _lsGet    = localStorage.getItem.bind(localStorage);
 
@@ -1873,9 +1897,11 @@ function fbDelete(key){
 async function _loadFromFirebase(retryCount){
   if(!_currentUser) { _diag('❌ LOAD: no user'); return false; }
 
-  // FIX: Skip re-fetching if already loaded successfully this session
-  if(retryCount === undefined && sessionStorage.getItem('_fbLoaded') === '1'){
-    _diag('⚡ Skipping Firebase load — already loaded this session');
+  // FIX: Skip re-fetching if already loaded successfully today.
+  // Uses localStorage (not sessionStorage) so it survives iPad/Safari tab backgrounding.
+  const _fbLoadedKey = '_fbLoaded_' + (todayKey ? todayKey() : new Date().toISOString().slice(0,10));
+  if(retryCount === undefined && localStorage.getItem(_fbLoadedKey) === '1'){
+    _diag('⚡ Skipping Firebase load — already loaded today');
     return true;
   }
 
@@ -1921,14 +1947,16 @@ async function _loadFromFirebase(retryCount){
         _lsSet(k, typeof v === 'string' ? v : JSON.stringify(v));
         count++;
       });
-      // FIX: Mark session as loaded so subsequent calls skip Firebase entirely
-      sessionStorage.setItem('_fbLoaded', '1');
+      // FIX: Mark today as loaded in localStorage so subsequent calls (and re-foregrounds on iPad) skip Firebase
+      const _fbLoadedKeyInner = '_fbLoaded_' + (todayKey ? todayKey() : new Date().toISOString().slice(0,10));
+      localStorage.setItem(_fbLoadedKeyInner, '1');
       _diag('✅ SUCCESS! '+count+' keys loaded from Firebase');
       return true;
     } else {
       _diag('⚠️ Firebase returned empty/null: '+JSON.stringify(data));
       // Treat null as a new user (no data yet), still mark as loaded
-      sessionStorage.setItem('_fbLoaded', '1');
+      const _fbLoadedKeyInner2 = '_fbLoaded_' + (todayKey ? todayKey() : new Date().toISOString().slice(0,10));
+      localStorage.setItem(_fbLoadedKeyInner2, '1');
       return false;
     }
   }catch(e){
@@ -10577,6 +10605,9 @@ function _bootApp(){
   //  into localStorage via _lsSet(). We now read from localStorage
   //  knowing it reflects the cloud state (if Firebase loaded successfully).
   // ══════════════════════════════════════════════════════════════
+
+  // FIX: Clean up old date-keyed entries FIRST — prevents QuotaExceededError on mobile/iPad
+  cleanupLocalStorage();
 
   // ── Step 1: Handle start date (cs) — the most critical key ──
   const csValue = _lsGet('cs');
