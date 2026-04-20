@@ -3238,7 +3238,7 @@ function showActivityPicker(pool){
 
     let rightHtml;
     if(status==='done')         rightHtml=`<span class="pi-status done">✅ Done</span>`;
-    else if(status==='skipped') rightHtml=`<span class="pi-status skipped">⏭ Skipped</span>`;
+    else if(status==='skipped') rightHtml=`<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0"><span class="pi-status skipped">⏭ Skipped</span><button onclick="event.stopPropagation();undoSkip('${a.title.replace(/'/g,"\\'")}');" style="border:1.5px solid #c7d7ff;background:#f0f4ff;color:#4fa3e0;border-radius:8px;padding:3px 9px;font-family:'Baloo 2',cursive;font-size:.68rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;line-height:1.6">↩️ Undo</button></div>`;
     else                        rightHtml=isGame?`<span class="pi-stars" style="color:var(--pink)">▶ Play</span>`:`<span class="pi-stars">⭐${a.stars||'?'}</span>`;
 
     const cls='picker-item'+(status==='done'?' done-item':status==='skipped'?' skipped-item':'');
@@ -4997,6 +4997,18 @@ function skipActivity(){
   setTimeout(fetchNext,400);
 }
 
+
+function undoSkip(title){
+  playClick();
+  skippedToday=skippedToday.filter(function(t){return t!==title;});
+  localStorage.setItem("c_skipped_"+todayKey(),JSON.stringify(skippedToday));
+  mascotSay("Great! That activity is back! 🎉");
+  if(document.querySelector(".picker-panel")){
+    renderPicker();
+  } else if(!current){
+    fetchNext();
+  }
+}
 // ══════════════════════════════════════
 //  GAMES ENGINE (with adaptive difficulty)
 // ══════════════════════════════════════
