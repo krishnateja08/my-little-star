@@ -3899,6 +3899,22 @@ function buildVisualPanel(a){
     </div>`;
   }
 
+
+  // ── SEVEN CONTINENTS ──
+  if(t.includes('Continent')){
+    const continents=[
+      {e:'🦁',name:'Africa',fact:'Second biggest! Home to lions and elephants!',c:'#56cf81',s:'rgba(86,207,129,.4)'},
+      {e:'🐼',name:'Asia',fact:'The BIGGEST continent! 4 billion people live here!',c:'#ffb830',s:'rgba(255,184,48,.4)'},
+      {e:'🦘',name:'Australia',fact:'The SMALLEST! Kangaroos live here!',c:'#ff8c69',s:'rgba(255,140,105,.4)'},
+      {e:'🗼',name:'Europe',fact:'Home of the Eiffel Tower and Big Ben!',c:'#4fa3e0',s:'rgba(79,163,224,.4)'},
+      {e:'🦅',name:'North America',fact:'Home of the USA and Canada!',c:'#a78bfa',s:'rgba(167,139,250,.4)'},
+      {e:'🌴',name:'South America',fact:'The Amazon rainforest is here!',c:'#ff6b9d',s:'rgba(255,107,157,.4)'},
+      {e:'🐧',name:'Antarctica',fact:'The COLDEST place! Penguins live here!',c:'#4ecdc4',s:'rgba(78,205,196,.4)'},
+    ];
+    const mk=(c)=>`<div onclick="speakText('${c.name}! ${c.fact}');this.style.transform='scale(1.15)';setTimeout(()=>this.style.transform='',400)" style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 6px 10px;border-radius:16px;background:${c.c};color:#fff;cursor:pointer;transition:transform .2s;text-align:center;box-shadow:0 5px 14px ${c.s};border:3px solid rgba(255,255,255,.35)"><span style="font-size:2.4rem">${c.e}</span><span style="font-family:'Baloo 2',cursive;font-size:.68rem;font-weight:800;line-height:1.2">${c.name}</span><span style="font-size:.52rem;opacity:.9;line-height:1.3">${c.fact}</span></div>`;
+    return `<div style="margin:12px 0"><div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:#4fa3e0;margin-bottom:10px;text-align:center">🌍 Tap each continent — it will say its name!</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">${continents.slice(0,4).map(c=>mk(c)).join('')}</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${continents.slice(4).map(c=>mk(c)).join('')}</div><div style="text-align:center;font-family:'Baloo 2',cursive;font-size:.72rem;color:var(--text3);margin-top:8px">👆 Tap any card and hear the name out loud!</div></div>`;
+  }
+
   // No special visual for this activity — return empty string
   return '';
 }
