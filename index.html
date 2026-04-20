@@ -1604,6 +1604,7 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
 <header>
   <button class="bedtime-toggle" id="bedtimeBtn" onclick="toggleBedtime()" title="Bedtime Mode">☀️</button>
   <button class="sound-toggle" id="soundBtn" onclick="toggleSound()" title="Toggle Sound">🔊</button>
+  <button class="sound-toggle" id="themeBtn" onclick="showThemePicker()" title="Change Theme" style="right:56px;font-size:1rem">🎨</button>
   <div class="mascot-wrap" onclick="mascotTap()">
     <div class="speech-bubble" id="speechBubble">Hello! 🌟</div>
     <span class="mascot-hat" id="mascotHat" style="display:none"></span>
@@ -2579,9 +2580,33 @@ const SHOP_ITEMS=[
   {id:'char_cat',emoji:'🐱',name:'Cat Buddy',cost:25,type:'character'},
   {id:'char_bear',emoji:'🐻',name:'Bear Buddy',cost:35,type:'character'},
   {id:'char_panda',emoji:'🐼',name:'Panda Pal',cost:40,type:'character'},
-  {id:'theme_ocean',emoji:'🌊',name:'Ocean Theme',cost:40,type:'theme',colors:{'--bg':'#e0f4ff','--pink':'#4fa3e0','--sun':'#56cf81'}},
-  {id:'theme_space',emoji:'🚀',name:'Space Theme',cost:50,type:'theme',colors:{'--bg':'#1a1a2e','--cardbg':'#222244','--text':'#e0d4ff','--text2':'#b8a9d4','--border':'#333355','--inputbg':'#2a2a4e'}},
-  {id:'theme_forest',emoji:'🌿',name:'Forest Theme',cost:45,type:'theme',colors:{'--bg':'#f0fff4','--pink':'#56cf81','--sun':'#4ecdc4'}},
+  {id:'theme_ocean',emoji:'🌊',name:'Ocean Theme',cost:40,type:'theme',
+    header:'linear-gradient(135deg,#006994,#0099cc,#00bcd4,#4ecdc4)',
+    colors:{'--bg':'#e0f4ff','--pink':'#0099cc','--sun':'#00bcd4','--mint':'#4ecdc4','--purple':'#006994','--green':'#00bcd4'}},
+  {id:'theme_space',emoji:'🚀',name:'Space Theme',cost:50,type:'theme',
+    header:'linear-gradient(135deg,#0d0d2b,#1a1a4e,#2d1b6b,#1a2940)',
+    colors:{'--bg':'#0d0d1f','--cardbg':'#1a1a3a','--text':'#e0d4ff','--text2':'#b8a9d4','--border':'#2a2a5e','--inputbg':'#15153a','--pink':'#a78bfa','--sun':'#ffb830'}},
+  {id:'theme_forest',emoji:'🌿',name:'Forest Theme',cost:45,type:'theme',
+    header:'linear-gradient(135deg,#1b4332,#2d6a4f,#52b788,#95d5b2)',
+    colors:{'--bg':'#f0fff4','--pink':'#52b788','--sun':'#95d5b2','--mint':'#2d6a4f','--purple':'#1b4332','--green':'#52b788'}},
+  {id:'theme_unicorn',emoji:'🦄',name:'Unicorn Magic',cost:0,type:'theme',
+    header:'linear-gradient(135deg,#ff6eb4,#c77dff,#7b2ff7,#ff6eb4)',
+    colors:{'--bg':'#fff0fa','--pink':'#ff6eb4','--sun':'#ffb3de','--mint':'#c77dff','--purple':'#7b2ff7','--green':'#ff9ed2','--blue':'#c77dff'}},
+  {id:'theme_dino',emoji:'🦕',name:'Dino World',cost:0,type:'theme',
+    header:'linear-gradient(135deg,#1a472a,#2d6a4f,#74c69d,#b7e4c7)',
+    colors:{'--bg':'#f0fff0','--pink':'#52b788','--sun':'#d8f3dc','--mint':'#74c69d','--purple':'#1a472a','--green':'#52b788','--blue':'#40916c'}},
+  {id:'theme_candy',emoji:'🍭',name:'Candy Land',cost:0,type:'theme',
+    header:'linear-gradient(135deg,#ff6b9d,#ff9de2,#ffb3f7,#c77dff)',
+    colors:{'--bg':'#fff0fb','--pink':'#ff6b9d','--sun':'#ffb3f7','--mint':'#ff9de2','--purple':'#c77dff','--green':'#ff6b9d','--blue':'#c77dff'}},
+  {id:'theme_superhero',emoji:'🦸',name:'Superhero',cost:0,type:'theme',
+    header:'linear-gradient(135deg,#c1121f,#023e8a,#ffd60a,#c1121f)',
+    colors:{'--bg':'#f0f4ff','--pink':'#c1121f','--sun':'#ffd60a','--mint':'#0077b6','--purple':'#023e8a','--green':'#0077b6','--blue':'#023e8a'}},
+  {id:'theme_princess',emoji:'👸',name:'Princess Castle',cost:0,type:'theme',
+    header:'linear-gradient(135deg,#e9c46a,#f4a261,#ff6b9d,#c77dff)',
+    colors:{'--bg':'#fff8f0','--pink':'#ff6b9d','--sun':'#e9c46a','--mint':'#f4a261','--purple':'#c77dff','--green':'#f4a261','--blue':'#c77dff'}},
+  {id:'theme_underwater',emoji:'🐠',name:'Under the Sea',cost:0,type:'theme',
+    header:'linear-gradient(135deg,#03045e,#0077b6,#00b4d8,#90e0ef)',
+    colors:{'--bg':'#e0f7fa','--pink':'#0077b6','--sun':'#90e0ef','--mint':'#00b4d8','--purple':'#03045e','--green':'#00b4d8','--blue':'#0077b6'}},
   {id:'rainbow',emoji:'🌈',name:'Rainbow Flair',cost:15,type:'hat'},
   {id:'trophy',emoji:'🏆',name:'Trophy',cost:60,type:'hat'},
 ];
@@ -2613,10 +2638,18 @@ function applyRewards(){
   const root=document.documentElement;
   // Reset custom theme properties first
   root.removeAttribute('style');
+  const headerEl=document.querySelector('header');
+  // Reset header to default
+  if(headerEl&&!document.body.classList.contains('bedtime')){
+    headerEl.style.background='linear-gradient(135deg,#ff6b9d,#ffb830,#4ecdc4)';
+  }
   if(activeTheme&&!bedtimeMode){
     const item=SHOP_ITEMS.find(i=>i.id===activeTheme);
     if(item&&item.colors){
       Object.entries(item.colors).forEach(([k,v])=>root.style.setProperty(k,v));
+    }
+    if(item&&item.header&&headerEl){
+      headerEl.style.background=item.header;
     }
   }
 }
@@ -12373,6 +12406,63 @@ function pickSsChoice(i){
       <button class="game-done-btn" onclick="markGameDone(5)">✅ Done! Give me stars! →</button>
     </div>`;
   speakText(choice.reaction);
+}
+
+// ══════════════════════════════════════
+//  THEME PICKER
+// ══════════════════════════════════════
+function showThemePicker(){
+  playClick();
+  const themes=[
+    {id:'',           emoji:'🌟', name:'Default',        header:'linear-gradient(135deg,#ff6b9d,#ffb830,#4ecdc4)'},
+    {id:'theme_unicorn',  emoji:'🦄', name:'Unicorn Magic',  header:'linear-gradient(135deg,#ff6eb4,#c77dff,#7b2ff7,#ff6eb4)'},
+    {id:'theme_candy',    emoji:'🍭', name:'Candy Land',     header:'linear-gradient(135deg,#ff6b9d,#ff9de2,#ffb3f7,#c77dff)'},
+    {id:'theme_princess', emoji:'👸', name:'Princess',        header:'linear-gradient(135deg,#e9c46a,#f4a261,#ff6b9d,#c77dff)'},
+    {id:'theme_superhero',emoji:'🦸', name:'Superhero',       header:'linear-gradient(135deg,#c1121f,#023e8a,#ffd60a)'},
+    {id:'theme_dino',     emoji:'🦕', name:'Dino World',      header:'linear-gradient(135deg,#1a472a,#2d6a4f,#74c69d,#b7e4c7)'},
+    {id:'theme_underwater',emoji:'🐠',name:'Under the Sea',   header:'linear-gradient(135deg,#03045e,#0077b6,#00b4d8,#90e0ef)'},
+    {id:'theme_space',    emoji:'🚀', name:'Space',           header:'linear-gradient(135deg,#0d0d2b,#1a1a4e,#2d1b6b)'},
+    {id:'theme_ocean',    emoji:'🌊', name:'Ocean',           header:'linear-gradient(135deg,#006994,#0099cc,#00bcd4,#4ecdc4)'},
+    {id:'theme_forest',   emoji:'🌿', name:'Forest',          header:'linear-gradient(135deg,#1b4332,#2d6a4f,#52b788,#95d5b2)'},
+  ];
+
+  // Build overlay
+  const overlay=document.createElement('div');
+  overlay.id='themePicker';
+  overlay.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s';
+  overlay.innerHTML=`
+    <div style="background:var(--cardbg);width:100%;max-width:520px;border-radius:28px 28px 0 0;padding:20px 16px 32px;box-shadow:0 -8px 40px rgba(0,0,0,.25)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;color:var(--text)">🎨 Choose a Theme!</div>
+        <button onclick="document.getElementById('themePicker').remove()" style="border:none;background:var(--border);border-radius:50%;width:32px;height:32px;font-size:1rem;cursor:pointer;color:var(--text2)">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+        ${themes.map(t=>`
+          <div onclick="applyThemeNow('${t.id}')" style="border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .2s;box-shadow:0 4px 14px rgba(0,0,0,.15);${activeTheme===t.id?'outline:4px solid #ffb830':''}"
+            onmousedown="this.style.transform='scale(.96)'" onmouseup="this.style.transform=''">
+            <div style="height:52px;background:${t.header};display:flex;align-items:center;justify-content:center;font-size:1.8rem">${t.emoji}</div>
+            <div style="padding:6px 10px 8px;background:var(--inputbg);font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:6px">
+              ${t.name}
+              ${activeTheme===t.id?'<span style="margin-left:auto;background:#ffb830;color:#fff;padding:1px 8px;border-radius:20px;font-size:.6rem">ON</span>':''}
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove();});
+}
+
+function applyThemeNow(id){
+  activeTheme=id;
+  localStorage.setItem('c_activeTheme',id);
+  if(_syncReady&&_currentUser) fbWrite('c_activeTheme',id);
+  applyRewards();
+  playClick();
+  // Refresh picker to show new ON badge
+  const picker=document.getElementById('themePicker');
+  if(picker)picker.remove();
+  showThemePicker();
+  mascotSay('✨ Theme changed!');
 }
 </script>
 </body>
