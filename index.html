@@ -1682,6 +1682,7 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
   <button class="gp"        data-g="time"     onclick="switchGameCat('time')">🕐 Time</button>
   <button class="gp"        data-g="money"    onclick="switchGameCat('money')">💰 Money</button>
   <button class="gp"        data-g="puzzle"   onclick="switchGameCat('puzzle')">🧩 Puzzle</button>
+  <button class="gp"        data-g="focus"    onclick="switchGameCat('focus')">🎯 Focus</button>
 </div>
 
 <!-- Today is... Teaching Bar -->
@@ -3031,6 +3032,9 @@ const GAMES = [
   {id:'oddOneOut',   week:1,emoji:'🔍',title:'Odd One Out!',          desc:'Three belong together — which one is different? Spot it fast!', cat:'focus'},
   {id:'spotDiff',    week:1,emoji:'👀',title:'Spot the Difference!',   desc:'Two rows of pictures — one changed! Can you find it?',          cat:'focus'},
   {id:'tapOrder',    week:1,emoji:'🎯',title:'Tap in Order!',          desc:'Numbers are scattered — tap them in the right order 1, 2, 3…',  cat:'focus'},
+  {id:'sameOrDiff',  week:1,emoji:'🤔',title:'Same or Different?',      desc:'Two groups flash on screen — are they the same or different?',  cat:'focus'},
+  {id:'quickCount',  week:1,emoji:'⚡',title:'Quick Count!',             desc:'Dots flash for a second — how many did you see? Be fast!',      cat:'focus'},
+  {id:'copyColours', week:1,emoji:'🌈',title:'Copy My Colours!',         desc:'Watch the colour sequence light up — then tap it back!',        cat:'focus'},
 ];
 
 // ══════════════════════════════════════
@@ -5388,7 +5392,7 @@ function renderGame(g){
     whatsMissing:buildWhatsMissing,colourPattern:buildColourPattern,numberMemory:buildNumberMemory,
     coinCount:buildCoinCount,fairTrade:buildFairTrade,myShop:buildMyShop,lemonadeStand:buildLemonadeStand,changeMaker:buildChangeMaker,
     shadowMatch:buildShadowMatch,dotCard:buildDotCard,oppSnap:buildOppSnap,colourWordMatch:buildColourWordMatch,
-    puzzleJigsaw:buildPuzzleJigsaw,oddOneOut:buildOddOneOut,spotDiff:buildSpotDiff,tapOrder:buildTapOrder};
+    puzzleJigsaw:buildPuzzleJigsaw,oddOneOut:buildOddOneOut,spotDiff:buildSpotDiff,tapOrder:buildTapOrder,sameOrDiff:buildSameOrDiff,quickCount:buildQuickCount,copyColours:buildCopyColours};
   (fns[g.id]||buildCountGame)();
   // Append skip button after game panel
   const area=document.getElementById('area');
@@ -11295,7 +11299,7 @@ function buildTapOrder(){toScore=0;toRound=0;toTotalRounds=diffLevel===1?5:diffL
 function nextToRound(){
   toRound++;
   if(toRound>toTotalRounds){endGame(toScore,toTotalRounds,'tapOrder');return;}
-  toTotal=diffLevel===1?4:diffLevel===2?6:8;
+  toTotal=diffLevel===1?2:diffLevel===2?3:3;
   toNext=1;
   const colors=['#ff6b9d','#ffb830','#56cf81','#4fa3e0','#a78bfa','#ff8c69','#4ecdc4','#ff5252'];
   const nums=Array.from({length:toTotal},(_,i)=>({n:i+1,c:colors[i%colors.length]})).sort(()=>Math.random()-.5);
@@ -11340,6 +11344,212 @@ function checkTo(n){
     if(el){el.style.animation='shake .3s';setTimeout(()=>el.style.animation='',350);}
     playWrong();adaptDifficulty(false);
     speakText('Oops! Tap '+toNext+' first!');
+  }
+}
+
+// ══════════════════════════════════════
+//  FOCUS GAME 4: SAME OR DIFFERENT?
+// ══════════════════════════════════════
+let soScore=0,soRound=0,soTotalRounds=6,soAnswer=false;
+function buildSameOrDiff(){soScore=0;soRound=0;soTotalRounds=diffLevel===1?5:diffLevel===2?6:7;nextSoRound();}
+function nextSoRound(){
+  soRound++;
+  if(soRound>soTotalRounds){endGame(soScore,soTotalRounds,'sameOrDiff');return;}
+  const pool=['🐱','🐶','🦊','🐸','🌸','⭐','🍎','🚗','🎈','🦁','🍕','🎯','🌙','🦋','🏆'];
+  const size=diffLevel===1?3:diffLevel===2?4:5;
+  const groupA=[...pool].sort(()=>Math.random()-.5).slice(0,size);
+  soAnswer=Math.random()>.5; // true = same, false = different
+  let groupB;
+  if(soAnswer){
+    groupB=[...groupA].sort(()=>Math.random()-.5); // same items, shuffled
+  } else {
+    groupB=[...groupA];
+    const swapIdx=Math.floor(Math.random()*size);
+    const replacement=pool.find(e=>!groupA.includes(e));
+    groupB[swapIdx]=replacement;
+    groupB=groupB.sort(()=>Math.random()-.5);
+  }
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🤔 Same or Different?</div>
+      <div class="game-inst">Round ${soRound}/${soTotalRounds} · Score: ${soScore} ⭐</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:var(--purple);text-align:center;margin:10px 0">
+        Do both groups have the <strong>same</strong> pictures?
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0">
+        <div style="background:linear-gradient(135deg,#e8f4ff,#d0e8ff);border-radius:14px;padding:12px;text-align:center">
+          <div style="font-family:'Baloo 2',cursive;font-size:.68rem;font-weight:800;color:#4fa3e0;margin-bottom:8px">GROUP A</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">${groupA.map(e=>`<span style="font-size:2rem">${e}</span>`).join('')}</div>
+        </div>
+        <div style="background:linear-gradient(135deg,#ffe8f4,#ffd0e8);border-radius:14px;padding:12px;text-align:center">
+          <div style="font-family:'Baloo 2',cursive;font-size:.68rem;font-weight:800;color:#ff6b9d;margin-bottom:8px">GROUP B</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">${groupB.map(e=>`<span style="font-size:2rem">${e}</span>`).join('')}</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+        <button onclick="checkSo(true)" style="padding:16px;border-radius:16px;border:none;background:linear-gradient(135deg,#56cf81,#4ecdc4);color:#fff;font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(86,207,129,.35)">✅ Same!</button>
+        <button onclick="checkSo(false)" style="padding:16px;border-radius:16px;border:none;background:linear-gradient(135deg,#ff6b9d,#ffb830);color:#fff;font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(255,107,157,.35)">❌ Different!</button>
+      </div>
+    </div>`;
+  speakText('Look at both groups carefully. Are they the same or different?');
+}
+function checkSo(answer){
+  if(answer===soAnswer){
+    soScore++;adaptDifficulty(true);playCorrect();
+    speakText(soAnswer?'Yes! They are the same!':'Correct! They are different!');
+    setTimeout(nextSoRound,1200);
+  } else {
+    adaptDifficulty(false);playWrong();
+    speakText(soAnswer?'Look again — they have the same pictures!':'Look again — one picture is different!');
+    setTimeout(nextSoRound,1800);
+  }
+}
+
+// ══════════════════════════════════════
+//  FOCUS GAME 5: QUICK COUNT!
+// ══════════════════════════════════════
+let qcScore=0,qcRound=0,qcTotalRounds=6,qcAnswer=0;
+function buildQuickCount(){qcScore=0;qcRound=0;qcTotalRounds=diffLevel===1?5:diffLevel===2?6:7;nextQcRound();}
+function nextQcRound(){
+  qcRound++;
+  if(qcRound>qcTotalRounds){endGame(qcScore,qcTotalRounds,'quickCount');return;}
+  const maxCount=diffLevel===1?5:diffLevel===2?8:12;
+  const minCount=diffLevel===1?2:3;
+  qcAnswer=Math.floor(Math.random()*(maxCount-minCount+1))+minCount;
+  const flashTime=diffLevel===1?2000:diffLevel===2?1500:1000;
+  const emojis=['⭐','🌸','🎈','🍎','🐸','🦋','🎯','💛'];
+  const em=emojis[Math.floor(Math.random()*emojis.length)];
+  const dots=Array(qcAnswer).fill(em);
+
+  // Phase 1: show the dots briefly
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel" style="text-align:center">
+      <div class="game-title">⚡ Quick Count!</div>
+      <div class="game-inst">Round ${qcRound}/${qcTotalRounds} · Score: ${qcScore} ⭐</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800;color:var(--sun);margin:14px 0">
+        👀 Count them — fast!
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:16px;background:linear-gradient(135deg,#fff8e0,#fff0f8);border-radius:18px;min-height:100px;align-items:center">
+        ${dots.map(d=>`<span style="font-size:2.4rem;animation:popIn .2s">${d}</span>`).join('')}
+      </div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.78rem;color:var(--text3);margin-top:10px">They will disappear in ${Math.round(flashTime/1000)} seconds!</div>
+    </div>`;
+  speakText('Count the pictures quickly!');
+
+  setTimeout(()=>{
+    const opts=new Set([qcAnswer]);
+    while(opts.size<4){const v=Math.max(1,qcAnswer+Math.floor(Math.random()*5)-2);opts.add(v);}
+    const choices=[...opts].sort(()=>Math.random()-.5);
+    document.getElementById('area').innerHTML=`
+      <div class="game-panel" style="text-align:center">
+        <div class="game-title">⚡ Quick Count!</div>
+        <div class="game-inst">Round ${qcRound}/${qcTotalRounds} · Score: ${qcScore} ⭐</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--purple);margin:14px 0">
+          How many ${em} did you see?
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:10px 0">
+          ${choices.map(n=>`<button onclick="checkQc(${n})"
+            style="padding:20px;border-radius:16px;border:none;background:linear-gradient(135deg,#a78bfa,#4fa3e0);
+                   color:#fff;font-family:'Baloo 2',cursive;font-size:1.6rem;font-weight:800;
+                   cursor:pointer;box-shadow:0 4px 12px rgba(167,139,250,.35);transition:transform .15s"
+            onmousedown="this.style.transform='scale(.94)'" onmouseup="this.style.transform=''">
+            ${n}
+          </button>`).join('')}
+        </div>
+      </div>`;
+    speakText('How many did you count?');
+  }, flashTime);
+}
+function checkQc(n){
+  if(n===qcAnswer){
+    qcScore++;adaptDifficulty(true);playCorrect();
+    speakText('Yes! You counted '+qcAnswer+' correctly!');
+    setTimeout(nextQcRound,1200);
+  } else {
+    adaptDifficulty(false);playWrong();
+    speakText('Not quite! There were '+qcAnswer+'. Try the next one!');
+    setTimeout(nextQcRound,1800);
+  }
+}
+
+// ══════════════════════════════════════
+//  FOCUS GAME 6: COPY MY COLOURS!
+// ══════════════════════════════════════
+let clrScore=0,clrRound=0,clrTotalRounds=6,clrSeq=[],clrStep=0;
+function buildCopyColours(){clrScore=0;clrRound=0;clrTotalRounds=diffLevel===1?5:diffLevel===2?6:7;nextCcRound();}
+const CC_PADS=[
+  {id:'red',   label:'Red',   c:'#ff6b9d', c2:'#ff3a7a'},
+  {id:'yellow',label:'Yellow',c:'#ffb830', c2:'#e09520'},
+  {id:'green', label:'Green', c:'#56cf81', c2:'#3ab065'},
+  {id:'blue',  label:'Blue',  c:'#4fa3e0', c2:'#2d85c7'},
+];
+function nextCcRound(){
+  clrRound++;
+  if(clrRound>clrTotalRounds){endGame(clrScore,clrTotalRounds,'copyColours');return;}
+  const seqLen=diffLevel===1?2:diffLevel===2?3:4;
+  clrSeq=Array.from({length:seqLen},()=>CC_PADS[Math.floor(Math.random()*CC_PADS.length)]);
+  clrStep=0;
+  renderCcBoard('Watch the colours light up!');
+  playCcSequence();
+}
+function renderCcBoard(msg){
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🌈 Copy My Colours!</div>
+      <div class="game-inst">Round ${clrRound}/${clrTotalRounds} · Score: ${clrScore} ⭐</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:var(--purple);text-align:center;margin:10px 0" id="ccMsg">${msg}</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:14px 0">
+        ${CC_PADS.map(p=>`<div id="cc_${p.id}" onclick="tapCc('${p.id}')"
+          style="height:90px;border-radius:18px;background:${p.c};
+                 display:flex;align-items:center;justify-content:center;
+                 cursor:pointer;transition:all .15s;box-shadow:0 5px 16px rgba(0,0,0,.18);
+                 font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:#fff">
+          ${p.label}
+        </div>`).join('')}
+      </div>
+      <div style="display:flex;gap:6px;justify-content:center;margin-top:6px" id="ccProgress">
+        ${clrSeq.map((_,i)=>`<div style="width:24px;height:8px;border-radius:4px;background:${i<clrStep?'var(--green)':'var(--border)'}"></div>`).join('')}
+      </div>
+    </div>`;
+}
+function flashPad(padId, duration=500){
+  return new Promise(res=>{
+    const el=document.getElementById('cc_'+padId);
+    if(el){el.style.transform='scale(1.12)';el.style.filter='brightness(1.5)';el.style.boxShadow='0 0 30px rgba(255,255,255,.6)';}
+    setTimeout(()=>{if(el){el.style.transform='';el.style.filter='';el.style.boxShadow='';}res();},duration);
+  });
+}
+async function playCcSequence(){
+  const msg=document.getElementById('ccMsg');
+  if(msg)msg.textContent='👀 Watch carefully…';
+  // Disable taps during playback
+  CC_PADS.forEach(p=>{const el=document.getElementById('cc_'+p.id);if(el)el.style.pointerEvents='none';});
+  await new Promise(r=>setTimeout(r,600));
+  for(const pad of clrSeq){
+    speakText(pad.label);
+    await flashPad(pad.id,600);
+    await new Promise(r=>setTimeout(r,300));
+  }
+  CC_PADS.forEach(p=>{const el=document.getElementById('cc_'+p.id);if(el)el.style.pointerEvents='';});
+  if(msg)msg.textContent='🎯 Your turn — tap the same colours!';
+  clrStep=0;
+}
+function tapCc(padId){
+  flashPad(padId,300);
+  if(padId===clrSeq[clrStep].id){
+    playCorrect();
+    clrStep++;
+    const prog=document.getElementById('ccProgress');
+    if(prog)prog.innerHTML=clrSeq.map((_,i)=>`<div style="width:24px;height:8px;border-radius:4px;background:${i<clrStep?'var(--green)':'var(--border)'}"></div>`).join('');
+    if(clrStep>=clrSeq.length){
+      clrScore++;adaptDifficulty(true);
+      speakText('Perfect! You copied it!');
+      setTimeout(nextCcRound,1200);
+    }
+  } else {
+    playWrong();adaptDifficulty(false);
+    speakText('Oops! Watch again!');
+    setTimeout(()=>{clrStep=0;renderCcBoard('Try again — watch!');playCcSequence();},800);
   }
 }
 </script>
