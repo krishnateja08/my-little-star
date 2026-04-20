@@ -3028,6 +3028,9 @@ const GAMES = [
   {id:'oppSnap',      week:1,emoji:'🔄',title:'Opposite Snap!',           desc:'Tap the card that is the opposite of the word shown!',cat:'puzzle'},
   {id:'colourWordMatch',week:1,emoji:'🌈',title:'Colour Word Match!',     desc:'Match the colour word to the right colour card!',    cat:'puzzle'},
   {id:'puzzleJigsaw',   week:1,emoji:'🧩',title:'TV Show Jigsaw Puzzle!', desc:'Drag the 4 pieces together to build your favourite TV show character! 5 new shows every day!',    cat:'puzzle'},
+  {id:'oddOneOut',   week:1,emoji:'🔍',title:'Odd One Out!',          desc:'Three belong together — which one is different? Spot it fast!', cat:'focus'},
+  {id:'spotDiff',    week:1,emoji:'👀',title:'Spot the Difference!',   desc:'Two rows of pictures — one changed! Can you find it?',          cat:'focus'},
+  {id:'tapOrder',    week:1,emoji:'🎯',title:'Tap in Order!',          desc:'Numbers are scattered — tap them in the right order 1, 2, 3…',  cat:'focus'},
 ];
 
 // ══════════════════════════════════════
@@ -3224,9 +3227,9 @@ function showActivityPicker(pool){
   const catColors={maths:'linear-gradient(135deg,#ffb830,#ff8c69)',letters:'linear-gradient(135deg,#a78bfa,#4fa3e0)',
     shapes:'linear-gradient(135deg,#4ecdc4,#56cf81)',creative:'linear-gradient(135deg,#ff6b9d,#a78bfa)',
     brain:'linear-gradient(135deg,#4fa3e0,#56cf81)',time:'linear-gradient(135deg,#ffb830,#a78bfa)',
-    money:'linear-gradient(135deg,#56cf81,#ffb830)'};
+    money:'linear-gradient(135deg,#56cf81,#ffb830)',focus:'linear-gradient(135deg,#7c3aed,#06b6d4)'};
   const catNames={maths:'🔢 Maths',letters:'🔤 Letters',shapes:'🔺 Shapes',creative:'🎨 Creative',
-    brain:'🧠 Brain',time:'🕐 Time',money:'💰 Money'};
+    brain:'🧠 Brain',time:'🕐 Time',money:'💰 Money',focus:'🎯 Focus'};
 
   function buildItem(a, idx, status){
     // status: 'available' | 'done' | 'skipped'
@@ -5385,7 +5388,7 @@ function renderGame(g){
     whatsMissing:buildWhatsMissing,colourPattern:buildColourPattern,numberMemory:buildNumberMemory,
     coinCount:buildCoinCount,fairTrade:buildFairTrade,myShop:buildMyShop,lemonadeStand:buildLemonadeStand,changeMaker:buildChangeMaker,
     shadowMatch:buildShadowMatch,dotCard:buildDotCard,oppSnap:buildOppSnap,colourWordMatch:buildColourWordMatch,
-    puzzleJigsaw:buildPuzzleJigsaw};
+    puzzleJigsaw:buildPuzzleJigsaw,oddOneOut:buildOddOneOut,spotDiff:buildSpotDiff,tapOrder:buildTapOrder};
   (fns[g.id]||buildCountGame)();
   // Append skip button after game panel
   const area=document.getElementById('area');
@@ -11161,6 +11164,182 @@ function _bootApp(){
         console.error('❌ Auto-retry error:', e);
       }
     }, 3000);
+  }
+}
+
+// ══════════════════════════════════════
+//  FOCUS GAME 1: ODD ONE OUT
+// ══════════════════════════════════════
+let ooScore=0,ooRound=0,ooTotalRounds=5,ooCorrectIdx=0;
+function buildOddOneOut(){ooScore=0;ooRound=0;ooTotalRounds=diffLevel===1?5:diffLevel===2?6:7;nextOoRound();}
+function nextOoRound(){
+  ooRound++;
+  if(ooRound>ooTotalRounds){endGame(ooScore,ooTotalRounds,'oddOneOut');return;}
+  const cats=[
+    {n:'Animals',  i:['🐱','🐶','🦊','🐸','🦁','🐘','🐯','🦒','🐬','🦋']},
+    {n:'Fruits',   i:['🍎','🍊','🍌','🍇','🍓','🍑','🥝','🍍','🫐','🍋']},
+    {n:'Vehicles', i:['🚗','🚕','🚌','🚒','🚓','✈️','🚂','🚀','🛸','🚁']},
+    {n:'Sports',   i:['⚽','🏀','🎾','🏈','🥊','🎯','⛳','🏸','🏒','🥋']},
+    {n:'Weather',  i:['☀️','🌧️','❄️','⛈️','🌪️','🌤️','🌊','🌈','⭐','🌙']},
+    {n:'Clothes',  i:['👕','👗','👔','👒','🧤','🧦','👟','🎩','👜','🧣']},
+    {n:'Nature',   i:['🌸','🌺','🌻','🌹','🍀','🌿','🍃','🌵','🌴','🌲']},
+    {n:'Food',     i:['🍕','🍔','🌮','🍜','🍣','🍩','🎂','🧁','🍦','🥞']},
+  ];
+  const numItems=diffLevel===1?4:5;
+  const mainCat=cats[Math.floor(Math.random()*cats.length)];
+  const otherCat=cats.filter(c=>c!==mainCat)[Math.floor(Math.random()*(cats.length-1))];
+  const mainItems=[...mainCat.i].sort(()=>Math.random()-.5).slice(0,numItems-1);
+  const oddItem=otherCat.i[Math.floor(Math.random()*otherCat.i.length)];
+  ooCorrectIdx=Math.floor(Math.random()*numItems);
+  const allItems=[...mainItems.slice(0,ooCorrectIdx),oddItem,...mainItems.slice(ooCorrectIdx)];
+  const cols=numItems<=4?2:3;
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔍 Odd One Out!</div>
+      <div class="game-inst">Round ${ooRound}/${ooTotalRounds} · Score: ${ooScore} ⭐</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800;color:var(--purple);text-align:center;margin:14px 0 10px">
+        Which one does NOT belong with the others?
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:12px;margin:10px 0">
+        ${allItems.map((item,i)=>`<div onclick="checkOo(this,${i===ooCorrectIdx})"
+          style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 8px;
+                 border-radius:18px;background:var(--inputbg);border:3px solid var(--border);
+                 cursor:pointer;transition:all .2s;text-align:center;min-height:90px">
+          <span style="font-size:3rem;line-height:1">${item}</span>
+        </div>`).join('')}
+      </div>
+      <div style="text-align:center;font-size:.78rem;color:var(--text3);font-family:'Baloo 2',cursive;margin-top:8px">
+        💡 ${numItems-1} are from the same group — find the one that doesn't fit!
+      </div>
+    </div>`;
+  speakText('Which one does not belong? Find the odd one out!');
+}
+function checkOo(el,correct){
+  if(correct){
+    el.style.background='linear-gradient(135deg,#56cf81,#4ecdc4)';
+    el.style.borderColor='#56cf81';el.style.transform='scale(1.08)';
+    ooScore++;adaptDifficulty(true);playCorrect();
+    speakText('Great eyes! That one did not belong!');
+    setTimeout(nextOoRound,1300);
+  } else {
+    el.style.background='rgba(255,107,157,.25)';el.style.borderColor='#ff6b9d';
+    el.style.animation='shake .3s';
+    adaptDifficulty(false);playWrong();
+    speakText('Look more carefully! Which one is different?');
+    setTimeout(()=>{el.style.background='';el.style.borderColor='';el.style.animation='';},900);
+  }
+}
+
+// ══════════════════════════════════════
+//  FOCUS GAME 2: SPOT THE DIFFERENCE
+// ══════════════════════════════════════
+let sdScore=0,sdRound=0,sdTotalRounds=5,sdChangeIdx=0;
+function buildSpotDiff(){sdScore=0;sdRound=0;sdTotalRounds=diffLevel===1?4:diffLevel===2?5:6;nextSdRound();}
+function nextSdRound(){
+  sdRound++;
+  if(sdRound>sdTotalRounds){endGame(sdScore,sdTotalRounds,'spotDiff');return;}
+  const rowSize=diffLevel===1?4:diffLevel===2?5:6;
+  const pool=['🐱','🐶','🦊','🐸','🌸','⭐','🍎','🚗','🎈','🌈','🎯','🌙','🍕','🦋','🎸','🏆','🌺','🦁','🍦','🧁','🎪','🦄','🍩','🏀','🎨'];
+  const base=[...pool].sort(()=>Math.random()-.5).slice(0,rowSize);
+  const changed=[...base];
+  sdChangeIdx=Math.floor(Math.random()*rowSize);
+  const replacement=pool.find(e=>!base.includes(e));
+  changed[sdChangeIdx]=replacement;
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">👀 Spot the Difference!</div>
+      <div class="game-inst">Round ${sdRound}/${sdTotalRounds} · Score: ${sdScore} ⭐</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:var(--blue);text-align:center;margin:10px 0">
+        One picture changed in Row 2 — tap it!
+      </div>
+      <div style="background:linear-gradient(135deg,#f0f8ff,#e8fff0);border-radius:16px;padding:12px;margin-bottom:10px">
+        <div style="font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800;color:var(--text3);margin-bottom:8px;text-align:center;letter-spacing:.5px">⬆️ ROW 1 — Original</div>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+          ${base.map(e=>`<div style="padding:10px;border-radius:12px;background:#fff;border:2px solid #e0e0f0;min-width:50px;text-align:center"><span style="font-size:2.2rem">${e}</span></div>`).join('')}
+        </div>
+      </div>
+      <div style="background:linear-gradient(135deg,#fff0f8,#ffe8f0);border-radius:16px;padding:12px">
+        <div style="font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800;color:var(--pink);margin-bottom:8px;text-align:center;letter-spacing:.5px">⬇️ ROW 2 — Tap what changed!</div>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+          ${changed.map((e,i)=>`<div onclick="checkSd(this,${i===sdChangeIdx})"
+            style="padding:10px;border-radius:12px;background:#fff;border:3px solid #ffb6d9;
+                   cursor:pointer;transition:all .2s;min-width:50px;text-align:center">
+            <span style="font-size:2.2rem">${e}</span>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div style="text-align:center;font-size:.78rem;color:var(--text3);font-family:'Baloo 2',cursive;margin-top:10px">👆 Compare the rows — tap the one that is different!</div>
+    </div>`;
+  speakText('Look carefully at both rows! One picture changed. Can you find it?');
+}
+function checkSd(el,correct){
+  if(correct){
+    el.style.background='linear-gradient(135deg,#56cf81,#4ecdc4)';
+    el.style.borderColor='#56cf81';el.style.transform='scale(1.15)';
+    sdScore++;adaptDifficulty(true);playCorrect();
+    speakText('Yes! Great eyes! You spotted the difference!');
+    setTimeout(nextSdRound,1300);
+  } else {
+    el.style.background='rgba(255,107,157,.3)';el.style.borderColor='#ff6b9d';
+    adaptDifficulty(false);playWrong();
+    speakText('Not that one! Keep looking carefully!');
+    setTimeout(()=>{el.style.background='#fff';el.style.borderColor='#ffb6d9';},900);
+  }
+}
+
+// ══════════════════════════════════════
+//  FOCUS GAME 3: TAP IN ORDER
+// ══════════════════════════════════════
+let toScore=0,toRound=0,toTotalRounds=5,toNext=1,toTotal=0;
+function buildTapOrder(){toScore=0;toRound=0;toTotalRounds=diffLevel===1?5:diffLevel===2?6:7;nextToRound();}
+function nextToRound(){
+  toRound++;
+  if(toRound>toTotalRounds){endGame(toScore,toTotalRounds,'tapOrder');return;}
+  toTotal=diffLevel===1?4:diffLevel===2?6:8;
+  toNext=1;
+  const colors=['#ff6b9d','#ffb830','#56cf81','#4fa3e0','#a78bfa','#ff8c69','#4ecdc4','#ff5252'];
+  const nums=Array.from({length:toTotal},(_,i)=>({n:i+1,c:colors[i%colors.length]})).sort(()=>Math.random()-.5);
+  const cols=toTotal<=4?2:3;
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🎯 Tap in Order!</div>
+      <div class="game-inst">Round ${toRound}/${toTotalRounds} · Score: ${toScore} ⭐</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800;color:var(--purple);text-align:center;margin:12px 0">
+        Tap <span id="toNextLabel" style="background:var(--purple);color:#fff;padding:2px 12px;border-radius:20px">1</span> first — then 2, 3, 4…
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:10px;margin:12px 0" id="tapOrderGrid">
+        ${nums.map(({n,c})=>`<div id="tn_${n}" onclick="checkTo(${n})"
+          style="display:flex;align-items:center;justify-content:center;height:72px;border-radius:16px;
+                 background:${c};color:#fff;cursor:pointer;
+                 font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;
+                 transition:all .25s;box-shadow:0 5px 14px rgba(0,0,0,.18)">
+          ${n}
+        </div>`).join('')}
+      </div>
+      <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:.78rem;color:var(--text3)">
+        Find <strong>1</strong> first — tap all numbers in order!
+      </div>
+    </div>`;
+  speakText(`Tap the numbers in order! Start from 1, then 2, then 3!`);
+}
+function checkTo(n){
+  if(n===toNext){
+    const el=document.getElementById('tn_'+n);
+    if(el){el.style.opacity='.55';el.style.transform='scale(.92)';el.style.pointerEvents='none';el.innerHTML='✓';}
+    playCorrect();
+    toNext++;
+    const lbl=document.getElementById('toNextLabel');
+    if(lbl&&toNext<=toTotal)lbl.textContent=toNext;
+    if(toNext>toTotal){
+      toScore++;adaptDifficulty(true);
+      speakText('Amazing! You got them all in order!');
+      setTimeout(nextToRound,1200);
+    }
+  } else {
+    const el=document.getElementById('tn_'+n);
+    if(el){el.style.animation='shake .3s';setTimeout(()=>el.style.animation='',350);}
+    playWrong();adaptDifficulty(false);
+    speakText('Oops! Tap '+toNext+' first!');
   }
 }
 </script>
