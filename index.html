@@ -3031,6 +3031,19 @@ const GAMES = [
   {id:'puzzleJigsaw',   week:1,emoji:'🧩',title:'TV Show Jigsaw Puzzle!', desc:'Drag the 4 pieces together to build your favourite TV show character! 5 new shows every day!',    cat:'puzzle'},
   {id:'oddOneOut',   week:1,emoji:'🔍',title:'Odd One Out!',          desc:'Three belong together — which one is different? Spot it fast!', cat:'focus'},
   {id:'spotDiff',    week:1,emoji:'👀',title:'Spot the Difference!',   desc:'Two rows of pictures — one changed! Can you find it?',          cat:'focus'},
+  // ── NEW MATHS GAMES ──
+  {id:'bigSmall',    week:1,emoji:'🔢',title:'Bigger or Smaller?',     desc:'Look at two numbers — which one is bigger? Tap it!',          cat:'maths'},
+  {id:'fillGap',     week:1,emoji:'🔢',title:'Fill the Gap!',           desc:'1, 2, __, 4 — what number is missing? Find it!',              cat:'maths'},
+  {id:'simpleSums',  week:1,emoji:'➕',title:'Simple Sums!',            desc:'Count the objects and find the answer — easy adding!',         cat:'maths'},
+  {id:'sortNums',    week:1,emoji:'📊',title:'Sort the Numbers!',       desc:'Put the numbers in order from smallest to biggest!',           cat:'maths'},
+  // ── NEW SHAPES GAMES ──
+  {id:'shapeSides',  week:1,emoji:'📐',title:'How Many Sides?',         desc:'Look at the shape — how many sides does it have?',             cat:'shapes'},
+  {id:'shapeReal',   week:1,emoji:'🔵',title:'Shapes in Real Life!',    desc:'Which object is the same shape as this one?',                  cat:'shapes'},
+  {id:'shapeColour', week:1,emoji:'🌈',title:'Colour That Shape!',      desc:'Hear the colour AND shape — tap the right one!',               cat:'shapes'},
+  // ── NEW BRAIN GAMES ──
+  {id:'finishPatt',  week:1,emoji:'🔮',title:'Finish the Pattern!',     desc:'🔴🔵🔴__ What comes next? Spot the pattern!',                  cat:'brain'},
+  {id:'listenTap',   week:1,emoji:'👂',title:'Listen & Tap!',           desc:'Hear a clue — then tap the right picture!',                    cat:'brain'},
+  {id:'pairMatch',   week:1,emoji:'🎴',title:'Pair It Up!',             desc:'Find the two things that go together!',                        cat:'brain'},
   {id:'tapOrder',    week:1,emoji:'🎯',title:'Tap in Order!',          desc:'Numbers are scattered — tap them in the right order 1, 2, 3…',  cat:'focus'},
   {id:'sameOrDiff',  week:1,emoji:'🤔',title:'Same or Different?',      desc:'Two groups flash on screen — are they the same or different?',  cat:'focus'},
   {id:'quickCount',  week:1,emoji:'⚡',title:'Quick Count!',             desc:'Dots flash for a second — how many did you see? Be fast!',      cat:'focus'},
@@ -5392,7 +5405,7 @@ function renderGame(g){
     whatsMissing:buildWhatsMissing,colourPattern:buildColourPattern,numberMemory:buildNumberMemory,
     coinCount:buildCoinCount,fairTrade:buildFairTrade,myShop:buildMyShop,lemonadeStand:buildLemonadeStand,changeMaker:buildChangeMaker,
     shadowMatch:buildShadowMatch,dotCard:buildDotCard,oppSnap:buildOppSnap,colourWordMatch:buildColourWordMatch,
-    puzzleJigsaw:buildPuzzleJigsaw,oddOneOut:buildOddOneOut,spotDiff:buildSpotDiff,tapOrder:buildTapOrder,sameOrDiff:buildSameOrDiff,quickCount:buildQuickCount,copyColours:buildCopyColours};
+    puzzleJigsaw:buildPuzzleJigsaw,oddOneOut:buildOddOneOut,spotDiff:buildSpotDiff,bigSmall:buildBigSmall,fillGap:buildFillGap,simpleSums:buildSimpleSums,sortNums:buildSortNums,shapeSides:buildShapeSides,shapeReal:buildShapeReal,shapeColour:buildShapeColour,finishPatt:buildFinishPatt,listenTap:buildListenTap,pairMatch:buildPairMatch,tapOrder:buildTapOrder,sameOrDiff:buildSameOrDiff,quickCount:buildQuickCount,copyColours:buildCopyColours};
   (fns[g.id]||buildCountGame)();
   // Append skip button after game panel
   const area=document.getElementById('area');
@@ -11550,6 +11563,556 @@ function tapCc(padId){
     playWrong();adaptDifficulty(false);
     speakText('Oops! Watch again!');
     setTimeout(()=>{clrStep=0;renderCcBoard('Try again — watch!');playCcSequence();},800);
+  }
+}
+
+// ════════════════════════════════════════════════
+//  NEW MATHS GAMES
+// ════════════════════════════════════════════════
+
+// ── Bigger or Smaller? ──
+let bsScore=0,bsRound=0;
+function buildBigSmall(){bsScore=0;bsRound=0;nextBsRound();}
+function nextBsRound(){
+  const total=diffLevel===1?6:diffLevel===2?7:8;
+  bsRound++;if(bsRound>total){endGame(bsScore,total,'bigSmall');return;}
+  const max=diffLevel===1?10:diffLevel===2?20:50;
+  let a=Math.floor(Math.random()*(max-1))+1;
+  let b=Math.floor(Math.random()*(max-1))+1;
+  while(b===a)b=Math.floor(Math.random()*(max-1))+1;
+  const question=Math.random()>.5?'BIGGER':'SMALLER';
+  const correct=question==='BIGGER'?(a>b?'A':'B'):(a<b?'A':'B');
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔢 Bigger or Smaller?</div>
+      <div class="game-inst">Round ${bsRound}/${total} · Score: ${bsScore} ⭐</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;color:var(--purple);text-align:center;margin:14px 0">
+        Which number is <span style="color:${question==='BIGGER'?'#56cf81':'#ff6b9d'};font-size:1.3rem">${question}</span>?
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0">
+        <div onclick="checkBs(this,'A','${correct}')"
+          style="display:flex;align-items:center;justify-content:center;height:110px;border-radius:20px;
+                 background:linear-gradient(135deg,#4fa3e0,#a78bfa);color:#fff;cursor:pointer;
+                 font-family:'Baloo 2',cursive;font-size:3.5rem;font-weight:800;
+                 box-shadow:0 6px 18px rgba(79,163,224,.35);transition:transform .15s"
+          onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform=''">${a}</div>
+        <div onclick="checkBs(this,'B','${correct}')"
+          style="display:flex;align-items:center;justify-content:center;height:110px;border-radius:20px;
+                 background:linear-gradient(135deg,#ff6b9d,#ffb830);color:#fff;cursor:pointer;
+                 font-family:'Baloo 2',cursive;font-size:3.5rem;font-weight:800;
+                 box-shadow:0 6px 18px rgba(255,107,157,.35);transition:transform .15s"
+          onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform=''">${b}</div>
+      </div>
+    </div>`;
+  speakText('Which number is '+question.toLowerCase()+'? '+a+' or '+b+'?');
+}
+function checkBs(el,choice,correct){
+  document.querySelectorAll('[onclick^="checkBs"]').forEach(e=>e.onclick=null);
+  if(choice===correct){
+    el.style.boxShadow='0 0 0 5px #56cf81';el.style.transform='scale(1.06)';
+    bsScore++;adaptDifficulty(true);playCorrect();speakText('Yes! Correct!');
+  } else {
+    el.style.boxShadow='0 0 0 5px #ff5252';el.style.animation='shake .3s';
+    adaptDifficulty(false);playWrong();speakText('Not quite! Try the next one!');
+  }
+  setTimeout(nextBsRound,1300);
+}
+
+// ── Fill the Gap! ──
+let fgScore=0,fgRound=0;
+function buildFillGap(){fgScore=0;fgRound=0;nextFgRound();}
+function nextFgRound(){
+  const total=diffLevel===1?5:diffLevel===2?6:7;
+  fgRound++;if(fgRound>total){endGame(fgScore,total,'fillGap');return;}
+  const start=Math.floor(Math.random()*8)+1;
+  const step=diffLevel===1?1:diffLevel===2?(Math.random()>.5?1:2):2;
+  const len=4;
+  const seq=Array.from({length:len},(_,i)=>start+i*step);
+  const gapIdx=Math.floor(Math.random()*len);
+  const answer=seq[gapIdx];
+  const display=seq.map((n,i)=>i===gapIdx?'__':n);
+  const opts=new Set([answer]);
+  while(opts.size<4){const v=Math.max(1,answer+Math.floor(Math.random()*7)-3);if(v!==answer)opts.add(v);}
+  const choices=[...opts].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔢 Fill the Gap!</div>
+      <div class="game-inst">Round ${fgRound}/${total} · Score: ${fgScore} ⭐</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:var(--blue);text-align:center;margin:12px 0">
+        What number fills the gap?
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:16px 0;flex-wrap:wrap">
+        ${display.map((n,i)=>`<div style="min-width:58px;height:62px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+          background:${i===gapIdx?'linear-gradient(135deg,#ffe0f0,#f0e0ff)':'linear-gradient(135deg,#4fa3e0,#56cf81)'};
+          color:${i===gapIdx?'var(--purple)':'#fff'};font-family:'Baloo 2',cursive;font-size:${i===gapIdx?'1.8rem':'1.6rem'};font-weight:800;
+          border:${i===gapIdx?'3px dashed var(--purple)':'none'};box-shadow:0 4px 10px rgba(0,0,0,.15)">${i===gapIdx?'?':n}</div>`).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:8px">
+        ${choices.map(n=>`<button onclick="checkFg(this,${n},${answer})"
+          style="padding:16px;border-radius:16px;border:none;background:linear-gradient(135deg,#a78bfa,#4fa3e0);
+                 color:#fff;font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;
+                 cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.15);transition:transform .15s"
+          onmousedown="this.style.transform='scale(.94)'" onmouseup="this.style.transform=''">${n}</button>`).join('')}
+      </div>
+    </div>`;
+  speakText('What number comes in the gap? The sequence is: '+display.map(n=>n==='__'?'blank':n).join(', '));
+}
+function checkFg(el,chosen,answer){
+  document.querySelectorAll('[onclick^="checkFg"]').forEach(e=>e.onclick=null);
+  if(chosen===answer){
+    el.style.background='linear-gradient(135deg,#56cf81,#4ecdc4)';
+    fgScore++;adaptDifficulty(true);playCorrect();speakText('Yes! '+answer+' fills the gap!');
+  } else {
+    el.style.background='linear-gradient(135deg,#ff6b9d,#ff8c69)';el.style.animation='shake .3s';
+    adaptDifficulty(false);playWrong();speakText('Not quite! The answer was '+answer+'!');
+  }
+  setTimeout(nextFgRound,1400);
+}
+
+// ── Simple Sums! ──
+let ssScore=0,ssRound=0;
+function buildSimpleSums(){ssScore=0;ssRound=0;nextSsRound();}
+function nextSsRound(){
+  const total=diffLevel===1?5:diffLevel===2?6:7;
+  ssRound++;if(ssRound>total){endGame(ssScore,total,'simpleSums');return;}
+  const maxA=diffLevel===1?4:diffLevel===2?6:8;
+  const a=Math.floor(Math.random()*maxA)+1;
+  const b=Math.floor(Math.random()*(diffLevel===1?3:4))+1;
+  const ans=a+b;
+  const emojis=['🍎','⭐','🌸','🎈','🐸','🦋','🍌','🍇'];
+  const em=emojis[Math.floor(Math.random()*emojis.length)];
+  const opts=new Set([ans]);
+  while(opts.size<3){const v=Math.max(1,ans+Math.floor(Math.random()*5)-2);if(v!==ans)opts.add(v);}
+  const choices=[...opts].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">➕ Simple Sums!</div>
+      <div class="game-inst">Round ${ssRound}/${total} · Score: ${ssScore} ⭐</div>
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin:14px 0;background:linear-gradient(135deg,#f8f4ff,#f0f8ff);border-radius:18px;padding:14px">
+        <div style="text-align:center">
+          <div style="font-size:1.6rem;line-height:1.4;flex-wrap:wrap;display:flex;justify-content:center;gap:3px">${Array(a).fill(em).join('')}</div>
+          <div style="font-family:'Baloo 2',cursive;font-size:1.6rem;font-weight:800;color:#4fa3e0;margin-top:6px">${a}</div>
+        </div>
+        <div style="font-family:'Baloo 2',cursive;font-size:2.5rem;font-weight:800;color:var(--pink)">+</div>
+        <div style="text-align:center">
+          <div style="font-size:1.6rem;line-height:1.4;flex-wrap:wrap;display:flex;justify-content:center;gap:3px">${Array(b).fill(em).join('')}</div>
+          <div style="font-family:'Baloo 2',cursive;font-size:1.6rem;font-weight:800;color:#ff6b9d;margin-top:6px">${b}</div>
+        </div>
+      </div>
+      <div style="font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--text);text-align:center;margin-bottom:12px">
+        ${a} + ${b} = <span style="font-size:1.5rem;color:var(--purple)">?</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+        ${choices.map(n=>`<button onclick="checkSs(this,${n},${ans})"
+          style="padding:18px 8px;border-radius:16px;border:none;background:linear-gradient(135deg,#ffb830,#ff8c69);
+                 color:#fff;font-family:'Baloo 2',cursive;font-size:1.6rem;font-weight:800;
+                 cursor:pointer;box-shadow:0 4px 12px rgba(255,184,48,.35);transition:transform .15s"
+          onmousedown="this.style.transform='scale(.93)'" onmouseup="this.style.transform=''">${n}</button>`).join('')}
+      </div>
+    </div>`;
+  speakText(a+' plus '+b+' equals what?');
+}
+function checkSs(el,chosen,ans){
+  document.querySelectorAll('[onclick^="checkSs"]').forEach(e=>e.onclick=null);
+  if(chosen===ans){
+    el.style.background='linear-gradient(135deg,#56cf81,#4ecdc4)';
+    ssScore++;adaptDifficulty(true);playCorrect();speakText('Yes! '+ans+' is correct!');
+  } else {
+    el.style.background='linear-gradient(135deg,#ff6b9d,#ff5252)';el.style.animation='shake .3s';
+    adaptDifficulty(false);playWrong();speakText('Not quite! The answer is '+ans+'!');
+  }
+  setTimeout(nextSsRound,1400);
+}
+
+// ── Sort the Numbers! ──
+let snScore=0,snRound=0,snOrder=[],snNext=0;
+function buildSortNums(){snScore=0;snRound=0;nextSnRound();}
+function nextSnRound(){
+  const total=diffLevel===1?4:diffLevel===2?5:6;
+  snRound++;if(snRound>total){endGame(snScore,total,'sortNums');return;}
+  const count=diffLevel===1?4:diffLevel===2?5:6;
+  const max=diffLevel===1?10:diffLevel===2?20:50;
+  const nums=new Set();
+  while(nums.size<count)nums.add(Math.floor(Math.random()*(max-1))+1);
+  snOrder=[...nums].sort((a,b)=>a-b);
+  snNext=0;
+  const shuffled=[...snOrder].sort(()=>Math.random()-.5);
+  const colors=['#ff6b9d','#ffb830','#56cf81','#4fa3e0','#a78bfa','#ff8c69'];
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">📊 Sort the Numbers!</div>
+      <div class="game-inst">Round ${snRound}/${total} · Score: ${snScore} ⭐</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:var(--blue);text-align:center;margin:10px 0">
+        Tap from <span style="color:#56cf81">smallest</span> → to <span style="color:#ff6b9d">biggest</span>!
+      </div>
+      <div style="display:flex;gap:6px;justify-content:center;margin:8px 0;flex-wrap:wrap" id="snProgress">
+        ${snOrder.map((_,i)=>`<div style="width:32px;height:32px;border-radius:10px;background:var(--border);display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:800;color:var(--text4)" id="snSlot_${i}">?</div>`).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0">
+        ${shuffled.map(n=>`<div id="snBtn_${n}" onclick="checkSn(this,${n})"
+          style="display:flex;align-items:center;justify-content:center;height:68px;border-radius:16px;
+                 background:${colors[Math.floor(Math.random()*colors.length)]};color:#fff;cursor:pointer;
+                 font-family:'Baloo 2',cursive;font-size:1.8rem;font-weight:800;
+                 transition:all .2s;box-shadow:0 4px 12px rgba(0,0,0,.15)">${n}</div>`).join('')}
+      </div>
+    </div>`;
+  speakText('Tap the numbers from smallest to biggest!');
+}
+function checkSn(el,n){
+  if(n===snOrder[snNext]){
+    el.style.opacity='.5';el.style.pointerEvents='none';el.innerHTML='✓';
+    const slot=document.getElementById('snSlot_'+snNext);
+    if(slot){slot.style.background='linear-gradient(135deg,#56cf81,#4ecdc4)';slot.style.color='#fff';slot.textContent=n;}
+    playCorrect();snNext++;
+    if(snNext>=snOrder.length){snScore++;adaptDifficulty(true);speakText('Amazing! You sorted them all!');setTimeout(nextSnRound,1200);}
+  } else {
+    el.style.animation='shake .3s';setTimeout(()=>el.style.animation='',350);
+    playWrong();adaptDifficulty(false);speakText('Not yet! Find the smallest one first!');
+  }
+}
+
+// ════════════════════════════════════════════════
+//  NEW SHAPES GAMES
+// ════════════════════════════════════════════════
+
+// ── How Many Sides? ──
+let hmsScore=0,hmsRound=0;
+const HMS_SHAPES=[
+  {e:'⭕',name:'Circle',sides:0,hint:'No corners and no sides — it curves all the way round!'},
+  {e:'🔺',name:'Triangle',sides:3,hint:'3 sides and 3 pointy corners!'},
+  {e:'🟦',name:'Square',sides:4,hint:'4 equal sides and 4 corners!'},
+  {e:'▬',name:'Rectangle',sides:4,hint:'4 sides — 2 long and 2 short!'},
+  {e:'⭐',name:'Star',sides:5,hint:'5 points sticking out!'},
+  {e:'⬟',name:'Pentagon',sides:5,hint:'5 sides and 5 corners!'},
+  {e:'⬡',name:'Hexagon',sides:6,hint:'6 sides — like a honeybee cell!'},
+];
+function buildShapeSides(){hmsScore=0;hmsRound=0;nextHmsRound();}
+function nextHmsRound(){
+  const total=diffLevel===1?5:diffLevel===2?6:7;
+  hmsRound++;if(hmsRound>total){endGame(hmsScore,total,'shapeSides');return;}
+  const pool=diffLevel===1?HMS_SHAPES.slice(0,4):HMS_SHAPES;
+  const shape=pool[Math.floor(Math.random()*pool.length)];
+  const opts=new Set([shape.sides]);
+  const allSides=pool.map(s=>s.sides);
+  while(opts.size<4){opts.add(allSides[Math.floor(Math.random()*allSides.length)]);}
+  const choices=[...opts].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">📐 How Many Sides?</div>
+      <div class="game-inst">Round ${hmsRound}/${total} · Score: ${hmsScore} ⭐</div>
+      <div style="text-align:center;margin:16px 0">
+        <div style="font-size:6rem;margin-bottom:8px;animation:popIn .3s">${shape.e}</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;color:var(--text)">${shape.name}</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800;color:var(--purple);margin-top:10px">
+          How many sides does it have?
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+        ${choices.map(n=>`<button onclick="checkHms(this,${n},${shape.sides},'${shape.hint}')"
+          style="padding:16px 6px;border-radius:14px;border:none;background:linear-gradient(135deg,#a78bfa,#4fa3e0);
+                 color:#fff;font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;
+                 cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.15);transition:transform .15s"
+          onmousedown="this.style.transform='scale(.92)'" onmouseup="this.style.transform=''">${n}</button>`).join('')}
+      </div>
+    </div>`;
+  speakText('How many sides does a '+shape.name+' have?');
+}
+function checkHms(el,chosen,ans,hint){
+  document.querySelectorAll('[onclick^="checkHms"]').forEach(e=>e.onclick=null);
+  if(chosen===ans){
+    el.style.background='linear-gradient(135deg,#56cf81,#4ecdc4)';
+    hmsScore++;adaptDifficulty(true);playCorrect();speakText('Yes! '+hint);
+  } else {
+    el.style.background='linear-gradient(135deg,#ff6b9d,#ff5252)';el.style.animation='shake .3s';
+    adaptDifficulty(false);playWrong();speakText('Not quite! '+hint);
+  }
+  setTimeout(nextHmsRound,1500);
+}
+
+// ── Shapes in Real Life! ──
+let srScore=0,srRound=0;
+const SR_DATA=[
+  {shape:'Circle',emoji:'⭕',objects:[{e:'🌕',n:'Moon'},{e:'🍕',n:'Pizza'},{e:'⚽',n:'Ball'},{e:'🏠',n:'House'}],ans:0},
+  {shape:'Triangle',emoji:'🔺',objects:[{e:'🔺',n:'Triangle sign'},{e:'🎹',n:'Piano'},{e:'🚗',n:'Car'},{e:'📦',n:'Box'}],ans:0},
+  {shape:'Rectangle',emoji:'▬',objects:[{e:'📱',n:'Phone'},{e:'🍕',n:'Pizza'},{e:'🌕',n:'Moon'},{e:'⚽',n:'Ball'}],ans:0},
+  {shape:'Circle',emoji:'⭕',objects:[{e:'🎡',n:'Ferris wheel'},{e:'📦',n:'Box'},{e:'🏠',n:'House'},{e:'🔺',n:'Cone'}],ans:0},
+  {shape:'Square',emoji:'🟦',objects:[{e:'🧊',n:'Ice cube'},{e:'🌕',n:'Moon'},{e:'🚗',n:'Car'},{e:'🌊',n:'Wave'}],ans:0},
+  {shape:'Triangle',emoji:'🔺',objects:[{e:'🍕',n:'Pizza slice'},{e:'📱',n:'Phone'},{e:'🌕',n:'Moon'},{e:'⚽',n:'Ball'}],ans:0},
+  {shape:'Rectangle',emoji:'▬',objects:[{e:'📚',n:'Book'},{e:'⚽',n:'Ball'},{e:'🌸',n:'Flower'},{e:'🎈',n:'Balloon'}],ans:0},
+];
+function buildShapeReal(){srScore=0;srRound=0;nextSrRound();}
+function nextSrRound(){
+  const total=diffLevel===1?4:diffLevel===2?5:6;
+  srRound++;if(srRound>total){endGame(srScore,total,'shapeReal');return;}
+  const item=SR_DATA[Math.floor(Math.random()*SR_DATA.length)];
+  const shuffled=[...item.objects].sort(()=>Math.random()-.5);
+  const correctObj=item.objects[item.ans];
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔵 Shapes in Real Life!</div>
+      <div class="game-inst">Round ${srRound}/${total} · Score: ${srScore} ⭐</div>
+      <div style="text-align:center;margin:14px 0">
+        <div style="font-size:5rem;margin-bottom:6px">${item.emoji}</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--purple)">
+          Which object is a <strong>${item.shape}</strong>?
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:10px 0">
+        ${shuffled.map(obj=>`<div onclick="checkSr(this,'${obj.n}','${correctObj.n}')"
+          style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 8px;
+                 border-radius:16px;background:var(--inputbg);border:3px solid var(--border);
+                 cursor:pointer;transition:all .2s;text-align:center">
+          <span style="font-size:3rem">${obj.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:800;color:var(--text2)">${obj.n}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  speakText('Which object is shaped like a '+item.shape+'?');
+}
+function checkSr(el,chosen,correct){
+  document.querySelectorAll('[onclick^="checkSr"]').forEach(e=>e.onclick=null);
+  if(chosen===correct){
+    el.style.background='linear-gradient(135deg,#56cf81,#4ecdc4)';el.style.borderColor='#56cf81';
+    srScore++;adaptDifficulty(true);playCorrect();speakText('Yes! The '+chosen+' is that shape!');
+  } else {
+    el.style.background='rgba(255,107,157,.2)';el.style.borderColor='#ff6b9d';el.style.animation='shake .3s';
+    adaptDifficulty(false);playWrong();speakText('Not quite! Look for the '+correct+'!');
+  }
+  setTimeout(nextSrRound,1400);
+}
+
+// ── Colour That Shape! ──
+let scScore=0,scRound=0;
+const SC_COMBO=[
+  {colour:'Red',cval:'#ff5252',shape:'Circle',e:'⭕'},
+  {colour:'Blue',cval:'#4fa3e0',shape:'Triangle',e:'🔺'},
+  {colour:'Green',cval:'#56cf81',shape:'Square',e:'🟩'},
+  {colour:'Yellow',cval:'#ffb830',shape:'Star',e:'⭐'},
+  {colour:'Purple',cval:'#a78bfa',shape:'Heart',e:'💜'},
+  {colour:'Pink',cval:'#ff6b9d',shape:'Circle',e:'🔴'},
+  {colour:'Orange',cval:'#ff8c69',shape:'Triangle',e:'🔶'},
+];
+function buildShapeColour(){scScore=0;scRound=0;nextScRound();}
+function nextScRound(){
+  const total=diffLevel===1?5:diffLevel===2?6:7;
+  scRound++;if(scRound>total){endGame(scScore,total,'shapeColour');return;}
+  const target=SC_COMBO[Math.floor(Math.random()*SC_COMBO.length)];
+  const others=SC_COMBO.filter(x=>x!==target).sort(()=>Math.random()-.5).slice(0,3);
+  const opts=[target,...others].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🌈 Colour That Shape!</div>
+      <div class="game-inst">Round ${scRound}/${total} · Score: ${scScore} ⭐</div>
+      <div style="text-align:center;background:linear-gradient(135deg,#f0f8ff,#fff0f8);border-radius:16px;padding:18px;margin:12px 0">
+        <div style="font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--text);margin-bottom:6px">Find the…</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:1.6rem;font-weight:800">
+          <span style="color:${target.cval}">${target.colour}</span> ${target.shape}
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+        ${opts.map(o=>`<div onclick="checkSc(this,'${o.colour}_${o.shape}','${target.colour}_${target.shape}')"
+          style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:16px 8px;
+                 border-radius:16px;background:var(--inputbg);border:3px solid var(--border);
+                 cursor:pointer;transition:all .2s;text-align:center">
+          <span style="font-size:3.5rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,.15))" style="color:${o.cval}">${o.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800;color:var(--text3)">${o.colour} ${o.shape}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  speakText('Find the '+target.colour+' '+target.shape+'!');
+}
+function checkSc(el,chosen,correct){
+  document.querySelectorAll('[onclick^="checkSc"]').forEach(e=>e.onclick=null);
+  if(chosen===correct){
+    el.style.background='linear-gradient(135deg,#56cf81,#4ecdc4)';el.style.borderColor='#56cf81';
+    scScore++;adaptDifficulty(true);playCorrect();speakText('Yes! Perfect!');
+  } else {
+    el.style.background='rgba(255,107,157,.2)';el.style.borderColor='#ff6b9d';el.style.animation='shake .3s';
+    adaptDifficulty(false);playWrong();speakText('Look carefully at the colour and shape!');
+  }
+  setTimeout(nextScRound,1300);
+}
+
+// ════════════════════════════════════════════════
+//  NEW BRAIN GAMES
+// ════════════════════════════════════════════════
+
+// ── Finish the Pattern! ──
+let fpScore=0,fpRound=0;
+function buildFinishPatt(){fpScore=0;fpRound=0;nextFpRound();}
+function nextFpRound(){
+  const total=diffLevel===1?5:diffLevel===2?6:7;
+  fpRound++;if(fpRound>total){endGame(fpScore,total,'finishPatt');return;}
+  const patterns=[
+    {seq:['🔴','🔵','🔴','🔵'],ans:'🔴',opts:['🔴','🟡','🟢','⚪']},
+    {seq:['⭐','🌙','⭐','🌙'],ans:'⭐',opts:['⭐','☀️','🌸','❄️']},
+    {seq:['🐱','🐶','🐱','🐶'],ans:'🐱',opts:['🐱','🦁','🐸','🐧']},
+    {seq:['🍎','🍌','🍎','🍌'],ans:'🍎',opts:['🍎','🍇','🍓','🥝']},
+    {seq:['🔺','🟦','🔺','🟦'],ans:'🔺',opts:['🔺','⭕','⬟','⭐']},
+    {seq:['🌸','🌼','🌸','🌼'],ans:'🌸',opts:['🌸','🌺','🌻','🌹']},
+    {seq:['🚗','🚌','🚗','🚌'],ans:'🚗',opts:['🚗','🚕','🚑','🚒']},
+    {seq:['1️⃣','2️⃣','1️⃣','2️⃣'],ans:'1️⃣',opts:['1️⃣','3️⃣','4️⃣','5️⃣']},
+    {seq:['🔴','🔵','🟡','🔴','🔵'],ans:'🟡',opts:['🟡','🟢','🟣','⚪']},
+    {seq:['🐸','🐸','🦋','🐸','🐸'],ans:'🦋',opts:['🦋','🐱','🐶','🐝']},
+  ];
+  const pat=patterns[Math.floor(Math.random()*patterns.length)];
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔮 Finish the Pattern!</div>
+      <div class="game-inst">Round ${fpRound}/${total} · Score: ${fpScore} ⭐</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:var(--purple);text-align:center;margin:12px 0">
+        What comes next?
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;
+                  background:linear-gradient(135deg,#f8f4ff,#f0f8ff);border-radius:18px;padding:16px;margin-bottom:14px">
+        ${pat.seq.map(e=>`<span style="font-size:2.8rem">${e}</span>`).join('<span style="font-family:Baloo 2,cursive;font-size:1.5rem;color:var(--text4)">→</span>')}
+        <span style="font-family:Baloo 2,cursive;font-size:1.5rem;color:var(--text4)">→</span>
+        <span style="font-size:2.8rem;filter:brightness(0) opacity(.2)">?</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+        ${pat.opts.sort(()=>Math.random()-.5).map(o=>`<div onclick="checkFp(this,'${o}','${pat.ans}')"
+          style="display:flex;align-items:center;justify-content:center;height:70px;border-radius:14px;
+                 background:var(--inputbg);border:3px solid var(--border);cursor:pointer;
+                 font-size:2.4rem;transition:all .2s">
+          ${o}
+        </div>`).join('')}
+      </div>
+    </div>`;
+  speakText('Look at the pattern! What comes next?');
+}
+function checkFp(el,chosen,ans){
+  document.querySelectorAll('[onclick^="checkFp"]').forEach(e=>e.onclick=null);
+  if(chosen===ans){
+    el.style.background='linear-gradient(135deg,#56cf81,#4ecdc4)';el.style.borderColor='#56cf81';el.style.transform='scale(1.1)';
+    fpScore++;adaptDifficulty(true);playCorrect();speakText('Yes! You spotted the pattern!');
+  } else {
+    el.style.background='rgba(255,107,157,.2)';el.style.borderColor='#ff6b9d';el.style.animation='shake .3s';
+    adaptDifficulty(false);playWrong();speakText('Look at the pattern again!');
+  }
+  setTimeout(nextFpRound,1300);
+}
+
+// ── Listen & Tap! ──
+let ltScore=0,ltRound=0;
+function buildListenTap(){ltScore=0;ltRound=0;nextLtRound();}
+function nextLtRound(){
+  const total=diffLevel===1?5:diffLevel===2?6:7;
+  ltRound++;if(ltRound>total){endGame(ltScore,total,'listenTap');return;}
+  const items=[
+    {e:'🐱',n:'cat'},{e:'🐶',n:'dog'},{e:'🌸',n:'flower'},
+    {e:'⭐',n:'star'},{e:'🍎',n:'apple'},{e:'🚗',n:'car'},
+    {e:'🌙',n:'moon'},{e:'☀️',n:'sun'},{e:'🎈',n:'balloon'},
+    {e:'🐸',n:'frog'},{e:'🦋',n:'butterfly'},{e:'🌈',n:'rainbow'},
+  ];
+  const count=diffLevel===1?4:diffLevel===2?5:6;
+  const picked=items.sort(()=>Math.random()-.5).slice(0,count);
+  const target=picked[Math.floor(Math.random()*picked.length)];
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">👂 Listen & Tap!</div>
+      <div class="game-inst">Round ${ltRound}/${total} · Score: ${ltScore} ⭐</div>
+      <div style="background:linear-gradient(135deg,#fff8e0,#e8f4ff);border-radius:16px;padding:16px;text-align:center;margin:12px 0">
+        <div style="font-size:2.5rem;margin-bottom:6px">👂</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--text)">
+          Tap the <span style="color:var(--purple);font-size:1.2rem">${target.n}</span>!
+        </div>
+        <button onclick="speakText('Tap the ${target.n}!')" style="margin-top:8px;padding:6px 16px;border-radius:20px;border:none;background:var(--purple);color:#fff;font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:700;cursor:pointer">🔊 Hear again</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(${count<=4?2:3},1fr);gap:12px">
+        ${picked.map(it=>`<div onclick="checkLt(this,'${it.n}','${target.n}')"
+          style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:16px 8px;
+                 border-radius:16px;background:var(--inputbg);border:3px solid var(--border);
+                 cursor:pointer;transition:all .2s;text-align:center">
+          <span style="font-size:3rem">${it.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:800;color:var(--text3)">${it.n}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  speakText('Tap the '+target.n+'!');
+}
+function checkLt(el,chosen,target){
+  document.querySelectorAll('[onclick^="checkLt"]').forEach(e=>e.onclick=null);
+  if(chosen===target){
+    el.style.background='linear-gradient(135deg,#56cf81,#4ecdc4)';el.style.borderColor='#56cf81';el.style.transform='scale(1.1)';
+    ltScore++;adaptDifficulty(true);playCorrect();speakText('Yes! That is the '+target+'!');
+  } else {
+    el.style.background='rgba(255,107,157,.2)';el.style.borderColor='#ff6b9d';el.style.animation='shake .3s';
+    adaptDifficulty(false);playWrong();speakText('Listen carefully! Find the '+target+'!');
+  }
+  setTimeout(nextLtRound,1300);
+}
+
+// ── Pair It Up! ──
+let puScore=0,puRound=0,puFirst=null;
+function buildPairMatch(){puScore=0;puRound=0;nextPuRound();}
+const PU_PAIRS=[
+  [{e:'🐑',n:'Sheep'},{e:'🧶',n:'Wool'}],
+  [{e:'🐄',n:'Cow'},{e:'🥛',n:'Milk'}],
+  [{e:'🐝',n:'Bee'},{e:'🍯',n:'Honey'}],
+  [{e:'🌧️',n:'Rain'},{e:'☂️',n:'Umbrella'}],
+  [{e:'📚',n:'Book'},{e:'✏️',n:'Pencil'}],
+  [{e:'🎵',n:'Music'},{e:'🎹',n:'Piano'}],
+  [{e:'☀️',n:'Sun'},{e:'🕶️',n:'Sunglasses'}],
+  [{e:'🌊',n:'Ocean'},{e:'🐟',n:'Fish'}],
+  [{e:'🌙',n:'Night'},{e:'⭐',n:'Star'}],
+  [{e:'🍞',n:'Bread'},{e:'🧈',n:'Butter'}],
+];
+function nextPuRound(){
+  const total=diffLevel===1?4:diffLevel===2?5:6;
+  puRound++;if(puRound>total){endGame(puScore,total,'pairMatch');return;}
+  const count=diffLevel===1?3:diffLevel===2?4:5;
+  const selected=PU_PAIRS.sort(()=>Math.random()-.5).slice(0,count);
+  const allCards=[...selected.map(p=>({...p[0],pairId:PU_PAIRS.indexOf(p)||Math.random(),side:0})),
+                  ...selected.map(p=>({...p[1],pairId:PU_PAIRS.indexOf(p)||Math.random(),side:1}))].sort(()=>Math.random()-.5);
+  puFirst=null;
+  let matched=new Set();
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🎴 Pair It Up!</div>
+      <div class="game-inst">Round ${puRound}/${total} · Score: ${puScore} ⭐</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--purple);text-align:center;margin:10px 0">
+        Tap two things that go together!
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0" id="puGrid">
+        ${allCards.map((c,i)=>`<div id="puCard_${i}" onclick="tapPu(${i})"
+          style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 6px;
+                 border-radius:14px;background:var(--inputbg);border:3px solid var(--border);
+                 cursor:pointer;transition:all .2s;text-align:center" data-pair="${c.n}">
+          <span style="font-size:2.4rem">${c.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.65rem;font-weight:800;color:var(--text3)">${c.n}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  window._puCards=allCards;window._puMatched=new Set();window._puFirst=null;window._puScore=puScore;window._puRound=puRound;
+  speakText('Find two things that go together!');
+}
+const PU_MATCH={Sheep:'Wool',Wool:'Sheep',Cow:'Milk',Milk:'Cow',Bee:'Honey',Honey:'Bee',Rain:'Umbrella',Umbrella:'Rain',Book:'Pencil',Pencil:'Book',Music:'Piano',Piano:'Music',Sun:'Sunglasses',Sunglasses:'Sun',Ocean:'Fish',Fish:'Ocean',Night:'Star',Star:'Night',Bread:'Butter',Butter:'Bread'};
+function tapPu(i){
+  if(window._puMatched.has(i))return;
+  const el=document.getElementById('puCard_'+i);
+  const name=window._puCards[i].n;
+  if(!window._puFirst){
+    window._puFirst={i,name};el.style.background='linear-gradient(135deg,#a78bfa,#4fa3e0)';el.style.color='#fff';
+    el.querySelectorAll('span').forEach(s=>s.style.color='#fff');
+    playClick();
+  } else {
+    const partner=PU_MATCH[window._puFirst.name];
+    const prev=document.getElementById('puCard_'+window._puFirst.i);
+    if(partner===name){
+      el.style.background='linear-gradient(135deg,#56cf81,#4ecdc4)';prev.style.background='linear-gradient(135deg,#56cf81,#4ecdc4)';
+      [el,prev].forEach(e=>{e.style.borderColor='#56cf81';e.style.pointerEvents='none';e.querySelectorAll('span').forEach(s=>s.style.color='#fff');});
+      window._puMatched.add(i);window._puMatched.add(window._puFirst.i);
+      playCorrect();window._puFirst=null;
+      const total=window._puCards.length/2;
+      if(window._puMatched.size/2>=total){puScore++;adaptDifficulty(true);speakText('Amazing! You matched them all!');setTimeout(nextPuRound,1200);}
+    } else {
+      el.style.background='rgba(255,107,157,.2)';prev.style.background='rgba(255,107,157,.2)';
+      playWrong();adaptDifficulty(false);
+      setTimeout(()=>{
+        [el,prev].forEach(e=>{e.style.background='';e.style.color='';e.querySelectorAll('span').forEach(s=>s.style.color='');});
+        window._puFirst=null;
+      },800);
+    }
   }
 }
 </script>
