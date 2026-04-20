@@ -3900,6 +3900,352 @@ function buildVisualPanel(a){
   }
 
 
+
+  // ── ART: PRIMARY COLOURS ──
+  if(t.includes('Primary Colour')||t.includes('Primary Color')){
+    const mixes=[
+      {a:'🔴',b:'🟡',r:'🟠',an:'Red',bn:'Yellow',rn:'Orange',c:'#ff8c69'},
+      {a:'🔴',b:'🔵',r:'🟣',an:'Red',bn:'Blue',rn:'Purple',c:'#a78bfa'},
+      {a:'🔵',b:'🟡',r:'🟢',an:'Blue',bn:'Yellow',rn:'Green',c:'#56cf81'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--pink);margin-bottom:10px;text-align:center">🎨 Tap each mix to hear what you get!</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
+        ${[{e:'🔴',n:'Red',c:'#ff6b9d'},{e:'🟡',n:'Yellow',c:'#ffb830'},{e:'🔵',n:'Blue',c:'#4fa3e0'}].map(p=>`
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 6px;border-radius:16px;background:${p.c};color:#fff;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.15)">
+            <span style="font-size:2.5rem">${p.e}</span>
+            <span style="font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:800">${p.n}</span>
+            <span style="font-size:.6rem;opacity:.9">Primary!</span>
+          </div>`).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        ${mixes.map(m=>`<div onclick="speakText('${m.an} plus ${m.bn} makes ${m.rn}!');this.style.transform='scale(1.1)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 5px;border-radius:14px;background:${m.c};color:#fff;cursor:pointer;transition:transform .2s;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.15)">
+          <span style="font-size:1.2rem">${m.a}+${m.b}</span>
+          <span style="font-size:1.8rem">${m.r}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.65rem;font-weight:800">${m.rn}!</span>
+        </div>`).join('')}
+      </div>
+      <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:.72rem;color:var(--text3);margin-top:8px">👆 Tap a mix to hear what colours make!</div>
+    </div>`;
+  }
+
+  // ── ART: SHAPES INTO PICTURES ──
+  if(t.includes('Shapes into')||t.includes('Shape into')){
+    const transforms=[
+      {shape:'⭕',arrow:'→',picture:'☀️',from:'Circle',to:'Sun',fact:'Add rays around it!',c:'#ffb830'},
+      {shape:'🔺',arrow:'→',picture:'🌲',from:'Triangle',to:'Tree',fact:'Add a rectangle trunk!',c:'#56cf81'},
+      {shape:'⬜',arrow:'→',picture:'🏠',from:'Rectangle',to:'House',fact:'Add a triangle roof!',c:'#4fa3e0'},
+      {shape:'🔵',arrow:'→',picture:'😊',from:'Circle',to:'Face',fact:'Add eyes and a smile!',c:'#a78bfa'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--purple);margin-bottom:10px;text-align:center">✏️ Tap to see each shape transformation!</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
+        ${transforms.map(t=>`<div onclick="speakText('A ${t.from} can become a ${t.to}! ${t.fact}');this.style.transform='scale(1.08)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;align-items:center;gap:8px;padding:12px 10px;border-radius:16px;background:${t.c};color:#fff;cursor:pointer;transition:transform .2s;box-shadow:0 4px 12px rgba(0,0,0,.15)">
+          <span style="font-size:2rem;flex-shrink:0">${t.shape}</span>
+          <span style="font-size:1.3rem;flex-shrink:0">→</span>
+          <span style="font-size:2rem;flex-shrink:0">${t.picture}</span>
+          <div style="flex:1">
+            <div style="font-family:'Baloo 2',cursive;font-size:.65rem;font-weight:800;line-height:1.2">${t.from} → ${t.to}</div>
+            <div style="font-size:.55rem;opacity:.9;margin-top:2px">${t.fact}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+      <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:.72rem;color:var(--text3);margin-top:8px">👆 Tap each shape to hear how to draw it!</div>
+    </div>`;
+  }
+
+  // ── ART: FINGER PAINTING ──
+  if(t.includes('Finger Paint')){
+    const strokes=[
+      {e:'👆',name:'Dot',desc:'Dip & press!',c:'#ff6b9d'},
+      {e:'☝️',name:'Line',desc:'Drag across!',c:'#ffb830'},
+      {e:'〰️',name:'Swirl',desc:'Go round & round!',c:'#a78bfa'},
+      {e:'🌈',name:'Rainbow',desc:'Arch over!',c:'#4ecdc4'},
+      {e:'☁️',name:'Cloud',desc:'Dab dab dab!',c:'#4fa3e0'},
+      {e:'🌱',name:'Grass',desc:'Flick upward!',c:'#56cf81'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--pink);margin-bottom:10px;text-align:center">🖌️ Tap each stroke to learn how!</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        ${strokes.map(s=>`<div onclick="speakText('${s.name}! ${s.desc}');this.style.transform='scale(1.12)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;border-radius:14px;background:${s.c};color:#fff;cursor:pointer;transition:transform .2s;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.15)">
+          <span style="font-size:2rem">${s.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800">${s.name}</span>
+          <span style="font-size:.58rem;opacity:.9">${s.desc}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── ART: DRAW MY HOUSE ──
+  if(t.includes('Draw My House')||t.includes('My House')){
+    const parts=[
+      {e:'🔺',name:'Roof',desc:'Triangle on top!',c:'#ff8c69'},
+      {e:'⬜',name:'Walls',desc:'Big rectangle!',c:'#4fa3e0'},
+      {e:'🚪',name:'Door',desc:'Tall rectangle in middle!',c:'#ffb830'},
+      {e:'🪟',name:'Window',desc:'Square on each side!',c:'#56cf81'},
+      {e:'🌳',name:'Garden',desc:'Trees and flowers!',c:'#4ecdc4'},
+      {e:'☁️',name:'Sky',desc:'Clouds up top!',c:'#a78bfa'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--blue);margin-bottom:10px;text-align:center">🏠 Tap each part to learn how to draw it!</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        ${parts.map(p=>`<div onclick="speakText('Draw the ${p.name}! ${p.desc}');this.style.transform='scale(1.12)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;border-radius:14px;background:${p.c};color:#fff;cursor:pointer;transition:transform .2s;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.15)">
+          <span style="font-size:2rem">${p.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800">${p.name}</span>
+          <span style="font-size:.58rem;opacity:.9">${p.desc}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── ART: SYMMETRY BUTTERFLY ──
+  if(t.includes('Symmetry')||t.includes('Butterfly')){
+    const steps=[
+      {e:'📄',step:'1',desc:'Fold paper in half',c:'#4fa3e0'},
+      {e:'🖌️',step:'2',desc:'Paint ONE wing only',c:'#ff6b9d'},
+      {e:'🤜',step:'3',desc:'Press & fold together',c:'#ffb830'},
+      {e:'🦋',step:'4',desc:'Open — two wings match!',c:'#56cf81'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--pink);margin-bottom:10px;text-align:center">🦋 Tap each step to hear it!</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px">
+        ${steps.map(s=>`<div onclick="speakText('Step ${s.step}: ${s.desc}');this.style.transform='scale(1.1)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px;border-radius:14px;background:${s.c};color:#fff;cursor:pointer;transition:transform .2s;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.15)">
+          <span style="font-family:'Baloo 2',cursive;font-size:.6rem;font-weight:800;background:rgba(255,255,255,.3);border-radius:10px;padding:1px 7px">STEP ${s.step}</span>
+          <span style="font-size:2rem">${s.e}</span>
+          <span style="font-size:.58rem;opacity:.9;line-height:1.3">${s.desc}</span>
+        </div>`).join('')}
+      </div>
+      <div style="text-align:center;margin-top:10px;padding:8px;border-radius:12px;background:linear-gradient(135deg,#ffe0f0,#f0e0ff)">
+        <span style="font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:800;color:var(--purple)">✨ Both wings look the same — that is SYMMETRY!</span>
+      </div>
+    </div>`;
+  }
+
+  // ── ART: SELF PORTRAIT ──
+  if(t.includes('Self Portrait')||t.includes('Portrait')){
+    const parts=[
+      {e:'👁️',name:'Eyes',desc:'Two eyes — look in the mirror!',c:'#4fa3e0'},
+      {e:'👃',name:'Nose',desc:'In the middle of your face!',c:'#ffb830'},
+      {e:'👄',name:'Mouth',desc:'Bottom half of your face!',c:'#ff6b9d'},
+      {e:'👂',name:'Ears',desc:'One on each side!',c:'#ff8c69'},
+      {e:'💇',name:'Hair',desc:'What colour is yours?',c:'#a78bfa'},
+      {e:'😊',name:'Expression',desc:'What face are you making?',c:'#56cf81'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--purple);margin-bottom:10px;text-align:center">🪞 Look in the mirror! Tap each part to draw it!</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        ${parts.map(p=>`<div onclick="speakText('Draw your ${p.name}! ${p.desc}');this.style.transform='scale(1.12)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;border-radius:14px;background:${p.c};color:#fff;cursor:pointer;transition:transform .2s;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.15)">
+          <span style="font-size:2rem">${p.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800">${p.name}</span>
+          <span style="font-size:.58rem;opacity:.9;line-height:1.3">${p.desc}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── MATHS: SHAPES ──
+  if(t.includes('Shapes — Circle')||t.includes('Shapes — Square')||t.includes('Shapes & Circle')){
+    const shapes=[
+      {e:'⭕',name:'Circle',fact:'0 corners, 0 sides — perfectly round!',c:'#ff6b9d'},
+      {e:'🟦',name:'Square',fact:'4 equal sides, 4 corners!',c:'#4fa3e0'},
+      {e:'🔺',name:'Triangle',fact:'3 sides, 3 corners!',c:'#ffb830'},
+      {e:'▬',name:'Rectangle',fact:'4 sides — 2 long, 2 short!',c:'#56cf81'},
+      {e:'⬟',name:'Diamond',fact:'4 equal sides, tilted!',c:'#a78bfa'},
+      {e:'⭐',name:'Star',fact:'5 points — count them!',c:'#ff8c69'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--blue);margin-bottom:10px;text-align:center">📐 Tap each shape to hear about it!</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        ${shapes.map(s=>`<div onclick="speakText('${s.name}! ${s.fact}');this.style.transform='scale(1.12)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;border-radius:14px;background:${s.c};color:#fff;cursor:pointer;transition:transform .2s;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.15)">
+          <span style="font-size:2.2rem">${s.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800">${s.name}</span>
+          <span style="font-size:.55rem;opacity:.9;line-height:1.3">${s.fact}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── MATHS: SEASONS ──
+  if(t.includes('Seasons of the Year')||t.includes('Season')){
+    const seasons=[
+      {e:'🌸',name:'Spring',desc:'Flowers bloom! Warm and rainy.',c:'#ff6b9d'},
+      {e:'☀️',name:'Summer',desc:'Hot and sunny! Ice cream time!',c:'#ffb830'},
+      {e:'🍂',name:'Autumn',desc:'Leaves fall! Getting cooler.',c:'#ff8c69'},
+      {e:'❄️',name:'Winter',desc:'Cold and frosty! Snow falls!',c:'#4fa3e0'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--sun);margin-bottom:10px;text-align:center">🌍 Tap each season to hear about it!</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+        ${seasons.map(s=>`<div onclick="speakText('${s.name}! ${s.desc}');this.style.transform='scale(1.08)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 8px;border-radius:16px;background:${s.c};color:#fff;cursor:pointer;transition:transform .2s;text-align:center;box-shadow:0 5px 14px rgba(0,0,0,.15)">
+          <span style="font-size:3rem">${s.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800">${s.name}</span>
+          <span style="font-size:.62rem;opacity:.9;line-height:1.4">${s.desc}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── MATHS: MORNING AFTERNOON NIGHT ──
+  if(t.includes('Morning, Afternoon')||t.includes('Morning, Afternoon & Night')){
+    const times=[
+      {e:'🌅',name:'Morning',desc:'Sun rises! Eat breakfast, go to school.',c:'#ffb830',time:'6am – 12pm'},
+      {e:'☀️',name:'Afternoon',desc:'Sun is high! Lunch time and play.',c:'#ff8c69',time:'12pm – 5pm'},
+      {e:'🌆',name:'Evening',desc:'Sun sets! Dinner time.',c:'#a78bfa',time:'5pm – 8pm'},
+      {e:'🌙',name:'Night',desc:'Dark outside! Sleep time.',c:'#4fa3e0',time:'8pm – 6am'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--sun);margin-bottom:10px;text-align:center">⏰ Tap each time of day!</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+        ${times.map(t=>`<div onclick="speakText('${t.name}! ${t.desc}');this.style.transform='scale(1.08)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 8px;border-radius:16px;background:${t.c};color:#fff;cursor:pointer;transition:transform .2s;text-align:center;box-shadow:0 5px 14px rgba(0,0,0,.15)">
+          <span style="font-size:2.8rem">${t.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:800">${t.name}</span>
+          <span style="font-size:.58rem;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px">${t.time}</span>
+          <span style="font-size:.58rem;opacity:.9;line-height:1.3">${t.desc}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── MATHS: ADDING WITH OBJECTS ──
+  if(t.includes('Adding')||t.includes('Addition')){
+    const sums=[
+      {a:1,b:1,emoji:['🍎','🍎'],c:'#ff6b9d'},
+      {a:2,b:1,emoji:['🌟','🌟','🌟'],c:'#ffb830'},
+      {a:2,b:2,emoji:['🐸','🐸','🐸','🐸'],c:'#56cf81'},
+      {a:3,b:2,emoji:['🦋','🦋','🦋','🦋','🦋'],c:'#a78bfa'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--green);margin-bottom:10px;text-align:center">➕ Tap each sum to hear the answer!</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
+        ${sums.map(s=>`<div onclick="speakText('${s.a} plus ${s.b} equals ${s.a+s.b}!');this.style.transform='scale(1.08)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 8px;border-radius:16px;background:${s.c};color:#fff;cursor:pointer;transition:transform .2s;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.15)">
+          <span style="font-size:1.3rem;line-height:1.4">${s.emoji.join(' ')}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800">${s.a} + ${s.b} = ${s.a+s.b}</span>
+          <span style="font-size:.62rem;opacity:.9">Tap to hear!</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── MATHS: LEARN COINS ──
+  if(t.includes('Learn Coins')||t.includes('Coins')){
+    const coins=[
+      {e:'🪙',name:'₹1',fact:'One rupee coin',c:'#ff8c69'},
+      {e:'🪙',name:'₹2',fact:'Two rupee coin',c:'#ffb830'},
+      {e:'🪙',name:'₹5',fact:'Five rupee coin',c:'#56cf81'},
+      {e:'💵',name:'₹10',fact:'Ten rupee note',c:'#4fa3e0'},
+      {e:'💴',name:'₹50',fact:'Fifty rupees',c:'#a78bfa'},
+      {e:'💶',name:'₹100',fact:'One hundred!',c:'#ff6b9d'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--sun);margin-bottom:10px;text-align:center">💰 Tap each coin to hear its value!</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        ${coins.map(c=>`<div onclick="speakText('This is ${c.name}. ${c.fact}!');this.style.transform='scale(1.12)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;border-radius:14px;background:${c.c};color:#fff;cursor:pointer;transition:transform .2s;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.15)">
+          <span style="font-size:2.2rem">${c.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800">${c.name}</span>
+          <span style="font-size:.58rem;opacity:.9">${c.fact}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── SCIENCE: WATER 3 FORMS ──
+  if(t.includes('Water') && (t.includes('Form')||t.includes('3 Form'))){
+    const forms=[
+      {e:'🧊',name:'Ice',state:'Solid',desc:'Water when it is very COLD! Hard and can be held.',temp:'Below 0°C',c:'#4fa3e0'},
+      {e:'💧',name:'Water',state:'Liquid',desc:'Normal water! We drink it, swim in it.',temp:'0°C – 100°C',c:'#56cf81'},
+      {e:'♨️',name:'Steam',state:'Gas',desc:'Water when it is very HOT! Floats up into the air.',temp:'Above 100°C',c:'#ff8c69'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--blue);margin-bottom:10px;text-align:center">💧 Tap each form of water!</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        ${forms.map(f=>`<div onclick="speakText('${f.name}! ${f.state}. ${f.desc}');this.style.transform='scale(1.1)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 6px;border-radius:16px;background:${f.c};color:#fff;cursor:pointer;transition:transform .2s;text-align:center;box-shadow:0 5px 14px rgba(0,0,0,.15)">
+          <span style="font-size:2.8rem">${f.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:800">${f.name}</span>
+          <span style="font-size:.6rem;background:rgba(255,255,255,.3);padding:2px 8px;border-radius:10px;font-weight:700">${f.state}</span>
+          <span style="font-size:.55rem;opacity:.9;line-height:1.3">${f.desc}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── SCIENCE: MAGNETS ──
+  if(t.includes('Magnet')){
+    const items=[
+      {e:'🥄',name:'Spoon',sticks:true,c:'#56cf81'},
+      {e:'📎',name:'Paperclip',sticks:true,c:'#4fa3e0'},
+      {e:'🔑',name:'Key',sticks:true,c:'#ff8c69'},
+      {e:'📄',name:'Paper',sticks:false,c:'#ff6b9d'},
+      {e:'🪵',name:'Wood',sticks:false,c:'#ffb830'},
+      {e:'🧴',name:'Plastic',sticks:false,c:'#a78bfa'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--mint);margin-bottom:10px;text-align:center">🧲 Tap each object — does it stick?</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        ${items.map(i=>`<div onclick="speakText('${i.name}! ${i.sticks ? 'Yes it sticks to the magnet! It is made of metal.' : 'No it does not stick. Magnets only attract metal!'}');this.style.transform='scale(1.1)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;border-radius:14px;background:${i.c};color:#fff;cursor:pointer;transition:transform .2s;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.15)">
+          <span style="font-size:2rem">${i.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800">${i.name}</span>
+          <span style="font-size:.65rem;background:rgba(255,255,255,.3);padding:2px 8px;border-radius:10px;font-weight:700">${i.sticks ? '🧲 Sticks!' : '❌ No stick'}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── SCIENCE: MOON AND STARS ──
+  if(t.includes('Moon')){
+    const phases=[
+      {e:'🌑',name:'New Moon',desc:'All dark — we cannot see it!',c:'#333'},
+      {e:'🌒',name:'Crescent',desc:'Just a tiny slice!',c:'#4fa3e0'},
+      {e:'🌓',name:'Half Moon',desc:'Half bright, half dark!',c:'#a78bfa'},
+      {e:'🌕',name:'Full Moon',desc:'Completely bright! Biggest!',c:'#ffb830'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--purple);margin-bottom:10px;text-align:center">🌙 Tap each moon phase!</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+        ${phases.map(p=>`<div onclick="speakText('${p.name}! ${p.desc}');this.style.transform='scale(1.1)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 5px;border-radius:14px;background:${p.c};color:#fff;cursor:pointer;transition:transform .2s;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.2);border:2px solid rgba(255,255,255,.2)">
+          <span style="font-size:2.5rem">${p.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.6rem;font-weight:800;line-height:1.2">${p.name}</span>
+          <span style="font-size:.52rem;opacity:.9;line-height:1.3">${p.desc}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── SCIENCE: BUTTERFLY LIFE CYCLE ──
+  if(t.includes('Butterfly Life')||t.includes('Life Cycle')){
+    const stages=[
+      {e:'🥚',name:'Egg',desc:'Tiny egg on a leaf',c:'#ffb830'},
+      {e:'🐛',name:'Caterpillar',desc:'Eats and grows and grows!',c:'#56cf81'},
+      {e:'🫘',name:'Cocoon',desc:'Wraps itself up tight',c:'#a78bfa'},
+      {e:'🦋',name:'Butterfly',desc:'Flies free! Beautiful!',c:'#ff6b9d'},
+    ];
+    return `<div style="margin:12px 0">
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--pink);margin-bottom:10px;text-align:center">🦋 Tap each stage of the life cycle!</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px">
+        ${stages.map((s,i)=>`<div onclick="speakText('Stage ${i+1}: ${s.name}! ${s.desc}');this.style.transform='scale(1.12)';setTimeout(()=>this.style.transform='',400)"
+          style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px;border-radius:14px;background:${s.c};color:#fff;cursor:pointer;transition:transform .2s;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.15)">
+          <span style="font-family:'Baloo 2',cursive;font-size:.58rem;font-weight:800;background:rgba(255,255,255,.3);border-radius:8px;padding:1px 6px">${i+1}</span>
+          <span style="font-size:2.2rem">${s.e}</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.65rem;font-weight:800">${s.name}</span>
+          <span style="font-size:.52rem;opacity:.9;line-height:1.3">${s.desc}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
   // ── SEVEN CONTINENTS ──
   if(t.includes('Continent')){
     const continents=[
