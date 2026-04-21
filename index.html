@@ -13,6 +13,12 @@
   --text:#222;--text2:#666;--text3:#888;--text4:#aaa;--text5:#bbb;--text6:#ccc;--text7:#ddd;
   --shadow:rgba(0,0,0,.09);--shadow2:rgba(0,0,0,.06);
   --cardbg:#fff;--inputbg:#f8f8ff;--border:#eee;--learnbg1:#f0f7ff;--learnbg2:#e8f5e9;
+  /* Create zone responsive tokens */
+  --cz-header-offset: 155px;
+  --cz-max-width: 100%;
+  --cz-rail-width: clamp(60px, 5.5vw, 70px);
+  --cz-btn-size: clamp(44px, 4vw, 56px);
+  --cz-btn-radius: clamp(10px, 1vw, 14px);
 }
 
 /* BEDTIME MODE */
@@ -1263,7 +1269,8 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .cz-zone.cz-brushes > div:last-child{padding:4px 2px!important;gap:2px!important;}
   .cz-zone.cz-shapes > div:last-child{padding:4px 2px!important;gap:3px!important;}
   /* recover canvas height — header is shorter on tiny phones */
-  #area > div[style*="100dvh"]{height:calc(100dvh - 128px)!important;min-height:380px!important;}
+  :root{--cz-header-offset:128px;}
+  #area > .cz-create-root{min-height:380px!important;}
 }
 
 /* Standard phones (341px–480px) — default, minimal tweaks */
@@ -1283,7 +1290,8 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   [id^="czBrushBtn_"] span[style*="2.8rem"]{font-size:2rem!important;}
   .cz-shape-btn span[style*="2rem"]{font-size:1.6rem!important;}
   /* recover canvas height on standard phones */
-  #area > div[style*="100dvh"]{height:calc(100dvh - 138px)!important;min-height:400px!important;}
+  :root{--cz-header-offset:138px;}
+  #area > .cz-create-root{min-height:400px!important;}
 }
 
 /* Large phones / small tablets (481px–768px) */
@@ -1396,6 +1404,19 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .challenge-bar{margin:12px 40px 0;}
   .timer-bar{margin:12px 40px 0;}
   .wbar{padding:12px 40px 0;}
+  /* ── Create zone: desktop ── */
+  :root{
+    --cz-header-offset: 175px;
+    --cz-rail-width: clamp(72px, 6vw, 90px);
+    --cz-btn-size: clamp(52px, 4.2vw, 64px);
+    --cz-btn-radius: clamp(12px, 1vw, 16px);
+  }
+  #area > .cz-create-root{max-width:1400px;margin-left:auto;margin-right:auto;}
+  [id^="czBrushBtn_"] span[style*="2.2rem"]{font-size:clamp(2rem,2.2vw,2.6rem)!important;}
+  [id^="czBrushBtn_"] span[style*="2.8rem"]{font-size:clamp(2.4rem,2.8vw,3.2rem)!important;}
+  .cz-shape-btn span[style*="2rem"]{font-size:clamp(1.8rem,2vw,2.4rem)!important;}
+  .cz-sticker-item{font-size:clamp(2rem,2.2vw,2.6rem)!important;}
+  #czBrushBtn_eraser{padding:clamp(8px,0.8vh,14px) clamp(14px,1.5vw,22px)!important;}
 }
 
 /* Extra wide screens (1400px+) — generous padding to keep readable */
@@ -1412,6 +1433,23 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .acard,.game-panel,.create-panel,.parent-dash,.picker-panel,.shop-panel{
     max-width:1000px;margin-left:auto;margin-right:auto;}
   .story-reader{max-width:1000px;margin-left:auto;margin-right:auto;}
+  /* ── Create zone: 1440px+ ── */
+  :root{
+    --cz-header-offset: 185px;
+    --cz-rail-width: clamp(80px, 5.5vw, 96px);
+    --cz-btn-size: clamp(56px, 3.8vw, 68px);
+  }
+}
+
+/* 4K / ultra-wide screens (1920px+) */
+@media(min-width:1920px){
+  :root{
+    --cz-header-offset: 200px;
+    --cz-rail-width: 96px;
+    --cz-btn-size: 68px;
+    --cz-btn-radius: 16px;
+  }
+  #area > .cz-create-root{max-width:1600px;}
 }
 
 /* Landscape phone fix */
@@ -1443,7 +1481,8 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   /* Reduce sticker row height */
   #czStickerList{padding:3px 6px!important;}
   /* Fix container height for landscape */
-  #area > div[style*="100dvh"]{height:calc(100dvh - 110px)!important;min-height:260px!important;}
+  :root{--cz-header-offset:110px;}
+  #area > .cz-create-root{min-height:260px!important;}
   /* Hide mascot tip bubble in landscape to save space */
   #czTipBubble{display:none!important;}
   /* Make eraser smaller */
@@ -7518,9 +7557,12 @@ function renderCreativeZone(){
     .cz-color-active{animation:czColorPick .35s ease-out forwards!important;}
     .cz-shape-active{animation:czShapePop .4s ease-out forwards!important;}
     .cz-sticker-selected{animation:czStickerBounce .4s ease-out forwards!important;}
-    /* Unified tool button size */
-    .cz-shape-btn{width:56px!important;height:56px!important;border-radius:14px!important;}
-    .cz-sticker-item{width:56px!important;height:56px!important;border-radius:14px!important;}
+    /* Unified tool button size — responsive via CSS custom properties */
+    .cz-shape-btn{width:var(--cz-btn-size)!important;height:var(--cz-btn-size)!important;border-radius:var(--cz-btn-radius)!important;}
+    .cz-sticker-item{width:var(--cz-btn-size)!important;height:var(--cz-btn-size)!important;border-radius:var(--cz-btn-radius)!important;}
+    /* Responsive wrappers for desktop */
+    .cz-create-root{max-width:var(--cz-max-width);margin-left:auto;margin-right:auto;}
+    .cz-canvas-max{max-height:clamp(300px,55vh,800px);}
     /* Color swatch glow ring on active */
     [data-czcolor].cz-color-active{box-shadow:0 0 0 3px #ffb830,0 0 14px rgba(255,184,48,.5),0 3px 10px rgba(0,0,0,.22)!important;}
     /* Size divider upgrade */
@@ -7540,7 +7582,7 @@ function renderCreativeZone(){
     body.bedtime .cz-zone-label{border-bottom-color:rgba(255,255,255,.06);}
   </style>
 
-  <div style="width:100%;display:flex;flex-direction:column;height:calc(100dvh - 155px);min-height:480px;padding:0;gap:0">
+  <div class="cz-create-root" style="width:100%;display:flex;flex-direction:column;height:calc(100dvh - var(--cz-header-offset));min-height:480px;max-height:calc(100dvh - 80px);padding:0;gap:0">
 
     <!-- ══ TOP: BG + ACTIONS bar ══ -->
     <div style="display:flex;align-items:center;gap:8px;padding:7px 8px 7px;flex-shrink:0;
@@ -7642,7 +7684,7 @@ function renderCreativeZone(){
       </div>
 
       <!-- ══ RIGHT RAIL: Brush Zone ══ -->
-      <div class="cz-zone cz-colors" style="width:70px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden">
+      <div class="cz-zone cz-colors" style="width:var(--cz-rail-width);flex-shrink:0;display:flex;flex-direction:column;overflow:hidden">
         <!-- COLOR section -->
         <div class="cz-zone-label" style="color:#c026d3;justify-content:center;font-size:.62rem">🎨 Colors</div>
         <div style="display:flex;flex-direction:column;align-items:center;padding:6px 4px;gap:5px;overflow-y:auto;scrollbar-width:none;flex:1">
@@ -7776,7 +7818,7 @@ function renderCreativeZone(){
   const wrap=document.getElementById('czWrap');
   function sizeCanvas(){
     const w=wrap.offsetWidth;
-    const h=wrap.offsetHeight||Math.min(Math.max(w*0.75,260),520);
+    const h=wrap.offsetHeight||Math.max(w*0.75,280);
     let imgData=null;
     if(drawCtx)try{imgData=drawCtx.getImageData(0,0,drawCanvas.width,drawCanvas.height);}catch(e){}
     drawCanvas.width=w*window.devicePixelRatio;
