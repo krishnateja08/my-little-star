@@ -7424,16 +7424,17 @@ function renderCreativeZone(){
   <div style="width:100%;display:flex;flex-direction:column;height:calc(100vh - 160px);min-height:400px;padding:0">
 
     <!-- ══ BG STRIP ══ -->
-    <div style="display:flex;align-items:center;gap:6px;padding:6px 8px 4px;overflow-x:auto;flex-shrink:0;scrollbar-width:none">
-      <span style="font-family:'Baloo 2',cursive;font-size:.6rem;font-weight:800;color:var(--text4);white-space:nowrap;flex-shrink:0">BG</span>
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 10px 6px;overflow-x:auto;flex-shrink:0;scrollbar-width:none;-webkit-overflow-scrolling:touch">
+      <span style="font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:800;color:var(--text4);white-space:nowrap;flex-shrink:0">BG</span>
       ${CZ_BGS.map((b,i)=>`
         <div onclick="czSetBg(${i})"
-          style="flex-shrink:0;display:flex;align-items:center;gap:5px;padding:3px 10px 3px 5px;border-radius:20px;
-                 border:2px solid ${czBgIdx===i?'#ffb830':'var(--border)'};
-                 background:${czBgIdx===i?'rgba(255,184,48,.12)':'var(--inputbg)'};
-                 cursor:pointer;transition:all .18s;white-space:nowrap">
-          <div style="width:20px;height:20px;border-radius:50%;background:${b.bg};background-color:${b.base||b.bg};background-size:${b.size||'100%'};flex-shrink:0;border:1px solid rgba(0,0,0,.08)"></div>
-          <span style="font-family:'Baloo 2',cursive;font-size:.62rem;font-weight:800;color:${czBgIdx===i?'#b36c00':'var(--text3)'}">${b.label}</span>
+          style="flex-shrink:0;display:flex;align-items:center;gap:7px;padding:5px 14px 5px 7px;border-radius:24px;
+                 border:2.5px solid ${czBgIdx===i?'#ffb830':'var(--border)'};
+                 background:${czBgIdx===i?'rgba(255,184,48,.15)':'var(--inputbg)'};
+                 cursor:pointer;transition:all .18s;white-space:nowrap;
+                 ${czBgIdx===i?'box-shadow:0 2px 8px rgba(255,184,48,.3)':''}">
+          <div style="width:28px;height:28px;border-radius:50%;background:${b.bg};background-color:${b.base||b.bg};background-size:${b.size||'100%'};flex-shrink:0;border:2px solid rgba(255,255,255,.6);box-shadow:0 1px 4px rgba(0,0,0,.15)"></div>
+          <span style="font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:800;color:${czBgIdx===i?'#b36c00':'var(--text2)'}">${b.label}</span>
         </div>`).join('')}
     </div>
 
@@ -7442,8 +7443,8 @@ function renderCreativeZone(){
 
       <!-- Canvas -->
       <div style="flex:1;position:relative;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.13);border:2px solid rgba(167,139,250,.2);margin:4px 0 4px 4px" id="czWrap">
-        <canvas id="drawCanvas" style="display:block;touch-action:none;position:relative;z-index:1;width:100%;height:100%"></canvas>
-        <div id="czBgLayer" style="position:absolute;inset:0;z-index:0;pointer-events:none"></div>
+        <canvas id="drawCanvas" style="display:block;touch-action:none;position:absolute;inset:0;z-index:1;width:100%;height:100%"></canvas>
+        <div id="czBgLayer" style="position:absolute;inset:0;z-index:0;pointer-events:none;background:#ffffff;transition:background .3s"></div>
         <!-- Mascot tip -->
         <div id="czMascot" style="position:absolute;bottom:8px;left:10px;z-index:2;pointer-events:none">
           <div id="czTipBubble" style="background:rgba(255,255,255,.92);backdrop-filter:blur(4px);border-radius:12px;padding:5px 9px;font-family:'Baloo 2',cursive;font-size:.62rem;font-weight:700;color:#7c3aed;box-shadow:0 2px 8px rgba(0,0,0,.1);max-width:130px;text-align:center;opacity:0;transition:opacity .4s">
@@ -7468,78 +7469,79 @@ function renderCreativeZone(){
       </div>
 
       <!-- ══ RIGHT RAIL: Colors + Size ══ -->
-      <div style="width:52px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding:6px 4px;gap:6px;overflow-y:auto;scrollbar-width:none">
-        <div style="font-family:'Baloo 2',cursive;font-size:.5rem;font-weight:800;color:var(--text4);letter-spacing:.5px;text-transform:uppercase">COLOR</div>
+      <div style="width:60px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding:8px 4px;gap:7px;overflow-y:auto;scrollbar-width:none">
+        <div style="font-family:'Baloo 2',cursive;font-size:.6rem;font-weight:800;color:var(--text4);letter-spacing:.5px;text-transform:uppercase">COLOR</div>
         <!-- Active color big dot -->
-        <div style="width:36px;height:36px;border-radius:50%;background:${drawColor};border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.18);flex-shrink:0"></div>
+        <div style="width:42px;height:42px;border-radius:50%;background:${drawColor};border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.22);flex-shrink:0"></div>
         ${CZ_COLORS.map(c=>`
           <div onclick="czSetColor('${c}')"
-            style="width:${drawColor===c?32:24}px;height:${drawColor===c?32:24}px;border-radius:50%;background:${c};cursor:pointer;transition:all .18s;flex-shrink:0;
+            style="width:${drawColor===c?38:28}px;height:${drawColor===c?38:28}px;border-radius:50%;background:${c};cursor:pointer;transition:all .18s;flex-shrink:0;
                    ${c==='#ffffff'?'box-shadow:inset 0 0 0 2px #ccc;':''}
-                   ${drawColor===c?'box-shadow:0 0 0 3px #ffb830,0 2px 8px rgba(0,0,0,.2)':'box-shadow:0 1px 4px rgba(0,0,0,.15)'}">
+                   ${drawColor===c?'box-shadow:0 0 0 3px #ffb830,0 2px 8px rgba(0,0,0,.2)':'box-shadow:0 1px 5px rgba(0,0,0,.18)'}">
           </div>`).join('')}
         <!-- Custom color -->
-        <div style="position:relative;width:24px;height:24px;border-radius:50%;overflow:hidden;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.15);flex-shrink:0" title="Custom colour">
+        <div style="position:relative;width:28px;height:28px;border-radius:50%;overflow:hidden;cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.18);flex-shrink:0" title="Custom colour">
           <div style="position:absolute;inset:0;background:conic-gradient(red,yellow,lime,aqua,blue,magenta,red)"></div>
           <input type="color" value="${drawColor}" oninput="czSetColor(this.value)"
             style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer">
         </div>
-        <div style="width:36px;height:1px;background:var(--border);margin:2px 0;flex-shrink:0"></div>
-        <div style="font-family:'Baloo 2',cursive;font-size:.5rem;font-weight:800;color:var(--text4);letter-spacing:.5px;text-transform:uppercase">SIZE</div>
+        <div style="width:40px;height:2px;background:var(--border);margin:2px 0;flex-shrink:0;border-radius:1px"></div>
+        <div style="font-family:'Baloo 2',cursive;font-size:.6rem;font-weight:800;color:var(--text4);letter-spacing:.5px;text-transform:uppercase">SIZE</div>
         ${CZ_SIZES.map(({s,label})=>`
           <div onclick="czSetSize(${s})" title="${label}"
-            style="width:${Math.min(10+s/2,36)}px;height:${Math.min(10+s/2,36)}px;border-radius:50%;cursor:pointer;transition:all .18s;flex-shrink:0;
+            style="width:${Math.min(12+s/2,42)}px;height:${Math.min(12+s/2,42)}px;border-radius:50%;cursor:pointer;transition:all .18s;flex-shrink:0;
                    background:${drawSize===s?'#a78bfa':'var(--text4)'};
-                   ${drawSize===s?'box-shadow:0 0 0 3px rgba(167,139,250,.4);transform:scale(1.15)':''}"></div>`).join('')}
+                   ${drawSize===s?'box-shadow:0 0 0 3px rgba(167,139,250,.45);transform:scale(1.18)':''}"></div>`).join('')}
       </div>
     </div>
 
     <!-- ══ BOTTOM TOOLBAR ══ -->
-    <div style="flex-shrink:0;background:var(--cardbg);border-top:1px solid var(--border);padding:0">
-      <!-- Tab switcher strip -->
-      <div style="display:flex;align-items:center;border-bottom:1px solid var(--border)">
-        <span style="font-family:'Baloo 2',cursive;font-size:.58rem;font-weight:800;color:var(--text4);padding:0 8px;white-space:nowrap">TOOLS</span>
+    <div style="flex-shrink:0;background:var(--cardbg);border-top:2px solid var(--border);padding:0">
+      <!-- Single scrollable strip -->
+      <div style="display:flex;align-items:center;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;min-height:64px">
+        <span style="font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800;color:var(--text4);padding:0 8px 0 10px;white-space:nowrap;flex-shrink:0">TOOLS</span>
         ${CZ_BRUSHES.map(b=>`
-          <button id="czBrushBtn_${b.id}" onclick="czSetBrush('${b.id}');window.czBottomPanel='tools';renderCreativeZone()"
-            style="display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 8px;border:none;border-bottom:3px solid ${czBrushType===b.id?'#a78bfa':'transparent'};
-                   background:${czBrushType===b.id?'rgba(167,139,250,.1)':'transparent'};
-                   color:${czBrushType===b.id?'#7c3aed':'var(--text3)'};
-                   cursor:pointer;transition:all .18s;flex-shrink:0">
-            <span style="font-size:1.25rem;line-height:1">${b.icon}</span>
-            <span style="font-family:'Baloo 2',cursive;font-size:.5rem;font-weight:800;line-height:1">${b.label}</span>
+          <button id="czBrushBtn_${b.id}" onclick="czSetBrush('${b.id}');renderCreativeZone()"
+            style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 10px;border:none;
+                   border-bottom:3px solid ${czBrushType===b.id?'#a78bfa':'transparent'};
+                   background:${czBrushType===b.id?'rgba(167,139,250,.12)':'transparent'};
+                   color:${czBrushType===b.id?'#7c3aed':'var(--text2)'};
+                   cursor:pointer;transition:all .18s;flex-shrink:0;min-height:64px">
+            <span style="font-size:1.7rem;line-height:1">${b.icon}</span>
+            <span style="font-family:'Baloo 2',cursive;font-size:.65rem;font-weight:800;line-height:1;margin-top:2px">${b.label}</span>
           </button>`).join('')}
         <!-- Divider -->
-        <div style="width:1px;height:36px;background:var(--border);flex-shrink:0;margin:0 2px"></div>
-        <span style="font-family:'Baloo 2',cursive;font-size:.58rem;font-weight:800;color:var(--text4);padding:0 6px;white-space:nowrap">SHAPES</span>
+        <div style="width:2px;height:44px;background:var(--border);flex-shrink:0;margin:0 4px;border-radius:2px"></div>
+        <span style="font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800;color:var(--text4);padding:0 8px;white-space:nowrap;flex-shrink:0">SHAPES</span>
         ${CZ_SHAPES.map(sh=>`
-          <div onclick="czSetShape('${sh.id}');window.czBottomPanel='shapes';renderCreativeZone()"
-            style="display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 6px;border-bottom:3px solid ${drawSticker==='__shape_'+sh.id?'#4ecdc4':'transparent'};
-                   background:${drawSticker==='__shape_'+sh.id?'rgba(78,205,196,.1)':'transparent'};
-                   cursor:pointer;transition:all .18s;flex-shrink:0">
-            <span style="font-size:1.25rem;line-height:1">${sh.icon}</span>
+          <div onclick="czSetShape('${sh.id}');renderCreativeZone()"
+            style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 8px;
+                   border-bottom:3px solid ${drawSticker==='__shape_'+sh.id?'#4ecdc4':'transparent'};
+                   background:${drawSticker==='__shape_'+sh.id?'rgba(78,205,196,.12)':'transparent'};
+                   cursor:pointer;transition:all .18s;flex-shrink:0;min-height:64px">
+            <span style="font-size:1.7rem;line-height:1">${sh.icon}</span>
           </div>`).join('')}
         <!-- Divider -->
-        <div style="width:1px;height:36px;background:var(--border);flex-shrink:0;margin:0 2px"></div>
-        <span style="font-family:'Baloo 2',cursive;font-size:.58rem;font-weight:800;color:var(--text4);padding:0 6px;white-space:nowrap">STICKERS</span>
-        <div style="display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1">
-          ${(CZ_STICKER_CATS[activeCat]||[]).map(s=>`
-            <div onclick="czSetSticker('${s}');renderCreativeZone()"
-              style="width:40px;height:40px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
-                     border-bottom:3px solid ${drawSticker===s?'#ff6b9d':'transparent'};
-                     background:${drawSticker===s?'rgba(255,107,157,.1)':'transparent'};
-                     font-size:1.25rem;cursor:pointer;transition:all .18s">
-              ${s}
-            </div>`).join('')}
-          <!-- Sticker category switchers -->
-          <div style="width:1px;height:36px;background:var(--border);flex-shrink:0;align-self:center;margin:0 3px"></div>
-          ${catKeys.map(k=>`
-            <button onclick="czSwitchStickerCat('${k}')"
-              style="width:36px;height:36px;border-radius:10px;border:2px solid ${activeCat===k?'#ff6b9d':'transparent'};
-                     background:${activeCat===k?'rgba(255,107,157,.1)':'transparent'};
-                     font-size:1.1rem;cursor:pointer;transition:all .18s;flex-shrink:0;align-self:center">
-              ${k}
-            </button>`).join('')}
-        </div>
+        <div style="width:2px;height:44px;background:var(--border);flex-shrink:0;margin:0 4px;border-radius:2px"></div>
+        <span style="font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800;color:var(--text4);padding:0 8px;white-space:nowrap;flex-shrink:0">STICKERS</span>
+        <!-- Sticker category switcher buttons FIRST -->
+        ${catKeys.map(k=>`
+          <button onclick="czSwitchStickerCat('${k}')"
+            style="width:44px;height:44px;border-radius:12px;border:2.5px solid ${activeCat===k?'#ff6b9d':'transparent'};
+                   background:${activeCat===k?'rgba(255,107,157,.12)':'transparent'};
+                   font-size:1.4rem;cursor:pointer;transition:all .18s;flex-shrink:0;margin:0 2px">
+            ${k}
+          </button>`).join('')}
+        <div style="width:2px;height:44px;background:var(--border);flex-shrink:0;margin:0 4px;border-radius:2px"></div>
+        <!-- Active category stickers -->
+        ${(CZ_STICKER_CATS[activeCat]||[]).map(s=>`
+          <div onclick="czSetSticker('${s}');renderCreativeZone()"
+            style="width:50px;height:64px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+                   border-bottom:3px solid ${drawSticker===s?'#ff6b9d':'transparent'};
+                   background:${drawSticker===s?'rgba(255,107,157,.12)':'transparent'};
+                   font-size:1.7rem;cursor:pointer;transition:all .18s">
+            ${s}
+          </div>`).join('')}
       </div>
     </div>
 
@@ -7564,8 +7566,7 @@ function renderCreativeZone(){
     drawCanvas.style.height=h+'px';
     drawCtx=drawCanvas.getContext('2d');
     drawCtx.scale(window.devicePixelRatio,window.devicePixelRatio);
-    drawCtx.fillStyle='#fff';
-    drawCtx.fillRect(0,0,w,h);
+    // Do NOT fill with white — czBgLayer behind handles the background
     if(imgData)try{drawCtx.putImageData(imgData,0,0);}catch(e){}
     drawCtx.lineCap='round';drawCtx.lineJoin='round';
     czApplyBg();
@@ -7610,19 +7611,20 @@ function czSetBg(idx){
   const b=CZ_BGS[idx];
   const layer=document.getElementById('czBgLayer');
   if(layer){
-    layer.style.transition='opacity .4s';
-    layer.style.opacity='0';
-    setTimeout(()=>{
-      if(layer){layer.style.background=b.bg;layer.style.backgroundColor=b.base||'';layer.style.backgroundSize=b.size||'100%';layer.style.opacity='1';}
-    },200);
+    layer.style.background=b.bg;
+    layer.style.backgroundColor=b.base||b.bg||'#ffffff';
+    layer.style.backgroundSize=b.size||'cover';
   }
-  document.querySelectorAll('#czBgs>div,#czBgGrid>div').forEach((_,i)=>{});
   renderCreativeZone();
 }
 function czApplyBg(){
   const b=CZ_BGS[czBgIdx]||CZ_BGS[0];
   const layer=document.getElementById('czBgLayer');
-  if(layer){layer.style.background=b.bg;layer.style.backgroundColor=b.base||'';layer.style.backgroundSize=b.size||'100%';}
+  if(layer){
+    layer.style.background=b.bg;
+    layer.style.backgroundColor=b.base||b.bg||'#ffffff';
+    layer.style.backgroundSize=b.size||'cover';
+  }
 }
 function czSaveUndo(){
   if(!drawCtx)return;
