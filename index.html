@@ -1596,10 +1596,17 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
 <!-- App Loader (shown while Firebase syncs) -->
 <div id="appLoader" style="display:flex;position:fixed;inset:0;background:linear-gradient(135deg,#ff6b9d,#ffb830,#4ecdc4);z-index:99998;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
   <div style="font-size:3.5rem;animation:float 1.5s ease-in-out infinite">⭐</div>
-  <div style="font-family:'Baloo 2',cursive;font-size:1.3rem;color:#fff;font-weight:700">Syncing your progress...</div>
+  <div id="appLoaderMsg" style="font-family:'Baloo 2',cursive;font-size:1.3rem;color:#fff;font-weight:700">Syncing your progress...</div>
   <div style="width:48px;height:48px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite"></div>
+  <div id="appLoaderSub" style="font-family:'Baloo 2',cursive;font-size:.8rem;color:rgba(255,255,255,.7);font-weight:600;text-align:center;max-width:260px;display:none">Taking longer than usual...<br>Check your internet connection.</div>
+  <button id="appLoaderRetry" onclick="location.reload()" style="display:none;margin-top:4px;padding:10px 28px;border:2px solid #fff;background:transparent;color:#fff;border-radius:50px;font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:700;cursor:pointer;">🔄 Tap to Retry</button>
   <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 </div>
+<script>
+// Show "taking too long" message after 5s, retry button after 10s
+setTimeout(()=>{const s=document.getElementById('appLoaderSub');if(s)s.style.display='block';},5000);
+setTimeout(()=>{const r=document.getElementById('appLoaderRetry');if(r)r.style.display='block';},10000);
+</script>
 
 <header>
   <button class="bedtime-toggle" id="bedtimeBtn" onclick="toggleBedtime()" title="Bedtime Mode">☀️</button>
@@ -2244,6 +2251,20 @@ let _firebaseLoaded = false;   // true ONLY if cloud data was successfully downl
   }
   _bootApp();
 })();
+
+// ── Hard safety timeout: if loader is still showing after 8s, force-hide it and boot anyway ──
+setTimeout(()=>{
+  const loader = document.getElementById('appLoader');
+  if(loader && loader.style.display !== 'none'){
+    console.warn('⚠️ appLoader still visible after 8s — force-hiding and booting');
+    loader.style.display = 'none';
+    if(!_syncReady){
+      _syncReady = true;
+      _firebaseLoaded = false;
+      try{ _bootApp(); }catch(e){ console.error('Force-boot failed:', e); }
+    }
+  }
+}, 8000);
 
 
 // ── Debug: show sync status ──
@@ -12816,3 +12837,4 @@ function applyThemeNow(id){
 </script>
 </body>
 </html>
+    
