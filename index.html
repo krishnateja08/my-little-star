@@ -1395,6 +1395,29 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .spill{bottom:8px;right:8px;padding:6px 10px;font-size:.78rem;}
 }
 
+/* ── Create zone — landscape phone fix ── */
+@media(max-height:500px) and (orientation:landscape){
+  /* Collapse the BG chips bar into a minimal 1-row strip */
+  #czBgChips{max-height:44px;overflow-y:hidden;}
+  /* Tighten all toolbar padding so canvas gets max vertical space */
+  #area [style*="padding:7px 8px 7px"]{padding:3px 6px 3px!important;}
+  #area [style*="padding:4px 8px 8px"]{padding:2px 6px 4px!important;}
+  #area [style*="padding:6px 8px 4px"]{padding:3px 6px 2px!important;}
+  /* Shrink sticker + shape buttons in landscape */
+  .cz-sticker-item{width:44px!important;height:44px!important;font-size:1.6rem!important;}
+  .cz-shape-btn{width:44px!important;height:44px!important;}
+  /* Shrink brush buttons */
+  .cz-zone.cz-brushes button[id^="czBrushBtn"]{padding:6px 6px!important;}
+  /* Reduce sticker row height */
+  #czStickerList{padding:3px 6px!important;}
+  /* Fix container height for landscape */
+  #area > div[style*="100dvh"]{height:calc(100dvh - 110px)!important;min-height:260px!important;}
+  /* Hide mascot tip bubble in landscape to save space */
+  #czTipBubble{display:none!important;}
+  /* Make eraser smaller */
+  #czBrushBtn_eraser{padding:6px 10px!important;}
+}
+
 /* Touch-friendly tap targets (ensure min 44px) */
 @media(pointer:coarse){
   .tab{min-height:44px;display:flex;align-items:center;justify-content:center;}
@@ -7485,7 +7508,7 @@ function renderCreativeZone(){
     body.bedtime .cz-zone-label{border-bottom-color:rgba(255,255,255,.06);}
   </style>
 
-  <div style="width:100%;display:flex;flex-direction:column;height:calc(100vh - 155px);min-height:480px;padding:0;gap:0">
+  <div style="width:100%;display:flex;flex-direction:column;height:calc(100dvh - 155px);min-height:480px;padding:0;gap:0">
 
     <!-- ══ TOP: BG + ACTIONS bar ══ -->
     <div style="display:flex;align-items:center;gap:8px;padding:7px 8px 7px;flex-shrink:0;
