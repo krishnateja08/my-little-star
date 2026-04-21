@@ -7508,51 +7508,81 @@ function renderCreativeZone(){
 
     <!-- ══ BOTTOM TOOLBAR ══ -->
     <div style="flex-shrink:0;background:var(--cardbg);border-top:2px solid var(--border);padding:0">
-      <!-- Single scrollable strip -->
-      <div style="display:flex;align-items:center;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;min-height:64px">
-        <span style="font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800;color:var(--text4);padding:0 8px 0 10px;white-space:nowrap;flex-shrink:0">TOOLS</span>
-        ${CZ_BRUSHES.map(b=>`
-          <button id="czBrushBtn_${b.id}" onclick="czSetBrush('${b.id}');renderCreativeZone()"
-            style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 10px;border:none;
-                   border-bottom:3px solid ${czBrushType===b.id?'#a78bfa':'transparent'};
-                   background:${czBrushType===b.id?'rgba(167,139,250,.12)':'transparent'};
-                   color:${czBrushType===b.id?'#7c3aed':'var(--text2)'};
-                   cursor:pointer;transition:all .18s;flex-shrink:0;min-height:64px">
-            <span style="font-size:1.7rem;line-height:1">${b.icon}</span>
-            <span style="font-family:'Baloo 2',cursive;font-size:.65rem;font-weight:800;line-height:1;margin-top:2px">${b.label}</span>
-          </button>`).join('')}
-        <!-- Divider -->
-        <div style="width:2px;height:44px;background:var(--border);flex-shrink:0;margin:0 4px;border-radius:2px"></div>
-        <span style="font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800;color:var(--text4);padding:0 8px;white-space:nowrap;flex-shrink:0">SHAPES</span>
-        ${CZ_SHAPES.map(sh=>`
-          <div onclick="czSetShape('${sh.id}');renderCreativeZone()"
-            style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 8px;
-                   border-bottom:3px solid ${drawSticker==='__shape_'+sh.id?'#4ecdc4':'transparent'};
-                   background:${drawSticker==='__shape_'+sh.id?'rgba(78,205,196,.12)':'transparent'};
-                   cursor:pointer;transition:all .18s;flex-shrink:0;min-height:64px">
-            <span style="font-size:1.7rem;line-height:1">${sh.icon}</span>
-          </div>`).join('')}
-        <!-- Divider -->
-        <div style="width:2px;height:44px;background:var(--border);flex-shrink:0;margin:0 4px;border-radius:2px"></div>
-        <span style="font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800;color:var(--text4);padding:0 8px;white-space:nowrap;flex-shrink:0">STICKERS</span>
-        <!-- Sticker category switcher buttons FIRST -->
-        ${catKeys.map(k=>`
-          <button onclick="czSwitchStickerCat('${k}')"
-            style="width:44px;height:44px;border-radius:12px;border:2.5px solid ${activeCat===k?'#ff6b9d':'transparent'};
-                   background:${activeCat===k?'rgba(255,107,157,.12)':'transparent'};
-                   font-size:1.4rem;cursor:pointer;transition:all .18s;flex-shrink:0;margin:0 2px">
-            ${k}
-          </button>`).join('')}
-        <div style="width:2px;height:44px;background:var(--border);flex-shrink:0;margin:0 4px;border-radius:2px"></div>
-        <!-- Active category stickers -->
-        ${(CZ_STICKER_CATS[activeCat]||[]).map(s=>`
-          <div onclick="czSetSticker('${s}');renderCreativeZone()"
-            style="width:50px;height:64px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
-                   border-bottom:3px solid ${drawSticker===s?'#ff6b9d':'transparent'};
-                   background:${drawSticker===s?'rgba(255,107,157,.12)':'transparent'};
-                   font-size:1.7rem;cursor:pointer;transition:all .18s">
-            ${s}
-          </div>`).join('')}
+      <div style="display:flex;align-items:stretch;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;min-height:76px">
+
+        <!-- ── LEFT: TOOLS (pinned, always visible) ── -->
+        <div style="display:flex;align-items:center;flex-shrink:0;background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(167,139,250,.06));border-right:2px solid rgba(167,139,250,.3);padding:0 4px">
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 6px 2px 4px;border-right:1px solid rgba(167,139,250,.2)">
+            <span style="font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:900;color:#a78bfa;letter-spacing:1px;writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);padding:4px 0">TOOLS</span>
+          </div>
+          ${CZ_BRUSHES.filter(b=>b.id!=='eraser').map(b=>`
+            <button id="czBrushBtn_${b.id}" onclick="czSetBrush('${b.id}');renderCreativeZone()"
+              style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 9px;border:none;border-radius:12px;margin:4px 2px;
+                     background:${czBrushType===b.id?'linear-gradient(135deg,#a78bfa,#7c3aed)':'transparent'};
+                     color:${czBrushType===b.id?'#fff':'var(--text2)'};
+                     cursor:pointer;transition:all .18s;flex-shrink:0;
+                     ${czBrushType===b.id?'box-shadow:0 4px 14px rgba(124,58,237,.4);transform:translateY(-2px)':''}">
+              <span style="font-size:2rem;line-height:1">${b.icon}</span>
+              <span style="font-family:'Baloo 2',cursive;font-size:.68rem;font-weight:800;line-height:1;white-space:nowrap">${b.label}</span>
+            </button>`).join('')}
+        </div>
+
+        <!-- ── ERASER (big, unmissable, bright red) ── -->
+        <button id="czBrushBtn_eraser" onclick="czSetBrush('eraser');renderCreativeZone()"
+          style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 14px;border:none;flex-shrink:0;
+                 background:${czBrushType==='eraser'?'linear-gradient(135deg,#ff2d55,#ff6b6b)':'linear-gradient(135deg,#ff6b6b22,#ff2d5511)'};
+                 border-right:2px solid ${czBrushType==='eraser'?'#ff2d55':'rgba(255,45,85,.3)'};
+                 cursor:pointer;transition:all .18s;
+                 ${czBrushType==='eraser'?'box-shadow:0 0 0 3px rgba(255,45,85,.35)':''}">
+          <span style="font-size:2.4rem;line-height:1">🧽</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:900;color:${czBrushType==='eraser'?'#fff':'#ff2d55'};line-height:1;white-space:nowrap">ERASER</span>
+        </button>
+
+        <!-- ── SHAPES ── -->
+        <div style="display:flex;align-items:center;flex-shrink:0;border-right:2px solid rgba(78,205,196,.3);padding:0 4px">
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 6px 2px 4px;border-right:1px solid rgba(78,205,196,.2)">
+            <span style="font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:900;color:#4ecdc4;letter-spacing:1px;writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);padding:4px 0">SHAPES</span>
+          </div>
+          ${CZ_SHAPES.map(sh=>`
+            <div onclick="czSetShape('${sh.id}');renderCreativeZone()"
+              style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:7px 8px;border-radius:12px;margin:4px 2px;
+                     background:${drawSticker==='__shape_'+sh.id?'linear-gradient(135deg,#4ecdc4,#56cf81)':'transparent'};
+                     cursor:pointer;transition:all .18s;flex-shrink:0;
+                     ${drawSticker==='__shape_'+sh.id?'box-shadow:0 4px 14px rgba(78,205,196,.4);transform:translateY(-2px)':''}">
+              <span style="font-size:2rem;line-height:1">${sh.icon}</span>
+            </div>`).join('')}
+        </div>
+
+        <!-- ── STICKERS ── -->
+        <div style="display:flex;align-items:center;flex-shrink:0;padding:0 4px">
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 6px 2px 4px;border-right:1px solid rgba(255,107,157,.25)">
+            <span style="font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:900;color:#ff6b9d;letter-spacing:1px;writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);padding:4px 0">STICKERS</span>
+          </div>
+          <!-- Category tabs -->
+          <div style="display:flex;flex-direction:column;gap:3px;padding:4px 5px;border-right:1px solid rgba(255,107,157,.2)">
+            ${catKeys.map(k=>`
+              <button onclick="czSwitchStickerCat('${k}')"
+                style="width:32px;height:32px;border-radius:9px;border:2px solid ${activeCat===k?'#ff6b9d':'transparent'};
+                       background:${activeCat===k?'linear-gradient(135deg,#ff6b9d,#ffb830)':'transparent'};
+                       font-size:1.2rem;cursor:pointer;transition:all .18s;flex-shrink:0;
+                       ${activeCat===k?'box-shadow:0 2px 8px rgba(255,107,157,.4)':''}">
+                ${k}
+              </button>`).join('')}
+          </div>
+          <!-- Stickers row -->
+          <div style="display:flex;align-items:center;gap:2px;overflow-x:auto;scrollbar-width:none">
+            ${(CZ_STICKER_CATS[activeCat]||[]).map(s=>`
+              <div onclick="czSetSticker('${s}');renderCreativeZone()"
+                style="width:54px;height:76px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:10px;margin:0 1px;
+                       background:${drawSticker===s?'linear-gradient(135deg,#ff6b9d22,#ffb83022)':'transparent'};
+                       border:2px solid ${drawSticker===s?'#ff6b9d':'transparent'};
+                       font-size:2rem;cursor:pointer;transition:all .18s;
+                       ${drawSticker===s?'transform:scale(1.1)':''}">
+                ${s}
+              </div>`).join('')}
+          </div>
+        </div>
+
       </div>
     </div>
 
