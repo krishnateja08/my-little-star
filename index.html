@@ -480,18 +480,6 @@ body.bedtime .challenge-bar{background:linear-gradient(135deg,#a78bfa11,#4ecdc41
 
 /* MAIN */
 .main{padding:10px 12px 110px;}
-/* Create tab: fixed overlay so canvas is immune to page layout */
-.main.create-active{padding:0!important;overflow:hidden!important;height:0!important;min-height:0!important;}
-.main.create-active #area{
-  position:fixed;
-  top:0; left:0; right:0; bottom:0;
-  z-index:500;
-  display:flex;
-  flex-direction:column;
-  background:var(--bg);
-  /* push down below the header+tabs — measured via JS */
-}
-.main.create-active #area > div{height:100%;flex:1;display:flex;flex-direction:column;}
 
 /* ACTIVITY CARD */
 .acard{background:var(--cardbg);border-radius:var(--r);padding:20px 16px;margin-bottom:12px;
@@ -1275,6 +1263,7 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .cz-zone.cz-brushes > div:last-child{padding:4px 2px!important;gap:2px!important;}
   .cz-zone.cz-shapes > div:last-child{padding:4px 2px!important;gap:3px!important;}
   /* recover canvas height — header is shorter on tiny phones */
+  #area > div[style*="100dvh"]{height:calc(100dvh - 128px)!important;min-height:380px!important;}
 }
 
 /* Standard phones (341px–480px) — default, minimal tweaks */
@@ -1294,6 +1283,7 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   [id^="czBrushBtn_"] span[style*="2.8rem"]{font-size:2rem!important;}
   .cz-shape-btn span[style*="2rem"]{font-size:1.6rem!important;}
   /* recover canvas height on standard phones */
+  #area > div[style*="100dvh"]{height:calc(100dvh - 138px)!important;min-height:400px!important;}
 }
 
 /* Large phones / small tablets (481px–768px) */
@@ -1355,11 +1345,6 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .tabs{gap:8px;padding:14px 30px 0;}
   .tab{padding:11px 20px;font-size:.88rem;}
   .main{padding:14px 30px 130px;}
-  .main.create-active{height:0!important;}
-  /* Wider color rail on tablet */
-  .cz-zone.cz-colors{width:84px!important;}
-  #czColorPreview{width:54px!important;height:54px!important;border-radius:16px!important;}
-  [data-czcolor]{width:36px!important;height:36px!important;border-radius:10px!important;}
   .acard,.game-panel,.create-panel,.parent-dash{padding:28px 24px;margin-bottom:16px;}
   .atitle,.game-title{font-size:1.65rem;}
   .aemoji{font-size:4.5rem;}
@@ -1396,11 +1381,6 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .tabs{padding:16px 40px 0;gap:10px;}
   .tab{padding:12px 24px;font-size:.92rem;}
   .main{padding:16px 40px 140px;}
-  .main.create-active{height:0!important;}
-  /* Wider color rail on desktop */
-  .cz-zone.cz-colors{width:92px!important;}
-  #czColorPreview{width:60px!important;height:60px!important;border-radius:18px!important;}
-  [data-czcolor]{width:40px!important;height:40px!important;border-radius:12px!important;}
   .acard,.game-panel,.create-panel,.parent-dash{padding:32px 28px;border-radius:28px;}
   .atitle,.game-title{font-size:1.8rem;}
   .done-btn,.game-next-btn,.game-done-btn{padding:18px;font-size:1.2rem;border-radius:18px;}
@@ -1463,6 +1443,7 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   /* Reduce sticker row height */
   #czStickerList{padding:3px 6px!important;}
   /* Fix container height for landscape */
+  #area > div[style*="100dvh"]{height:calc(100dvh - 110px)!important;min-height:260px!important;}
   /* Hide mascot tip bubble in landscape to save space */
   #czTipBubble{display:none!important;}
   /* Make eraser smaller */
@@ -7559,7 +7540,7 @@ function renderCreativeZone(){
     body.bedtime .cz-zone-label{border-bottom-color:rgba(255,255,255,.06);}
   </style>
 
-  <div style="width:100%;display:flex;flex-direction:column;height:100%;padding:0;gap:0">
+  <div style="width:100%;display:flex;flex-direction:column;height:calc(100dvh - 155px);min-height:480px;padding:0;gap:0">
 
     <!-- ══ TOP: BG + ACTIONS bar ══ -->
     <div style="display:flex;align-items:center;gap:8px;padding:7px 8px 7px;flex-shrink:0;
@@ -7660,34 +7641,31 @@ function renderCreativeZone(){
         </div>
       </div>
 
-      <!-- ══ RIGHT RAIL: Color Zone ══ -->
+      <!-- ══ RIGHT RAIL: Brush Zone ══ -->
       <div class="cz-zone cz-colors" style="width:70px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden">
         <!-- COLOR section -->
         <div class="cz-zone-label" style="color:#c026d3;justify-content:center;font-size:.62rem">🎨 Colors</div>
-        <div style="display:flex;flex-direction:column;align-items:center;padding:6px 4px;gap:4px;flex:1;justify-content:space-evenly;overflow:hidden">
+        <div style="display:flex;flex-direction:column;align-items:center;padding:6px 4px;gap:5px;overflow-y:auto;scrollbar-width:none;flex:1">
           <!-- Active color preview (big) -->
-          <div id="czColorPreview" style="width:42px;height:42px;border-radius:12px;background:${drawColor};border:3px solid #fff;
+          <div id="czColorPreview" style="width:46px;height:46px;border-radius:14px;background:${drawColor};border:3px solid #fff;
                       box-shadow:0 3px 12px rgba(0,0,0,.25);flex-shrink:0;position:relative;overflow:hidden">
             <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.3),transparent)"></div>
           </div>
-          <!-- Color swatches — spaced evenly to fill available height, no scroll -->
-          <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;justify-content:space-evenly;width:100%">
           ${CZ_COLORS.map(c=>`
             <div onclick="czSetColor('${c}')" data-czcolor="${c}"
-              style="width:${drawColor===c?40:30}px;height:${drawColor===c?40:30}px;border-radius:${drawColor===c?'11':'8'}px;
+              style="width:${drawColor===c?44:32}px;height:${drawColor===c?44:32}px;border-radius:${drawColor===c?'12':'9'}px;
                      background:${c};cursor:pointer;transition:all .2s;flex-shrink:0;
                      ${c==='#ffffff'?'box-shadow:inset 0 0 0 2px #ccc;':''}
                      ${drawColor===c?'box-shadow:0 0 0 3px #ffb830,0 3px 10px rgba(0,0,0,.22);transform:scale(1.05)':'box-shadow:0 1px 5px rgba(0,0,0,.2)'}">
             </div>`).join('')}
-          </div>
-          <!-- Custom colour wheel — always visible at bottom -->
+          <!-- Custom colour wheel -->
           <div style="position:relative;width:36px;height:36px;border-radius:50%;overflow:hidden;cursor:pointer;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.18);border:2px solid rgba(255,255,255,.7)" title="Custom colour">
             <div style="position:absolute;inset:0;background:conic-gradient(red,yellow,lime,aqua,blue,magenta,red)"></div>
             <input id="czColorInput" type="color" value="${drawColor}" oninput="czSetColor(this.value)"
               style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer">
           </div>
           <!-- Color / Size divider — clear labeled separator -->
-          <div style="width:56px;display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0">
+          <div style="width:56px;display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0;margin:4px 0">
             <div style="width:100%;height:1.5px;background:linear-gradient(90deg,transparent,rgba(167,139,250,.4),transparent);border-radius:1px"></div>
             <span style="font-family:'Baloo 2',cursive;font-size:.55rem;font-weight:900;color:#c026d3;letter-spacing:.5px;opacity:.5">· · ·</span>
             <div style="width:100%;height:1.5px;background:linear-gradient(90deg,transparent,rgba(79,163,224,.4),transparent);border-radius:1px"></div>
@@ -7697,13 +7675,11 @@ function renderCreativeZone(){
             <span style="font-size:.8rem">📏</span>
             <span style="font-family:'Baloo 2',cursive;font-size:.55rem;font-weight:900;color:#4fa3e0;letter-spacing:.5px">SIZE</span>
           </div>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:0 0 auto;justify-content:center">
           ${CZ_SIZES.map(({s,label})=>`
             <div onclick="czSetSize(${s})" title="${label}" data-czsize="${s}"
-              style="width:${Math.min(12+s/2,40)}px;height:${Math.min(12+s/2,40)}px;border-radius:50%;cursor:pointer;transition:all .2s;flex-shrink:0;
+              style="width:${Math.min(14+s/2,46)}px;height:${Math.min(14+s/2,46)}px;border-radius:50%;cursor:pointer;transition:all .2s;flex-shrink:0;
                      background:${drawSize===s?'linear-gradient(135deg,#4fa3e0,#2563eb)':'var(--text5)'};
                      ${drawSize===s?'box-shadow:0 0 0 3px rgba(79,163,224,.4),0 3px 8px rgba(79,163,224,.3);transform:scale(1.15)':'box-shadow:0 1px 4px rgba(0,0,0,.15)'}"></div>`).join('')}
-          </div>
         </div>
       </div>
     </div>
@@ -7815,15 +7791,7 @@ function renderCreativeZone(){
     czApplyBg();
   }
   requestAnimationFrame(()=>{requestAnimationFrame(sizeCanvas);});
-  window.addEventListener('resize',()=>{
-    if(tab==='create'&&drawCanvas){
-      sizeCanvas();
-      // Recalculate fixed top in case browser chrome changed
-      const tabsEl=document.querySelector('.tabs');
-      const area=document.getElementById('area');
-      if(tabsEl&&area) area.style.top=tabsEl.getBoundingClientRect().bottom+'px';
-    }
-  });
+  window.addEventListener('resize',()=>{if(tab==='create'&&drawCanvas)sizeCanvas();});
   drawCanvas.addEventListener('mousedown',czStartDraw);
   drawCanvas.addEventListener('mousemove',czDoDraw);
   drawCanvas.addEventListener('mouseup',czEndDraw);
@@ -7930,9 +7898,9 @@ function czRefreshColorRail(){
   document.querySelectorAll('[data-czcolor]').forEach(el=>{
     const c=el.dataset.czcolor;
     const active=c===drawColor;
-    el.style.width=(active?40:30)+'px';
-    el.style.height=(active?40:30)+'px';
-    el.style.borderRadius=(active?'11':'8')+'px';
+    el.style.width=(active?44:32)+'px';
+    el.style.height=(active?44:32)+'px';
+    el.style.borderRadius=(active?'12':'9')+'px';
     el.style.boxShadow=active?'0 0 0 3px #ffb830,0 3px 10px rgba(0,0,0,.22)':'0 1px 5px rgba(0,0,0,.2)';
     el.style.transform=active?'scale(1.05)':'';
   });
@@ -8911,25 +8879,6 @@ function switchTab(t){
   document.getElementById('gameRow').classList.toggle('show',t==='games');
   document.getElementById('thinkRow').classList.remove('show');
   if(t!=='learning') subj='all';
-
-  // Toggle create-active on main so canvas gets full height with no padding
-  document.querySelector('.main').classList.toggle('create-active', t==='create');
-  // Hide weekly bar for create tab — it's never needed there
-  document.getElementById('wbar').style.display=(t==='create')?'none':'flex';
-  // For create tab: set fixed area top to exact bottom of tabs element
-  if(t==='create'){
-    requestAnimationFrame(()=>{
-      const tabsEl=document.querySelector('.tabs');
-      if(tabsEl){
-        const tabsBottom=tabsEl.getBoundingClientRect().bottom;
-        const area=document.getElementById('area');
-        if(area) area.style.top=tabsBottom+'px';
-      }
-    });
-  } else {
-    const area=document.getElementById('area');
-    if(area) area.style.top='';
-  }
 
   // Show/hide elements based on tab
   const isSpecial=t==='create'||t==='parent'||t==='stories'||t==='hearts';
