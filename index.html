@@ -480,10 +480,18 @@ body.bedtime .challenge-bar{background:linear-gradient(135deg,#a78bfa11,#4ecdc41
 
 /* MAIN */
 .main{padding:10px 12px 110px;}
-/* Create tab: remove padding so canvas fills full viewport height */
-.main.create-active{padding:0!important;overflow:hidden!important;height:calc(100dvh - 155px);}
-.main.create-active #area{height:100%;display:flex;flex-direction:column;}
-.main.create-active #area > div{height:100%;flex:1;}
+/* Create tab: fixed overlay so canvas is immune to page layout */
+.main.create-active{padding:0!important;overflow:hidden!important;height:0!important;min-height:0!important;}
+.main.create-active #area{
+  position:fixed;
+  top:0; left:0; right:0; bottom:0;
+  z-index:500;
+  display:flex;
+  flex-direction:column;
+  background:var(--bg);
+  /* push down below the header+tabs — measured via JS */
+}
+.main.create-active #area > div{height:100%;flex:1;display:flex;flex-direction:column;}
 
 /* ACTIVITY CARD */
 .acard{background:var(--cardbg);border-radius:var(--r);padding:20px 16px;margin-bottom:12px;
@@ -1267,7 +1275,6 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .cz-zone.cz-brushes > div:last-child{padding:4px 2px!important;gap:2px!important;}
   .cz-zone.cz-shapes > div:last-child{padding:4px 2px!important;gap:3px!important;}
   /* recover canvas height — header is shorter on tiny phones */
-  .main.create-active{height:calc(100dvh - 128px)!important;}
 }
 
 /* Standard phones (341px–480px) — default, minimal tweaks */
@@ -1287,7 +1294,6 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   [id^="czBrushBtn_"] span[style*="2.8rem"]{font-size:2rem!important;}
   .cz-shape-btn span[style*="2rem"]{font-size:1.6rem!important;}
   /* recover canvas height on standard phones */
-  .main.create-active{height:calc(100dvh - 138px)!important;}
 }
 
 /* Large phones / small tablets (481px–768px) */
@@ -1338,7 +1344,6 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .fact-title{font-size:1.15rem;}
   .color-dot{width:36px;height:36px;}
   .create-canvas-wrap{border-radius:18px;}
-  .main.create-active{height:calc(100dvh - 158px)!important;}
 }
 
 /* Tablets (769px–1024px) */
@@ -1350,7 +1355,7 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .tabs{gap:8px;padding:14px 30px 0;}
   .tab{padding:11px 20px;font-size:.88rem;}
   .main{padding:14px 30px 130px;}
-  .main.create-active{height:calc(100dvh - 168px)!important;}
+  .main.create-active{height:0!important;}
   /* Wider color rail on tablet */
   .cz-zone.cz-colors{width:84px!important;}
   #czColorPreview{width:54px!important;height:54px!important;border-radius:16px!important;}
@@ -1391,7 +1396,7 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .tabs{padding:16px 40px 0;gap:10px;}
   .tab{padding:12px 24px;font-size:.92rem;}
   .main{padding:16px 40px 140px;}
-  .main.create-active{height:calc(100dvh - 178px)!important;}
+  .main.create-active{height:0!important;}
   /* Wider color rail on desktop */
   .cz-zone.cz-colors{width:92px!important;}
   #czColorPreview{width:60px!important;height:60px!important;border-radius:18px!important;}
@@ -1458,7 +1463,6 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   /* Reduce sticker row height */
   #czStickerList{padding:3px 6px!important;}
   /* Fix container height for landscape */
-  .main.create-active{height:calc(100dvh - 110px)!important;}
   /* Hide mascot tip bubble in landscape to save space */
   #czTipBubble{display:none!important;}
   /* Make eraser smaller */
@@ -7555,7 +7559,7 @@ function renderCreativeZone(){
     body.bedtime .cz-zone-label{border-bottom-color:rgba(255,255,255,.06);}
   </style>
 
-  <div style="width:100%;display:flex;flex-direction:column;height:100%;min-height:480px;padding:0;gap:0">
+  <div style="width:100%;display:flex;flex-direction:column;height:100%;padding:0;gap:0">
 
     <!-- ══ TOP: BG + ACTIONS bar ══ -->
     <div style="display:flex;align-items:center;gap:8px;padding:7px 8px 7px;flex-shrink:0;
@@ -7811,7 +7815,15 @@ function renderCreativeZone(){
     czApplyBg();
   }
   requestAnimationFrame(()=>{requestAnimationFrame(sizeCanvas);});
-  window.addEventListener('resize',()=>{if(tab==='create'&&drawCanvas)sizeCanvas();});
+  window.addEventListener('resize',()=>{
+    if(tab==='create'&&drawCanvas){
+      sizeCanvas();
+      // Recalculate fixed top in case browser chrome changed
+      const tabsEl=document.querySelector('.tabs');
+      const area=document.getElementById('area');
+      if(tabsEl&&area) area.style.top=tabsEl.getBoundingClientRect().bottom+'px';
+    }
+  });
   drawCanvas.addEventListener('mousedown',czStartDraw);
   drawCanvas.addEventListener('mousemove',czDoDraw);
   drawCanvas.addEventListener('mouseup',czEndDraw);
@@ -8902,6 +8914,22 @@ function switchTab(t){
 
   // Toggle create-active on main so canvas gets full height with no padding
   document.querySelector('.main').classList.toggle('create-active', t==='create');
+  // Hide weekly bar for create tab — it's never needed there
+  document.getElementById('wbar').style.display=(t==='create')?'none':'flex';
+  // For create tab: set fixed area top to exact bottom of tabs element
+  if(t==='create'){
+    requestAnimationFrame(()=>{
+      const tabsEl=document.querySelector('.tabs');
+      if(tabsEl){
+        const tabsBottom=tabsEl.getBoundingClientRect().bottom;
+        const area=document.getElementById('area');
+        if(area) area.style.top=tabsBottom+'px';
+      }
+    });
+  } else {
+    const area=document.getElementById('area');
+    if(area) area.style.top='';
+  }
 
   // Show/hide elements based on tab
   const isSpecial=t==='create'||t==='parent'||t==='stories'||t==='hearts';
