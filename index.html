@@ -7449,16 +7449,33 @@ function renderCreativeZone(){
     @keyframes czPop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:1}}
     @keyframes czShine{0%{opacity:0;transform:translateX(-60px)}50%{opacity:.6}100%{opacity:0;transform:translateX(80px)}}
     @keyframes czGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,107,157,0)}50%{box-shadow:0 0 0 8px rgba(255,107,157,.25)}}
+    @keyframes czMascotPop{0%{transform:scale(1) rotate(0)}25%{transform:scale(1.5) rotate(-15deg)}50%{transform:scale(1.3) rotate(10deg)}75%{transform:scale(1.4) rotate(-8deg)}100%{transform:scale(1) rotate(0)}}
+    @keyframes czFramePulse{0%,100%{box-shadow:0 12px 40px rgba(0,0,0,.22),0 2px 8px rgba(0,0,0,.1),0 0 0 3px rgba(167,139,250,.45),0 0 0 6px rgba(255,184,48,.15),0 0 0 9px rgba(167,139,250,.07)}50%{box-shadow:0 12px 40px rgba(0,0,0,.22),0 2px 8px rgba(0,0,0,.1),0 0 0 3px rgba(167,139,250,.65),0 0 0 7px rgba(255,184,48,.25),0 0 0 11px rgba(167,139,250,.12)}}
+    #czWrap{animation:czFramePulse 4s ease-in-out infinite;}
     .cz-tool-btn:active{transform:scale(.88)!important;}
     .cz-sticker:active{animation:czBounce .35s;}
-    .cz-zone{background:var(--cardbg);border-radius:18px;box-shadow:0 3px 14px rgba(0,0,0,.08);border:1.5px solid var(--border);}
-    .cz-zone-label{font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:900;letter-spacing:.8px;text-transform:uppercase;padding:6px 10px 4px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:5px;}
+    /* ── Section Cards — pastel fills, soft shadows, rounded ── */
+    .cz-zone{border-radius:20px;box-shadow:0 4px 18px rgba(0,0,0,.08),0 1px 4px rgba(0,0,0,.05);border:1.5px solid rgba(255,255,255,.8);}
+    .cz-zone.cz-brushes {background:linear-gradient(145deg,#fdf0ff,#f3e8ff,#fdf0ff);}
+    .cz-zone.cz-shapes  {background:linear-gradient(145deg,#e8fff8,#d4f5f0,#e8fff8);}
+    .cz-zone.cz-stickers{background:linear-gradient(145deg,#fff0f5,#ffe4ee,#fff0f5);}
+    .cz-zone.cz-colors  {background:linear-gradient(180deg,#fff8ff,#f5ecff);}
+    body.bedtime .cz-zone{border-color:rgba(255,255,255,.08);}
+    body.bedtime .cz-zone.cz-brushes {background:linear-gradient(145deg,#2a1a3e,#221436);}
+    body.bedtime .cz-zone.cz-shapes  {background:linear-gradient(145deg,#1a2e2a,#142622);}
+    body.bedtime .cz-zone.cz-stickers{background:linear-gradient(145deg,#2e1a22,#22141a);}
+    body.bedtime .cz-zone.cz-colors  {background:linear-gradient(180deg,#22143a,#1a0e2e);}
+    .cz-zone-label{font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:900;letter-spacing:.8px;text-transform:uppercase;padding:7px 11px 5px;border-bottom:1.5px solid rgba(0,0,0,.05);display:flex;align-items:center;gap:5px;border-radius:19px 19px 0 0;}
+    body.bedtime .cz-zone-label{border-bottom-color:rgba(255,255,255,.06);}
   </style>
 
   <div style="width:100%;display:flex;flex-direction:column;height:calc(100vh - 155px);min-height:480px;padding:0;gap:0">
 
     <!-- ══ TOP: BG + ACTIONS bar ══ -->
-    <div style="display:flex;align-items:center;gap:8px;padding:7px 8px 5px;flex-shrink:0;background:var(--cardbg);border-bottom:1.5px solid var(--border)">
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 8px 7px;flex-shrink:0;
+                background:linear-gradient(145deg,#fff9ec,#fff5e0);
+                border-bottom:1.5px solid rgba(255,184,48,.2);border-radius:0;
+                box-shadow:0 2px 8px rgba(255,184,48,.08)">
 
       <!-- BG zone -->
       <div style="flex:1;display:flex;align-items:center;gap:6px;overflow:hidden">
@@ -7523,20 +7540,26 @@ function renderCreativeZone(){
     </div>
 
     <!-- ══ MIDDLE: Canvas + Right Rail ══ -->
-    <div style="display:flex;flex:1;min-height:0;gap:6px;padding:6px 6px 4px">
+    <div style="display:flex;flex:1;min-height:0;gap:8px;padding:6px 8px 4px">
 
-      <!-- Canvas frame (suggestion 7: premium border + shadow) -->
-      <div style="flex:1;position:relative;border-radius:20px;overflow:hidden;
-                  box-shadow:0 8px 32px rgba(0,0,0,.18),0 0 0 4px rgba(167,139,250,.15),0 0 0 7px rgba(167,139,250,.07);
-                  border:3px solid rgba(167,139,250,.35)" id="czWrap">
+      <!-- Canvas frame — upgraded with premium frame treatment -->
+      <div style="flex:1;position:relative;border-radius:24px;overflow:hidden;
+                  box-shadow:0 12px 40px rgba(0,0,0,.22),0 2px 8px rgba(0,0,0,.1),0 0 0 3px rgba(167,139,250,.45),0 0 0 6px rgba(255,184,48,.15),0 0 0 9px rgba(167,139,250,.07);
+                  border:2px solid rgba(167,139,250,.5);
+                  background:linear-gradient(135deg,rgba(167,139,250,.1),rgba(255,184,48,.08))" id="czWrap">
         <canvas id="drawCanvas" style="display:block;touch-action:none;position:absolute;inset:0;z-index:1;width:100%;height:100%"></canvas>
         <div id="czBgLayer" style="position:absolute;inset:0;z-index:0;pointer-events:none;background:#ffffff"></div>
-        <!-- Mascot corner (suggestion 8) -->
-        <div id="czMascot" style="position:absolute;bottom:10px;left:12px;z-index:3;pointer-events:none;display:flex;align-items:flex-end;gap:6px">
-          <div style="font-size:2.2rem;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 3px 6px rgba(0,0,0,.2))">🌟</div>
-          <div id="czTipBubble" style="background:rgba(255,255,255,.95);backdrop-filter:blur(6px);border-radius:14px 14px 14px 4px;
-               padding:7px 12px;font-family:'Baloo 2',cursive;font-size:.68rem;font-weight:700;color:#7c3aed;
-               box-shadow:0 4px 14px rgba(0,0,0,.12);max-width:150px;text-align:center;opacity:0;transition:opacity .5s;line-height:1.4">
+        <!-- Mascot corner — upgraded with personality & celebration -->
+        <div id="czMascot" style="position:absolute;bottom:10px;left:10px;z-index:3;display:flex;align-items:flex-end;gap:5px;cursor:pointer"
+          onclick="czMascotTap()">
+          <div style="position:relative">
+            <div id="czMascotEmoji" style="font-size:2.6rem;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 4px 8px rgba(0,0,0,.25));transition:all .3s;display:block">🎨</div>
+            <!-- Glow ring under mascot -->
+            <div style="position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:36px;height:8px;border-radius:50%;background:rgba(167,139,250,.25);filter:blur(4px)"></div>
+          </div>
+          <div id="czTipBubble" style="background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-radius:14px 14px 14px 4px;
+               padding:8px 13px;font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:700;color:#7c3aed;
+               box-shadow:0 5px 18px rgba(0,0,0,.14),0 0 0 1.5px rgba(167,139,250,.3);max-width:150px;text-align:center;opacity:0;transition:opacity .4s;line-height:1.4;pointer-events:none">
             ${tip}
           </div>
         </div>
@@ -7547,9 +7570,9 @@ function renderCreativeZone(){
       </div>
 
       <!-- ══ RIGHT RAIL: Brush Zone ══ -->
-      <div class="cz-zone" style="width:70px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden">
+      <div class="cz-zone cz-colors" style="width:70px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden">
         <!-- COLOR section -->
-        <div class="cz-zone-label" style="color:#ff6b9d;justify-content:center">🎨</div>
+        <div class="cz-zone-label" style="color:#c026d3;justify-content:center">🎨</div>
         <div style="display:flex;flex-direction:column;align-items:center;padding:6px 4px;gap:5px;overflow-y:auto;scrollbar-width:none;flex:1">
           <!-- Active color preview (big) -->
           <div style="width:46px;height:46px;border-radius:14px;background:${drawColor};border:3px solid #fff;
@@ -7583,14 +7606,14 @@ function renderCreativeZone(){
     </div>
 
     <!-- ══ BOTTOM: Tools + Eraser | Shapes | Stickers ══ -->
-    <div style="flex-shrink:0;display:flex;flex-direction:column;gap:4px;padding:0 6px 6px">
+    <div style="flex-shrink:0;display:flex;flex-direction:column;gap:6px;padding:4px 8px 8px">
 
       <!-- Row: DRAW TOOLS zone + ERASER + SHAPES zone -->
       <div style="display:flex;gap:6px;align-items:stretch">
 
-        <!-- 🖌️ DRAW TOOLS zone (suggestion 1: grouped) -->
-        <div class="cz-zone" style="flex:1;overflow:hidden">
-          <div class="cz-zone-label" style="color:#a78bfa">🖌️ Draw Tools</div>
+        <!-- 🖌️ DRAW TOOLS zone -->
+        <div class="cz-zone cz-brushes" style="flex:1;overflow:hidden">
+          <div class="cz-zone-label" style="color:#9333ea">🖌️ Brushes</div>
           <div style="display:flex;align-items:center;justify-content:space-around;padding:6px 4px;gap:3px">
             ${CZ_BRUSHES.filter(b=>b.id!=='eraser').map(b=>`
               <button id="czBrushBtn_${b.id}" class="cz-tool-btn" onclick="czSetBrush('${b.id}');renderCreativeZone()"
@@ -7618,8 +7641,8 @@ function renderCreativeZone(){
         </button>
 
         <!-- 🔷 SHAPES zone -->
-        <div class="cz-zone" style="flex:1;overflow:hidden">
-          <div class="cz-zone-label" style="color:#4ecdc4">🔷 Shapes</div>
+        <div class="cz-zone cz-shapes" style="flex:1;overflow:hidden">
+          <div class="cz-zone-label" style="color:#0d9488">🔷 Shapes</div>
           <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;padding:6px 4px;gap:4px">
             ${CZ_SHAPES.map(sh=>`
               <div class="cz-tool-btn" onclick="czSetShape('${sh.id}');renderCreativeZone()"
@@ -7632,9 +7655,9 @@ function renderCreativeZone(){
         </div>
       </div>
 
-      <!-- Row: STICKERS zone (suggestion 6: tabbed, bigger, bouncy) -->
-      <div class="cz-zone" style="overflow:hidden">
-        <div class="cz-zone-label" style="color:#ff6b9d">
+      <!-- Row: STICKERS zone -->
+      <div class="cz-zone cz-stickers" style="overflow:hidden">
+        <div class="cz-zone-label" style="color:#e11d78">
           🐾 Stickers
           <div style="display:flex;gap:5px;margin-left:auto">
             ${catKeys.map(k=>`
@@ -7814,8 +7837,60 @@ function czSave(){
       setTimeout(()=>czShowBadge('🌟','Super Artist!','You earned 15 stars!'),800);
     }
     mascotSay('Amazing art! ⭐+3 stars!');
+    setTimeout(()=>czMascotCelebrate('Saved! 💾 +3 ⭐'),400);
   }catch(e){}
   setTimeout(()=>{if(btn){btn.style.background='linear-gradient(135deg,#4ade80,#22c55e)';}renderCreativeZone();},1000);
+}
+// ── Mascot interaction ────────────────────────────────
+const CZ_MASCOT_CHEERS=[
+  {e:'🎨',msg:'You\'re so creative! 🌟'},
+  {e:'🦄',msg:'Magic drawing! ✨'},
+  {e:'🌈',msg:'So colourful! 🎉'},
+  {e:'⭐',msg:'Super star artist!'},
+  {e:'🎀',msg:'Beautiful art! 💕'},
+  {e:'🚀',msg:'To the moon! 🌙'},
+  {e:'🌸',msg:'Lovely! Keep going!'},
+  {e:'🦋',msg:'Wow, amazing! 🎊'},
+];
+function czMascotTap(){
+  const cheer=CZ_MASCOT_CHEERS[Math.floor(Math.random()*CZ_MASCOT_CHEERS.length)];
+  const emoji=document.getElementById('czMascotEmoji');
+  const bubble=document.getElementById('czTipBubble');
+  if(emoji){
+    emoji.textContent=cheer.e;
+    emoji.style.animation='none';
+    requestAnimationFrame(()=>{emoji.style.animation='czMascotPop .6s ease, float 3s ease-in-out 0.6s infinite';});
+  }
+  if(bubble){
+    bubble.textContent=cheer.msg;
+    bubble.style.opacity='1';
+    clearTimeout(window._czBubbleTimer);
+    window._czBubbleTimer=setTimeout(()=>{
+      if(bubble)bubble.style.opacity='0';
+      setTimeout(()=>{if(emoji)emoji.textContent='🎨';},300);
+    },2500);
+  }
+  playClick&&playClick();
+}
+function czMascotCelebrate(msg){
+  const emoji=document.getElementById('czMascotEmoji');
+  const bubble=document.getElementById('czTipBubble');
+  const celebEmojis=['🎉','🏆','🌟','✨','🎊'];
+  const e=celebEmojis[Math.floor(Math.random()*celebEmojis.length)];
+  if(emoji){
+    emoji.textContent=e;
+    emoji.style.animation='none';
+    requestAnimationFrame(()=>{emoji.style.animation='czMascotPop .5s ease, float 3s ease-in-out 0.5s infinite';});
+  }
+  if(bubble&&msg){
+    bubble.textContent=msg;
+    bubble.style.opacity='1';
+    clearTimeout(window._czBubbleTimer);
+    window._czBubbleTimer=setTimeout(()=>{
+      if(bubble)bubble.style.opacity='0';
+      setTimeout(()=>{if(emoji){emoji.textContent='🎨';emoji.style.animation='float 3s ease-in-out infinite';}},400);
+    },3000);
+  }
 }
 function czShowBadge(emoji,title,desc){
   const el=document.createElement('div');
