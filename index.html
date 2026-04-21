@@ -7484,7 +7484,8 @@ function renderCreativeZone(){
           <!-- BG category filter -->
           <div style="display:flex;gap:2px">
             ${['all','fantasy','nature','patterns','solid'].map(c=>`
-              <button onclick="window.czActiveBgCat='${c}';renderCreativeZone()"
+              <button onclick="window.czActiveBgCat='${c}';czRefreshBgSection(this)"
+                data-czbgcat="${c}"
                 style="padding:1px 5px;border-radius:6px;border:none;font-family:'Baloo 2',cursive;font-size:.5rem;font-weight:800;cursor:pointer;transition:all .15s;
                        background:${activeBgCat===c?'#ffb830':'var(--inputbg)'};color:${activeBgCat===c?'#fff':'var(--text4)'}">
                 ${c==='all'?'All':c==='fantasy'?'✨':c==='nature'?'🌿':c==='patterns'?'◉':'▩'}
@@ -7492,17 +7493,17 @@ function renderCreativeZone(){
           </div>
         </div>
         <!-- BG chips scrollable -->
-        <div style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;align-items:center;flex:1">
+        <div id="czBgChips" style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;align-items:center;flex:1">
           ${bgList.map((b,_i)=>{
             const realIdx=CZ_BGS.indexOf(b);
-            return `<div onclick="czSetBg(${realIdx})"
+            return `<div onclick="czSetBg(${realIdx})" data-czbg="${realIdx}"
               style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:all .18s;padding:3px 5px;border-radius:14px;
                      border:2.5px solid ${czBgIdx===realIdx?'#ffb830':'transparent'};
                      background:${czBgIdx===realIdx?'rgba(255,184,48,.1)':'transparent'};
                      ${czBgIdx===realIdx?'box-shadow:0 2px 8px rgba(255,184,48,.35)':''}">
               <div style="width:36px;height:36px;border-radius:12px;background:${b.bg};background-color:${b.base||b.bg};background-size:${b.size||'cover'};
                           border:2px solid rgba(255,255,255,.5);box-shadow:0 2px 6px rgba(0,0,0,.15);overflow:hidden;flex-shrink:0"></div>
-              <span style="font-family:'Baloo 2',cursive;font-size:.55rem;font-weight:800;color:${czBgIdx===realIdx?'#b36c00':'var(--text4)'};white-space:nowrap">${b.label}</span>
+              <span data-cz="bglabel" style="font-family:'Baloo 2',cursive;font-size:.55rem;font-weight:800;color:${czBgIdx===realIdx?'#b36c00':'var(--text4)'};white-space:nowrap">${b.label}</span>
             </div>`;
           }).join('')}
         </div>
@@ -7575,12 +7576,12 @@ function renderCreativeZone(){
         <div class="cz-zone-label" style="color:#c026d3;justify-content:center">🎨</div>
         <div style="display:flex;flex-direction:column;align-items:center;padding:6px 4px;gap:5px;overflow-y:auto;scrollbar-width:none;flex:1">
           <!-- Active color preview (big) -->
-          <div style="width:46px;height:46px;border-radius:14px;background:${drawColor};border:3px solid #fff;
+          <div id="czColorPreview" style="width:46px;height:46px;border-radius:14px;background:${drawColor};border:3px solid #fff;
                       box-shadow:0 3px 12px rgba(0,0,0,.25);flex-shrink:0;position:relative;overflow:hidden">
             <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.3),transparent)"></div>
           </div>
           ${CZ_COLORS.map(c=>`
-            <div onclick="czSetColor('${c}')"
+            <div onclick="czSetColor('${c}')" data-czcolor="${c}"
               style="width:${drawColor===c?44:32}px;height:${drawColor===c?44:32}px;border-radius:${drawColor===c?'12':'9'}px;
                      background:${c};cursor:pointer;transition:all .2s;flex-shrink:0;
                      ${c==='#ffffff'?'box-shadow:inset 0 0 0 2px #ccc;':''}
@@ -7589,7 +7590,7 @@ function renderCreativeZone(){
           <!-- Custom colour wheel -->
           <div style="position:relative;width:32px;height:32px;border-radius:50%;overflow:hidden;cursor:pointer;flex-shrink:0;box-shadow:0 1px 5px rgba(0,0,0,.2)" title="Custom colour">
             <div style="position:absolute;inset:0;background:conic-gradient(red,yellow,lime,aqua,blue,magenta,red)"></div>
-            <input type="color" value="${drawColor}" oninput="czSetColor(this.value)"
+            <input id="czColorInput" type="color" value="${drawColor}" oninput="czSetColor(this.value)"
               style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer">
           </div>
           <!-- Divider -->
@@ -7597,7 +7598,7 @@ function renderCreativeZone(){
           <!-- SIZE label -->
           <span style="font-family:'Baloo 2',cursive;font-size:.58rem;font-weight:900;color:#4fa3e0;letter-spacing:.5px">SIZE</span>
           ${CZ_SIZES.map(({s,label})=>`
-            <div onclick="czSetSize(${s})" title="${label}"
+            <div onclick="czSetSize(${s})" title="${label}" data-czsize="${s}"
               style="width:${Math.min(14+s/2,46)}px;height:${Math.min(14+s/2,46)}px;border-radius:50%;cursor:pointer;transition:all .2s;flex-shrink:0;
                      background:${drawSize===s?'linear-gradient(135deg,#4fa3e0,#2563eb)':'var(--text5)'};
                      ${drawSize===s?'box-shadow:0 0 0 3px rgba(79,163,224,.4),0 3px 8px rgba(79,163,224,.3);transform:scale(1.15)':'box-shadow:0 1px 4px rgba(0,0,0,.15)'}"></div>`).join('')}
@@ -7616,28 +7617,28 @@ function renderCreativeZone(){
           <div class="cz-zone-label" style="color:#9333ea">🖌️ Brushes</div>
           <div style="display:flex;align-items:center;justify-content:space-around;padding:6px 4px;gap:3px">
             ${CZ_BRUSHES.filter(b=>b.id!=='eraser').map(b=>`
-              <button id="czBrushBtn_${b.id}" class="cz-tool-btn" onclick="czSetBrush('${b.id}');renderCreativeZone()"
+              <button id="czBrushBtn_${b.id}" class="cz-tool-btn" onclick="czSetBrush('${b.id}')"
                 style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 10px;border:none;border-radius:14px;cursor:pointer;transition:all .2s;flex:1;
                        background:${czBrushType===b.id?'linear-gradient(135deg,#a78bfa,#7c3aed)':'var(--inputbg)'};
                        ${czBrushType===b.id?'box-shadow:0 5px 18px rgba(124,58,237,.45);transform:translateY(-3px)':''}">
                 <span style="font-size:2.2rem;line-height:1">${b.icon}</span>
-                <span style="font-family:'Baloo 2',cursive;font-size:.65rem;font-weight:900;
+                <span data-cz="label" style="font-family:'Baloo 2',cursive;font-size:.65rem;font-weight:900;
                              color:${czBrushType===b.id?'#fff':'var(--text2)'};white-space:nowrap;line-height:1">${b.label}</span>
-                ${czBrushType===b.id?`<div style="width:28px;height:3px;border-radius:2px;background:rgba(255,255,255,.5);margin-top:1px"></div>`:''}
+                <div data-cz="activebar" style="width:28px;height:3px;border-radius:2px;background:rgba(255,255,255,.5);margin-top:1px;display:${czBrushType===b.id?'block':'none'}"></div>
               </button>`).join('')}
           </div>
         </div>
 
         <!-- 🧽 ERASER — BIG + UNMISSABLE -->
-        <button id="czBrushBtn_eraser" class="cz-tool-btn" onclick="czSetBrush('eraser');renderCreativeZone()"
+        <button id="czBrushBtn_eraser" class="cz-tool-btn" onclick="czSetBrush('eraser')"
           style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:10px 18px;border:none;border-radius:18px;cursor:pointer;transition:all .2s;flex-shrink:0;
                  background:${czBrushType==='eraser'?'linear-gradient(135deg,#ff2d55,#ff6b6b)':'linear-gradient(135deg,#fff0f2,#ffe0e5)'};
                  box-shadow:${czBrushType==='eraser'?'0 6px 20px rgba(255,45,85,.5),0 0 0 4px rgba(255,45,85,.2)':'0 3px 10px rgba(255,45,85,.15)'};
                  ${czBrushType==='eraser'?'transform:scale(1.06)':''}">
           <span style="font-size:2.8rem;line-height:1">🧽</span>
-          <span style="font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:900;
+          <span data-cz="label" style="font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:900;
                        color:${czBrushType==='eraser'?'#fff':'#ff2d55'};letter-spacing:.5px">ERASER</span>
-          ${czBrushType==='eraser'?`<div style="font-family:'Baloo 2',cursive;font-size:.55rem;color:rgba(255,255,255,.8);font-weight:700">Active ✓</div>`:''}
+          <div data-cz="activetag" style="font-family:'Baloo 2',cursive;font-size:.55rem;color:rgba(255,255,255,.8);font-weight:700;display:${czBrushType==='eraser'?'block':'none'}">Active ✓</div>
         </button>
 
         <!-- 🔷 SHAPES zone -->
@@ -7645,7 +7646,7 @@ function renderCreativeZone(){
           <div class="cz-zone-label" style="color:#0d9488">🔷 Shapes</div>
           <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;padding:6px 4px;gap:4px">
             ${CZ_SHAPES.map(sh=>`
-              <div class="cz-tool-btn" onclick="czSetShape('${sh.id}');renderCreativeZone()"
+              <div class="cz-tool-btn" onclick="czSetShape('${sh.id}')" data-czshape="${sh.id}"
                 style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:52px;height:52px;border-radius:14px;cursor:pointer;transition:all .2s;
                        background:${drawSticker==='__shape_'+sh.id?'linear-gradient(135deg,#4ecdc4,#56cf81)':'var(--inputbg)'};
                        ${drawSticker==='__shape_'+sh.id?'box-shadow:0 5px 18px rgba(78,205,196,.45);transform:translateY(-3px)':''}">
@@ -7661,7 +7662,7 @@ function renderCreativeZone(){
           🐾 Stickers
           <div style="display:flex;gap:5px;margin-left:auto">
             ${catKeys.map(k=>`
-              <button onclick="czSwitchStickerCat('${k}')"
+              <button onclick="czSwitchStickerCat('${k}')" data-czstickercat="${k}"
                 style="width:36px;height:28px;border-radius:10px;border:2px solid ${activeCat===k?'#ff6b9d':'transparent'};
                        background:${activeCat===k?'linear-gradient(135deg,#ff6b9d,#ffb830)':'var(--inputbg)'};
                        font-size:1.15rem;cursor:pointer;transition:all .18s;
@@ -7670,9 +7671,9 @@ function renderCreativeZone(){
               </button>`).join('')}
           </div>
         </div>
-        <div style="display:flex;align-items:center;gap:3px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:6px 8px">
+        <div id="czStickerList" style="display:flex;align-items:center;gap:3px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:6px 8px">
           ${(CZ_STICKER_CATS[activeCat]||[]).map(s=>`
-            <div class="cz-sticker cz-tool-btn" onclick="czSetSticker('${s}');renderCreativeZone()"
+            <div class="cz-sticker cz-tool-btn" onclick="czSetSticker('${s}')" data-czsticker="${s}"
               style="width:60px;height:60px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:16px;
                      background:${drawSticker===s?'linear-gradient(135deg,rgba(255,107,157,.2),rgba(255,184,48,.2))':'var(--inputbg)'};
                      border:2.5px solid ${drawSticker===s?'#ff6b9d':'transparent'};
@@ -7727,25 +7728,41 @@ function renderCreativeZone(){
 }
 
 // ── Actions ──────────────────────────────────────────
+// ── Lightweight setters — update UI state WITHOUT rebuilding canvas ──────────
 function czSetColor(c){
-  drawColor=c;drawSticker='';
+  drawColor=c;
+  drawSticker='';
   if(czBrushType==='eraser')czBrushType='marker';
-  renderCreativeZone();
+  czRefreshColorRail();
+  czRefreshBrushRow();
+  czRefreshStickerRow();
 }
 function czSetBrush(b){
-  czBrushType=b;drawSticker='';
+  czBrushType=b;
+  drawSticker='';
   drawMode=b==='eraser'?'eraser':'draw';
-  // Bounce animation
-  setTimeout(()=>{const el=document.getElementById('czBrushBtn_'+b);if(el){el.style.transform='scale(1.15) translateY(-4px)';setTimeout(()=>el.style.transform='',200);}},10);
-  renderCreativeZone();
+  czRefreshBrushRow();
+  czRefreshStickerRow();
+  czRefreshShapeRow();
 }
-function czSetSize(s){drawSize=s;renderCreativeZone();}
+function czSetSize(s){
+  drawSize=s;
+  czRefreshSizeButtons();
+}
 function czSetSticker(s){
   drawSticker=s;drawMode='sticker';
-  renderCreativeZone();
+  czRefreshStickerRow();
+  czRefreshShapeRow();
 }
-function czSetShape(id){drawSticker='__shape_'+id;drawMode='sticker';renderCreativeZone();}
-function czSwitchStickerCat(k){window.czActiveStickerCat=k;renderCreativeZone();}
+function czSetShape(id){
+  drawSticker='__shape_'+id;drawMode='sticker';
+  czRefreshShapeRow();
+  czRefreshStickerRow();
+}
+function czSwitchStickerCat(k){
+  window.czActiveStickerCat=k;
+  czRefreshStickerRow(true);
+}
 function czSetBg(idx){
   czBgIdx=idx;
   const b=CZ_BGS[idx];
@@ -7755,7 +7772,148 @@ function czSetBg(idx){
     layer.style.backgroundColor=b.base||b.bg||'#ffffff';
     layer.style.backgroundSize=b.size||'cover';
   }
-  renderCreativeZone();
+  czRefreshBgRow();
+}
+
+// ── DOM refresh helpers — only repaint the specific UI section ────────────────
+function czRefreshColorRail(){
+  // Update color swatches active states + big preview
+  document.querySelectorAll('[data-czcolor]').forEach(el=>{
+    const c=el.dataset.czcolor;
+    const active=c===drawColor;
+    el.style.width=(active?44:32)+'px';
+    el.style.height=(active?44:32)+'px';
+    el.style.borderRadius=(active?'12':'9')+'px';
+    el.style.boxShadow=active?'0 0 0 3px #ffb830,0 3px 10px rgba(0,0,0,.22)':'0 1px 5px rgba(0,0,0,.2)';
+    el.style.transform=active?'scale(1.05)':'';
+  });
+  // Update big color preview
+  const preview=document.getElementById('czColorPreview');
+  if(preview)preview.style.background=drawColor;
+  // Update color input value
+  const inp=document.getElementById('czColorInput');
+  if(inp)inp.value=drawColor;
+}
+function czRefreshBrushRow(){
+  CZ_BRUSHES.forEach(b=>{
+    const btn=document.getElementById('czBrushBtn_'+b.id);
+    if(!btn)return;
+    const active=czBrushType===b.id;
+    if(b.id==='eraser'){
+      btn.style.background=active?'linear-gradient(135deg,#ff2d55,#ff6b6b)':'linear-gradient(135deg,#fff0f2,#ffe0e5)';
+      btn.style.boxShadow=active?'0 6px 20px rgba(255,45,85,.5),0 0 0 4px rgba(255,45,85,.2)':'0 3px 10px rgba(255,45,85,.15)';
+      btn.style.transform=active?'scale(1.06)':'';
+      btn.querySelector('[data-cz="label"]').style.color=active?'#fff':'#ff2d55';
+      const activeTag=btn.querySelector('[data-cz="activetag"]');
+      if(activeTag)activeTag.style.display=active?'block':'none';
+    }else{
+      btn.style.background=active?'linear-gradient(135deg,#a78bfa,#7c3aed)':'var(--inputbg)';
+      btn.style.boxShadow=active?'0 5px 18px rgba(124,58,237,.45)':'';
+      btn.style.transform=active?'translateY(-3px)':'';
+      const lbl=btn.querySelector('[data-cz="label"]');
+      if(lbl)lbl.style.color=active?'#fff':'var(--text2)';
+      const bar=btn.querySelector('[data-cz="activebar"]');
+      if(bar)bar.style.display=active?'block':'none';
+    }
+  });
+}
+function czRefreshSizeButtons(){
+  document.querySelectorAll('[data-czsize]').forEach(el=>{
+    const s=parseInt(el.dataset.czsize);
+    const active=s===drawSize;
+    el.style.background=active?'linear-gradient(135deg,#4fa3e0,#2563eb)':'var(--text5)';
+    el.style.boxShadow=active?'0 0 0 3px rgba(79,163,224,.4),0 3px 8px rgba(79,163,224,.3)':'0 1px 4px rgba(0,0,0,.15)';
+    el.style.transform=active?'scale(1.15)':'';
+  });
+}
+function czRefreshShapeRow(){
+  document.querySelectorAll('[data-czshape]').forEach(el=>{
+    const id=el.dataset.czshape;
+    const active=drawSticker==='__shape_'+id;
+    el.style.background=active?'linear-gradient(135deg,#4ecdc4,#56cf81)':'var(--inputbg)';
+    el.style.boxShadow=active?'0 5px 18px rgba(78,205,196,.45)':'';
+    el.style.transform=active?'translateY(-3px)':'';
+  });
+}
+function czRefreshStickerRow(rebuildCats){
+  if(rebuildCats){
+    // Only rebuild the sticker cat tabs + sticker list (not the whole UI)
+    const catKeys=Object.keys(CZ_STICKER_CATS);
+    const activeCat=window.czActiveStickerCat||catKeys[0];
+    // Refresh cat buttons
+    document.querySelectorAll('[data-czstickercat]').forEach(btn=>{
+      const k=btn.dataset.czstickercat;
+      const active=k===activeCat;
+      btn.style.border=`2px solid ${active?'#ff6b9d':'transparent'}`;
+      btn.style.background=active?'linear-gradient(135deg,#ff6b9d,#ffb830)':'var(--inputbg)';
+      btn.style.boxShadow=active?'0 3px 10px rgba(255,107,157,.4)':'';
+    });
+    // Rebuild sticker list
+    const list=document.getElementById('czStickerList');
+    if(list){
+      list.innerHTML=(CZ_STICKER_CATS[activeCat]||[]).map(s=>`
+        <div class="cz-sticker cz-tool-btn" onclick="czSetSticker('${s}')"
+          data-czsticker="${s}"
+          style="width:60px;height:60px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:16px;
+                 background:${drawSticker===s?'linear-gradient(135deg,rgba(255,107,157,.2),rgba(255,184,48,.2))':'var(--inputbg)'};
+                 border:2.5px solid ${drawSticker===s?'#ff6b9d':'transparent'};
+                 font-size:2.2rem;cursor:pointer;transition:all .2s;
+                 ${drawSticker===s?'box-shadow:0 5px 16px rgba(255,107,157,.4);transform:scale(1.12)':''}">
+          ${s}
+        </div>`).join('');
+    }
+    return;
+  }
+  document.querySelectorAll('[data-czsticker]').forEach(el=>{
+    const s=el.dataset.czsticker;
+    const active=s===drawSticker;
+    el.style.background=active?'linear-gradient(135deg,rgba(255,107,157,.2),rgba(255,184,48,.2))':'var(--inputbg)';
+    el.style.border=`2.5px solid ${active?'#ff6b9d':'transparent'}`;
+    el.style.boxShadow=active?'0 5px 16px rgba(255,107,157,.4)':'';
+    el.style.transform=active?'scale(1.12)':'';
+  });
+}
+function czRefreshBgSection(clickedBtn){
+  // Update cat button styles
+  document.querySelectorAll('[data-czbgcat]').forEach(btn=>{
+    const active=btn.dataset.czbgcat===window.czActiveBgCat;
+    btn.style.background=active?'#ffb830':'var(--inputbg)';
+    btn.style.color=active?'#fff':'var(--text4)';
+  });
+  // Rebuild just the BG chips list
+  const BG_CATS={
+    all:CZ_BGS,
+    solid:CZ_BGS.filter(b=>!b.bg.includes('gradient')&&!b.bg.includes('radial')),
+    fantasy:CZ_BGS.filter((_,i)=>[8,9,10,11,12].includes(i)),
+    nature:CZ_BGS.filter((_,i)=>[3,4,5,6,14,15].includes(i)),
+    patterns:CZ_BGS.filter(b=>b.size),
+  };
+  const bgList=BG_CATS[window.czActiveBgCat]||CZ_BGS;
+  const container=document.getElementById('czBgChips');
+  if(!container)return;
+  container.innerHTML=bgList.map(b=>{
+    const realIdx=CZ_BGS.indexOf(b);
+    return `<div onclick="czSetBg(${realIdx})" data-czbg="${realIdx}"
+      style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:all .18s;padding:3px 5px;border-radius:14px;
+             border:2.5px solid ${czBgIdx===realIdx?'#ffb830':'transparent'};
+             background:${czBgIdx===realIdx?'rgba(255,184,48,.1)':'transparent'};
+             ${czBgIdx===realIdx?'box-shadow:0 2px 8px rgba(255,184,48,.35)':''}">
+      <div style="width:36px;height:36px;border-radius:12px;background:${b.bg};background-color:${b.base||b.bg};background-size:${b.size||'cover'};
+                  border:2px solid rgba(255,255,255,.5);box-shadow:0 2px 6px rgba(0,0,0,.15);overflow:hidden;flex-shrink:0"></div>
+      <span data-cz="bglabel" style="font-family:'Baloo 2',cursive;font-size:.55rem;font-weight:800;color:${czBgIdx===realIdx?'#b36c00':'var(--text4)'};white-space:nowrap">${b.label}</span>
+    </div>`;
+  }).join('');
+}
+function czRefreshBgRow(){
+  document.querySelectorAll('[data-czbg]').forEach(el=>{
+    const idx=parseInt(el.dataset.czbg);
+    const active=idx===czBgIdx;
+    el.style.border=`2.5px solid ${active?'#ffb830':'transparent'}`;
+    el.style.background=active?'rgba(255,184,48,.1)':'transparent';
+    el.style.boxShadow=active?'0 2px 8px rgba(255,184,48,.35)':'';
+    const lbl=el.querySelector('[data-cz="bglabel"]');
+    if(lbl)lbl.style.color=active?'#b36c00':'var(--text4)';
+  });
 }
 function czApplyBg(){
   const b=CZ_BGS[czBgIdx]||CZ_BGS[0];
@@ -7839,7 +7997,7 @@ function czSave(){
     mascotSay('Amazing art! ⭐+3 stars!');
     setTimeout(()=>czMascotCelebrate('Saved! 💾 +3 ⭐'),400);
   }catch(e){}
-  setTimeout(()=>{if(btn){btn.style.background='linear-gradient(135deg,#4ade80,#22c55e)';}renderCreativeZone();},1000);
+  setTimeout(()=>{if(btn){btn.style.background='linear-gradient(135deg,#4ade80,#22c55e)';}},1000);
 }
 // ── Mascot interaction ────────────────────────────────
 const CZ_MASCOT_CHEERS=[
