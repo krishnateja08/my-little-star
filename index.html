@@ -1246,12 +1246,44 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .brush-size{width:24px;height:24px;}
   .sticker-btn{font-size:1.2rem;padding:2px;}
   .create-tool{font-size:.7rem;padding:6px 10px;}
+  /* ── Create zone: tiny phones ── */
+  .cz-zone.cz-colors{width:52px!important;}
+  #czColorPreview{width:34px!important;height:34px!important;border-radius:10px!important;}
+  [data-czcolor]{width:22px!important;height:22px!important;border-radius:6px!important;}
+  .cz-zone-label{font-size:.56rem!important;padding:5px 5px 4px!important;letter-spacing:.2px!important;}
+  .cz-shape-btn{width:38px!important;height:38px!important;}
+  .cz-sticker-item{width:42px!important;height:42px!important;font-size:1.4rem!important;}
+  #czBrushBtn_eraser{padding:5px 8px!important;}
+  /* shrink brush button icons + padding */
+  [id^="czBrushBtn_"]:not(#czBrushBtn_eraser){padding:6px 4px!important;}
+  [id^="czBrushBtn_"] span[style*="2.2rem"]{font-size:1.5rem!important;}
+  [id^="czBrushBtn_"] span[style*="2.8rem"]{font-size:1.8rem!important;}
+  .cz-shape-btn span[style*="2rem"]{font-size:1.4rem!important;}
+  /* tighten bottom toolbar padding */
+  .cz-zone.cz-brushes > div:last-child{padding:4px 2px!important;gap:2px!important;}
+  .cz-zone.cz-shapes > div:last-child{padding:4px 2px!important;gap:3px!important;}
+  /* recover canvas height — header is shorter on tiny phones */
+  #area > div[style*="100dvh"]{height:calc(100dvh - 128px)!important;min-height:380px!important;}
 }
 
 /* Standard phones (341px–480px) — default, minimal tweaks */
 @media(min-width:341px) and (max-width:480px){
   .main{padding:10px 12px 110px;}
   .memory-grid{grid-template-columns:repeat(4,1fr);gap:5px;}
+  /* ── Create zone: standard phones ── */
+  .cz-zone.cz-colors{width:58px!important;}
+  #czColorPreview{width:38px!important;height:38px!important;border-radius:11px!important;}
+  [data-czcolor]{width:26px!important;height:26px!important;border-radius:8px!important;}
+  .cz-zone-label{font-size:.6rem!important;padding:6px 7px 4px!important;}
+  .cz-shape-btn{width:42px!important;height:42px!important;}
+  .cz-sticker-item{width:48px!important;height:48px!important;font-size:1.7rem!important;}
+  #czBrushBtn_eraser{padding:7px 12px!important;}
+  [id^="czBrushBtn_"]:not(#czBrushBtn_eraser){padding:8px 6px!important;}
+  [id^="czBrushBtn_"] span[style*="2.2rem"]{font-size:1.7rem!important;}
+  [id^="czBrushBtn_"] span[style*="2.8rem"]{font-size:2rem!important;}
+  .cz-shape-btn span[style*="2rem"]{font-size:1.6rem!important;}
+  /* recover canvas height on standard phones */
+  #area > div[style*="100dvh"]{height:calc(100dvh - 138px)!important;min-height:400px!important;}
 }
 
 /* Large phones / small tablets (481px–768px) */
