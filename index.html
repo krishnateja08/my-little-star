@@ -7525,6 +7525,7 @@ function renderCreativeZone(){
   if(!window.czStars)window.czStars=0;
   if(!window.czBadges)window.czBadges=[];
 
+  // BG categories
   const BG_CATS={
     all:CZ_BGS,
     solid:CZ_BGS.filter(b=>!b.bg.includes('gradient')&&!b.bg.includes('radial')),
@@ -7533,226 +7534,258 @@ function renderCreativeZone(){
     patterns:CZ_BGS.filter(b=>b.size),
   };
   const bgList=BG_CATS[activeBgCat]||CZ_BGS;
+
   const tip=MASCOT_TIPS[Math.floor(Math.random()*MASCOT_TIPS.length)];
 
   document.getElementById('area').innerHTML=`
   <style>
     @keyframes czBounce{0%,100%{transform:scale(1)}40%{transform:scale(1.35)}70%{transform:scale(.9)}}
+    @keyframes czPop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes czShine{0%{opacity:0;transform:translateX(-60px)}50%{opacity:.6}100%{opacity:0;transform:translateX(80px)}}
     @keyframes czGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,107,157,0)}50%{box-shadow:0 0 0 8px rgba(255,107,157,.25)}}
-    @keyframes czFramePulse{0%,100%{box-shadow:0 8px 30px rgba(0,0,0,.18),0 0 0 3px rgba(167,139,250,.4),0 0 0 6px rgba(255,184,48,.12)}50%{box-shadow:0 8px 30px rgba(0,0,0,.18),0 0 0 3px rgba(167,139,250,.6),0 0 0 7px rgba(255,184,48,.22)}}
-    @keyframes czWiggle{0%,100%{transform:translateX(0) rotate(0)}20%{transform:translateX(2px) rotate(-12deg)}40%{transform:translateX(2px) rotate(10deg)}60%{transform:translateX(2px) rotate(-7deg)}80%{transform:translateX(2px) rotate(5deg)}}
+    @keyframes czMascotPop{0%{transform:scale(1) rotate(0)}25%{transform:scale(1.5) rotate(-15deg)}50%{transform:scale(1.3) rotate(10deg)}75%{transform:scale(1.4) rotate(-8deg)}100%{transform:scale(1) rotate(0)}}
+    @keyframes czFramePulse{0%,100%{box-shadow:0 12px 40px rgba(0,0,0,.22),0 2px 8px rgba(0,0,0,.1),0 0 0 3px rgba(167,139,250,.45),0 0 0 6px rgba(255,184,48,.15),0 0 0 9px rgba(167,139,250,.07)}50%{box-shadow:0 12px 40px rgba(0,0,0,.22),0 2px 8px rgba(0,0,0,.1),0 0 0 3px rgba(167,139,250,.65),0 0 0 7px rgba(255,184,48,.25),0 0 0 11px rgba(167,139,250,.12)}}
+    @keyframes czWiggle{0%,100%{transform:translateY(-3px) rotate(0)}20%{transform:translateY(-3px) rotate(-12deg)}40%{transform:translateY(-3px) rotate(10deg)}60%{transform:translateY(-3px) rotate(-7deg)}80%{transform:translateY(-3px) rotate(5deg)}}
     @keyframes czColorPick{0%{transform:scale(1.05)}30%{transform:scale(1.28) rotate(-8deg)}60%{transform:scale(1.18) rotate(5deg)}100%{transform:scale(1.05) rotate(0)}}
-    @keyframes czShapePop{0%{transform:scale(1)}35%{transform:scale(1.22) rotate(-6deg)}65%{transform:scale(1.12) rotate(4deg)}100%{transform:scale(1.04)}}
-    @keyframes czStickerBounce{0%{transform:scale(1.1)}25%{transform:scale(1.3) rotate(-8deg)}55%{transform:scale(1.16) rotate(5deg)}100%{transform:scale(1.1)}}
+    @keyframes czShapePop{0%{transform:scale(1)}35%{transform:scale(1.22) rotate(-6deg)}65%{transform:scale(1.12) rotate(4deg)}100%{transform:translateY(-3px) scale(1)}}
+    @keyframes czStickerBounce{0%{transform:scale(1.12)}25%{transform:scale(1.32) rotate(-8deg)}55%{transform:scale(1.18) rotate(5deg)}100%{transform:scale(1.12)}}
     #czWrap{animation:czFramePulse 4s ease-in-out infinite;}
     .cz-tool-btn:active{transform:scale(.88)!important;}
+    .cz-sticker:active{animation:czBounce .35s;}
+    /* Unified active state animations */
     .cz-brush-active{animation:czWiggle .45s ease-in-out forwards!important;}
     .cz-color-active{animation:czColorPick .35s ease-out forwards!important;}
     .cz-shape-active{animation:czShapePop .4s ease-out forwards!important;}
     .cz-sticker-selected{animation:czStickerBounce .4s ease-out forwards!important;}
-    [data-czcolor].cz-color-active{box-shadow:0 0 0 3px #ffb830,0 0 14px rgba(255,184,48,.5) !important;}
-    .cz3-root{width:100%;display:flex;flex-direction:column;height:calc(100dvh - var(--cz-header-offset));min-height:480px;max-height:calc(100dvh - 80px);}
-    .cz3-body{display:flex;flex:1;min-height:0;}
-    .cz3-left{width:86px;flex-shrink:0;display:flex;flex-direction:column;background:linear-gradient(180deg,#fdf0ff,#f0e8ff);border-right:1.5px solid rgba(167,139,250,.2);overflow:hidden;}
-    body.bedtime .cz3-left{background:linear-gradient(180deg,#1e1030,#16082a);border-right-color:rgba(167,139,250,.15);}
-    .cz3-center{flex:1;display:flex;flex-direction:column;min-width:0;}
-    .cz3-right{width:92px;flex-shrink:0;display:flex;flex-direction:column;background:linear-gradient(180deg,#fff0f5,#ffe8f0);border-left:1.5px solid rgba(255,107,157,.2);overflow:hidden;}
-    body.bedtime .cz3-right{background:linear-gradient(180deg,#2a0e1a,#200810);border-left-color:rgba(255,107,157,.15);}
-    .cz3-sec-title{font-family:'Baloo 2',cursive;font-size:.52rem;font-weight:900;letter-spacing:.5px;text-transform:uppercase;text-align:center;padding:2px 0;}
-    .cz3-divider{width:68px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(167,139,250,.3),transparent);margin:3px auto;flex-shrink:0;}
-    .cz3-bgbar{flex-shrink:0;padding:5px 8px;background:linear-gradient(145deg,#fff9ec,#fff5e0);border-bottom:1.5px solid rgba(255,184,48,.22);display:flex;align-items:center;gap:6px;}
-    body.bedtime .cz3-bgbar{background:linear-gradient(145deg,#1e1810,#18140c);}
-    .cz3-colorbar{flex-shrink:0;padding:5px 8px;background:linear-gradient(145deg,#fdf8ff,#f5eeff);border-top:1.5px solid rgba(167,139,250,.15);display:flex;align-items:center;gap:5px;}
-    body.bedtime .cz3-colorbar{background:linear-gradient(145deg,#16102a,#120c22);}
+    /* Unified tool button size — responsive via CSS custom properties */
+    .cz-shape-btn{width:var(--cz-btn-size)!important;height:var(--cz-btn-size)!important;border-radius:var(--cz-btn-radius)!important;}
+    .cz-sticker-item{width:var(--cz-btn-size)!important;height:var(--cz-btn-size)!important;border-radius:var(--cz-btn-radius)!important;}
+    /* Responsive wrappers for desktop */
+    .cz-create-root{max-width:var(--cz-max-width);margin-left:auto;margin-right:auto;}
+    .cz-canvas-max{max-height:clamp(300px,55vh,800px);}
+    /* Color swatch glow ring on active */
+    [data-czcolor].cz-color-active{box-shadow:0 0 0 3px #ffb830,0 0 14px rgba(255,184,48,.5),0 3px 10px rgba(0,0,0,.22)!important;}
+    /* Size divider upgrade */
+    .cz-size-divider{width:48px;height:1.5px;background:linear-gradient(90deg,transparent,var(--border),transparent);border-radius:1px;flex-shrink:0;margin:4px 0;}
+    /* ── Section Cards — pastel fills, soft shadows, rounded ── */
+    .cz-zone{border-radius:20px;box-shadow:0 4px 18px rgba(0,0,0,.08),0 1px 4px rgba(0,0,0,.05);border:1.5px solid rgba(255,255,255,.8);}
+    .cz-zone.cz-brushes {background:linear-gradient(145deg,#fdf0ff,#f3e8ff,#fdf0ff);}
+    .cz-zone.cz-shapes  {background:linear-gradient(145deg,#e8fff8,#d4f5f0,#e8fff8);}
+    .cz-zone.cz-stickers{background:linear-gradient(145deg,#fff0f5,#ffe4ee,#fff0f5);}
+    .cz-zone.cz-colors  {background:linear-gradient(180deg,#fff8ff,#f5ecff);}
+    body.bedtime .cz-zone{border-color:rgba(255,255,255,.08);}
+    body.bedtime .cz-zone.cz-brushes {background:linear-gradient(145deg,#2a1a3e,#221436);}
+    body.bedtime .cz-zone.cz-shapes  {background:linear-gradient(145deg,#1a2e2a,#142622);}
+    body.bedtime .cz-zone.cz-stickers{background:linear-gradient(145deg,#2e1a22,#22141a);}
+    body.bedtime .cz-zone.cz-colors  {background:linear-gradient(180deg,#22143a,#1a0e2e);}
+    .cz-zone-label{font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:900;letter-spacing:.8px;text-transform:uppercase;padding:7px 11px 5px;border-bottom:1.5px solid rgba(0,0,0,.05);display:flex;align-items:center;gap:5px;border-radius:19px 19px 0 0;}
+    body.bedtime .cz-zone-label{border-bottom-color:rgba(255,255,255,.06);}
   </style>
 
-  <div class="cz3-root">
+  <div class="cz-create-root" style="width:100%;display:flex;flex-direction:column;height:calc(100dvh - var(--cz-header-offset));min-height:480px;max-height:calc(100dvh - 80px);padding:0;gap:0">
 
-    <!-- TOP BG BAR -->
-    <div class="cz3-bgbar">
-      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;gap:2px">
-        <span style="font-family:'Baloo 2',cursive;font-size:.58rem;font-weight:900;color:#b36c00;letter-spacing:.5px">BG</span>
-        <div style="display:flex;gap:2px">
-          ${['all','fantasy','nature','patterns','solid'].map(c=>`
-            <button onclick="window.czActiveBgCat='${c}';czRefreshBgSection(this)" data-czbgcat="${c}"
-              style="padding:1px 5px;border-radius:6px;border:none;font-family:'Baloo 2',cursive;font-size:.5rem;font-weight:800;cursor:pointer;transition:all .15s;
-                     background:${activeBgCat===c?'#ffb830':'var(--inputbg)'};color:${activeBgCat===c?'#fff':'var(--text4)'}">
-              ${c==='all'?'All':c==='fantasy'?'✨':c==='nature'?'🌿':c==='patterns'?'◉':'▩'}
-            </button>`).join('')}
+    <!-- ══ TOP: BG + ACTIONS bar ══ -->
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 8px 7px;flex-shrink:0;
+                background:linear-gradient(145deg,#fff9ec,#fff5e0);
+                border-bottom:1.5px solid rgba(255,184,48,.2);border-radius:0;
+                box-shadow:0 2px 8px rgba(255,184,48,.08)">
+
+      <!-- BG zone -->
+      <div style="flex:1;display:flex;align-items:center;gap:6px;overflow:hidden">
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;gap:2px">
+          <span style="font-family:'Baloo 2',cursive;font-size:.6rem;font-weight:900;color:#ffb830;letter-spacing:.6px">BG</span>
+          <!-- BG category filter -->
+          <div style="display:flex;gap:2px">
+            ${['all','fantasy','nature','patterns','solid'].map(c=>`
+              <button onclick="window.czActiveBgCat='${c}';czRefreshBgSection(this)"
+                data-czbgcat="${c}"
+                style="padding:1px 5px;border-radius:6px;border:none;font-family:'Baloo 2',cursive;font-size:.5rem;font-weight:800;cursor:pointer;transition:all .15s;
+                       background:${activeBgCat===c?'#ffb830':'var(--inputbg)'};color:${activeBgCat===c?'#fff':'var(--text4)'}">
+                ${c==='all'?'All':c==='fantasy'?'✨':c==='nature'?'🌿':c==='patterns'?'◉':'▩'}
+              </button>`).join('')}
+          </div>
+        </div>
+        <!-- BG chips scrollable -->
+        <div id="czBgChips" style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;align-items:center;flex:1">
+          ${bgList.map((b,_i)=>{
+            const realIdx=CZ_BGS.indexOf(b);
+            return `<div onclick="czSetBg(${realIdx})" data-czbg="${realIdx}"
+              style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:all .18s;padding:3px 5px;border-radius:14px;
+                     border:2.5px solid ${czBgIdx===realIdx?'#ffb830':'transparent'};
+                     background:${czBgIdx===realIdx?'rgba(255,184,48,.1)':'transparent'};
+                     ${czBgIdx===realIdx?'box-shadow:0 2px 8px rgba(255,184,48,.35)':''}">
+              <div style="width:36px;height:36px;border-radius:12px;background:${b.bg};background-color:${b.base||b.bg};background-size:${b.size||'cover'};
+                          border:2px solid rgba(255,255,255,.5);box-shadow:0 2px 6px rgba(0,0,0,.15);overflow:hidden;flex-shrink:0"></div>
+              <span data-cz="bglabel" style="font-family:'Baloo 2',cursive;font-size:.55rem;font-weight:800;color:${czBgIdx===realIdx?'#b36c00':'var(--text4)'};white-space:nowrap">${b.label}</span>
+            </div>`;
+          }).join('')}
         </div>
       </div>
-      <div id="czBgChips" style="display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;align-items:center;flex:1">
-        ${bgList.map((b,_i)=>{
-          const realIdx=CZ_BGS.indexOf(b);
-          return `<div onclick="czSetBg(${realIdx})" data-czbg="${realIdx}"
-            style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;transition:all .18s;padding:3px 4px;border-radius:12px;
-                   border:2.5px solid ${czBgIdx===realIdx?'#ffb830':'transparent'};
-                   background:${czBgIdx===realIdx?'rgba(255,184,48,.1)':'transparent'};
-                   ${czBgIdx===realIdx?'box-shadow:0 2px 8px rgba(255,184,48,.35)':''}">
-            <div style="width:32px;height:32px;border-radius:10px;background:${b.bg};background-color:${b.base||b.bg||'#ffffff'};background-size:${b.size||'cover'};
-                        border:2px solid rgba(255,255,255,.5);box-shadow:0 2px 5px rgba(0,0,0,.14);overflow:hidden;flex-shrink:0"></div>
-            <span data-cz="bglabel" style="font-family:'Baloo 2',cursive;font-size:.48rem;font-weight:800;color:${czBgIdx===realIdx?'#b36c00':'var(--text4)'};white-space:nowrap">${b.label}</span>
-          </div>`;
-        }).join('')}
-      </div>
-      <div style="display:flex;align-items:center;gap:3px;background:linear-gradient(135deg,#fff7e0,#ffedd0);border-radius:20px;padding:4px 10px;border:1.5px solid rgba(255,184,48,.3);flex-shrink:0">
-        <span style="font-size:.95rem">⭐</span>
-        <span id="czStarCount" style="font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:900;color:#b36c00">${window.czStars||0}</span>
+
+      <!-- Actions zone (Save/Undo/Clear) -->
+      <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;padding:4px 6px;border-radius:16px;background:rgba(0,0,0,.04);border:1.5px solid var(--border)">
+        <button onclick="czUndo()" id="czUndoBtn" title="Undo"
+          style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 8px;border:none;border-radius:12px;
+                 background:linear-gradient(135deg,#fff7e0,#ffedd0);cursor:pointer;transition:all .15s;box-shadow:0 2px 6px rgba(255,184,48,.25)"
+          onmousedown="this.style.transform='scale(.88)'" onmouseup="this.style.transform=''">
+          <span style="font-size:1.4rem;line-height:1">↩️</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.55rem;font-weight:900;color:#b36c00">UNDO</span>
+        </button>
+        <button onclick="czConfirmClear()" title="Clear"
+          style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 8px;border:none;border-radius:12px;
+                 background:linear-gradient(135deg,#fff0f0,#ffe0e0);cursor:pointer;transition:all .15s;box-shadow:0 2px 6px rgba(255,45,85,.2)"
+          onmousedown="this.style.transform='scale(.88)'" onmouseup="this.style.transform=''">
+          <span style="font-size:1.4rem;line-height:1">🗑️</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.55rem;font-weight:900;color:#ff2d55">CLEAR</span>
+        </button>
+        <button onclick="czSave()" id="czSaveBtn"
+          style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 10px;border:none;border-radius:12px;
+                 background:linear-gradient(135deg,#4ade80,#22c55e);cursor:pointer;transition:all .15s;box-shadow:0 3px 10px rgba(34,197,94,.35);animation:czGlow 2s infinite"
+          onmousedown="this.style.transform='scale(.93)'" onmouseup="this.style.transform=''">
+          <span style="font-size:1.4rem;line-height:1">💾</span>
+          <span style="font-family:'Baloo 2',cursive;font-size:.55rem;font-weight:900;color:#fff">SAVE</span>
+        </button>
+        <!-- Stars earned -->
+        <div style="display:flex;flex-direction:column;align-items:center;padding:4px 6px;border-left:1.5px solid var(--border);margin-left:2px">
+          <span style="font-size:1.3rem">⭐</span>
+          <span id="czStarCount" style="font-family:'Baloo 2',cursive;font-size:.65rem;font-weight:900;color:#ffb830">${window.czStars||0}</span>
+        </div>
       </div>
     </div>
 
-    <!-- THREE-COLUMN BODY -->
-    <div class="cz3-body">
+    <!-- ══ MIDDLE: Canvas + Right Rail ══ -->
+    <div style="display:flex;flex:1;min-height:0;gap:8px;padding:6px 8px 4px">
 
-      <!-- LEFT: Brushes + Size + Shapes -->
-      <div class="cz3-left">
-        <div style="overflow-y:auto;scrollbar-width:none;flex:1;display:flex;flex-direction:column;align-items:center;padding:7px 5px 6px;gap:4px">
-          <div class="cz3-sec-title" style="color:#9333ea">🖌 Brushes</div>
+      <!-- Canvas frame — upgraded with premium frame treatment -->
+      <div style="flex:1;position:relative;border-radius:24px;overflow:hidden;
+                  box-shadow:0 12px 40px rgba(0,0,0,.22),0 2px 8px rgba(0,0,0,.1),0 0 0 3px rgba(167,139,250,.45),0 0 0 6px rgba(255,184,48,.15),0 0 0 9px rgba(167,139,250,.07);
+                  border:2px solid rgba(167,139,250,.5);
+                  background:linear-gradient(135deg,rgba(167,139,250,.1),rgba(255,184,48,.08))" id="czWrap">
+        <canvas id="drawCanvas" style="display:block;touch-action:none;position:absolute;inset:0;z-index:1;width:100%;height:100%"></canvas>
+        <div id="czBgLayer" style="position:absolute;inset:0;z-index:0;pointer-events:none;background:#ffffff"></div>
+        <!-- Mascot corner — upgraded with personality & celebration -->
+        <div id="czMascot" style="position:absolute;bottom:10px;left:10px;z-index:3;display:flex;align-items:flex-end;gap:5px;cursor:pointer"
+          onclick="czMascotTap()">
+          <div style="position:relative">
+            <div id="czMascotEmoji" style="font-size:2.6rem;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 4px 8px rgba(0,0,0,.25));transition:all .3s;display:block">🎨</div>
+            <!-- Glow ring under mascot -->
+            <div style="position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:36px;height:8px;border-radius:50%;background:rgba(167,139,250,.25);filter:blur(4px)"></div>
+          </div>
+          <div id="czTipBubble" style="background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-radius:14px 14px 14px 4px;
+               padding:8px 13px;font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:700;color:#7c3aed;
+               box-shadow:0 5px 18px rgba(0,0,0,.14),0 0 0 1.5px rgba(167,139,250,.3);max-width:150px;text-align:center;opacity:0;transition:opacity .4s;line-height:1.4;pointer-events:none">
+            ${tip}
+          </div>
+        </div>
+        <!-- Draw here hint -->
+        <div id="czHint" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:2;opacity:.25">
+          <span style="font-family:'Baloo 2',cursive;font-size:1rem;color:#888">✏️ Draw here!</span>
+        </div>
+        <!-- ══ Resize Handle ══ -->
+        <div id="czResizeHandle"
+          style="position:absolute;bottom:0;left:0;right:0;height:22px;z-index:10;cursor:ns-resize;
+                 display:flex;align-items:center;justify-content:center;
+                 background:linear-gradient(transparent,rgba(167,139,250,.18));
+                 border-radius:0 0 22px 22px;transition:background .2s;user-select:none;touch-action:none"
+          title="Drag to resize canvas">
+          <div style="display:flex;gap:3px;align-items:center;opacity:.55;pointer-events:none">
+            <div style="width:28px;height:3px;border-radius:2px;background:rgba(167,139,250,.8)"></div>
+            <div style="width:6px;height:6px;border-radius:50%;background:rgba(167,139,250,.9)"></div>
+            <div style="width:28px;height:3px;border-radius:2px;background:rgba(167,139,250,.8)"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT RAIL: Brushes + Size only -->
+      <div class="cz-zone cz-brushes" style="width:50px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden">
+        <div class="cz-zone-label" style="color:#9333ea;justify-content:center;font-size:.58rem;padding:5px 4px 4px">🖌️</div>
+        <div style="display:flex;flex-direction:column;align-items:center;padding:4px 4px;gap:5px;overflow-y:auto;scrollbar-width:none;flex:1">
           ${CZ_BRUSHES.map(b=>`
             <button id="czBrushBtn_${b.id}" class="cz-tool-btn" onclick="czSetBrush('${b.id}')" title="${b.tip||b.label}"
-              style="width:74px;height:42px;border:none;border-radius:13px;cursor:pointer;transition:all .2s;flex-shrink:0;
-                     display:flex;align-items:center;justify-content:flex-start;gap:6px;padding:0 8px;
+              style="width:38px;height:38px;border:none;border-radius:11px;cursor:pointer;transition:all .2s;
+                     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0;flex-shrink:0;
                      background:${b.id==='eraser'?(czBrushType==='eraser'?'linear-gradient(135deg,#ff2d55,#ff6b6b)':'linear-gradient(135deg,#fff0f2,#ffe0e5)'):(czBrushType===b.id?'linear-gradient(135deg,#a78bfa,#7c3aed)':'var(--inputbg)')};
-                     box-shadow:${b.id==='eraser'?(czBrushType==='eraser'?'0 4px 12px rgba(255,45,85,.4)':'0 2px 5px rgba(255,45,85,.1)'):(czBrushType===b.id?'0 4px 12px rgba(124,58,237,.35)':'0 1px 3px rgba(0,0,0,.07)')};
-                     ${czBrushType===b.id?'transform:translateX(3px)':''}">
-              <span style="font-size:1.2rem;line-height:1;flex-shrink:0">${b.icon}</span>
-              <span data-cz="label" style="font-family:'Baloo 2',cursive;font-size:.5rem;font-weight:900;line-height:1;
-                           color:${b.id==='eraser'?(czBrushType==='eraser'?'#fff':'#ff2d55'):(czBrushType===b.id?'#fff':'var(--text3)')};white-space:nowrap">${b.label}</span>
+                     box-shadow:${b.id==='eraser'?(czBrushType==='eraser'?'0 4px 12px rgba(255,45,85,.45)':'0 2px 6px rgba(255,45,85,.12)'):(czBrushType===b.id?'0 4px 12px rgba(124,58,237,.4)':'')};
+                     ${czBrushType===b.id?'transform:scale(1.08)':''}">
+              <span style="font-size:1.3rem;line-height:1">${b.icon}</span>
+              <span data-cz="label" style="font-family:'Baloo 2',cursive;font-size:.42rem;font-weight:900;line-height:1;
+                           color:${b.id==='eraser'?(czBrushType==='eraser'?'#fff':'#ff2d55'):(czBrushType===b.id?'#fff':'var(--text4)')};white-space:nowrap">${b.label}</span>
             </button>`).join('')}
+          <div style="width:34px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(79,163,224,.4),transparent);flex-shrink:0;margin:2px 0"></div>
+          <div style="font-family:'Baloo 2',cursive;font-size:.42rem;font-weight:900;color:#4fa3e0;letter-spacing:.4px;flex-shrink:0">SIZE</div>
+          ${CZ_SIZES.map(({s,label})=>`
+            <div onclick="czSetSize(${s})" title="${label}" data-czsize="${s}"
+              style="width:${Math.min(10+s/2,36)}px;height:${Math.min(10+s/2,36)}px;border-radius:50%;cursor:pointer;transition:all .2s;flex-shrink:0;
+                     background:${drawSize===s?'linear-gradient(135deg,#4fa3e0,#2563eb)':'var(--text5)'};
+                     ${drawSize===s?'box-shadow:0 0 0 3px rgba(79,163,224,.4),0 3px 8px rgba(79,163,224,.3);transform:scale(1.15)':'box-shadow:0 1px 4px rgba(0,0,0,.15)'}"></div>`).join('')}
+        </div>
+      </div>
+    </div>
 
-          <div class="cz3-divider"></div>
-          <div class="cz3-sec-title" style="color:#4fa3e0">● Size</div>
-          <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:5px;width:100%">
-            ${CZ_SIZES.map(({s,label})=>`
-              <div onclick="czSetSize(${s})" title="${label}" data-czsize="${s}"
-                style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;cursor:pointer;transition:all .2s;flex-shrink:0;
-                       background:${drawSize===s?'linear-gradient(135deg,#4fa3e0,#2563eb)':'var(--inputbg)'};
-                       ${drawSize===s?'box-shadow:0 0 0 3px rgba(79,163,224,.4);transform:scale(1.12)':'box-shadow:0 1px 4px rgba(0,0,0,.08)'}">
-                <div style="width:${Math.min(4+s*0.42,20)}px;height:${Math.min(4+s*0.42,20)}px;border-radius:50%;
-                            background:${drawSize===s?'#fff':'var(--text4)'}"></div>
-              </div>`).join('')}
-          </div>
-
-          <div class="cz3-divider"></div>
-          <div class="cz3-sec-title" style="color:#0d9488">🔷 Shapes</div>
-          <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px;width:100%">
-            ${CZ_SHAPES.map(sh=>`
-              <div class="cz-tool-btn" onclick="czSetShape('${sh.id}')" data-czshape="${sh.id}" title="${sh.label}"
-                style="width:32px;height:32px;flex-shrink:0;border-radius:9px;cursor:pointer;transition:all .2s;
-                       display:flex;align-items:center;justify-content:center;font-size:1.15rem;
-                       background:${drawSticker==='__shape_'+sh.id?'linear-gradient(135deg,#4ecdc4,#56cf81)':'var(--inputbg)'};
-                       ${drawSticker==='__shape_'+sh.id?'box-shadow:0 4px 10px rgba(78,205,196,.4);transform:scale(1.1)':'box-shadow:0 1px 3px rgba(0,0,0,.07)'}">
-                ${sh.icon}
-              </div>`).join('')}
+    <!-- BOTTOM: Shapes + Colors bar -->
+    <div style="flex-shrink:0;border-top:1.5px solid rgba(167,139,250,.18);background:linear-gradient(145deg,#fdf8ff,#f8f4ff);padding:5px 8px 6px;display:flex;flex-direction:column;gap:5px">
+      <!-- Shapes row -->
+      <div style="display:flex;align-items:center;gap:5px">
+        <span style="font-family:'Baloo 2',cursive;font-size:.55rem;font-weight:900;color:#0d9488;letter-spacing:.5px;flex-shrink:0">🔷</span>
+        <div style="display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;align-items:center;flex:1">
+          ${CZ_SHAPES.map(sh=>`
+            <div class="cz-tool-btn cz-shape-btn" onclick="czSetShape('${sh.id}')" data-czshape="${sh.id}" title="${sh.label}"
+              style="width:36px;height:36px;flex-shrink:0;border-radius:11px;cursor:pointer;transition:all .2s;
+                     display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+                     background:${drawSticker==='__shape_'+sh.id?'linear-gradient(135deg,#4ecdc4,#56cf81)':'var(--inputbg)'};
+                     ${drawSticker==='__shape_'+sh.id?'box-shadow:0 4px 12px rgba(78,205,196,.45);transform:scale(1.1)':'box-shadow:0 1px 4px rgba(0,0,0,.08)'}">
+              ${sh.icon}
+            </div>`).join('')}
+        </div>
+      </div>
+      <!-- Colors row -->
+      <div style="display:flex;align-items:center;gap:5px">
+        <div id="czColorPreview" style="width:28px;height:28px;border-radius:9px;background:${drawColor};border:2.5px solid #fff;
+                    box-shadow:0 2px 8px rgba(0,0,0,.22);flex-shrink:0;position:relative;overflow:hidden">
+          <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.25),transparent)"></div>
+        </div>
+        <div style="display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;align-items:center;flex:1">
+          ${CZ_COLORS.map(c=>`
+            <div onclick="czSetColor('${c}')" data-czcolor="${c}" title="${c}"
+              style="width:${drawColor===c?30:24}px;height:${drawColor===c?30:24}px;border-radius:${drawColor===c?'9':'7'}px;
+                     background:${c};cursor:pointer;transition:all .18s;flex-shrink:0;
+                     ${c==='#ffffff'?'box-shadow:inset 0 0 0 1.5px #ccc;':''}
+                     ${drawColor===c?'box-shadow:0 0 0 2.5px #ffb830,0 2px 8px rgba(0,0,0,.2);transform:scale(1.1)':'box-shadow:0 1px 4px rgba(0,0,0,.15)'}">
+            </div>`).join('')}
+          <div style="position:relative;width:26px;height:26px;border-radius:50%;overflow:hidden;cursor:pointer;flex-shrink:0;box-shadow:0 1px 6px rgba(0,0,0,.2);border:2px solid rgba(255,255,255,.8)" title="Custom colour">
+            <div style="position:absolute;inset:0;background:conic-gradient(red,yellow,lime,aqua,blue,magenta,red)"></div>
+            <input id="czColorInput" type="color" value="${drawColor}" oninput="czSetColor(this.value)"
+              style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer">
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- CENTER: Canvas + Colors -->
-      <div class="cz3-center">
-        <div style="flex:1;padding:6px;min-height:0;position:relative">
-          <div style="width:100%;height:100%;position:relative;border-radius:18px;overflow:hidden;
-                      box-shadow:0 8px 28px rgba(0,0,0,.18),0 0 0 3px rgba(167,139,250,.4),0 0 0 6px rgba(255,184,48,.12);
-                      border:2px solid rgba(167,139,250,.45)" id="czWrap">
-            <canvas id="drawCanvas" style="display:block;touch-action:none;position:absolute;inset:0;z-index:1;width:100%;height:100%"></canvas>
-            <div id="czBgLayer" style="position:absolute;inset:0;z-index:0;pointer-events:none;background:#ffffff"></div>
-            <div id="czMascot" style="position:absolute;bottom:10px;left:10px;z-index:3;display:flex;align-items:flex-end;gap:5px;cursor:pointer" onclick="czMascotTap()">
-              <div style="position:relative">
-                <div id="czMascotEmoji" style="font-size:2.4rem;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 3px 6px rgba(0,0,0,.2));transition:all .3s">🎨</div>
-                <div style="position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:32px;height:7px;border-radius:50%;background:rgba(167,139,250,.2);filter:blur(3px)"></div>
-              </div>
-              <div id="czTipBubble" style="background:rgba(255,255,255,.96);border-radius:13px 13px 13px 3px;
-                   padding:7px 12px;font-family:'Baloo 2',cursive;font-size:.68rem;font-weight:700;color:#7c3aed;
-                   box-shadow:0 4px 16px rgba(0,0,0,.12),0 0 0 1.5px rgba(167,139,250,.28);max-width:145px;text-align:center;opacity:0;transition:opacity .4s;line-height:1.4;pointer-events:none">
-                ${tip}
-              </div>
-            </div>
-            <div id="czHint" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:2;opacity:.25">
-              <span style="font-family:'Baloo 2',cursive;font-size:1rem;color:#888">✏️ Draw here!</span>
-            </div>
-            <div id="czResizeHandle"
-              style="position:absolute;bottom:0;left:0;right:0;height:20px;z-index:10;cursor:ns-resize;
-                     display:flex;align-items:center;justify-content:center;
-                     background:linear-gradient(transparent,rgba(167,139,250,.15));
-                     border-radius:0 0 16px 16px;transition:background .2s;user-select:none;touch-action:none" title="Drag to resize">
-              <div style="display:flex;gap:3px;align-items:center;opacity:.5;pointer-events:none">
-                <div style="width:24px;height:3px;border-radius:2px;background:rgba(167,139,250,.8)"></div>
-                <div style="width:5px;height:5px;border-radius:50%;background:rgba(167,139,250,.9)"></div>
-                <div style="width:24px;height:3px;border-radius:2px;background:rgba(167,139,250,.8)"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Colors bar -->
-        <div class="cz3-colorbar">
-          <div id="czColorPreview" style="width:26px;height:26px;border-radius:8px;background:${drawColor};border:2.5px solid #fff;
-                      box-shadow:0 2px 7px rgba(0,0,0,.18);flex-shrink:0;position:relative;overflow:hidden">
-            <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.25),transparent)"></div>
-          </div>
-          <div style="display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;align-items:center;flex:1">
-            ${CZ_COLORS.map(c=>`
-              <div onclick="czSetColor('${c}')" data-czcolor="${c}" title="${c}"
-                style="width:${drawColor===c?28:22}px;height:${drawColor===c?28:22}px;border-radius:${drawColor===c?'9':'7'}px;
-                       background:${c};cursor:pointer;transition:all .18s;flex-shrink:0;
-                       ${c==='#ffffff'?'box-shadow:inset 0 0 0 1.5px #ccc;':''}
-                       ${drawColor===c?'box-shadow:0 0 0 2.5px #ffb830,0 2px 7px rgba(0,0,0,.18);transform:scale(1.1)':'box-shadow:0 1px 3px rgba(0,0,0,.14)'}">
-              </div>`).join('')}
-            <div style="position:relative;width:24px;height:24px;border-radius:50%;overflow:hidden;cursor:pointer;flex-shrink:0;box-shadow:0 1px 5px rgba(0,0,0,.18);border:2px solid rgba(255,255,255,.8)" title="Custom colour">
-              <div style="position:absolute;inset:0;background:conic-gradient(red,yellow,lime,aqua,blue,magenta,red)"></div>
-              <input id="czColorInput" type="color" value="${drawColor}" oninput="czSetColor(this.value)"
-                style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT: Stickers + Actions -->
-      <div class="cz3-right">
-        <div style="overflow-y:auto;scrollbar-width:none;flex:1;display:flex;flex-direction:column;padding:7px 5px 6px;gap:5px;align-items:center">
-          <div class="cz3-sec-title" style="color:#e11d78">🐾 Stickers</div>
-          <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:3px">
+      <!-- Stickers row -->
+      <div class="cz-zone cz-stickers" style="overflow:hidden">
+        <div class="cz-zone-label" style="color:#e11d78">
+          🐾 Stickers
+          <div style="display:flex;gap:5px;margin-left:auto">
             ${catKeys.map(k=>`
               <button onclick="czSwitchStickerCat('${k}')" data-czstickercat="${k}"
-                style="width:28px;height:24px;border-radius:7px;border:2px solid ${activeCat===k?'#ff6b9d':'transparent'};
+                style="width:36px;height:28px;border-radius:10px;border:2px solid ${activeCat===k?'#ff6b9d':'transparent'};
                        background:${activeCat===k?'linear-gradient(135deg,#ff6b9d,#ffb830)':'var(--inputbg)'};
-                       font-size:.95rem;cursor:pointer;transition:all .18s;
-                       ${activeCat===k?'box-shadow:0 3px 8px rgba(255,107,157,.3)':''}">${k}
+                       font-size:1.15rem;cursor:pointer;transition:all .18s;
+                       ${activeCat===k?'box-shadow:0 3px 10px rgba(255,107,157,.4)':''}>
+                ${k}
               </button>`).join('')}
           </div>
-          <div id="czStickerList" style="display:flex;flex-wrap:wrap;justify-content:center;gap:3px;padding:1px 0;width:100%">
-            ${(CZ_STICKER_CATS[activeCat]||[]).map(s=>`
-              <div class="cz-sticker cz-tool-btn" onclick="czSetSticker('${s}')" data-czsticker="${s}"
-                style="width:26px;height:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:8px;
-                       background:${drawSticker===s?'linear-gradient(135deg,rgba(255,107,157,.2),rgba(255,184,48,.2))':'var(--inputbg)'};
-                       border:2px solid ${drawSticker===s?'#ff6b9d':'transparent'};
-                       font-size:1.1rem;cursor:pointer;transition:all .2s;
-                       ${drawSticker===s?'box-shadow:0 3px 10px rgba(255,107,157,.32);transform:scale(1.1)':''}">
-                ${s}
-              </div>`).join('')}
-          </div>
-          <div style="width:72px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(255,107,157,.3),transparent);flex-shrink:0"></div>
-          <div class="cz3-sec-title" style="color:#888">Actions</div>
-          <button onclick="czUndo()" id="czUndoBtn"
-            style="width:80px;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px 4px;border:none;border-radius:12px;
-                   background:linear-gradient(135deg,#fff7e0,#ffedd0);cursor:pointer;transition:all .15s;box-shadow:0 2px 6px rgba(255,184,48,.18);flex-shrink:0"
-            onmousedown="this.style.transform='scale(.93)'" onmouseup="this.style.transform=''">
-            <span style="font-size:1rem">↩️</span>
-            <span style="font-family:'Baloo 2',cursive;font-size:.55rem;font-weight:900;color:#b36c00">UNDO</span>
-          </button>
-          <button onclick="czConfirmClear()"
-            style="width:80px;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px 4px;border:none;border-radius:12px;
-                   background:linear-gradient(135deg,#fff0f0,#ffe0e0);cursor:pointer;transition:all .15s;box-shadow:0 2px 6px rgba(255,45,85,.14);flex-shrink:0"
-            onmousedown="this.style.transform='scale(.93)'" onmouseup="this.style.transform=''">
-            <span style="font-size:1rem">🗑️</span>
-            <span style="font-family:'Baloo 2',cursive;font-size:.55rem;font-weight:900;color:#ff2d55">CLEAR</span>
-          </button>
-          <button onclick="czSave()" id="czSaveBtn"
-            style="width:80px;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px 4px;border:none;border-radius:12px;
-                   background:linear-gradient(135deg,#4ade80,#22c55e);cursor:pointer;transition:all .15s;box-shadow:0 3px 10px rgba(34,197,94,.28);animation:czGlow 2s infinite;flex-shrink:0"
-            onmousedown="this.style.transform='scale(.93)'" onmouseup="this.style.transform=''">
-            <span style="font-size:1rem">💾</span>
-            <span style="font-family:'Baloo 2',cursive;font-size:.6rem;font-weight:900;color:#fff">SAVE</span>
-          </button>
+        </div>
+        <div id="czStickerList" style="display:flex;align-items:center;gap:3px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:6px 8px">
+          ${(CZ_STICKER_CATS[activeCat]||[]).map(s=>`
+            <div class="cz-sticker cz-tool-btn cz-sticker-item" onclick="czSetSticker('${s}')" data-czsticker="${s}"
+              style="width:48px;height:48px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:14px;
+                     background:${drawSticker===s?'linear-gradient(135deg,rgba(255,107,157,.2),rgba(255,184,48,.2))':'var(--inputbg)'};
+                     border:2.5px solid ${drawSticker===s?'#ff6b9d':'transparent'};
+                     font-size:2rem;cursor:pointer;transition:all .2s;
+                     ${drawSticker===s?'box-shadow:0 5px 16px rgba(255,107,157,.4);transform:scale(1.12)':''}>
+              ${s}
+            </div>`).join('')}
         </div>
       </div>
     </div>
@@ -7763,6 +7796,87 @@ function renderCreativeZone(){
   if(hint)hint.style.opacity=czUndoStack.length>0?'0':'.25';
 
   document.getElementById('hist').innerHTML='';
+
+  // ── Setup canvas ──────────────────────────────────
+  drawCanvas=document.getElementById('drawCanvas');
+  const wrap=document.getElementById('czWrap');
+  function sizeCanvas(){
+    const w=wrap.offsetWidth;
+    const h=wrap.offsetHeight||Math.max(w*0.75,280);
+    let imgData=null;
+    if(drawCtx)try{imgData=drawCtx.getImageData(0,0,drawCanvas.width,drawCanvas.height);}catch(e){}
+    drawCanvas.width=w*window.devicePixelRatio;
+    drawCanvas.height=h*window.devicePixelRatio;
+    drawCanvas.style.width=w+'px';
+    drawCanvas.style.height=h+'px';
+    drawCtx=drawCanvas.getContext('2d');
+    drawCtx.scale(window.devicePixelRatio,window.devicePixelRatio);
+    // Do NOT fill with white — czBgLayer behind handles the background
+    if(imgData)try{drawCtx.putImageData(imgData,0,0);}catch(e){}
+    drawCtx.lineCap='round';drawCtx.lineJoin='round';
+    czApplyBg();
+  }
+  requestAnimationFrame(()=>{requestAnimationFrame(sizeCanvas);});
+  window.addEventListener('resize',()=>{if(tab==='create'&&drawCanvas)sizeCanvas();});
+
+  // ── Drag-to-resize canvas ──────────────────────────
+  (function(){
+    const middleRow=wrap.parentElement; // the flex row containing czWrap + rail
+    const handle=document.getElementById('czResizeHandle');
+    if(!handle||!middleRow)return;
+    let dragging=false,startY=0,startH=0;
+
+    function onDragStart(e){
+      dragging=true;
+      startY=e.clientY??e.touches?.[0]?.clientY??0;
+      startH=middleRow.offsetHeight;
+      handle.style.background='linear-gradient(transparent,rgba(167,139,250,.38))';
+      document.body.style.userSelect='none';
+      document.body.style.cursor='ns-resize';
+    }
+    function onDragMove(e){
+      if(!dragging)return;
+      const y=e.clientY??e.touches?.[0]?.clientY??startY;
+      const delta=y-startY;
+      const minH=200, maxH=window.innerHeight-120;
+      const newH=Math.min(maxH,Math.max(minH,startH+delta));
+      middleRow.style.flex='none';
+      middleRow.style.height=newH+'px';
+      sizeCanvas();
+    }
+    function onDragEnd(){
+      if(!dragging)return;
+      dragging=false;
+      handle.style.background='linear-gradient(transparent,rgba(167,139,250,.18))';
+      document.body.style.userSelect='';
+      document.body.style.cursor='';
+      sizeCanvas();
+    }
+
+    handle.addEventListener('mousedown',onDragStart);
+    window.addEventListener('mousemove',onDragMove);
+    window.addEventListener('mouseup',onDragEnd);
+
+    handle.addEventListener('touchstart',e=>{e.preventDefault();onDragStart(e.touches[0]);},{passive:false});
+    window.addEventListener('touchmove',e=>{if(dragging){e.preventDefault();onDragMove(e);}},{passive:false});
+    window.addEventListener('touchend',onDragEnd);
+
+    // Hover glow
+    handle.addEventListener('mouseenter',()=>{if(!dragging)handle.style.background='linear-gradient(transparent,rgba(167,139,250,.28))';});
+    handle.addEventListener('mouseleave',()=>{if(!dragging)handle.style.background='linear-gradient(transparent,rgba(167,139,250,.18))';});
+  })();
+  drawCanvas.addEventListener('mousedown',czStartDraw);
+  drawCanvas.addEventListener('mousemove',czDoDraw);
+  drawCanvas.addEventListener('mouseup',czEndDraw);
+  drawCanvas.addEventListener('mouseleave',czEndDraw);
+  drawCanvas.addEventListener('touchstart',e=>{e.preventDefault();czStartDraw(e.touches[0]);},{passive:false});
+  drawCanvas.addEventListener('touchmove',e=>{e.preventDefault();czDoDraw(e.touches[0]);},{passive:false});
+  drawCanvas.addEventListener('touchend',czEndDraw);
+
+  // Show mascot tip after 1s
+  setTimeout(()=>{const b=document.getElementById('czTipBubble');if(b)b.style.opacity='1';},1000);
+  setTimeout(()=>{const b=document.getElementById('czTipBubble');if(b)b.style.opacity='0';},4000);
+}
 
 // ── Actions ──────────────────────────────────────────
 // ── Lightweight setters — update UI state WITHOUT rebuilding canvas ──────────
@@ -7928,13 +8042,13 @@ function czRefreshStickerRow(rebuildCats){
     const list=document.getElementById('czStickerList');
     if(list){
       list.innerHTML=(CZ_STICKER_CATS[activeCat]||[]).map(s=>`
-        <div class="cz-sticker cz-tool-btn" onclick="czSetSticker('${s}')"
+        <div class="cz-sticker cz-tool-btn cz-sticker-item" onclick="czSetSticker('${s}')"
           data-czsticker="${s}"
-          style="width:26px;height:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:8px;
+          style="width:56px;height:56px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:14px;
                  background:${drawSticker===s?'linear-gradient(135deg,rgba(255,107,157,.2),rgba(255,184,48,.2))':'var(--inputbg)'};
-                 border:2px solid ${drawSticker===s?'#ff6b9d':'transparent'};
-                 font-size:1.1rem;cursor:pointer;transition:all .2s;
-                 ${drawSticker===s?'box-shadow:0 3px 10px rgba(255,107,157,.32);transform:scale(1.1)':''}">
+                 border:2.5px solid ${drawSticker===s?'#ff6b9d':'transparent'};
+                 font-size:2.2rem;cursor:pointer;transition:all .2s;
+                 ${drawSticker===s?'box-shadow:0 5px 16px rgba(255,107,157,.4);transform:scale(1.12)':''}">
           ${s}
         </div>`).join('');
     }
