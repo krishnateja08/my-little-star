@@ -7681,6 +7681,19 @@ function renderCreativeZone(){
         <div id="czHint" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:2;opacity:.25">
           <span style="font-family:'Baloo 2',cursive;font-size:1rem;color:#888">✏️ Draw here!</span>
         </div>
+        <!-- ══ Resize Handle ══ -->
+        <div id="czResizeHandle"
+          style="position:absolute;bottom:0;left:0;right:0;height:22px;z-index:10;cursor:ns-resize;
+                 display:flex;align-items:center;justify-content:center;
+                 background:linear-gradient(transparent,rgba(167,139,250,.18));
+                 border-radius:0 0 22px 22px;transition:background .2s;user-select:none;touch-action:none"
+          title="Drag to resize canvas">
+          <div style="display:flex;gap:3px;align-items:center;opacity:.55;pointer-events:none">
+            <div style="width:28px;height:3px;border-radius:2px;background:rgba(167,139,250,.8)"></div>
+            <div style="width:6px;height:6px;border-radius:50%;background:rgba(167,139,250,.9)"></div>
+            <div style="width:28px;height:3px;border-radius:2px;background:rgba(167,139,250,.8)"></div>
+          </div>
+        </div>
       </div>
 
       <!-- ══ RIGHT RAIL: Brush Zone ══ -->
@@ -7834,6 +7847,53 @@ function renderCreativeZone(){
   }
   requestAnimationFrame(()=>{requestAnimationFrame(sizeCanvas);});
   window.addEventListener('resize',()=>{if(tab==='create'&&drawCanvas)sizeCanvas();});
+
+  // ── Drag-to-resize canvas ──────────────────────────
+  (function(){
+    const middleRow=wrap.parentElement; // the flex row containing czWrap + rail
+    const handle=document.getElementById('czResizeHandle');
+    if(!handle||!middleRow)return;
+    let dragging=false,startY=0,startH=0;
+
+    function onDragStart(e){
+      dragging=true;
+      startY=e.clientY??e.touches?.[0]?.clientY??0;
+      startH=middleRow.offsetHeight;
+      handle.style.background='linear-gradient(transparent,rgba(167,139,250,.38))';
+      document.body.style.userSelect='none';
+      document.body.style.cursor='ns-resize';
+    }
+    function onDragMove(e){
+      if(!dragging)return;
+      const y=e.clientY??e.touches?.[0]?.clientY??startY;
+      const delta=y-startY;
+      const minH=200, maxH=window.innerHeight-120;
+      const newH=Math.min(maxH,Math.max(minH,startH+delta));
+      middleRow.style.flex='none';
+      middleRow.style.height=newH+'px';
+      sizeCanvas();
+    }
+    function onDragEnd(){
+      if(!dragging)return;
+      dragging=false;
+      handle.style.background='linear-gradient(transparent,rgba(167,139,250,.18))';
+      document.body.style.userSelect='';
+      document.body.style.cursor='';
+      sizeCanvas();
+    }
+
+    handle.addEventListener('mousedown',onDragStart);
+    window.addEventListener('mousemove',onDragMove);
+    window.addEventListener('mouseup',onDragEnd);
+
+    handle.addEventListener('touchstart',e=>{e.preventDefault();onDragStart(e.touches[0]);},{passive:false});
+    window.addEventListener('touchmove',e=>{if(dragging){e.preventDefault();onDragMove(e);}},{passive:false});
+    window.addEventListener('touchend',onDragEnd);
+
+    // Hover glow
+    handle.addEventListener('mouseenter',()=>{if(!dragging)handle.style.background='linear-gradient(transparent,rgba(167,139,250,.28))';});
+    handle.addEventListener('mouseleave',()=>{if(!dragging)handle.style.background='linear-gradient(transparent,rgba(167,139,250,.18))';});
+  })();
   drawCanvas.addEventListener('mousedown',czStartDraw);
   drawCanvas.addEventListener('mousemove',czDoDraw);
   drawCanvas.addEventListener('mouseup',czEndDraw);
