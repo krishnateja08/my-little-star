@@ -1239,9 +1239,9 @@ body.bedtime .skill-track{background:#333355;}
   font-size:.9rem;font-weight:700;box-shadow:0 6px 22px rgba(255,107,157,.4);
   transform:translateX(200px);transition:transform .4s cubic-bezier(.68,-.55,.27,1.55);z-index:9999;}
 .toast.show{transform:translateX(0);}
-.spill{position:fixed;bottom:16px;right:16px;background:linear-gradient(135deg,#ffb830,#ff6b9d);
+.spill{position:fixed;bottom:75px;right:16px;background:linear-gradient(135deg,#ffb830,#ff6b9d);
   color:#fff;padding:10px 16px;border-radius:50px;font-family:'Baloo 2',cursive;
-  font-size:.95rem;font-weight:700;box-shadow:0 6px 22px rgba(255,184,48,.4);z-index:100;
+  font-size:.95rem;font-weight:700;box-shadow:0 6px 22px rgba(255,184,48,.4);z-index:600;
   cursor:pointer;transition:all .2s;}
 .spill:active{transform:scale(.93);}
 
@@ -1569,7 +1569,7 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .fact-emoji{font-size:1.8rem;}
   .fact-title{font-size:.9rem;}
   .fact-body{font-size:.78rem;}
-  .spill{bottom:12px;right:12px;padding:8px 12px;font-size:.82rem;}
+  .spill{bottom:75px;right:12px;padding:8px 12px;font-size:.82rem;}
   .toast{font-size:.78rem;padding:6px 12px;}
   .speech-bubble{font-size:.65rem;padding:3px 8px;}
   .sound-toggle,.bedtime-toggle{width:30px;height:30px;font-size:.9rem;}
@@ -1793,7 +1793,7 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   .fact-card{display:none;}
   .main{padding:6px 12px 80px;}
   .aemoji{font-size:2rem;margin:2px 0;}
-  .spill{bottom:8px;right:8px;padding:6px 10px;font-size:.78rem;}
+  .spill{bottom:75px;right:8px;padding:6px 10px;font-size:.78rem;}
 }
 
 /* ── Create zone — landscape phone fix ── */
@@ -2003,7 +2003,7 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
 
 
   .main{padding-bottom:max(110px,calc(110px + env(safe-area-inset-bottom)));}
-  .spill{bottom:max(16px,env(safe-area-inset-bottom));right:max(16px,env(safe-area-inset-right));}
+  .spill{bottom:calc(75px + env(safe-area-inset-bottom));right:max(16px,env(safe-area-inset-right));}
   .toast{top:max(16px,env(safe-area-inset-top));}
 }
 
@@ -3156,6 +3156,13 @@ function applyRewards(){
 
 function showShop(){
   playClick();
+  // Make sure activityView is visible (user might be on homepage)
+  document.getElementById('homeView').style.display='none';
+  document.getElementById('activityView').style.display='block';
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  const sn=document.getElementById('sectionName');if(sn)sn.textContent='🎁 Star Shop';
+  const ss=document.getElementById('sectionSub');if(ss)ss.textContent='Spend your stars on cool rewards!';
+  window.scrollTo({top:0,behavior:'smooth'});
   const el=document.getElementById('area');
   el.innerHTML=`
     <div class="shop-panel">
