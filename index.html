@@ -7760,11 +7760,16 @@ function renderCreativeZone(){
               ${bgList.map((b,_i)=>{
                 const realIdx=CZ_BGS.indexOf(b);
                 return `<div onclick="czSetBg(${realIdx})" data-czbg="${realIdx}"
-                  style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;transition:all .18s;padding:2px 4px;border-radius:10px;
-                         border:2px solid ${czBgIdx===realIdx?'#ffb830':'transparent'};
-                         background:${czBgIdx===realIdx?'rgba(255,184,48,.1)':'transparent'}">
-                  <div style="width:30px;height:30px;border-radius:9px;background:${b.bg};background-color:${b.base||b.bg};background-size:${b.size||'cover'};
-                              border:1.5px solid rgba(255,255,255,.6);box-shadow:0 2px 5px rgba(0,0,0,.15);overflow:hidden;flex-shrink:0"></div>
+                  style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;transition:all .22s;padding:3px 4px;border-radius:12px;
+                         outline:${czBgIdx===realIdx?'3px solid #ffb830':'3px solid transparent'};
+                         outline-offset:2px;
+                         background:${czBgIdx===realIdx?'rgba(255,184,48,.18)':'transparent'};
+                         transform:${czBgIdx===realIdx?'scale(1.18)':'scale(1)'};
+                         box-shadow:${czBgIdx===realIdx?'0 4px 12px rgba(255,184,48,.45)':'none'}">
+                  <div style="position:relative;width:${czBgIdx===realIdx?34:28}px;height:${czBgIdx===realIdx?34:28}px;border-radius:9px;background:${b.bg};background-color:${b.base||b.bg};background-size:${b.size||'cover'};
+                              border:${czBgIdx===realIdx?'2px solid #ffb830':'1.5px solid rgba(255,255,255,.6)'};box-shadow:0 2px 5px rgba(0,0,0,.15);overflow:hidden;flex-shrink:0;transition:all .22s">
+                    ${czBgIdx===realIdx?'<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18);font-size:.85rem">✓</div>':''}
+                  </div>
                 </div>`;
               }).join('')}
               <div style="display:flex;gap:3px;flex-shrink:0;margin-left:2px">
@@ -8132,12 +8137,16 @@ function czRefreshBgSection(clickedBtn){
   container.innerHTML=bgList.map(b=>{
     const realIdx=CZ_BGS.indexOf(b);
     return `<div onclick="czSetBg(${realIdx})" data-czbg="${realIdx}"
-      style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:all .18s;padding:3px 5px;border-radius:14px;
-             border:2.5px solid ${czBgIdx===realIdx?'#ffb830':'transparent'};
-             background:${czBgIdx===realIdx?'rgba(255,184,48,.1)':'transparent'};
-             ${czBgIdx===realIdx?'box-shadow:0 2px 8px rgba(255,184,48,.35)':''}">
-      <div style="width:30px;height:30px;border-radius:9px;background:${b.bg};background-color:${b.base||b.bg};background-size:${b.size||'cover'};
-                  border:1.5px solid rgba(255,255,255,.6);box-shadow:0 2px 5px rgba(0,0,0,.15);overflow:hidden;flex-shrink:0"></div>
+      style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:all .22s;padding:3px 5px;border-radius:12px;
+             outline:${czBgIdx===realIdx?'3px solid #ffb830':'3px solid transparent'};
+             outline-offset:2px;
+             background:${czBgIdx===realIdx?'rgba(255,184,48,.18)':'transparent'};
+             transform:${czBgIdx===realIdx?'scale(1.18)':'scale(1)'};
+             box-shadow:${czBgIdx===realIdx?'0 4px 12px rgba(255,184,48,.45)':'none'}">
+      <div style="position:relative;width:${czBgIdx===realIdx?34:28}px;height:${czBgIdx===realIdx?34:28}px;border-radius:9px;background:${b.bg};background-color:${b.base||b.bg};background-size:${b.size||'cover'};
+                  border:${czBgIdx===realIdx?'2px solid #ffb830':'1.5px solid rgba(255,255,255,.6)'};box-shadow:0 2px 5px rgba(0,0,0,.15);overflow:hidden;flex-shrink:0;transition:all .22s">
+        ${czBgIdx===realIdx?'<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18);font-size:.85rem">✓</div>':''}
+      </div>
     </div>`;
   }).join('');
 }
@@ -8145,9 +8154,30 @@ function czRefreshBgRow(){
   document.querySelectorAll('[data-czbg]').forEach(el=>{
     const idx=parseInt(el.dataset.czbg);
     const active=idx===czBgIdx;
-    el.style.border=`2.5px solid ${active?'#ffb830':'transparent'}`;
-    el.style.background=active?'rgba(255,184,48,.1)':'transparent';
-    el.style.boxShadow=active?'0 2px 8px rgba(255,184,48,.35)':'';
+    el.style.outline=active?'3px solid #ffb830':'3px solid transparent';
+    el.style.outlineOffset='2px';
+    el.style.background=active?'rgba(255,184,48,.18)':'transparent';
+    el.style.boxShadow=active?'0 4px 12px rgba(255,184,48,.45)':'none';
+    el.style.transform=active?'scale(1.18)':'scale(1)';
+    // Update inner swatch size + checkmark
+    const swatch=el.querySelector('div');
+    if(swatch){
+      swatch.style.width=active?'34px':'28px';
+      swatch.style.height=active?'34px':'28px';
+      swatch.style.border=active?'2px solid #ffb830':'1.5px solid rgba(255,255,255,.6)';
+      // Add/remove checkmark overlay
+      let ck=swatch.querySelector('.cz-bg-ck');
+      if(active&&!ck){
+        ck=document.createElement('div');
+        ck.className='cz-bg-ck';
+        ck.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.22);font-size:.85rem;pointer-events:none';
+        ck.textContent='✓';
+        swatch.style.position='relative';
+        swatch.appendChild(ck);
+      } else if(!active&&ck){
+        ck.remove();
+      }
+    }
     const lbl=el.querySelector('[data-cz="bglabel"]');
     if(lbl)lbl.style.color=active?'#b36c00':'var(--text4)';
   });
