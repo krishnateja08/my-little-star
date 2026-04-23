@@ -322,27 +322,116 @@ body.bedtime .hw-day{background:#0d2218;border-color:#1b5e20;}
   body{width:100%;}
   header{padding:26px 40px 36px;border-radius:0 0 52px 52px;}
   header h1{font-size:2.1rem;}
-  #homeView{padding:18px 24px 110px;}
-  #activityView{padding:12px 24px 110px;}
-  .adventure-grid{grid-template-columns:repeat(3,1fr);gap:14px;}
-  .mini-grid{grid-template-columns:repeat(3,1fr);}
-  .adv-tile{min-height:160px;}
+  #homeView{padding:18px 28px 110px;}
+  #activityView{padding:12px 28px 110px;}
+  .adventure-grid{grid-template-columns:repeat(3,1fr);gap:16px;}
+  .mini-grid{grid-template-columns:repeat(3,1fr);gap:12px;}
+  .adv-tile{min-height:170px;}
   .adv-tile.wide{grid-column:1/-1;}
+  .adv-tile .tile-icon{font-size:3.2rem;}
+  .adv-tile .tile-name{font-size:1.15rem;}
   .bottom-nav{left:0;right:0;}
   .bn-item{min-width:70px;padding:8px 14px;}
-  .bn-icon{font-size:1.5rem!important;}
-  .bn-label{font-size:.6rem!important;}
+  .bn-item .bn-icon{font-size:1.5rem;}
+  .bn-item .bn-label{font-size:.6rem;}
+  .quest-strip .qs-title{font-size:1rem;}
+  .home-story-hero{padding:20px 26px;}
+  .hsh-icon{font-size:3rem;}
+  .hsh-title{font-size:1.1rem;}
+  .mini-tile{padding:20px 14px;}
+  .mini-tile .mt-icon{font-size:2.6rem;}
+  .mini-tile .mt-name{font-size:.85rem;}
 }
 @media(min-width:1024px){
   body{width:100%;}
   header{padding:30px 60px 40px;}
-  #homeView{padding:20px 36px 110px;}
-  #activityView{padding:14px 36px 110px;}
-  .adventure-grid{grid-template-columns:repeat(3,1fr);gap:16px;}
-  .adv-tile{min-height:180px;padding:24px 20px;}
-  .adv-tile .tile-icon{font-size:3.4rem;}
-  .adv-tile .tile-name{font-size:1.2rem;}
+  #homeView{padding:22px 40px 110px;}
+  #activityView{padding:16px 40px 110px;}
+  .adventure-grid{grid-template-columns:repeat(4,1fr);gap:18px;}
+  .mini-grid{grid-template-columns:repeat(3,1fr);gap:14px;}
+  .adv-tile{min-height:190px;padding:26px 22px;}
+  .adv-tile .tile-icon{font-size:3.6rem;}
+  .adv-tile .tile-name{font-size:1.25rem;}
+  .adv-tile .tile-desc{font-size:.78rem;}
   .bottom-nav{left:0;right:0;}
+  .bn-item{min-width:90px;padding:10px 18px;}
+  .bn-item .bn-icon{font-size:1.6rem;}
+  .bn-item .bn-label{font-size:.65rem;}
+  .quest-strip{padding:18px 24px;}
+  .quest-strip .qs-title{font-size:1.05rem;}
+  .quest-strip .qs-gems .num{font-size:1.4rem;}
+  .home-story-hero{padding:22px 30px;}
+  .hsh-icon{font-size:3.4rem;}
+  .hsh-title{font-size:1.2rem;}
+  .mini-tile{padding:22px 16px;}
+  .mini-tile .mt-icon{font-size:2.8rem;}
+  .mini-tile .mt-name{font-size:.9rem;}
+  .home-section-label{font-size:.85rem;}
+}
+@media(min-width:1400px){
+  header{padding:34px 80px 44px;}
+  #homeView{padding:26px 60px 110px;}
+  #activityView{padding:20px 60px 110px;}
+  .adventure-grid{gap:20px;}
+  .adv-tile{min-height:210px;padding:28px 24px;}
+  .adv-tile .tile-icon{font-size:4rem;}
+  .adv-tile .tile-name{font-size:1.3rem;}
+  .mini-grid{gap:16px;}
+  .mini-tile{padding:24px 18px;}
+  .mini-tile .mt-icon{font-size:3rem;}
+}
+
+/* Small phones (< 380px) */
+@media(max-width:380px){
+  #homeView{padding:10px 10px 100px;}
+  .quest-strip{padding:11px 12px;gap:10px;}
+  .quest-strip .qs-icon{font-size:1.6rem;}
+  .quest-strip .qs-gems{padding:6px 10px;}
+  .quest-strip .qs-gems .num{font-size:1rem;}
+  .adventure-grid{grid-template-columns:1fr 1fr;gap:9px;}
+  .adv-tile{min-height:120px;padding:14px 12px;}
+  .adv-tile .tile-icon{font-size:2.4rem;}
+  .adv-tile .tile-name{font-size:.92rem;}
+  .adv-tile .tile-desc{display:none;}
+  .mini-grid{gap:8px;}
+  .mini-tile{padding:13px 8px;}
+  .mini-tile .mt-icon{font-size:1.8rem;}
+  .mini-tile .mt-name{font-size:.68rem;}
+  .home-story-hero{padding:12px 14px;gap:10px;}
+  .hsh-icon{font-size:2rem;}
+  .hsh-title{font-size:.85rem;}
+  .hsh-sub{display:none;}
+  .hsh-btn{padding:6px 12px;font-size:.72rem;}
+  .home-week{gap:4px;}
+  .hw-day{min-width:36px;padding:6px 2px;}
+}
+
+/* Landscape phone */
+@media(max-height:500px) and (orientation:landscape){
+  header{padding:8px 60px 14px;border-radius:0 0 20px 20px;}
+  header h1{font-size:1.1rem;}
+  .hsub,.dbadge{display:none;}
+  .mascot{font-size:1.6rem;}
+  #homeView{padding:8px 14px 80px;}
+  .quest-strip{padding:8px 12px;margin-bottom:8px;}
+  .quest-strip .qs-sub{display:none;}
+  .home-week{display:none;}
+  .home-story-hero{padding:10px 14px;margin-bottom:8px;}
+  .hsh-sub{display:none;}
+  .adventure-grid{grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px;}
+  .adv-tile{min-height:90px;padding:10px 10px;}
+  .adv-tile .tile-icon{font-size:2rem;}
+  .adv-tile .tile-name{font-size:.82rem;}
+  .adv-tile .tile-desc{display:none;}
+  .adv-tile .tile-cta{display:none;}
+  .mini-grid{gap:8px;margin-bottom:8px;}
+  .mini-tile{padding:10px 8px;}
+  .mini-tile .mt-icon{font-size:1.6rem;}
+  .home-section-label{margin:4px 0 6px;}
+  .bottom-nav{padding:4px 4px;}
+  .bn-item{padding:4px 8px;}
+  .bn-item .bn-icon{font-size:1.1rem;}
+  .bn-item .bn-label{font-size:.48rem;}
 }
 .mascot-wrap{position:relative;display:inline-block;cursor:pointer;}
 .mascot{font-size:2.6rem;animation:float 3s ease-in-out infinite;display:block;transition:transform .3s;}
@@ -9952,23 +10041,32 @@ function closeGate(){document.getElementById('gateOverlay').innerHTML='';}
 
 function openParentTab(){
   tab='parent';
+  // Show the activity view (was hidden on homepage)
+  document.getElementById('homeView').style.display='none';
+  document.getElementById('activityView').style.display='block';
+  // Update bottom nav
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  const bnP=document.getElementById('bn_parent');if(bnP)bnP.classList.add('active');
+  // Update section header
+  const sn=document.getElementById('sectionName');if(sn)sn.textContent='👨‍👩‍👧 Parent Dashboard';
+  const ss=document.getElementById('sectionSub');if(ss)ss.textContent='View progress & settings';
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t==='parent'));
   document.getElementById('subjRow').classList.remove('show');
   document.getElementById('gameRow').classList.remove('show');
-  const isSpecial=true;
-  document.getElementById('progBar').style.display='none';
-  document.getElementById('factCard').style.display='none';
-  document.getElementById('timerBar').classList.remove('show');
+  const pb=document.getElementById('progBar');if(pb)pb.style.display='none';
+  const fc=document.getElementById('factCard');if(fc)fc.style.display='none';
+  const tb=document.getElementById('timerBar');if(tb)tb.classList.remove('show');
   document.getElementById('challengeBar').style.display='none';
-  document.getElementById('storyBanner').style.display='none';
-  document.getElementById('starPath').style.display='none';
-  document.getElementById('goalsCard').style.display='none';
-  document.getElementById('sparkCard').style.display='none';
-  document.getElementById('bttCard').style.display='none';
-  document.getElementById('qcFab').style.display='none';
+  const sb=document.getElementById('storyBanner');if(sb)sb.style.display='none';
+  const sp=document.getElementById('starPath');if(sp)sp.style.display='none';
+  const gc=document.getElementById('goalsCard');if(gc)gc.style.display='none';
+  const sc=document.getElementById('sparkCard');if(sc)sc.style.display='none';
+  const bc=document.getElementById('bttCard');if(bc)bc.style.display='none';
+  const qf=document.getElementById('qcFab');if(qf)qf.style.display='none';
   document.getElementById('weatherBar').classList.remove('show');
-  document.getElementById('todayBar').style.display='none';
-  document.getElementById('physBanner').style.display='none';
+  const td=document.getElementById('todayBar');if(td)td.style.display='none';
+  const phys=document.getElementById('physBanner');if(phys)phys.style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
   fetchNext();
 }
 
