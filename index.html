@@ -8,11 +8,12 @@
 <style>
 :root{
   --pink:#ff6b9d;--sun:#ffb830;--mint:#4ecdc4;--purple:#a78bfa;
-  --green:#56cf81;--blue:#4fa3e0;--coral:#ff8c69;
-  --bg:#fff8f0;--card:#fff;--r:22px;
-  --text:#222;--text2:#666;--text3:#888;--text4:#aaa;--text5:#bbb;--text6:#ccc;--text7:#ddd;
-  --shadow:rgba(0,0,0,.09);--shadow2:rgba(0,0,0,.06);
-  --cardbg:#fff;--inputbg:#f8f8ff;--border:#eee;--learnbg1:#f0f7ff;--learnbg2:#e8f5e9;
+  --green:#52b788;--blue:#4fa3e0;--coral:#ff8c69;
+  --j1:#1b4332;--j2:#2d6a4f;--j3:#52b788;--j4:#b7e4c7;
+  --bg:#f0faf4;--card:#fff;--r:22px;
+  --text:#1a3a2a;--text2:#3d6b56;--text3:#6b9e85;--text4:#95c4aa;--text5:#bcdecb;--text6:#d4ede0;--text7:#eaf6ef;
+  --shadow:rgba(27,67,50,.12);--shadow2:rgba(27,67,50,.07);
+  --cardbg:#fff;--inputbg:#f0faf4;--border:#d4ede0;--learnbg1:#e8f5ee;--learnbg2:#e8f5e9;
   /* Create zone responsive tokens */
   --cz-header-offset: 155px;
   --cz-max-width: 100%;
@@ -42,17 +43,307 @@ body.bedtime .fact-card{box-shadow:0 8px 28px rgba(0,0,0,.5);}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;
   min-height:100dvh;overflow-x:hidden;-webkit-text-size-adjust:100%;
-  background-image:radial-gradient(circle at 10% 10%,#ffe0f044,transparent 40%),
-  radial-gradient(circle at 90% 90%,#d4f1ff44,transparent 40%);
+  background-image:radial-gradient(circle at 5% 5%,#b7e4c733,transparent 40%),
+  radial-gradient(circle at 95% 95%,#d8f3dc33,transparent 40%);
   transition:background .6s;}
 img,canvas,svg{max-width:100%;height:auto;}
 
 /* HEADER */
-header{background:linear-gradient(135deg,#ff6b9d,#ffb830,#4ecdc4);
-  padding:16px 16px 24px;border-radius:0 0 36px 36px;text-align:center;
-  box-shadow:0 8px 30px rgba(255,107,157,.3);position:relative;overflow:hidden;}
-header::before{content:'';position:absolute;inset:0;
-  background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='5' fill='%23fff' fill-opacity='.07'/%3E%3C/svg%3E");}
+header{background:linear-gradient(135deg,#1b4332,#2d6a4f,#52b788);
+  padding:20px 20px 28px;border-radius:0 0 44px 44px;text-align:center;
+  box-shadow:0 8px 32px rgba(27,67,50,.3);position:relative;overflow:hidden;}
+header::before{content:'🌿';position:absolute;top:-10px;left:-6px;font-size:6rem;opacity:.12;transform:rotate(-20deg);pointer-events:none;}
+header::after{content:'🍃';position:absolute;bottom:-14px;right:-8px;font-size:7rem;opacity:.1;transform:rotate(15deg);pointer-events:none;}
+header h1{font-family:'Baloo 2',cursive;font-size:1.7rem;color:#fff;text-shadow:2px 3px 0 rgba(0,0,0,.15);position:relative;}
+.hsub{color:rgba(255,255,255,.88);font-size:.84rem;position:relative;margin-top:2px;}
+.dbadge{display:inline-block;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.3);border-radius:50px;
+  padding:4px 16px;font-family:'Baloo 2',cursive;font-size:.8rem;color:#fff;margin-top:7px;position:relative;}
+
+/* SOUND / BEDTIME TOGGLES */
+.sound-toggle{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.18);
+  border:1.5px solid rgba(255,255,255,.3);border-radius:50%;width:38px;height:38px;font-size:1.1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;z-index:10;transition:all .2s;color:#fff;}
+.sound-toggle:active{transform:scale(.9);}
+.bedtime-toggle{position:absolute;top:14px;left:14px;background:rgba(255,255,255,.18);
+  border:1.5px solid rgba(255,255,255,.3);border-radius:50%;width:38px;height:38px;font-size:1.1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;z-index:10;transition:all .2s;color:#fff;}
+.bedtime-toggle:active{transform:scale(.9);}
+
+/* HIDE the old top tabs — replaced by bottom nav */
+.tabs{display:none !important;}
+
+/* ══════════════════════════════════════════════
+   ADVENTURE MAP HOMEPAGE
+══════════════════════════════════════════════ */
+#homeView{display:block;padding:14px 14px 100px;}
+
+/* Quest / progress strip */
+.quest-strip{background:#fff;border-radius:20px;padding:14px 18px;margin-bottom:16px;
+  box-shadow:0 4px 18px var(--shadow2);border:1.5px solid var(--border);display:flex;align-items:center;gap:14px;}
+.quest-strip .qs-icon{font-size:2rem;flex-shrink:0;}
+.quest-strip .qs-body{flex:1;min-width:0;}
+.quest-strip .qs-title{font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:var(--j1);margin-bottom:5px;}
+.quest-strip .qs-bar{height:11px;background:#e0f0e8;border-radius:50px;overflow:hidden;}
+.quest-strip .qs-fill{height:100%;width:0%;background:linear-gradient(90deg,#1b4332,#52b788,#4ecdc4);border-radius:50px;transition:width .7s ease;}
+.quest-strip .qs-sub{font-size:.72rem;color:var(--text3);margin-top:4px;font-weight:600;}
+.quest-strip .qs-gems{background:linear-gradient(135deg,#1b4332,#52b788);border-radius:14px;padding:8px 14px;text-align:center;flex-shrink:0;}
+.quest-strip .qs-gems .num{font-family:'Baloo 2',cursive;font-size:1.25rem;font-weight:800;color:#fff;line-height:1;}
+.quest-strip .qs-gems .lbl{font-size:.55rem;color:rgba(255,255,255,.8);font-weight:700;letter-spacing:.5px;}
+
+/* Week strip inside homepage */
+.home-week{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+.home-week::-webkit-scrollbar{display:none;}
+.hw-day{flex:1;min-width:42px;background:#fff;border-radius:14px;padding:8px 4px;text-align:center;
+  box-shadow:0 2px 10px var(--shadow2);border:1.5px solid var(--border);}
+.hw-day.today{background:linear-gradient(135deg,#1b4332,#52b788);border-color:transparent;}
+.hw-day.done{background:linear-gradient(135deg,#52b788,#4ecdc4);border-color:transparent;}
+.hw-day .dn{font-size:.58rem;font-weight:800;text-transform:uppercase;color:var(--text4);}
+.hw-day.today .dn,.hw-day.done .dn{color:rgba(255,255,255,.8);}
+.hw-day .dd{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--text);}
+.hw-day.today .dd,.hw-day.done .dd{color:#fff;}
+.hw-day .ds{font-size:.8rem;margin-top:1px;}
+
+/* Story hero card */
+.home-story-hero{background:linear-gradient(135deg,#fff8e1,#e8f5ee);border-radius:22px;
+  padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:16px;
+  box-shadow:0 4px 16px rgba(27,67,50,.1);cursor:pointer;transition:transform .2s;
+  border-left:5px solid #52b788;}
+.home-story-hero:hover{transform:scale(1.01);}
+.home-story-hero:active{transform:scale(.98);}
+.hsh-icon{font-size:2.6rem;flex-shrink:0;}
+.hsh-body{flex:1;}
+.hsh-title{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:#1b4332;}
+.hsh-sub{font-size:.76rem;color:var(--text3);margin-top:3px;}
+.hsh-btn{background:linear-gradient(135deg,#1b4332,#52b788);border-radius:50px;
+  padding:8px 18px;font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:800;
+  color:#fff;flex-shrink:0;border:none;cursor:pointer;white-space:nowrap;}
+
+/* Section label */
+.home-section-label{font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:800;
+  color:var(--j2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;}
+
+/* THE MAIN ADVENTURE MAP GRID */
+.adventure-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+
+.adv-tile{border-radius:24px;padding:20px 16px;cursor:pointer;position:relative;
+  overflow:hidden;transition:transform .22s,box-shadow .22s;min-height:140px;
+  display:flex;flex-direction:column;justify-content:space-between;}
+.adv-tile:hover{transform:translateY(-4px);}
+.adv-tile:active{transform:scale(.96);}
+
+.adv-tile .tile-shine{position:absolute;top:-30px;right:-30px;width:100px;height:100px;
+  border-radius:50%;background:rgba(255,255,255,.12);pointer-events:none;}
+.adv-tile .tile-shine2{position:absolute;bottom:-20px;left:-20px;width:70px;height:70px;
+  border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none;}
+
+.adv-tile .tile-status{position:absolute;top:12px;right:12px;width:28px;height:28px;
+  border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;
+  justify-content:center;font-size:.85rem;font-weight:800;}
+.adv-tile .tile-status.done{background:rgba(255,255,255,.35);}
+
+.adv-tile .tile-top{display:flex;align-items:flex-start;}
+.adv-tile .tile-icon{font-size:3rem;line-height:1;filter:drop-shadow(0 3px 6px rgba(0,0,0,.2));}
+
+.adv-tile .tile-bottom{}
+.adv-tile .tile-name{font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;color:#fff;
+  line-height:1.2;text-shadow:0 1px 3px rgba(0,0,0,.2);}
+.adv-tile .tile-desc{font-size:.72rem;color:rgba(255,255,255,.75);margin-top:3px;line-height:1.4;}
+.adv-tile .tile-cta{display:inline-block;margin-top:8px;background:rgba(255,255,255,.25);
+  border-radius:50px;padding:4px 14px;font-family:'Baloo 2',cursive;font-size:.7rem;
+  font-weight:800;color:#fff;border:1.5px solid rgba(255,255,255,.4);}
+
+/* Wide tile (spans 2 cols) */
+.adv-tile.wide{grid-column:1/-1;min-height:100px;flex-direction:row;align-items:center;gap:18px;padding:18px 22px;}
+.adv-tile.wide .tile-bottom{flex:1;}
+.adv-tile.wide .tile-icon{font-size:3.4rem;}
+
+/* Small 3-col tiles */
+.mini-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;}
+.mini-tile{border-radius:20px;padding:16px 10px;text-align:center;cursor:pointer;
+  transition:transform .2s;position:relative;overflow:hidden;}
+.mini-tile:hover{transform:translateY(-3px);}
+.mini-tile:active{transform:scale(.95);}
+.mini-tile .mt-icon{font-size:2.2rem;display:block;margin-bottom:6px;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.2));}
+.mini-tile .mt-name{font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:800;color:#fff;
+  text-shadow:0 1px 2px rgba(0,0,0,.2);}
+.mini-tile .mt-badge{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.3);
+  border-radius:50%;width:20px;height:20px;display:flex;align-items:center;
+  justify-content:center;font-size:.6rem;font-weight:800;color:#fff;}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:500;
+  background:#fff;border-top:2px solid var(--border);
+  display:flex;justify-content:space-around;align-items:center;
+  padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+  box-shadow:0 -4px 20px rgba(27,67,50,.1);}
+body.bedtime .bottom-nav{background:#0f2a18;border-top-color:#1b5e20;}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;
+  border-radius:14px;cursor:pointer;transition:all .18s;min-width:52px;border:none;
+  background:transparent;color:var(--text4);font-family:'Baloo 2',cursive;}
+.bn-item.active{background:linear-gradient(135deg,#1b4332,#52b788);color:#fff;}
+.bn-item .bn-icon{font-size:1.4rem;line-height:1;}
+.bn-item .bn-label{font-size:.55rem;font-weight:800;letter-spacing:.3px;text-transform:uppercase;line-height:1;}
+.bn-item .bn-dot{width:5px;height:5px;border-radius:50%;background:var(--pink);margin-top:1px;display:none;}
+.bn-item.has-new .bn-dot{display:block;}
+
+/* Activity view (when a section is open) */
+#activityView{display:none;padding:10px 14px 100px;}
+#activityView.show{display:block;}
+
+/* Section header inside activity view */
+.section-header{display:flex;align-items:center;gap:12px;padding:12px 0 14px;}
+.back-btn{background:#fff;border:2px solid var(--border);border-radius:14px;padding:8px 14px;
+  font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:800;color:var(--j2);
+  cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .18s;flex-shrink:0;}
+.back-btn:hover{background:var(--j1);color:#fff;border-color:var(--j1);}
+.section-title-bar{flex:1;}
+.section-title-bar .st-name{font-family:'Baloo 2',cursive;font-size:1.2rem;font-weight:800;color:var(--j1);}
+.section-title-bar .st-sub{font-size:.74rem;color:var(--text3);}
+
+/* Subject and game pills adjusted */
+.subj-row,.think-row,.game-row{padding:0 0 10px;margin:0;}
+
+/* Progress bar restyled */
+.prog{background:#fff;border-radius:18px;padding:12px 18px;
+  margin-bottom:12px;box-shadow:0 3px 14px var(--shadow2);display:flex;align-items:center;gap:12px;
+  border:1.5px solid var(--border);}
+.pl{font-size:.7rem;color:var(--text4);font-weight:700;text-transform:uppercase;letter-spacing:1px;flex-shrink:0;}
+.pb{flex:1;height:12px;background:#e0f0e8;border-radius:50px;overflow:hidden;}
+body.bedtime .pb{background:#0f2a18;}
+.pf{height:100%;border-radius:50px;background:linear-gradient(90deg,#1b4332,#52b788,#4ecdc4);transition:width .6s cubic-bezier(.68,-.55,.27,1.55);}
+.pc{font-family:'Baloo 2',cursive;font-size:.82rem;color:var(--text3);flex-shrink:0;}
+
+/* Activity cards */
+.acard{background:#fff;border-radius:24px;padding:22px 20px;margin-bottom:14px;
+  box-shadow:0 6px 24px var(--shadow);position:relative;overflow:hidden;transition:all .4s;
+  border:1.5px solid var(--border);}
+.acard::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,#1b4332,#52b788,#4ecdc4);}
+.aemoji{font-size:3.8rem;display:block;margin:8px 0;animation:wiggle 2.5s ease-in-out infinite;}
+.atitle{font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;color:var(--text);margin-bottom:5px;line-height:1.2;}
+
+/* Inline elements fix */
+.wbar{display:none;}
+.challenge-bar{display:none;}
+.spark-card{margin:0 0 12px;padding:13px 16px;border-radius:18px;
+  background:linear-gradient(135deg,#e8f5ee,#d8f3dc);border-left:4px solid #52b788;
+  box-shadow:0 3px 12px var(--shadow2);}
+body.bedtime .spark-card{background:linear-gradient(135deg,#0f2a18,#0d2a14);}
+.spark-card:active{transform:scale(.98);}
+.spark-emoji{font-size:1.5rem;}
+.spark-text{flex:1;font-size:.84rem;color:var(--text2);font-weight:600;}
+.spark-done{font-size:.72rem;color:#52b788;font-weight:700;}
+
+/* Story banner inside activity view */
+.story-banner{background:linear-gradient(135deg,#e8f5ee,#d8f3dc);border-radius:18px;
+  margin:0 0 12px;padding:13px 16px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 3px 12px var(--shadow2);cursor:pointer;transition:all .2s;border-left:4px solid #52b788;}
+.story-banner:active{transform:scale(.98);}
+body.bedtime .story-banner{background:linear-gradient(135deg,#0f2a18,#0d2a14);}
+.story-title{font-family:'Baloo 2',cursive;font-size:.84rem;font-weight:700;color:#1b4332;}
+.story-desc{font-size:.72rem;color:var(--text3);}
+
+/* Today bar */
+.today-bar{margin:0 0 12px;padding:13px 16px;border-radius:18px;
+  background:linear-gradient(135deg,#e8f5ee,#d8f3dc);
+  box-shadow:0 3px 12px var(--shadow2);cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;gap:12px;border-left:4px solid #52b788;}
+body.bedtime .today-bar{background:linear-gradient(135deg,#0f2a18,#0d2a14);}
+.today-day{font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;color:#1b4332;line-height:1.2;}
+.today-date{font-size:.78rem;color:var(--text3);font-weight:600;}
+.today-time{font-family:'Baloo 2',cursive;font-size:.72rem;color:var(--text4);margin-top:1px;}
+
+/* Physical activity banner */
+.phys-banner{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:13px 16px;
+  border-radius:18px;background:linear-gradient(135deg,#e8f5ee,#d8f3dc);cursor:pointer;
+  box-shadow:0 3px 12px var(--shadow2);border-left:4px solid #52b788;transition:all .2s;}
+body.bedtime .phys-banner{background:linear-gradient(135deg,#0f2a18,#0d2a14);}
+.phys-banner:active{transform:scale(.98);}
+.phys-banner-title{font-family:'Baloo 2',cursive;font-size:.84rem;font-weight:700;color:#1b4332;}
+.phys-banner-desc{font-size:.7rem;color:var(--text3);}
+.phys-banner-go{font-family:'Baloo 2',cursive;font-size:.74rem;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,#1b4332,#52b788);padding:6px 16px;border-radius:50px;
+  flex-shrink:0;border:none;cursor:pointer;}
+
+/* Goals card */
+.goals-card{margin:0 0 12px;padding:14px 16px;border-radius:18px;
+  background:linear-gradient(135deg,#e8f5ee,#d8f3dc);
+  box-shadow:0 3px 12px var(--shadow2);border-left:4px solid #52b788;}
+body.bedtime .goals-card{background:linear-gradient(135deg,#0f2a18,#0d2a14);}
+.goals-title{font-family:'Baloo 2',cursive;font-size:.88rem;font-weight:700;color:#1b4332;margin-bottom:8px;}
+.goal-check.done{background:#52b788;border-color:#52b788;color:#fff;}
+.goals-reward{text-align:center;margin-top:8px;font-family:'Baloo 2',cursive;font-size:.78rem;color:#52b788;font-weight:700;}
+
+/* Beat timer card */
+.btt-card{background:linear-gradient(135deg,#e8f5ee,#d8f3dc);border-radius:18px;
+  margin:0 0 12px;padding:13px 16px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 3px 12px var(--shadow2);cursor:pointer;border-left:4px solid #52b788;}
+body.bedtime .btt-card{background:linear-gradient(135deg,#0f2a18,#0d2a14);}
+.btt-card:active{transform:scale(.98);}
+.btt-title{font-family:'Baloo 2',cursive;font-size:.84rem;font-weight:700;color:#1b4332;}
+.btt-desc{font-size:.7rem;color:var(--text3);}
+.btt-timer{font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;color:#52b788;flex-shrink:0;}
+
+/* Focus timer */
+.timer-bar{margin:0 0 12px;background:#fff;border-radius:18px;padding:10px 16px;
+  box-shadow:0 3px 12px var(--shadow2);align-items:center;gap:10px;border:1.5px solid var(--border);}
+.timer-bar.show{display:flex;}
+.timer-fg{stroke:#52b788;stroke-linecap:round;transition:stroke-dashoffset .5s;}
+.timer-btn{border:none;padding:6px 14px;border-radius:50px;font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.timer-start{background:linear-gradient(135deg,#52b788,#4ecdc4);color:#fff;}
+.timer-stop{background:linear-gradient(135deg,var(--pink),var(--coral));color:#fff;}
+
+/* Weekly challenge hidden from activity view, shown on homepage */
+.challenge-bar{display:none!important;}
+
+/* Main area hidden — using new homeView/activityView */
+.main{display:none;}
+
+/* Bedtime dark mode */
+body.bedtime{
+  --bg:#081a0f;--card:#0d2218;--cardbg:#0d2218;--text:#c8e6c9;--text2:#a5d6a7;
+  --text3:#81c784;--text4:#4caf50;--text5:#2e7d32;--text6:#1b5e20;--text7:#134a18;
+  --shadow:rgba(0,0,0,.45);--shadow2:rgba(0,0,0,.3);--border:#1b5e20;
+  --inputbg:#0a1f0e;--learnbg1:#081a0f;--learnbg2:#0d2218;
+}
+body.bedtime{background:var(--bg);}
+body.bedtime *{transition:background .8s,color .8s,border-color .8s;}
+body.bedtime header{background:linear-gradient(135deg,#050f08,#0a1f0e,#081a0f);box-shadow:0 8px 30px rgba(0,0,0,.6);}
+body.bedtime .adv-tile,.body.bedtime .mini-tile{filter:brightness(.85);}
+body.bedtime .acard{background:var(--cardbg);border-color:#1b5e20;}
+body.bedtime .bottom-nav{background:#081a0f;border-top-color:#1b5e20;}
+body.bedtime .quest-strip,.body.bedtime .home-story-hero{background:#0d2218;border-color:#1b5e20;}
+body.bedtime .hw-day{background:#0d2218;border-color:#1b5e20;}
+
+/* Desktop & iPad */
+@media(min-width:768px){
+  body{max-width:920px;margin:0 auto;}
+  header{padding:26px 40px 36px;border-radius:0 0 52px 52px;}
+  header h1{font-size:2.1rem;}
+  #homeView{padding:18px 24px 110px;}
+  #activityView{padding:12px 24px 110px;}
+  .adventure-grid{grid-template-columns:repeat(3,1fr);gap:14px;}
+  .mini-grid{grid-template-columns:repeat(3,1fr);}
+  .adv-tile{min-height:160px;}
+  .adv-tile.wide{grid-column:1/-1;}
+  .bottom-nav{max-width:920px;left:50%;transform:translateX(-50%);}
+  .bn-item{min-width:70px;padding:8px 14px;}
+  .bn-icon{font-size:1.5rem!important;}
+  .bn-label{font-size:.6rem!important;}
+}
+@media(min-width:1024px){
+  body{max-width:1080px;}
+  header{padding:30px 60px 40px;}
+  #homeView{padding:20px 36px 110px;}
+  #activityView{padding:14px 36px 110px;}
+  .adventure-grid{grid-template-columns:repeat(3,1fr);gap:16px;}
+  .adv-tile{min-height:180px;padding:24px 20px;}
+  .adv-tile .tile-icon{font-size:3.4rem;}
+  .adv-tile .tile-name{font-size:1.2rem;}
+  .bottom-nav{max-width:1080px;}
+}
 .mascot-wrap{position:relative;display:inline-block;cursor:pointer;}
 .mascot{font-size:2.6rem;animation:float 3s ease-in-out infinite;display:block;transition:transform .3s;}
 .mascot-hat{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:1.4rem;z-index:2;
@@ -70,60 +361,7 @@ header::before{content:'';position:absolute;inset:0;
   border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid #fff;}
 .speech-bubble.show{opacity:1;top:-44px;}
 
-header h1{font-family:'Baloo 2',cursive;font-size:1.6rem;color:#fff;text-shadow:2px 3px 0 rgba(0,0,0,.12);position:relative;}
-.hsub{color:rgba(255,255,255,.9);font-size:.82rem;position:relative;margin-top:2px;}
-.dbadge{display:inline-block;background:rgba(255,255,255,.22);border-radius:50px;
-  padding:3px 14px;font-family:'Baloo 2',cursive;font-size:.8rem;color:#fff;margin-top:6px;position:relative;}
-
-/* SOUND TOGGLE */
-.sound-toggle{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.22);
-  border:none;border-radius:50%;width:36px;height:36px;font-size:1.1rem;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;z-index:10;transition:all .2s;}
-.sound-toggle:active{transform:scale(.9);}
-
-/* BEDTIME TOGGLE */
-.bedtime-toggle{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.22);
-  border:none;border-radius:50%;width:36px;height:36px;font-size:1.1rem;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;z-index:10;transition:all .2s;}
-.bedtime-toggle:active{transform:scale(.9);}
-
-/* STORY BANNER */
-.story-banner{background:linear-gradient(135deg,#fff5d4,#ffe0f0);border-radius:16px;
-  margin:10px 12px 0;padding:12px 16px;display:flex;align-items:center;gap:10px;
-  box-shadow:0 4px 14px rgba(255,184,48,.15);cursor:pointer;transition:all .2s;}
-.story-banner:active{transform:scale(.98);}
-body.bedtime .story-banner{background:linear-gradient(135deg,#2a2044,#1a2a44);}
-.story-emoji{font-size:1.6rem;}
-.story-text{flex:1;}
-.story-title{font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--pink);}
-.story-desc{font-size:.72rem;color:var(--text3);}
-
-/* TABS */
-.tabs{display:flex;gap:4px;padding:10px 8px 0;flex-wrap:wrap;justify-content:center;}
-.tab{flex:1 1 auto;border:none;padding:6px 4px 5px;border-radius:16px;cursor:pointer;
-  font-family:'Baloo 2',cursive;font-weight:700;transition:all .2s;
-  background:var(--cardbg);color:var(--text5);box-shadow:0 2px 8px var(--shadow2);
-  text-align:center;min-width:0;display:flex;flex-direction:column;align-items:center;gap:1px;}
-.tab .tab-icon{font-size:1.6rem;line-height:1;display:block;}
-.tab .tab-label{font-size:.68rem;line-height:1;display:block;letter-spacing:.3px;}
-.tab.active{color:#fff;transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.14);}
-.tab{position:relative;}
-.tab-badge{display:block;margin-top:3px;padding:2px 7px;border-radius:50px;
-  font-size:.62rem;font-weight:800;font-family:'Baloo 2',cursive;line-height:1.4;
-  pointer-events:none;transition:all .3s;text-align:center;white-space:nowrap;}
-.tab-badge.pending{background:rgba(255,107,157,.22);color:#ff6b9d;}
-.tab-badge.all-done{background:rgba(86,207,129,.22);color:#56cf81;}
-.tab.active .tab-badge.pending{background:rgba(255,255,255,.25);color:#fff;}
-.tab.active .tab-badge.all-done{background:rgba(255,255,255,.25);color:#fff;}
-.tab[data-t="morning"].active {background:linear-gradient(135deg,#ffb830,#ff8c69);}
-.tab[data-t="learning"].active{background:linear-gradient(135deg,#a78bfa,#4fa3e0);}
-.tab[data-t="games"].active   {background:linear-gradient(135deg,#ff6b9d,#ffb830);}
-.tab[data-t="evening"].active {background:linear-gradient(135deg,#4ecdc4,#56cf81);}
-.tab[data-t="create"].active  {background:linear-gradient(135deg,#ff6b9d,#a78bfa);}
-.tab[data-t="stories"].active {background:linear-gradient(135deg,#1a1a2e,#4a3a6e);}
-.tab[data-t="hearts"].active  {background:linear-gradient(135deg,#ff6b9d,#ffb830);}
-.tab[data-t="parent"].active  {background:linear-gradient(135deg,#333,#555);}
-.tab[data-t="think"].active   {background:linear-gradient(135deg,#7c3aed,#06b6d4);}
+/* mascot */
 
 /* THINK ROW */
 .think-row{display:none;gap:6px;padding:6px 8px;flex-wrap:wrap;overflow-x:auto;justify-content:center;}
@@ -1688,206 +1926,281 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
 </head>
 <body>
 
-<!-- Auth Overlay (Google Sign-In) -->
-<div id="familyCodeOverlay"></div>
-
-<!-- App Loader (shown while Firebase syncs) -->
-<div id="appLoader" style="display:flex;position:fixed;inset:0;background:linear-gradient(135deg,#ff6b9d,#ffb830,#4ecdc4);z-index:99998;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
-  <div style="font-size:3.5rem;animation:float 1.5s ease-in-out infinite">⭐</div>
-  <div style="font-family:'Baloo 2',cursive;font-size:1.3rem;color:#fff;font-weight:700">Syncing your progress...</div>
+<!-- App Loader -->
+<div id="appLoader" style="display:flex;position:fixed;inset:0;background:linear-gradient(135deg,#1b4332,#2d6a4f,#52b788);z-index:99998;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+  <div style="font-size:3.8rem;animation:float 1.5s ease-in-out infinite">&#x1F9DC;&#x200D;&#x2640;&#xFE0F;</div>
+  <div style="font-family:'Baloo 2',cursive;font-size:1.3rem;color:#fff;font-weight:700">Preparing your adventure...</div>
   <div style="width:48px;height:48px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite"></div>
   <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 </div>
 
+<div id="familyCodeOverlay"></div>
+
 <header>
-  <button class="bedtime-toggle" id="bedtimeBtn" onclick="toggleBedtime()" title="Bedtime Mode">☀️</button>
-  <button class="sound-toggle" id="soundBtn" onclick="toggleSound()" title="Toggle Sound">🔊</button>
-  <button class="sound-toggle" id="themeBtn" onclick="showThemePicker()" title="Change Theme" style="right:56px;font-size:1rem">🎨</button>
+  <button class="bedtime-toggle" id="bedtimeBtn" onclick="toggleBedtime()" title="Bedtime Mode">&#x2600;&#xFE0F;</button>
+  <button class="sound-toggle" id="soundBtn" onclick="toggleSound()" title="Toggle Sound">&#x1F50A;</button>
+  <button class="sound-toggle" id="themeBtn" onclick="showThemePicker()" title="Change Theme" style="right:58px;font-size:1rem">&#x1F3A8;</button>
   <div class="mascot-wrap" onclick="mascotTap()">
-    <div class="speech-bubble" id="speechBubble">Hello! 🌟</div>
+    <div class="speech-bubble" id="speechBubble">Hello! &#x1F30A;</div>
     <span class="mascot-hat" id="mascotHat" style="display:none"></span>
-    <span class="mascot" id="mascotEmoji">🧜‍♀️</span>
+    <span class="mascot" id="mascotEmoji">&#x1F9DC;&#x200D;&#x2640;&#xFE0F;</span>
   </div>
-  <h1>My Little Star ⭐</h1>
-  <div class="hsub" id="hsub">Ready to learn and play! 🌈</div>
+  <h1>My Little Star &#x2B50;</h1>
+  <div class="hsub" id="hsub">Your ocean adventure awaits! &#x1F30A;</div>
   <div class="dbadge" id="dbadge">Day 1 of 60</div>
 </header>
 
-<div class="story-banner" id="storyBanner" onclick="speakText(document.getElementById('storyDesc').textContent)">
-  <span class="story-emoji" id="storyEmoji">🌱</span>
-  <div class="story-text">
-    <div class="story-title" id="storyTitle">Today's Adventure</div>
-    <div class="story-desc" id="storyDesc">Loading today's story...</div>
+<!-- ADVENTURE MAP HOMEPAGE -->
+<div id="homeView">
+  <div class="quest-strip">
+    <div class="qs-icon">&#x1F5FA;&#xFE0F;</div>
+    <div class="qs-body">
+      <div class="qs-title" id="questTitle">Today's Quest &mdash; Let's get started!</div>
+      <div class="qs-bar"><div class="qs-fill" id="questFill"></div></div>
+      <div class="qs-sub" id="questSub">Tap any activity to begin your adventure &#x1F33F;</div>
+    </div>
+    <div class="qs-gems">
+      <div class="num" id="questGems">&#x2B50; 0</div>
+      <div class="lbl">STARS</div>
+    </div>
   </div>
-  <span style="font-size:1.2rem">🔊</span>
-</div>
-
-<div class="tabs">
-  <button class="tab active" data-t="morning"  onclick="switchTab('morning')"><span class="tab-icon">🌅</span><span class="tab-label">Morning</span></button>
-  <button class="tab"        data-t="learning" onclick="switchTab('learning')"><span class="tab-icon">📚</span><span class="tab-label">Learn</span></button>
-  <button class="tab"        data-t="games"    onclick="switchTab('games')"><span class="tab-icon">🎮</span><span class="tab-label">Games</span></button>
-  <button class="tab"        data-t="create"   onclick="switchTab('create')"><span class="tab-icon">🎨</span><span class="tab-label">Create</span></button>
-  <button class="tab"        data-t="evening"  onclick="switchTab('evening')"><span class="tab-icon">🌙</span><span class="tab-label">Evening</span></button>
-  <button class="tab"        data-t="stories"  onclick="switchTab('stories')"><span class="tab-icon">📖</span><span class="tab-label">Stories</span></button>
-  <button class="tab"        data-t="hearts"   onclick="switchTab('hearts')"><span class="tab-icon">💛</span><span class="tab-label">Hearts</span></button>
-  <button class="tab"        data-t="parent"   onclick="switchTab('parent')"><span class="tab-icon">👨‍👩‍👧</span><span class="tab-label">Parent</span></button>
-</div>
-
-<!-- Weather Picker (#2) -->
-<div class="weather-bar" id="weatherBar">
-  <div class="weather-q">🌤️ What's the weather today?</div>
-  <div class="weather-opts" id="weatherOpts"></div>
-  <div class="weather-done" id="weatherDone"></div>
-</div>
-
-<!-- Daily Physical Activity Banner -->
-<div class="phys-banner" id="physBanner" style="display:none" onclick="openPhysActivity()">
-  <div class="phys-banner-anim" id="physBannerAnim"></div>
-  <div class="phys-banner-info">
-    <div class="phys-banner-title" id="physBannerTitle">💪 Today's Exercise</div>
-    <div class="phys-banner-desc" id="physBannerDesc">Tap to start!</div>
+  <div class="home-week" id="homeWeek"></div>
+  <div class="home-story-hero" onclick="goToSection('stories')">
+    <div class="hsh-icon" id="hshEmoji">&#x1F4D6;</div>
+    <div class="hsh-body">
+      <div class="hsh-title" id="hshTitle">Today's Story is Ready!</div>
+      <div class="hsh-sub" id="hshSub">Tap to start a brand new adventure</div>
+    </div>
+    <button class="hsh-btn" onclick="event.stopPropagation();goToSection('stories')">&#x2728; Read Now</button>
   </div>
-  <button class="phys-banner-go">Let's Go!</button>
-</div>
-
-<div class="subj-row" id="subjRow">
-  <button class="sp active" data-s="all"      onclick="switchSubj('all')">🌈 All</button>
-  <button class="sp"        data-s="abc"      onclick="switchSubj('abc')">🔤 ABC</button>
-  <button class="sp"        data-s="maths"    onclick="switchSubj('maths')">🔢 Maths</button>
-  <button class="sp"        data-s="art"      onclick="switchSubj('art')">🎨 Art</button>
-  <button class="sp"        data-s="science"  onclick="switchSubj('science')">🔬 Science</button>
-  <button class="sp"        data-s="feelings" onclick="switchSubj('feelings')">💛 Feelings</button>
-  <button class="sp"        data-s="world"    onclick="switchSubj('world')">🌍 World</button>
-  <button class="sp"        data-s="body"     onclick="switchSubj('body')">🫀 My Body</button>
-  <button class="sp"        data-s="think"    onclick="switchSubj('think')">🧩 Think</button>
-  <button class="sp"        data-s="read"     onclick="switchSubj('read')">📖 Read</button>
-  <button class="sp"        data-s="gita"     onclick="switchSubj('gita')">🪔 Gita</button>
-</div>
-
-<div class="think-row" id="thinkRow">
-  <button class="tp active" data-k="all"        onclick="switchThinkCat('all')">🌈 All</button>
-  <button class="tp"        data-k="sequencing" onclick="switchThinkCat('sequencing')">📖 Sequencing</button>
-  <button class="tp"        data-k="coding"     onclick="switchThinkCat('coding')">💻 Coding</button>
-  <button class="tp"        data-k="patterns"   onclick="switchThinkCat('patterns')">🔷 Patterns</button>
-</div>
-
-<div class="game-row" id="gameRow">
-  <button class="gp active" data-g="all"      onclick="switchGameCat('all')">🌈 All Games</button>
-  <button class="gp"        data-g="maths"    onclick="switchGameCat('maths')">🔢 Maths</button>
-  <button class="gp"        data-g="letters"  onclick="switchGameCat('letters')">🔤 Letters</button>
-  <button class="gp"        data-g="shapes"   onclick="switchGameCat('shapes')">🔺 Shapes</button>
-  <button class="gp"        data-g="creative" onclick="switchGameCat('creative')">🎨 Creative</button>
-  <button class="gp"        data-g="brain"    onclick="switchGameCat('brain')">🧠 Brain</button>
-  <button class="gp"        data-g="time"     onclick="switchGameCat('time')">🕐 Time</button>
-  <button class="gp"        data-g="money"    onclick="switchGameCat('money')">💰 Money</button>
-  <button class="gp"        data-g="puzzle"   onclick="switchGameCat('puzzle')">🧩 Puzzle</button>
-  <button class="gp"        data-g="focus"    onclick="switchGameCat('focus')">🎯 Focus</button>
-</div>
-
-<!-- Today is... Teaching Bar -->
-<div class="today-bar" id="todayBar" onclick="speakToday()">
-  <div class="today-clock" id="todayClock"></div>
-  <div class="today-info">
-    <div class="today-day" id="todayDay">Today is...</div>
-    <div class="today-date" id="todayDate">Loading...</div>
-    <div class="today-time" id="todayTime">🕐 --:--</div>
+  <div class="home-section-label">&#x1F5FA;&#xFE0F; Your Adventure Map</div>
+  <div class="adventure-grid">
+    <div class="adv-tile" style="background:linear-gradient(135deg,#ffb830,#ff8c69);" onclick="goToSection('morning')">
+      <div class="tile-shine"></div><div class="tile-shine2"></div>
+      <div class="tile-status" id="ts_morning">&#x1F31F;</div>
+      <div class="tile-top"><div class="tile-icon">&#x1F305;</div></div>
+      <div class="tile-bottom">
+        <div class="tile-name">Morning Routine</div>
+        <div class="tile-desc">Breathing, exercise &amp; great habits to start your day</div>
+        <div class="tile-cta">&#x25B6; Start</div>
+      </div>
+    </div>
+    <div class="adv-tile" style="background:linear-gradient(135deg,#1b4332,#52b788);" onclick="goToSection('learning')">
+      <div class="tile-shine"></div><div class="tile-shine2"></div>
+      <div class="tile-status" id="ts_learning">&#x1F4D6;</div>
+      <div class="tile-top"><div class="tile-icon">&#x1F4DA;</div></div>
+      <div class="tile-bottom">
+        <div class="tile-name">Learning Time</div>
+        <div class="tile-desc">Maths, ABC, Science &amp; exciting lessons</div>
+        <div class="tile-cta">&#x25B6; Learn</div>
+      </div>
+    </div>
+    <div class="adv-tile" style="background:linear-gradient(135deg,#ff6b9d,#c77dff);" onclick="goToSection('games')">
+      <div class="tile-shine"></div><div class="tile-shine2"></div>
+      <div class="tile-status" id="ts_games">&#x1F3AF;</div>
+      <div class="tile-top"><div class="tile-icon">&#x1F3AE;</div></div>
+      <div class="tile-bottom">
+        <div class="tile-name">Fun Games</div>
+        <div class="tile-desc">Letters, shapes, maths games &amp; brain teasers</div>
+        <div class="tile-cta">&#x25B6; Play</div>
+      </div>
+    </div>
+    <div class="adv-tile" style="background:linear-gradient(135deg,#4ecdc4,#56cf81);" onclick="goToSection('evening')">
+      <div class="tile-shine"></div><div class="tile-shine2"></div>
+      <div class="tile-status" id="ts_evening">&#x1F319;</div>
+      <div class="tile-top"><div class="tile-icon">&#x1F33F;</div></div>
+      <div class="tile-bottom">
+        <div class="tile-name">Evening Wind Down</div>
+        <div class="tile-desc">Calm time, gratitude &amp; getting ready for sleep</div>
+        <div class="tile-cta">&#x25B6; Relax</div>
+      </div>
+    </div>
   </div>
-  <span class="today-speak">🔊</span>
+  <div class="home-section-label" style="margin-top:4px;">&#x1F3A8; More Adventures</div>
+  <div class="mini-grid">
+    <div class="mini-tile" style="background:linear-gradient(135deg,#ff6b9d,#a78bfa);" onclick="goToSection('create')">
+      <div class="mt-badge" id="ts_create">&#x270F;&#xFE0F;</div>
+      <span class="mt-icon">&#x1F3A8;</span><div class="mt-name">Create</div>
+    </div>
+    <div class="mini-tile" style="background:linear-gradient(135deg,#ffb830,#ff6b9d);" onclick="goToSection('hearts')">
+      <div class="mt-badge" id="ts_hearts">&#x1F49B;</div>
+      <span class="mt-icon">&#x2764;&#xFE0F;</span><div class="mt-name">Hearts</div>
+    </div>
+    <div class="mini-tile" style="background:linear-gradient(135deg,#7c3aed,#06b6d4);" onclick="goToSection('think')">
+      <div class="mt-badge" id="ts_think">&#x1F9E9;</div>
+      <span class="mt-icon">&#x1F9E0;</span><div class="mt-name">Think</div>
+    </div>
+  </div>
 </div>
 
-<div class="wbar" id="wbar"></div>
+<!-- ACTIVITY VIEW -->
+<div id="activityView" style="display:none;">
+  <div style="padding:12px 14px 0;">
+    <div class="section-header">
+      <button class="back-btn" onclick="goHome()">&#x2190; Home</button>
+      <div class="section-title-bar">
+        <div class="st-name" id="sectionName">Activity</div>
+        <div class="st-sub" id="sectionSub">Keep going! &#x1F31F;</div>
+      </div>
+    </div>
+  </div>
+  <div style="padding:0 14px 110px;">
+    <div class="story-banner" id="storyBanner" style="display:none" onclick="speakText(document.getElementById('storyDesc').textContent)">
+      <span class="story-emoji" id="storyEmoji">&#x1F331;</span>
+      <div class="story-text">
+        <div class="story-title" id="storyTitle">Today's Adventure</div>
+        <div class="story-desc" id="storyDesc">Loading today's story...</div>
+      </div>
+      <span style="font-size:1.2rem">&#x1F50A;</span>
+    </div>
+    <div class="weather-bar" id="weatherBar">
+      <div class="weather-q">&#x1F324;&#xFE0F; What's the weather today?</div>
+      <div class="weather-opts" id="weatherOpts"></div>
+      <div class="weather-done" id="weatherDone"></div>
+    </div>
+    <div class="phys-banner" id="physBanner" style="display:none" onclick="openPhysActivity()">
+      <div class="phys-banner-anim" id="physBannerAnim"></div>
+      <div class="phys-banner-info">
+        <div class="phys-banner-title" id="physBannerTitle">&#x1F4AA; Today's Exercise</div>
+        <div class="phys-banner-desc" id="physBannerDesc">Tap to start!</div>
+      </div>
+      <button class="phys-banner-go">Let's Go!</button>
+    </div>
+    <div class="subj-row" id="subjRow">
+      <button class="sp active" data-s="all" onclick="switchSubj('all')">&#x1F308; All</button>
+      <button class="sp" data-s="abc" onclick="switchSubj('abc')">&#x1F524; ABC</button>
+      <button class="sp" data-s="maths" onclick="switchSubj('maths')">&#x1F522; Maths</button>
+      <button class="sp" data-s="art" onclick="switchSubj('art')">&#x1F3A8; Art</button>
+      <button class="sp" data-s="science" onclick="switchSubj('science')">&#x1F52C; Science</button>
+      <button class="sp" data-s="feelings" onclick="switchSubj('feelings')">&#x1F49B; Feelings</button>
+      <button class="sp" data-s="world" onclick="switchSubj('world')">&#x1F30D; World</button>
+      <button class="sp" data-s="body" onclick="switchSubj('body')">&#x1FAB7; My Body</button>
+      <button class="sp" data-s="think" onclick="switchSubj('think')">&#x1F9E9; Think</button>
+      <button class="sp" data-s="read" onclick="switchSubj('read')">&#x1F4D6; Read</button>
+      <button class="sp" data-s="gita" onclick="switchSubj('gita')">&#x1FA94; Gita</button>
+    </div>
+    <div class="think-row" id="thinkRow">
+      <button class="tp active" data-k="all" onclick="switchThinkCat('all')">&#x1F308; All</button>
+      <button class="tp" data-k="sequencing" onclick="switchThinkCat('sequencing')">&#x1F4D6; Sequencing</button>
+      <button class="tp" data-k="coding" onclick="switchThinkCat('coding')">&#x1F4BB; Coding</button>
+      <button class="tp" data-k="patterns" onclick="switchThinkCat('patterns')">&#x1F537; Patterns</button>
+    </div>
+    <div class="game-row" id="gameRow">
+      <button class="gp active" data-g="all" onclick="switchGameCat('all')">&#x1F308; All</button>
+      <button class="gp" data-g="maths" onclick="switchGameCat('maths')">&#x1F522; Maths</button>
+      <button class="gp" data-g="letters" onclick="switchGameCat('letters')">&#x1F524; Letters</button>
+      <button class="gp" data-g="shapes" onclick="switchGameCat('shapes')">&#x1F53A; Shapes</button>
+      <button class="gp" data-g="creative" onclick="switchGameCat('creative')">&#x1F3A8; Creative</button>
+      <button class="gp" data-g="brain" onclick="switchGameCat('brain')">&#x1F9E0; Brain</button>
+      <button class="gp" data-g="time" onclick="switchGameCat('time')">&#x1F550; Time</button>
+      <button class="gp" data-g="money" onclick="switchGameCat('money')">&#x1F4B0; Money</button>
+      <button class="gp" data-g="puzzle" onclick="switchGameCat('puzzle')">&#x1F9E9; Puzzle</button>
+      <button class="gp" data-g="focus" onclick="switchGameCat('focus')">&#x1F3AF; Focus</button>
+    </div>
+    <div class="today-bar" id="todayBar" style="display:none" onclick="speakToday()">
+      <div class="today-clock" id="todayClock"></div>
+      <div class="today-info">
+        <div class="today-day" id="todayDay">Today is...</div>
+        <div class="today-date" id="todayDate">Loading...</div>
+        <div class="today-time" id="todayTime">&#x1F550; --:--</div>
+      </div>
+      <span class="today-speak">&#x1F50A;</span>
+    </div>
+    <div class="star-path" id="starPath"></div>
+    <div class="timer-bar" id="timerBar">
+      <div class="timer-circle"><svg viewBox="0 0 40 40">
+        <circle class="timer-bg" cx="20" cy="20" r="17"/>
+        <circle class="timer-fg" id="timerFg" cx="20" cy="20" r="17" stroke-dasharray="106.8" stroke-dashoffset="0"/>
+      </svg></div>
+      <div class="timer-text" id="timerText">&#x23F1;&#xFE0F; Play for 5 minutes!</div>
+      <button class="timer-btn timer-start" id="timerBtn" onclick="toggleTimer()">&#x25B6; Start</button>
+    </div>
+    <div id="factCard"></div>
+    <div class="spark-card" id="sparkCard" style="display:none;flex" onclick="completeSpark()">
+      <span class="spark-emoji" id="sparkEmoji">&#x1F9E0;</span>
+      <span class="spark-text" id="sparkText">Loading brain spark...</span>
+      <span class="spark-done" id="sparkDone"></span>
+    </div>
+    <div class="goals-card" id="goalsCard" style="display:none">
+      <div class="goals-title">&#x1F3AF; Today's 3 Goals</div>
+      <div id="goalsList"></div>
+      <div class="goals-reward" id="goalsReward"></div>
+    </div>
+    <div class="btt-card" id="bttCard" style="display:none" onclick="startBeatTimer()">
+      <span class="btt-emoji">&#x23F1;&#xFE0F;</span>
+      <div class="btt-info">
+        <div class="btt-title" id="bttTitle">&#x23F1;&#xFE0F; Beat the Timer!</div>
+        <div class="btt-desc" id="bttDesc">Can you do it before time runs out?</div>
+      </div>
+      <span class="btt-timer">GO!</span>
+    </div>
+    <div class="prog" id="progBar">
+      <span class="pl">Progress</span>
+      <div class="pb"><div class="pf" id="pf" style="width:0%"></div></div>
+      <span class="pc" id="pc">0 done</span>
+    </div>
+    <div class="congrats" id="congrats" style="display:none">
+      <div style="font-size:2.6rem">&#x1F389;</div>
+      <h2>All Done Today!</h2>
+      <p id="cmsg">You are a SUPERSTAR!</p>
+      <button class="nbtn" onclick="switchToNext()">Try another session &#x2192;</button>
+      <br><button onclick="parentReset()" style="margin-top:10px;background:none;border:1px dashed rgba(255,255,255,0.5);color:rgba(255,255,255,0.7);border-radius:50px;padding:6px 16px;font-size:.75rem;cursor:pointer;">&#x1F504; Parent: Reset full 60-day journey</button>
+    </div>
+    <div id="area"></div>
+    <div id="hist"></div>
+  </div>
+</div>
 
-<!-- Star Reward Path (#2) -->
-<div class="star-path" id="starPath"></div>
-
-<!-- WEEKLY CHALLENGE -->
-<div class="challenge-bar" id="challengeBar">
-  <span class="challenge-emoji">🎯</span>
+<!-- Hidden tabs needed by JS -->
+<div class="tabs" style="display:none!important">
+  <button class="tab active" data-t="morning" onclick="switchTab('morning')"></button>
+  <button class="tab" data-t="learning" onclick="switchTab('learning')"></button>
+  <button class="tab" data-t="games" onclick="switchTab('games')"></button>
+  <button class="tab" data-t="create" onclick="switchTab('create')"></button>
+  <button class="tab" data-t="evening" onclick="switchTab('evening')"></button>
+  <button class="tab" data-t="stories" onclick="switchTab('stories')"></button>
+  <button class="tab" data-t="hearts" onclick="switchTab('hearts')"></button>
+  <button class="tab" data-t="parent" onclick="switchTab('parent')"></button>
+</div>
+<div class="wbar" id="wbar" style="display:none"></div>
+<div class="challenge-bar" id="challengeBar" style="display:none">
+  <span class="challenge-emoji">&#x1F3AF;</span>
   <div class="challenge-info">
     <div class="challenge-title" id="challengeTitle">This week: Complete 5 activities!</div>
     <div class="challenge-prog" id="challengeProg">0/5 done</div>
   </div>
-  <span class="challenge-badge" id="challengeBadge">🔒</span>
+  <span class="challenge-badge" id="challengeBadge">&#x1F512;</span>
 </div>
-
-<!-- FOCUS TIMER -->
-<div class="timer-bar" id="timerBar">
-  <div class="timer-circle">
-    <svg viewBox="0 0 40 40">
-      <circle class="timer-bg" cx="20" cy="20" r="17"/>
-      <circle class="timer-fg" id="timerFg" cx="20" cy="20" r="17" stroke-dasharray="106.8" stroke-dashoffset="0"/>
-    </svg>
-  </div>
-  <div class="timer-text" id="timerText">⏱️ Play for 5 minutes!</div>
-  <button class="timer-btn timer-start" id="timerBtn" onclick="toggleTimer()">▶ Start</button>
-</div>
-
-<div id="factCard"></div>
-
-<!-- Brain Spark (#6) -->
-<div class="spark-card" id="sparkCard" onclick="completeSpark()">
-  <span class="spark-emoji" id="sparkEmoji">🧠</span>
-  <span class="spark-text" id="sparkText">Loading brain spark...</span>
-  <span class="spark-done" id="sparkDone"></span>
-</div>
-
-<!-- Daily 3 Goals -->
-<div class="goals-card" id="goalsCard" style="display:none">
-  <div class="goals-title">🎯 Today's 3 Goals</div>
-  <div id="goalsList"></div>
-  <div class="goals-reward" id="goalsReward"></div>
-</div>
-
-<!-- Beat the Timer (#2a) -->
-<div class="btt-card" id="bttCard" style="display:none" onclick="startBeatTimer()">
-
-<!-- Bedtime Lock overlay (injected by JS) -->
 <div id="bedtimeLockOverlay"></div>
-  <span class="btt-emoji">⏱️</span>
-  <div class="btt-info">
-    <div class="btt-title" id="bttTitle">⏱️ Beat the Timer!</div>
-    <div class="btt-desc" id="bttDesc">Can you do it before time runs out?</div>
-  </div>
-  <span class="btt-timer">GO!</span>
-</div>
-
-<!-- Beat timer popup (injected by JS) -->
 <div id="bttOverlay"></div>
-<!-- Gallery viewer (injected by JS) -->
 <div id="galleryView"></div>
-
-<div class="prog" id="progBar">
-  <span class="pl">Today</span>
-  <div class="pb"><div class="pf" id="pf" style="width:0%"></div></div>
-  <span class="pc" id="pc">0 done</span>
-</div>
-
-<div class="main">
-  <div class="congrats" id="congrats">
-    <div style="font-size:2.6rem">🎉</div>
-    <h2>All Done Today!</h2>
-    <p id="cmsg">You are a SUPERSTAR!</p>
-    <button class="nbtn" onclick="switchToNext()">Try another session →</button>
-    <br><button onclick="parentReset()" style="margin-top:10px;background:none;border:1px dashed rgba(255,255,255,0.5);color:rgba(255,255,255,0.7);border-radius:50px;padding:6px 16px;font-size:.75rem;cursor:pointer;">🔄 Parent: Reset full 60-day journey</button>
-  </div>
-  <div id="area"></div>
-  <div id="hist"></div>
-</div>
-
-<div class="spill" id="spill" onclick="showShop()">⭐ ... stars</div>
-<div class="toast" id="toast">⭐</div>
-
-<!-- Quick Create FAB (#5) -->
-<button class="qc-fab" id="qcFab" onclick="toggleQuickCreate()">🎨</button>
+<div class="spill" id="spill" onclick="showShop()">&#x2B50; ... stars</div>
+<div class="toast" id="toast">&#x2B50;</div>
+<button class="qc-fab" id="qcFab" onclick="toggleQuickCreate()" style="display:none">&#x1F3A8;</button>
 <div class="qc-popup" id="qcPopup"></div>
-
-<!-- Feelings overlay (injected by JS) -->
 <div id="feelingsOverlay"></div>
-<!-- Surprise overlay (injected by JS) -->
 <div id="surpriseOverlay"></div>
-<!-- Parent gate overlay -->
 <div id="gateOverlay"></div>
 
+<!-- BOTTOM NAVIGATION -->
+<nav class="bottom-nav">
+  <button class="bn-item active" id="bn_home" onclick="goHome()">
+    <span class="bn-icon">&#x1F3E0;</span><span class="bn-label">Home</span>
+  </button>
+  <button class="bn-item" id="bn_learning" onclick="goToSection('learning')">
+    <span class="bn-icon">&#x1F4DA;</span><span class="bn-label">Learn</span>
+    <span class="bn-dot"></span>
+  </button>
+  <button class="bn-item" id="bn_games" onclick="goToSection('games')">
+    <span class="bn-icon">&#x1F3AE;</span><span class="bn-label">Games</span>
+  </button>
+  <button class="bn-item" id="bn_stories" onclick="goToSection('stories')">
+    <span class="bn-icon">&#x1F4D6;</span><span class="bn-label">Stories</span>
+  </button>
+  <button class="bn-item" id="bn_parent" onclick="switchTab('parent')">
+    <span class="bn-icon">&#x1F46A;</span><span class="bn-label">Parent</span>
+  </button>
+</nav>
 
 <!-- Firebase SDK (compat CDN — works with simple script tags) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -7430,7 +7743,7 @@ function markDone(){
   ws[todayKey()]=(ws[todayKey()]||0)+current.stars;
   localStorage.setItem('cws',JSON.stringify(ws));
   showSpill();showToast(`⭐ +${current.stars} stars!`);playStar();burst();
-  mascotPraise();renderStarPath();renderGoals();renderTabBadges();
+  mascotPraise();renderStarPath();renderGoals();renderTabBadges();updateHomepage();
   const ac=document.getElementById('ac');if(ac){ac.style.opacity='0';ac.style.transform='scale(.9) translateY(-10px)';}
   current=null;currentlyPlaying=false;setTimeout(fetchNext,500);
 }
@@ -9032,22 +9345,32 @@ function switchTab(t){
 
   // Show/hide elements based on tab
   const isSpecial=t==='create'||t==='parent'||t==='stories'||t==='hearts';
-  document.getElementById('progBar').style.display=isSpecial?'none':'flex';
-  document.getElementById('factCard').style.display=isSpecial?'none':'block';
-  document.getElementById('timerBar').classList.toggle('show',!isSpecial);
-  document.getElementById('challengeBar').style.display=isSpecial?'none':'flex';
-  document.getElementById('storyBanner').style.display=isSpecial?'none':'flex';
-  document.getElementById('starPath').style.display=isSpecial?'none':'block';
-  document.getElementById('goalsCard').style.display=isSpecial?'none':'block';
+  const pb=document.getElementById('progBar');if(pb)pb.style.display=isSpecial?'none':'flex';
+  const fc=document.getElementById('factCard');if(fc)fc.style.display=isSpecial?'none':'block';
+  const tb=document.getElementById('timerBar');if(tb)tb.classList.toggle('show',!isSpecial);
+  // challengeBar is hidden globally in new layout
+  const sb=document.getElementById('storyBanner');
+  if(sb)sb.style.display=(t==='morning'&&!isSpecial)?'flex':'none';
+  const sp=document.getElementById('starPath');if(sp)sp.style.display=isSpecial?'none':'block';
+  const gc=document.getElementById('goalsCard');if(gc)gc.style.display=isSpecial?'none':'block';
   if(!isSpecial)renderGoals();
-  document.getElementById('sparkCard').style.display=isSpecial?'none':'flex';
-  document.getElementById('bttCard').style.display='none';
+  const sc=document.getElementById('sparkCard');if(sc)sc.style.display=isSpecial?'none':'flex';
+  const bc=document.getElementById('bttCard');if(bc)bc.style.display='none';
   if(!isSpecial)renderBtt();
-  document.getElementById('qcFab').style.display=(t==='create'||t==='parent'||t==='stories'||t==='hearts')?'none':'flex';
+  const qf=document.getElementById('qcFab');
+  if(qf)qf.style.display=(t==='create')?'flex':'none';
   document.getElementById('weatherBar').classList.toggle('show',t==='morning');
-  document.getElementById('todayBar').style.display=isSpecial?'none':'flex';
-  document.getElementById('physBanner').style.display='none';
+  const td=document.getElementById('todayBar');if(td)td.style.display=(t==='morning')?'flex':'none';
+  const phys=document.getElementById('physBanner');if(phys)phys.style.display='none';
   if(t==='morning'||t==='evening')renderPhysBanner();
+
+  // Update section subtitle
+  const meta=SECTION_META&&SECTION_META[t];
+  if(meta){
+    const sn=document.getElementById('sectionName');const ss=document.getElementById('sectionSub');
+    if(sn)sn.textContent=meta.icon+' '+meta.name;
+    if(ss)ss.textContent=meta.sub;
+  }
 
   if(t==='hearts'){renderHeartsTab();return;}
   fetchNext();
@@ -9665,7 +9988,112 @@ function switchGameCat(c){
 // ══════════════════════════════════════
 //  HELPERS
 // ══════════════════════════════════════
-function showSpill(){document.getElementById('spill').textContent=`⭐ ${stars} stars`;}
+function showSpill(){
+  document.getElementById('spill').textContent=`⭐ ${stars} stars`;
+  updateHomepage();
+}
+
+// ══════════════════════════════════════
+//  ADVENTURE MAP NAVIGATION
+// ══════════════════════════════════════
+const SECTION_META={
+  morning: {name:'Morning Routine',sub:'Breathing, exercise & good habits',icon:'🌅',bn:'bn_morning'},
+  learning:{name:'Learning Time',   sub:'Maths, ABC, Science & more',       icon:'📚',bn:'bn_learning'},
+  games:   {name:'Fun Games',       sub:'Letters, shapes, maths & brain teasers',icon:'🎮',bn:'bn_games'},
+  evening: {name:'Evening Wind Down',sub:'Calm time & getting ready for sleep',icon:'🌿',bn:'bn_evening'},
+  create:  {name:'Create & Draw',   sub:'Art, music, stickers & more',      icon:'🎨',bn:'bn_create'},
+  stories: {name:'Story Time',      sub:'Read amazing adventure stories',    icon:'📖',bn:'bn_stories'},
+  hearts:  {name:'Hearts & Feelings',sub:'Understand your emotions',         icon:'❤️',bn:'bn_hearts'},
+  think:   {name:'Think & Puzzle',  sub:'Patterns, logic & coding',          icon:'🧠',bn:'bn_think'},
+  parent:  {name:'Parent Dashboard',sub:'View progress & settings',          icon:'👨‍👩‍👧',bn:'bn_parent'},
+};
+
+function goToSection(t){
+  const meta=SECTION_META[t]||{name:t,sub:'',icon:'🌟'};
+  document.getElementById('homeView').style.display='none';
+  const av=document.getElementById('activityView');
+  av.style.display='block';
+  document.getElementById('sectionName').textContent=meta.icon+' '+meta.name;
+  document.getElementById('sectionSub').textContent=meta.sub;
+  // Update bottom nav
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  const bnEl=document.getElementById('bn_'+t);
+  if(bnEl)bnEl.classList.add('active');
+  else document.getElementById('bn_home') && document.getElementById('bn_home').classList.remove('active');
+  // Switch tab content
+  switchTab(t);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goHome(){
+  document.getElementById('activityView').style.display='none';
+  document.getElementById('homeView').style.display='block';
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  const bnHome=document.getElementById('bn_home');
+  if(bnHome)bnHome.classList.add('active');
+  updateHomepage();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function updateHomepage(){
+  try{
+    // Quest strip
+    const total=done.length;
+    const qf=document.getElementById('questFill');
+    const qg=document.getElementById('questGems');
+    const qs=document.getElementById('questSub');
+    const qt=document.getElementById('questTitle');
+    if(qf) qf.style.width=Math.min(100,total*12)+'%';
+    if(qg) qg.textContent='⭐ '+stars;
+    if(qt) qt.textContent=total===0?'Today\'s Quest — Let\'s get started!':`Today's Quest — ${total} activit${total===1?'y':'ies'} done!`;
+    if(qs){
+      if(total===0) qs.textContent='Tap any activity to begin your adventure 🌿';
+      else if(total<3) qs.textContent='Great start! Keep going 🌟';
+      else if(total<6) qs.textContent="You're on a roll! Amazing work 🚀";
+      else qs.textContent='Quest complete! You are a superstar! 🏆';
+    }
+    // Section status badges
+    const tabDones={};
+    done.forEach(d=>{tabDones[d.tab]=(tabDones[d.tab]||0)+1;});
+    ['morning','learning','games','evening','create','hearts','think'].forEach(t=>{
+      const el=document.getElementById('ts_'+t);
+      if(!el)return;
+      const n=tabDones[t]||0;
+      el.textContent=n>0?'✅':'';
+    });
+    // Week strip
+    renderHomeWeek();
+    // Story hero
+    const stEl=document.getElementById('hshTitle');
+    const sdEl=document.getElementById('hshSub');
+    const seEl=document.getElementById('hshEmoji');
+    if(stEl&&typeof STORIES!=='undefined'&&STORIES.length){
+      const s=STORIES[Math.floor(Math.random()*Math.min(5,STORIES.length))];
+      if(s){
+        if(seEl)seEl.textContent=s.emoji||'📖';
+        stEl.textContent=s.title||'Today\'s Story is Ready!';
+        if(sdEl)sdEl.textContent=s.moral?s.moral.slice(0,60)+'…':'Tap to start a brand new adventure';
+      }
+    }
+  }catch(e){}
+}
+
+function renderHomeWeek(){
+  const el=document.getElementById('homeWeek');
+  if(!el)return;
+  const ws=JSON.parse(localStorage.getItem('cws')||'{}');
+  const today=new Date();const dow=today.getDay();
+  const days=['S','M','T','W','T','F','S'];
+  let html='';
+  for(let i=0;i<7;i++){
+    const d=new Date(today);d.setDate(today.getDate()-dow+i);
+    const key=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+    const s=ws[key]||0;const isToday=i===dow;
+    const cls='hw-day'+(isToday?' today':s>0?' done':'');
+    html+=`<div class="${cls}"><div class="dn">${days[i]}</div><div class="dd">${d.getDate()}</div><div class="ds">${s>0?'⭐':isToday?'🔥':''}</div></div>`;
+  }
+  el.innerHTML=html;
+}
 let tt;
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2500);}
 function burst(){
@@ -12102,6 +12530,10 @@ function _bootApp(){
   }
 
   setupHeader();showSpill();renderWbar();renderFact();renderStory();renderChallenge();applyRewards();renderTabBadges();
+  updateHomepage();
+  // Show homepage first — don't auto-load an activity
+  document.getElementById('homeView').style.display='block';
+  document.getElementById('activityView').style.display='none';
   renderStarPath();renderSpark();renderWeather();renderPhysBanner();renderTodayBar();renderBtt();renderGoals();
 // Check bedtime lock (delayed so other UI loads first)
   setTimeout(checkBedtimeLock,1500);
@@ -12124,8 +12556,9 @@ function _bootApp(){
   // Show friend name in mascot bubble if named
   if(friendName)setTimeout(()=>mascotSay('Hi '+friendName+'! Let\'s go! 💛'),1500);
 
-  // Start activities
-  fetchNext();
+  // Start activities — deferred; user picks section from homepage first
+  // fetchNext() is called when user taps a section tile via goToSection()
+  setTimeout(()=>updateHomepage(),500);
 
   // ══════════════════════════════════════════════════════════════
   //  AUTO-RETRY: If Firebase failed to load (common on iOS/iPad),
