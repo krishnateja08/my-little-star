@@ -17,6 +17,7 @@
   --cz-header-offset: 155px;
   --cz-max-width: 100%;
   --cz-rail-width: clamp(60px, 5.5vw, 70px);
+  --cz-sticker-rail-width: clamp(130px, 12vw, 160px);
   --cz-btn-size: clamp(44px, 4vw, 56px);
   --cz-btn-radius: clamp(10px, 1vw, 14px);
 }
@@ -1408,6 +1409,7 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   :root{
     --cz-header-offset: 175px;
     --cz-rail-width: clamp(72px, 6vw, 90px);
+    --cz-sticker-rail-width: clamp(150px, 13vw, 180px);
     --cz-btn-size: clamp(52px, 4.2vw, 64px);
     --cz-btn-radius: clamp(12px, 1vw, 16px);
   }
@@ -1437,6 +1439,7 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   :root{
     --cz-header-offset: 185px;
     --cz-rail-width: clamp(80px, 5.5vw, 96px);
+    --cz-sticker-rail-width: clamp(160px, 14vw, 200px);
     --cz-btn-size: clamp(56px, 3.8vw, 68px);
   }
 }
@@ -1446,6 +1449,7 @@ body.bedtime .exercise-anim{background:linear-gradient(180deg,#1a1a2e,#222244);}
   :root{
     --cz-header-offset: 200px;
     --cz-rail-width: 96px;
+    --cz-sticker-rail-width: 200px;
     --cz-btn-size: 68px;
     --cz-btn-radius: 16px;
   }
@@ -7762,27 +7766,27 @@ function renderCreativeZone(){
       </div>
 
       <!-- ══ RIGHT SIDEBAR: Stickers ══ -->
-      <div class="cz-zone cz-stickers" style="width:var(--cz-rail-width);flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;border-radius:0;border-left:1.5px solid rgba(255,107,157,.15);box-shadow:none">
+      <div class="cz-zone cz-stickers" style="width:var(--cz-sticker-rail-width);flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;border-radius:0;border-left:1.5px solid rgba(255,107,157,.15);box-shadow:none">
         <div class="cz-zone-label" style="color:#e11d78;justify-content:center;font-size:.6rem;padding:6px 4px 5px;border-radius:0">STICKERS</div>
         <!-- Category tabs -->
-        <div style="display:flex;flex-wrap:wrap;gap:3px;padding:4px 5px;border-bottom:1px solid rgba(255,107,157,.1)">
+        <div style="display:flex;flex-wrap:wrap;gap:3px;padding:4px 6px;border-bottom:1px solid rgba(255,107,157,.1)">
           ${catKeys.map(k=>`
             <button onclick="czSwitchStickerCat('${k}')" data-czstickercat="${k}"
-              style="width:28px;height:26px;border-radius:8px;border:2px solid ${activeCat===k?'#ff6b9d':'transparent'};
+              style="width:30px;height:28px;border-radius:8px;border:2px solid ${activeCat===k?'#ff6b9d':'transparent'};
                      background:${activeCat===k?'linear-gradient(135deg,#ff6b9d,#ffb830)':'var(--inputbg)'};
-                     font-size:1rem;cursor:pointer;transition:all .18s;
+                     font-size:1.1rem;cursor:pointer;transition:all .18s;
                      ${activeCat===k?'box-shadow:0 2px 8px rgba(255,107,157,.35)':''}">
               ${k}
             </button>`).join('')}
         </div>
-        <!-- Sticker grid -->
-        <div id="czStickerList" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;overflow-y:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:6px 5px;flex:1">
+        <!-- Sticker grid — 2 columns, clearly visible -->
+        <div id="czStickerList" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,107,157,.3) transparent;-webkit-overflow-scrolling:touch;padding:8px 6px;flex:1">
           ${(CZ_STICKER_CATS[activeCat]||[]).map(s=>`
             <div class="cz-sticker cz-tool-btn cz-sticker-item" onclick="czSetSticker('${s}')" data-czsticker="${s}"
               style="width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:12px;
                      background:${drawSticker===s?'linear-gradient(135deg,rgba(255,107,157,.2),rgba(255,184,48,.2))':'var(--inputbg)'};
                      border:2.5px solid ${drawSticker===s?'#ff6b9d':'transparent'};
-                     font-size:1.8rem;cursor:pointer;transition:all .2s;
+                     font-size:2rem;cursor:pointer;transition:all .2s;
                      ${drawSticker===s?'box-shadow:0 5px 16px rgba(255,107,157,.4);transform:scale(1.08)':''}">
               ${s}
             </div>`).join('')}
@@ -8047,14 +8051,17 @@ function czRefreshStickerRow(rebuildCats){
     // Rebuild sticker list
     const list=document.getElementById('czStickerList');
     if(list){
+      list.style.display='grid';
+      list.style.gridTemplateColumns='1fr 1fr';
+      list.style.gap='6px';
       list.innerHTML=(CZ_STICKER_CATS[activeCat]||[]).map(s=>`
         <div class="cz-sticker cz-tool-btn cz-sticker-item" onclick="czSetSticker('${s}')"
           data-czsticker="${s}"
-          style="width:56px;height:56px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:14px;
+          style="width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:12px;
                  background:${drawSticker===s?'linear-gradient(135deg,rgba(255,107,157,.2),rgba(255,184,48,.2))':'var(--inputbg)'};
                  border:2.5px solid ${drawSticker===s?'#ff6b9d':'transparent'};
-                 font-size:2.2rem;cursor:pointer;transition:all .2s;
-                 ${drawSticker===s?'box-shadow:0 5px 16px rgba(255,107,157,.4);transform:scale(1.12)':''}">
+                 font-size:2rem;cursor:pointer;transition:all .2s;
+                 ${drawSticker===s?'box-shadow:0 5px 16px rgba(255,107,157,.4);transform:scale(1.08)':''}">
           ${s}
         </div>`).join('');
     }
