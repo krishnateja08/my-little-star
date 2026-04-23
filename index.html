@@ -7608,12 +7608,12 @@ function renderCreativeZone(){
             <button id="czBrushBtn_${b.id}" class="cz-tool-btn" onclick="czSetBrush('${b.id}')" title="${b.tip||b.label}"
               style="width:100%;border:none;border-radius:11px;cursor:pointer;transition:all .2s;
                      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 4px;flex-shrink:0;
-                     background:${czBrushType===b.id?'linear-gradient(135deg,#a78bfa,#7c3aed)':'var(--inputbg)'};
-                     box-shadow:${czBrushType===b.id?'0 4px 12px rgba(124,58,237,.4)':'0 1px 4px rgba(0,0,0,.08)'};
+                     background:${czBrushType===b.id?'linear-gradient(135deg,#a78bfa,#7c3aed)':'#ede9fe'};
+                     box-shadow:${czBrushType===b.id?'0 4px 12px rgba(124,58,237,.4)':'0 2px 6px rgba(124,58,237,.12)'};
                      ${czBrushType===b.id?'transform:scale(1.05)':''}">
               <span style="font-size:1.6rem;line-height:1">${b.icon}</span>
               <span data-cz="label" style="font-family:'Baloo 2',cursive;font-size:.48rem;font-weight:900;line-height:1;
-                           color:${czBrushType===b.id?'#fff':'var(--text4)'};white-space:nowrap">${b.label}</span>
+                           color:${czBrushType===b.id?'#fff':'#555'};white-space:nowrap">${b.label}</span>
             </button>`).join('')}
 
           <!-- SIZE divider -->
@@ -7661,6 +7661,13 @@ function renderCreativeZone(){
       <div style="flex:1;display:flex;flex-direction:column;min-width:0;position:relative">
         <!-- Canvas action buttons row (top of canvas) -->
         <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;padding:6px 10px 4px;flex-shrink:0;background:transparent">
+          <button onclick="czDeselectSticker()" id="czDeselectBtn" title="Back to Draw"
+            style="display:${drawSticker?'flex':'none'};align-items:center;gap:4px;padding:6px 12px;border:none;border-radius:20px;
+                   background:linear-gradient(135deg,#a78bfa,#7c3aed);cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(124,58,237,.35);
+                   font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:900;color:#fff"
+            onmousedown="this.style.transform='scale(.9)'" onmouseup="this.style.transform=''">
+            ✏️ Draw
+          </button>
           <button onclick="czUndo()" id="czUndoBtn" title="Undo"
             style="display:flex;align-items:center;gap:4px;padding:6px 12px;border:none;border-radius:20px;
                    background:rgba(255,255,255,.9);cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.12);
@@ -7946,6 +7953,7 @@ function czSetSticker(s){
   drawSticker=s;drawMode='sticker';
   czRefreshStickerRow();
   czRefreshShapeRow();
+  const db=document.getElementById('czDeselectBtn');if(db)db.style.display='flex';
   // Micro-animation: bounce the selected sticker
   const el=document.querySelector(`[data-czsticker="${s}"]`);
   if(el){
@@ -7959,6 +7967,7 @@ function czSetShape(id){
   drawSticker='__shape_'+id;drawMode='sticker';
   czRefreshShapeRow();
   czRefreshStickerRow();
+  const db=document.getElementById('czDeselectBtn');if(db)db.style.display='flex';
   // Micro-animation: pop the selected shape
   const el=document.querySelector(`[data-czshape="${id}"]`);
   if(el){
@@ -7967,6 +7976,18 @@ function czSetShape(id){
     el.classList.add('cz-shape-active');
     setTimeout(()=>el.classList.remove('cz-shape-active'),450);
   }
+}
+function czDeselectSticker(){
+  drawSticker='';drawMode='draw';
+  czBrushType=czBrushType==='eraser'?'eraser':'marker';
+  czRefreshShapeRow();
+  czRefreshStickerRow();
+  czRefreshBrushRow();
+  // Hide the deselect button, show draw mode is active
+  const btn=document.getElementById('czDeselectBtn');
+  if(btn)btn.style.display='none';
+  mascotSay&&mascotSay('Drawing mode! ✏️');
+  playClick&&playClick();
 }
 function czSwitchStickerCat(k){
   window.czActiveStickerCat=k;
@@ -8016,7 +8037,7 @@ function czRefreshBrushRow(){
       const activeTag=btn.querySelector('[data-cz="activetag"]');
       if(activeTag)activeTag.style.display=active?'block':'none';
     }else{
-      btn.style.background=active?'linear-gradient(135deg,#a78bfa,#7c3aed)':'var(--inputbg)';
+      btn.style.background=active?'linear-gradient(135deg,#a78bfa,#7c3aed)':'#ede9fe';
       btn.style.boxShadow=active?'0 5px 18px rgba(124,58,237,.45)':'';
       btn.style.transform=active?'translateY(-3px)':'';
       const lbl=btn.querySelector('[data-cz="label"]');
