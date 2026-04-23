@@ -319,7 +319,7 @@ body.bedtime .hw-day{background:#0d2218;border-color:#1b5e20;}
 
 /* Desktop & iPad */
 @media(min-width:768px){
-  body{max-width:920px;margin:0 auto;}
+  body{width:100%;}
   header{padding:26px 40px 36px;border-radius:0 0 52px 52px;}
   header h1{font-size:2.1rem;}
   #homeView{padding:18px 24px 110px;}
@@ -328,13 +328,13 @@ body.bedtime .hw-day{background:#0d2218;border-color:#1b5e20;}
   .mini-grid{grid-template-columns:repeat(3,1fr);}
   .adv-tile{min-height:160px;}
   .adv-tile.wide{grid-column:1/-1;}
-  .bottom-nav{max-width:920px;left:50%;transform:translateX(-50%);}
+  .bottom-nav{left:0;right:0;}
   .bn-item{min-width:70px;padding:8px 14px;}
   .bn-icon{font-size:1.5rem!important;}
   .bn-label{font-size:.6rem!important;}
 }
 @media(min-width:1024px){
-  body{max-width:1080px;}
+  body{width:100%;}
   header{padding:30px 60px 40px;}
   #homeView{padding:20px 36px 110px;}
   #activityView{padding:14px 36px 110px;}
@@ -342,7 +342,7 @@ body.bedtime .hw-day{background:#0d2218;border-color:#1b5e20;}
   .adv-tile{min-height:180px;padding:24px 20px;}
   .adv-tile .tile-icon{font-size:3.4rem;}
   .adv-tile .tile-name{font-size:1.2rem;}
-  .bottom-nav{max-width:1080px;}
+  .bottom-nav{left:0;right:0;}
 }
 .mascot-wrap{position:relative;display:inline-block;cursor:pointer;}
 .mascot{font-size:2.6rem;animation:float 3s ease-in-out infinite;display:block;transition:transform .3s;}
