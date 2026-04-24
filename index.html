@@ -2294,6 +2294,61 @@ body.bedtime .sr-stat,.body.bedtime .sr-log-entry,.body.bedtime .sr-cat-card,.bo
       <span class="mt-icon">&#x1F9E0;</span><div class="mt-name">Think</div>
     </div>
   </div>
+
+  <!-- ── DAILY DASHBOARD WIDGETS (home only) ── -->
+  <div class="home-section-label" style="margin-top:16px;">&#x1F4C5; Today's Dashboard</div>
+
+  <!-- Today's Date & Time bar -->
+  <div class="today-bar" id="todayBar" onclick="speakToday()">
+    <div class="today-clock" id="todayClock"></div>
+    <div class="today-info">
+      <div class="today-day" id="todayDay">Today is...</div>
+      <div class="today-date" id="todayDate">Loading...</div>
+      <div class="today-time" id="todayTime">&#x1F550; --:--</div>
+    </div>
+    <span class="today-speak">&#x1F50A;</span>
+  </div>
+
+  <!-- Star path progress -->
+  <div class="star-path" id="starPath"></div>
+
+  <!-- Session timer -->
+  <div class="timer-bar show" id="timerBar">
+    <div class="timer-circle"><svg viewBox="0 0 40 40">
+      <circle class="timer-bg" cx="20" cy="20" r="17"/>
+      <circle class="timer-fg" id="timerFg" cx="20" cy="20" r="17" stroke-dasharray="106.8" stroke-dashoffset="0"/>
+    </svg></div>
+    <div class="timer-text" id="timerText">&#x23F1;&#xFE0F; Play for 5 minutes!</div>
+    <button class="timer-btn timer-start" id="timerBtn" onclick="toggleTimer()">&#x25B6; Start</button>
+  </div>
+
+  <!-- Did You Know fact -->
+  <div id="factCard"></div>
+
+  <!-- Brain Spark -->
+  <div class="spark-card" id="sparkCard" style="display:none;flex" onclick="completeSpark()">
+    <span class="spark-emoji" id="sparkEmoji">&#x1F9E0;</span>
+    <span class="spark-text" id="sparkText">Loading brain spark...</span>
+    <span class="spark-done" id="sparkDone"></span>
+  </div>
+
+  <!-- Today's 3 Goals -->
+  <div class="goals-card" id="goalsCard" style="display:none">
+    <div class="goals-title">&#x1F3AF; Today's 3 Goals</div>
+    <div id="goalsList"></div>
+    <div class="goals-reward" id="goalsReward"></div>
+  </div>
+
+  <!-- Beat the Timer challenge -->
+  <div class="btt-card" id="bttCard" style="display:none" onclick="startBeatTimer()">
+    <span class="btt-emoji">&#x23F1;&#xFE0F;</span>
+    <div class="btt-info">
+      <div class="btt-title" id="bttTitle">&#x23F1;&#xFE0F; Beat the Timer!</div>
+      <div class="btt-desc" id="bttDesc">Can you do it before time runs out?</div>
+    </div>
+    <span class="btt-timer">GO!</span>
+  </div>
+
 </div>
 
 <!-- ACTIVITY VIEW -->
@@ -2359,43 +2414,6 @@ body.bedtime .sr-stat,.body.bedtime .sr-log-entry,.body.bedtime .sr-cat-card,.bo
       <button class="gp" data-g="money" onclick="switchGameCat('money')">&#x1F4B0; Money</button>
       <button class="gp" data-g="puzzle" onclick="switchGameCat('puzzle')">&#x1F9E9; Puzzle</button>
       <button class="gp" data-g="focus" onclick="switchGameCat('focus')">&#x1F3AF; Focus</button>
-    </div>
-    <div class="today-bar" id="todayBar" style="display:none" onclick="speakToday()">
-      <div class="today-clock" id="todayClock"></div>
-      <div class="today-info">
-        <div class="today-day" id="todayDay">Today is...</div>
-        <div class="today-date" id="todayDate">Loading...</div>
-        <div class="today-time" id="todayTime">&#x1F550; --:--</div>
-      </div>
-      <span class="today-speak">&#x1F50A;</span>
-    </div>
-    <div class="star-path" id="starPath"></div>
-    <div class="timer-bar" id="timerBar">
-      <div class="timer-circle"><svg viewBox="0 0 40 40">
-        <circle class="timer-bg" cx="20" cy="20" r="17"/>
-        <circle class="timer-fg" id="timerFg" cx="20" cy="20" r="17" stroke-dasharray="106.8" stroke-dashoffset="0"/>
-      </svg></div>
-      <div class="timer-text" id="timerText">&#x23F1;&#xFE0F; Play for 5 minutes!</div>
-      <button class="timer-btn timer-start" id="timerBtn" onclick="toggleTimer()">&#x25B6; Start</button>
-    </div>
-    <div id="factCard"></div>
-    <div class="spark-card" id="sparkCard" style="display:none;flex" onclick="completeSpark()">
-      <span class="spark-emoji" id="sparkEmoji">&#x1F9E0;</span>
-      <span class="spark-text" id="sparkText">Loading brain spark...</span>
-      <span class="spark-done" id="sparkDone"></span>
-    </div>
-    <div class="goals-card" id="goalsCard" style="display:none">
-      <div class="goals-title">&#x1F3AF; Today's 3 Goals</div>
-      <div id="goalsList"></div>
-      <div class="goals-reward" id="goalsReward"></div>
-    </div>
-    <div class="btt-card" id="bttCard" style="display:none" onclick="startBeatTimer()">
-      <span class="btt-emoji">&#x23F1;&#xFE0F;</span>
-      <div class="btt-info">
-        <div class="btt-title" id="bttTitle">&#x23F1;&#xFE0F; Beat the Timer!</div>
-        <div class="btt-desc" id="bttDesc">Can you do it before time runs out?</div>
-      </div>
-      <span class="btt-timer">GO!</span>
     </div>
     <div class="prog" id="progBar">
       <span class="pl">Progress</span>
@@ -9632,21 +9650,13 @@ function switchTab(t){
   // Show/hide elements based on tab
   const isSpecial=t==='create'||t==='parent'||t==='stories'||t==='hearts';
   const pb=document.getElementById('progBar');if(pb)pb.style.display=isSpecial?'none':'flex';
-  const fc=document.getElementById('factCard');if(fc)fc.style.display=isSpecial?'none':'block';
-  const tb=document.getElementById('timerBar');if(tb)tb.classList.toggle('show',!isSpecial);
-  // challengeBar is hidden globally in new layout
+  // storyBanner only on morning
   const sb=document.getElementById('storyBanner');
   if(sb)sb.style.display=(t==='morning'&&!isSpecial)?'flex':'none';
-  const sp=document.getElementById('starPath');if(sp)sp.style.display=isSpecial?'none':'block';
-  const gc=document.getElementById('goalsCard');if(gc)gc.style.display=isSpecial?'none':'block';
-  if(!isSpecial)renderGoals();
-  const sc=document.getElementById('sparkCard');if(sc)sc.style.display=isSpecial?'none':'flex';
-  const bc=document.getElementById('bttCard');if(bc)bc.style.display='none';
-  if(!isSpecial)renderBtt();
   const qf=document.getElementById('qcFab');
   if(qf)qf.style.display=(t==='create')?'flex':'none';
   document.getElementById('weatherBar').classList.toggle('show',t==='morning');
-  const td=document.getElementById('todayBar');if(td)td.style.display=(t==='morning')?'flex':'none';
+  const td=document.getElementById('todayBar');if(td)td.style.display='none'; // now on home only
   const phys=document.getElementById('physBanner');if(phys)phys.style.display='none';
   if(t==='morning'||t==='evening')renderPhysBanner();
 
@@ -10327,6 +10337,15 @@ function goHome(){
   const bnHome=document.getElementById('bn_home');
   if(bnHome)bnHome.classList.add('active');
   updateHomepage();
+  // Re-render all dashboard widgets (now live in homeView only)
+  if(typeof renderFact==='function')      renderFact();
+  if(typeof renderSpark==='function')     renderSpark();
+  if(typeof renderBtt==='function')       renderBtt();
+  if(typeof renderGoals==='function')     renderGoals();
+  if(typeof renderStarPath==='function')  renderStarPath();
+  if(typeof renderTodayBar==='function')  renderTodayBar();
+  // Ensure todayBar is visible on home
+  const td=document.getElementById('todayBar');if(td)td.style.display='flex';
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -12830,6 +12849,8 @@ function _bootApp(){
   document.getElementById('homeView').style.display='block';
   document.getElementById('activityView').style.display='none';
   renderStarPath();renderSpark();renderWeather();renderPhysBanner();renderTodayBar();renderBtt();renderGoals();
+  // Dashboard widgets now live in homeView — ensure todayBar always visible on home
+  const _tdBar=document.getElementById('todayBar');if(_tdBar)_tdBar.style.display='flex';
 // Check bedtime lock (delayed so other UI loads first)
   setTimeout(checkBedtimeLock,1500);
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===tab));
@@ -12837,7 +12858,6 @@ function _bootApp(){
   document.getElementById('gameRow').classList.toggle('show',tab==='games');
   document.getElementById('thinkRow').classList.toggle('show',tab==='learning'&&subj==='think');
   document.getElementById('weatherBar').classList.toggle('show',tab==='morning');
-  document.getElementById('timerBar').classList.add('show');
 
   // Morning tune + feelings check-in
   setTimeout(()=>{
