@@ -93,15 +93,15 @@ header h1{font-family:'Baloo 2',cursive;font-size:1.7rem;color:#fff;text-shadow:
 /* Week strip inside homepage */
 .home-week{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
 .home-week::-webkit-scrollbar{display:none;}
-.hw-day{flex:1;min-width:42px;background:#fff;border-radius:14px;padding:8px 4px;text-align:center;
-  box-shadow:0 2px 10px var(--shadow2);border:1.5px solid var(--border);}
+.hw-day{flex:0 0 auto;min-width:78px;background:#fff;border-radius:14px;padding:10px 6px;text-align:center;
+  box-shadow:0 2px 10px var(--shadow2);border:1.5px solid var(--border);cursor:pointer;transition:transform .2s;}
 .hw-day.today{background:linear-gradient(135deg,#1b4332,#52b788);border-color:transparent;}
 .hw-day.done{background:linear-gradient(135deg,#52b788,#4ecdc4);border-color:transparent;}
-.hw-day .dn{font-size:.58rem;font-weight:800;text-transform:uppercase;color:var(--text4);}
-.hw-day.today .dn,.hw-day.done .dn{color:rgba(255,255,255,.8);}
-.hw-day .dd{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--text);}
+.hw-day .dn{font-size:.58rem;font-weight:800;text-transform:uppercase;color:var(--text4);letter-spacing:.2px;white-space:nowrap;}
+.hw-day.today .dn,.hw-day.done .dn{color:rgba(255,255,255,.85);}
+.hw-day .dd{font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:800;color:var(--text);margin-top:2px;}
 .hw-day.today .dd,.hw-day.done .dd{color:#fff;}
-.hw-day .ds{font-size:.8rem;margin-top:1px;}
+.hw-day .ds{font-size:.85rem;margin-top:2px;}
 
 /* Story hero card */
 .home-story-hero{background:linear-gradient(135deg,#fff8e1,#e8f5ee);border-radius:22px;
@@ -403,7 +403,8 @@ body.bedtime .hw-day{background:#0d2218;border-color:#1b5e20;}
   .hsh-sub{display:none;}
   .hsh-btn{padding:6px 12px;font-size:.72rem;}
   .home-week{gap:4px;}
-  .hw-day{min-width:36px;padding:6px 2px;}
+  .hw-day{min-width:70px;padding:8px 4px;}
+  .hw-day .dn{font-size:.54rem;}
 }
 
 /* Landscape phone */
@@ -10397,14 +10398,18 @@ function renderHomeWeek(){
   if(!el)return;
   const ws=JSON.parse(localStorage.getItem('cws')||'{}');
   const today=new Date();const dow=today.getDay();
-  const days=['S','M','T','W','T','F','S'];
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   let html='';
   for(let i=0;i<7;i++){
     const d=new Date(today);d.setDate(today.getDate()-dow+i);
     const key=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
     const s=ws[key]||0;const isToday=i===dow;
     const cls='hw-day'+(isToday?' today':s>0?' done':'');
-    html+=`<div class="${cls}"><div class="dn">${days[i]}</div><div class="dd">${d.getDate()}</div><div class="ds">${s>0?'⭐':isToday?'🔥':''}</div></div>`;
+    html+=`<div class="${cls}" onclick="speakText('${days[i]}');this.style.transform='scale(1.08)';setTimeout(()=>this.style.transform='',350)">
+      <div class="dn">${days[i]}</div>
+      <div class="dd">${d.getDate()}</div>
+      <div class="ds">${s>0?'⭐':isToday?'🔥':''}</div>
+    </div>`;
   }
   el.innerHTML=html;
 }
