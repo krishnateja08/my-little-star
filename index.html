@@ -2104,6 +2104,16 @@ body.bedtime .bubble-arena{background:linear-gradient(135deg,#1a2030,#201a30);}
         <div class="tile-cta">&#x25B6; Relax</div>
       </div>
     </div>
+    <div class="adv-tile wide" style="background:linear-gradient(135deg,#ff6b9d,#a78bfa,#4ecdc4);" onclick="goToSection('creativity')">
+      <div class="tile-shine"></div><div class="tile-shine2"></div>
+      <div class="tile-status" id="ts_creativity">🎨</div>
+      <div class="tile-icon">🎨</div>
+      <div class="tile-bottom">
+        <div class="tile-name">🌈 Creativity Zone</div>
+        <div class="tile-desc">Puzzles • Blocks • Patterns • Colouring • Stickers</div>
+        <div class="tile-cta">&#x25B6; Create!</div>
+      </div>
+    </div>
   </div>
   <div class="home-section-label" style="margin-top:4px;">&#x1F3A8; More Adventures</div>
   <div class="mini-grid">
@@ -3648,7 +3658,7 @@ function getPool(){
     // No same-day auto-recycle — completed games only come back tomorrow
     return pool;
   }
-  if(tab==='create'||tab==='parent') return [];
+  if(tab==='create'||tab==='creativity'||tab==='parent') return [];
   // Think is now a subject within learning
   if(tab==='learning'&&subj==='think'){
     let pool=CUR.think||[];
@@ -3706,6 +3716,7 @@ async function fetchNext(forceAct){
 
   // Special tabs
   if(tab==='create'){renderCreativeZone();busy=false;return;}
+  if(tab==='creativity'){renderCreativityZone();busy=false;return;}
   if(tab==='parent'){renderParentDash();busy=false;return;}
   if(tab==='stories'){renderStories();busy=false;return;}
 
@@ -9440,7 +9451,7 @@ function switchTab(t){
   if(t!=='learning') subj='all';
 
   // Show/hide elements based on tab
-  const isSpecial=t==='create'||t==='parent'||t==='stories'||t==='hearts';
+  const isSpecial=t==='create'||t==='creativity'||t==='parent'||t==='stories'||t==='hearts';
   const pb=document.getElementById('progBar');if(pb)pb.style.display=isSpecial?'none':'flex';
   const fc=document.getElementById('factCard');if(fc)fc.style.display=isSpecial?'none':'block';
   const tb=document.getElementById('timerBar');if(tb)tb.classList.toggle('show',!isSpecial);
@@ -10110,6 +10121,7 @@ const SECTION_META={
   stories: {name:'Story Time',      sub:'Read amazing adventure stories',    icon:'📖',bn:'bn_stories'},
   hearts:  {name:'Hearts & Feelings',sub:'Understand your emotions',         icon:'❤️',bn:'bn_hearts'},
   think:   {name:'Think & Puzzle',  sub:'Patterns, logic & coding',          icon:'🧠',bn:'bn_think'},
+  creativity:{name:'Creativity Zone', sub:'Puzzles, blocks, patterns, colouring & stickers',icon:'🎨',bn:'bn_creativity'},
   parent:  {name:'Parent Dashboard',sub:'View progress & settings',          icon:'👨‍👩‍👧',bn:'bn_parent'},
 };
 
@@ -10160,7 +10172,7 @@ function updateHomepage(){
     // Section status badges
     const tabDones={};
     done.forEach(d=>{tabDones[d.tab]=(tabDones[d.tab]||0)+1;});
-    ['morning','learning','games','evening','create','hearts','think'].forEach(t=>{
+    ['morning','learning','games','evening','create','hearts','think','creativity'].forEach(t=>{
       const el=document.getElementById('ts_'+t);
       if(!el)return;
       const n=tabDones[t]||0;
@@ -13834,8 +13846,945 @@ function clearMusic(){const d=window._musicData;if(!d)return;d.played=[];d.rende
 
 // ════════════════════════════════════════════════
 //  CREATIVE GAME 4: STORY STARTER!
-// ════════════════════════════════════════════════
-const SS_STORIES=[
+
+// ══════════════════════════════════════════════════════
+//  🎨 CREATIVITY ZONE — 5 Interactive Games
+// ══════════════════════════════════════════════════════
+let czGame = null; // current creativity game
+
+function renderCreativityZone() {
+  const area = document.getElementById('area');
+  area.innerHTML = `
+  <style>
+  /* ─── Creativity Hub Styles ─── */
+  .czHub{padding:4px 0 16px;}
+  .czGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px;}
+  .czCard{border-radius:20px;overflow:hidden;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.15);
+    transition:transform .22s,box-shadow .22s;position:relative;}
+  .czCard:hover{transform:translateY(-5px);box-shadow:0 12px 30px rgba(0,0,0,.2);}
+  .czCard:active{transform:scale(.96);}
+  .czCard-img{height:120px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+  .czCard-label{padding:10px 14px 12px;background:#fff;}
+  .czCard-title{font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:#333;margin-bottom:2px;}
+  .czCard-sub{font-size:.68rem;color:#888;}
+  .czWide{grid-column:1/-1;}
+
+  /* ─── Puzzle styles ─── */
+  .pz-board{display:grid;gap:3px;margin:12px auto;width:fit-content;}
+  .pz-piece{width:80px;height:80px;border-radius:8px;cursor:pointer;transition:all .25s;
+    border:3px solid transparent;display:flex;align-items:center;justify-content:center;font-size:2rem;}
+  .pz-piece.selected{border-color:#a78bfa;transform:scale(1.1);box-shadow:0 0 16px rgba(167,139,250,.5);}
+  .pz-piece.correct{border-color:#52b788;box-shadow:0 0 12px rgba(82,183,136,.4);}
+  .pz-tray{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:10px 0;padding:12px;
+    background:rgba(0,0,0,.04);border-radius:16px;}
+
+  /* ─── Block Builder ─── */
+  .blk-grid{display:grid;grid-template-columns:repeat(8,40px);grid-template-rows:repeat(8,40px);gap:2px;
+    margin:8px auto;width:fit-content;}
+  .blk-cell{width:40px;height:40px;border-radius:6px;border:2px dashed #e0e0e0;
+    cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+  .blk-cell:hover{border-color:#a78bfa;background:rgba(167,139,250,.1);}
+  .blk-cell.filled{border:none;}
+  .blk-palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0;}
+  .blk-color{width:38px;height:38px;border-radius:10px;cursor:pointer;border:3px solid transparent;
+    transition:all .2s;box-shadow:0 3px 10px rgba(0,0,0,.2);}
+  .blk-color.active{border-color:#333;transform:scale(1.15);}
+  .blk-color.eraser{background:linear-gradient(135deg,#f0f0f0,#ddd);position:relative;}
+
+  /* ─── Pattern Matching ─── */
+  .pm-row{display:flex;align-items:center;gap:8px;margin:10px 0;flex-wrap:wrap;justify-content:center;}
+  .pm-shape{width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    font-size:1.8rem;box-shadow:0 3px 10px rgba(0,0,0,.1);}
+  .pm-blank{width:52px;height:52px;border-radius:10px;border:3px dashed #a78bfa;background:#f5f0ff;
+    display:flex;align-items:center;justify-content:center;font-size:1.4rem;cursor:pointer;
+    transition:all .2s;}
+  .pm-blank:hover{background:#ede8ff;transform:scale(1.05);}
+  .pm-choice{width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    font-size:1.8rem;cursor:pointer;border:3px solid transparent;transition:all .2s;
+    box-shadow:0 3px 10px rgba(0,0,0,.1);}
+  .pm-choice:hover{transform:scale(1.1);border-color:#a78bfa;}
+  .pm-choice.chosen-correct{border-color:#52b788;box-shadow:0 0 16px rgba(82,183,136,.4);}
+  .pm-choice.chosen-wrong{border-color:#ff6b9d;animation:shake .3s;}
+
+  /* ─── Colouring Page ─── */
+  #czCanvas{border-radius:16px;box-shadow:0 6px 20px rgba(0,0,0,.15);cursor:crosshair;
+    touch-action:none;display:block;margin:0 auto;}
+  .col-palette{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:10px 0;}
+  .col-swatch{width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;
+    transition:all .2s;box-shadow:0 3px 10px rgba(0,0,0,.2);}
+  .col-swatch.active{border-color:#333;transform:scale(1.2);}
+  .col-swatch.eraser-sw{background:linear-gradient(135deg,#fff,#eee);border:2px solid #ccc;}
+  .col-brushrow{display:flex;gap:8px;justify-content:center;margin:6px 0;}
+  .col-brush{padding:6px 14px;border-radius:50px;border:2px solid var(--border);background:var(--inputbg);
+    font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:700;cursor:pointer;transition:all .2s;color:var(--text2);}
+  .col-brush.active{background:linear-gradient(135deg,#ff6b9d,#a78bfa);color:#fff;border-color:transparent;}
+
+  /* ─── Sticker Scene ─── */
+  #stickerScene{width:100%;border-radius:16px;overflow:hidden;position:relative;
+    box-shadow:0 6px 20px rgba(0,0,0,.15);user-select:none;touch-action:none;}
+  .stk-bg{width:100%;display:block;}
+  .stk-item{position:absolute;font-size:2.6rem;cursor:grab;transition:filter .15s;
+    user-select:none;filter:drop-shadow(2px 4px 6px rgba(0,0,0,.3));z-index:10;}
+  .stk-item:hover{filter:drop-shadow(2px 4px 12px rgba(0,0,0,.5)) brightness(1.1);}
+  .stk-item.placed{cursor:grab;}
+  .stk-tray{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px;
+    background:rgba(255,255,255,.9);border-radius:14px;margin-top:8px;}
+  .stk-btn{font-size:2.2rem;padding:8px;border-radius:12px;border:3px solid transparent;
+    background:linear-gradient(135deg,#f8f0ff,#f0f8ff);cursor:pointer;text-align:center;
+    transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+  .stk-btn:hover{transform:scale(1.15);border-color:#a78bfa;}
+  .stk-btn:active{transform:scale(.95);}
+  </style>
+
+  <div class="czHub">
+    <div style="text-align:center;margin-bottom:14px;">
+      <div style="font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:#a78bfa;">🎨 Creativity Zone</div>
+      <div style="font-size:.78rem;color:var(--text3);margin-top:3px;">Choose a fun creative activity!</div>
+    </div>
+    <div class="czGrid">
+      <div class="czCard" onclick="czShowGame('puzzle')">
+        <div class="czCard-img" style="background:linear-gradient(135deg,#1b4332,#52b788,#b7e4c7);">
+          ${czPuzzlePreviewSVG()}
+        </div>
+        <div class="czCard-label">
+          <div class="czCard-title">🧩 Simple Puzzles</div>
+          <div class="czCard-sub">Piece together the picture!</div>
+        </div>
+      </div>
+      <div class="czCard" onclick="czShowGame('blocks')">
+        <div class="czCard-img" style="background:linear-gradient(135deg,#1a1a60,#0077b6,#00b4d8);">
+          ${czBlockPreviewSVG()}
+        </div>
+        <div class="czCard-label">
+          <div class="czCard-title">🏗️ Block Building</div>
+          <div class="czCard-sub">Build the model!</div>
+        </div>
+      </div>
+      <div class="czCard" onclick="czShowGame('pattern')">
+        <div class="czCard-img" style="background:linear-gradient(135deg,#6a0dad,#a855f7,#f0abfc);">
+          ${czPatternPreviewSVG()}
+        </div>
+        <div class="czCard-label">
+          <div class="czCard-title">🔷 Pattern Matching</div>
+          <div class="czCard-sub">What comes next? Circle it!</div>
+        </div>
+      </div>
+      <div class="czCard" onclick="czShowGame('colour')">
+        <div class="czCard-img" style="background:linear-gradient(135deg,#ff6b35,#f7c59f,#efefd0);">
+          ${czColourPreviewSVG()}
+        </div>
+        <div class="czCard-label">
+          <div class="czCard-title">🖌️ Colouring Pages</div>
+          <div class="czCard-sub">Colour the picture!</div>
+        </div>
+      </div>
+      <div class="czCard czWide" onclick="czShowGame('stickers')">
+        <div class="czCard-img" style="background:linear-gradient(135deg,#ff416c,#ff4b2b,#ffd32a);height:90px;">
+          ${czStickerPreviewSVG()}
+        </div>
+        <div class="czCard-label">
+          <div class="czCard-title">⭐ Sticker Scenes</div>
+          <div class="czCard-sub">Add stickers to complete the scene!</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── Preview SVGs for hub cards ──
+function czPuzzlePreviewSVG(){
+  return `<svg viewBox="0 0 200 120" width="180" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <clipPath id="p1"><path d="M10,10 Q35,10 40,20 Q45,10 70,10 L70,55 Q60,55 60,65 Q60,75 70,75 L70,110 Q45,110 40,100 Q35,110 10,110Z"/></clipPath>
+      <clipPath id="p2"><path d="M75,10 Q100,10 105,20 Q110,10 135,10 L135,55 Q125,55 125,65 Q125,75 135,75 L135,110 Q110,110 105,100 Q100,110 75,110Z"/></clipPath>
+    </defs>
+    <rect x="5" y="5" width="70" height="110" rx="6" fill="#4ade80" clip-path="url(#p1)"/>
+    <rect x="5" y="5" width="70" height="110" rx="6" fill="none" stroke="#fff" stroke-width="2" clip-path="url(#p1)"/>
+    <!-- puppy face in piece 1 -->
+    <ellipse cx="40" cy="58" rx="22" ry="20" fill="#c9833a" clip-path="url(#p1)"/>
+    <ellipse cx="40" cy="72" rx="14" ry="10" fill="#e8a566" clip-path="url(#p1)"/>
+    <ellipse cx="32" cy="52" rx="8" ry="12" fill="#8B4513" clip-path="url(#p1)"/>
+    <ellipse cx="48" cy="52" rx="8" ry="12" fill="#8B4513" clip-path="url(#p1)"/>
+    <circle cx="35" cy="55" r="4" fill="#222" clip-path="url(#p1)"/>
+    <circle cx="45" cy="55" r="4" fill="#222" clip-path="url(#p1)"/>
+    <circle cx="36" cy="54" r="1.5" fill="#fff" clip-path="url(#p1)"/>
+    <circle cx="46" cy="54" r="1.5" fill="#fff" clip-path="url(#p1)"/>
+    <ellipse cx="40" cy="66" rx="5" ry="4" fill="#d44" clip-path="url(#p1)"/>
+    <!-- piece 2 -->
+    <rect x="70" y="5" width="70" height="110" rx="6" fill="#86efac" clip-path="url(#p2)"/>
+    <rect fill="#52b788" x="75" y="80" width="60" height="35" rx="4" clip-path="url(#p2)"/>
+    <rect fill="#74c69d" x="90" y="60" width="30" height="25" rx="3" clip-path="url(#p2)"/>
+    <polygon points="90,60 105,44 120,60" fill="#1b4332" clip-path="url(#p2)"/>
+    <!-- floating piece -->
+    <g transform="translate(148,60) rotate(-15)">
+      <rect x="0" y="0" width="42" height="42" rx="6" fill="#4ecdc4" stroke="#fff" stroke-width="2"/>
+      <path d="M5,5 Q21,18 38,5 Q38,21 25,21 Q38,21 38,38 Q21,25 5,38 Q5,21 18,21 Q5,21 5,5Z" fill="none" stroke="#fff" stroke-width="1.5" opacity=".5"/>
+      <text x="21" y="27" text-anchor="middle" font-size="18">🐾</text>
+    </g>
+  </svg>`;
+}
+
+function czBlockPreviewSVG(){
+  const blocks=[
+    {x:30,y:70,w:30,h:20,c1:'#e53935',c2:'#b71c1c'},{x:60,y:70,w:30,h:20,c1:'#e53935',c2:'#b71c1c'},
+    {x:30,y:50,w:30,h:20,c1:'#fdd835',c2:'#f9a825'},{x:60,y:50,w:30,h:20,c1:'#1e88e5',c2:'#1565c0'},
+    {x:38,y:34,w:44,h:16,c1:'#e53935',c2:'#b71c1c'},{x:50,y:18,w:20,h:16,c1:'#e53935',c2:'#b71c1c'},
+    {x:20,y:90,w:40,h:18,c1:'#1e88e5',c2:'#1565c0'},{x:60,y:90,w:40,h:18,c1:'#43a047',c2:'#2e7d32'},
+    {x:110,y:80,w:30,h:18,c1:'#ab47bc',c2:'#7b1fa2'},
+  ];
+  return `<svg viewBox="0 0 200 120" width="180" xmlns="http://www.w3.org/2000/svg">
+    ${blocks.map(b=>`
+      <rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="4" fill="${b.c1}"/>
+      <rect x="${b.x}" y="${b.y}" width="${b.w}" height="6" rx="4" fill="${b.c2}" opacity=".4"/>
+    `).join('')}
+    <!-- grid reference -->
+    <rect x="125" y="20" width="65" height="90" rx="6" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>
+    ${[0,1,2].map(r=>[0,1,2].map(c=>`<circle cx="${133+c*18}" cy="${30+r*18}" r="3" fill="rgba(255,255,255,.5)"/>`).join('')).join('')}
+    <text x="158" y="88" text-anchor="middle" font-size="11" fill="rgba(255,255,255,.8)" font-weight="bold">You build it!</text>
+  </svg>`;
+}
+
+function czPatternPreviewSVG(){
+  const items=[
+    {x:16,shape:'circle',fill:'#4ade80'},{x:52,shape:'star',fill:'#fbbf24'},
+    {x:88,shape:'circle',fill:'#4ade80'},{x:124,shape:'star',fill:'#fbbf24'},
+    {x:160,shape:'question',fill:'#a855f7'}
+  ];
+  function drawShape(s){
+    if(s.shape==='circle') return `<circle cx="18" cy="18" r="13" fill="${s.fill}"/>`;
+    if(s.shape==='star') return `<polygon points="18,5 21,14 30,14 23,20 26,29 18,23 10,29 13,20 6,14 15,14" fill="${s.fill}"/>`;
+    return `<text x="18" y="24" text-anchor="middle" font-size="20" fill="${s.fill}" font-weight="900">?</text>`;
+  }
+  return `<svg viewBox="0 0 200 120" width="180" xmlns="http://www.w3.org/2000/svg">
+    <!-- Row 1 -->
+    ${items.map(i=>`<g transform="translate(${i.x},10)">${drawShape(i)}</g>`).join('')}
+    <!-- Row 2 blue squares + triangles -->
+    <rect x="16" y="48" width="26" height="26" rx="5" fill="#3b82f6"/>
+    <polygon points="61,74 70,48 79,74" fill="#ef4444"/>
+    <rect x="88" y="48" width="26" height="26" rx="5" fill="#3b82f6"/>
+    <polygon points="133,74 142,48 151,74" fill="#ef4444"/>
+    <text x="172" y="68" text-anchor="middle" font-size="22" fill="#a855f7" font-weight="900">?</text>
+    <!-- Row 3 hearts -->
+    <text x="22" y="108" font-size="22">🩷</text>
+    <text x="58" y="108" font-size="22">💜</text>
+    <text x="94" y="108" font-size="22">🩷</text>
+    <text x="130" y="108" font-size="22">💜</text>
+    <text x="166" y="108" font-size="22" opacity=".4">?</text>
+  </svg>`;
+}
+
+function czColourPreviewSVG(){
+  return `<svg viewBox="0 0 200 120" width="180" xmlns="http://www.w3.org/2000/svg">
+    <!-- Crayons left -->
+    <rect x="8" y="20" width="14" height="70" rx="5" fill="#e53935" transform="rotate(-15,15,55)"/>
+    <polygon points="8,90 22,90 15,105" fill="#c62828" transform="rotate(-15,15,55)"/>
+    <rect x="28" y="15" width="14" height="70" rx="5" fill="#ff9800" transform="rotate(-8,35,50)"/>
+    <polygon points="28,85 42,85 35,100" fill="#e65100" transform="rotate(-8,35,50)"/>
+    <rect x="48" y="18" width="14" height="70" rx="5" fill="#fdd835" transform="rotate(2,55,53)"/>
+    <polygon points="48,88 62,88 55,103" fill="#f9a825" transform="rotate(2,55,53)"/>
+    <!-- Dino outline (coloured) -->
+    <g transform="translate(90,10)">
+      <ellipse cx="45" cy="70" rx="30" ry="40" fill="#86efac" stroke="#1b4332" stroke-width="2"/>
+      <ellipse cx="45" cy="30" rx="18" ry="22" fill="#86efac" stroke="#1b4332" stroke-width="2"/>
+      <ellipse cx="60" cy="16" rx="9" ry="6" fill="#86efac" stroke="#1b4332" stroke-width="1.5"/>
+      <circle cx="57" cy="13" r="3" fill="#222"/>
+      <circle cx="58" cy="12" r="1" fill="#fff"/>
+      <path d="M45,40 Q35,55 25,70" stroke="#1b4332" stroke-width="2" fill="none"/>
+      <path d="M45,40 Q55,55 65,70" stroke="#1b4332" stroke-width="2" fill="none"/>
+      <ellipse cx="55" cy="50" rx="5" ry="3" fill="#4ade80" stroke="#1b4332" stroke-width="1"/>
+      <ellipse cx="35" cy="55" rx="5" ry="3" fill="#4ade80" stroke="#1b4332" stroke-width="1"/>
+    </g>
+  </svg>`;
+}
+
+function czStickerPreviewSVG(){
+  return `<svg viewBox="0 0 200 90" width="200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Sky -->
+    <rect x="0" y="0" width="130" height="90" rx="8" fill="#87ceeb"/>
+    <!-- Sun -->
+    <circle cx="25" cy="22" r="12" fill="#fdd835"/>
+    ${[0,60,120,180,240,300].map(a=>`<line x1="25" y1="22" x2="${25+Math.cos(a*Math.PI/180)*18}" y2="${22+Math.sin(a*Math.PI/180)*18}" stroke="#fdd835" stroke-width="2.5"/>`).join('')}
+    <!-- Clouds -->
+    <ellipse cx="70" cy="18" rx="16" ry="10" fill="#fff" opacity=".9"/>
+    <ellipse cx="82" cy="15" rx="12" ry="9" fill="#fff" opacity=".9"/>
+    <!-- Ground -->
+    <rect x="0" y="65" width="130" height="25" rx="0 0 8 8" fill="#4ade80"/>
+    <!-- Tree -->
+    <rect x="95" y="45" width="8" height="25" fill="#8B4513"/>
+    <circle cx="99" cy="38" r="18" fill="#16a34a"/>
+    <!-- Sticker tray -->
+    <rect x="135" y="0" width="65" height="90" rx="8" fill="rgba(255,255,255,.9)"/>
+    <text x="168" y="22" text-anchor="middle" font-size="20">☀️</text>
+    <text x="168" y="50" text-anchor="middle" font-size="20">🦋</text>
+    <text x="168" y="78" text-anchor="middle" font-size="20">🐕</text>
+  </svg>`;
+}
+
+// ── Game launcher ──
+function czShowGame(game){
+  czGame = game;
+  playClick();
+  if(game==='puzzle') czRenderPuzzle();
+  else if(game==='blocks') czRenderBlocks();
+  else if(game==='pattern') czRenderPattern();
+  else if(game==='colour') czRenderColour();
+  else if(game==='stickers') czRenderStickers();
+}
+
+function czBack(){
+  czGame = null;
+  renderCreativityZone();
+}
+
+function czGameShell(title, content, extraBtn=''){
+  return `
+  <div class="game-panel" style="padding-bottom:12px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+      <button onclick="czBack()" style="border:none;background:var(--inputbg);border-radius:50px;padding:6px 14px;
+        font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:700;cursor:pointer;color:var(--text2);">← Back</button>
+      <div class="game-title" style="margin:0;">${title}</div>
+      ${extraBtn}
+    </div>
+    ${content}
+  </div>`;
+}
+
+// ══════════════════════════════════════
+//  1. SIMPLE PUZZLES
+// ══════════════════════════════════════
+const CZ_PUZZLES = [
+  {
+    name:'Puppy Park', emoji:'🐶',
+    grid:3, // 3x3
+    pieces:['🏠','☁️','🌿','🌸','🐶','🌼','🟩','🎾','⭐'],
+    colors:['#86efac','#87ceeb','#74c69d','#fda4af','#c9833a','#fde68a','#4ade80','#fdba74','#fef08a']
+  },
+  {
+    name:'Rainbow Sky', emoji:'🌈',
+    grid:3,
+    pieces:['🌤️','🌟','☁️','🌈','⭐','🌙','🌿','🦋','🌸'],
+    colors:['#bfdbfe','#fde68a','#ddd6fe','#fb7185','#fde68a','#c4b5fd','#86efac','#f9a8d4','#fda4af']
+  }
+];
+let czPuzzleIdx=0, czPuzzleSelected=null, czPuzzleBoard=[], czPuzzleTray=[];
+
+function czRenderPuzzle(){
+  const p=CZ_PUZZLES[czPuzzleIdx%CZ_PUZZLES.length];
+  const n=p.grid*p.grid;
+  // Shuffle tray
+  czPuzzleTray=[...Array(n).keys()].sort(()=>Math.random()-.5);
+  czPuzzleBoard=Array(n).fill(null);
+  czPuzzleSelected=null;
+  const area=document.getElementById('area');
+  area.innerHTML=czGameShell(`🧩 ${p.name}`, czPuzzleHTML(p));
+  addCzPuzzleListeners(p);
+}
+
+function czPuzzleHTML(p){
+  const n=p.grid*p.grid;
+  let boardCells='';
+  for(let i=0;i<n;i++){
+    boardCells+=`<div class="pz-piece" id="czb_${i}" data-idx="${i}"
+      style="background:${p.colors[i]};font-size:2rem;width:82px;height:82px;">
+      <span style="opacity:.2;font-size:1.4rem;">${i+1}</span>
+    </div>`;
+  }
+  let trayCells='';
+  for(let i=0;i<czPuzzleTray.length;i++){
+    const pi=czPuzzleTray[i];
+    trayCells+=`<div class="pz-piece" id="czt_${i}" data-tray="${i}" data-piece="${pi}"
+      style="background:${p.colors[pi]};font-size:2rem;width:82px;height:82px;">${p.pieces[pi]}</div>`;
+  }
+  return `
+    <div style="text-align:center;font-size:.82rem;color:var(--text3);margin-bottom:8px;">Tap a piece from below, then tap where it goes!</div>
+    <div class="pz-board" style="grid-template-columns:repeat(${p.grid},84px);">${boardCells}</div>
+    <div style="font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:700;color:var(--purple);text-align:center;margin:8px 0;">🧩 Pieces to place:</div>
+    <div class="pz-tray">${trayCells}</div>
+    <div id="czPuzzleMsg" style="text-align:center;min-height:32px;"></div>`;
+}
+
+function addCzPuzzleListeners(p){
+  const n=p.grid*p.grid;
+  for(let i=0;i<n;i++){
+    const el=document.getElementById('czb_'+i);
+    if(el) el.addEventListener('click',()=>czBoardClick(i,p));
+  }
+  for(let i=0;i<czPuzzleTray.length;i++){
+    const el=document.getElementById('czt_'+i);
+    if(el) el.addEventListener('click',()=>czTrayClick(i,p));
+  }
+}
+
+function czTrayClick(ti,p){
+  // Deselect previous
+  document.querySelectorAll('.pz-piece').forEach(el=>el.classList.remove('selected'));
+  czPuzzleSelected={type:'tray',idx:ti,piece:czPuzzleTray[ti]};
+  const el=document.getElementById('czt_'+ti);
+  if(el) el.classList.add('selected');
+}
+
+function czBoardClick(bi,p){
+  if(!czPuzzleSelected||czPuzzleSelected.type!=='tray') return;
+  const pi=czPuzzleSelected.piece;
+  const boardEl=document.getElementById('czb_'+bi);
+  const trayEl=document.getElementById('czt_'+czPuzzleSelected.idx);
+  if(pi===bi){
+    // Correct!
+    boardEl.innerHTML=p.pieces[pi];
+    boardEl.classList.add('correct');
+    boardEl.style.background=p.colors[pi];
+    if(trayEl){trayEl.style.opacity='.3';trayEl.style.pointerEvents='none';trayEl.classList.remove('selected');}
+    czPuzzleTray[czPuzzleSelected.idx]=null;
+    czPuzzleBoard[bi]=pi;
+    czPuzzleSelected=null;
+    playCorrect(); burst();
+    const msg=document.getElementById('czPuzzleMsg');
+    if(msg)msg.innerHTML='<span style="color:#52b788;font-weight:700">✅ Great fit!</span>';
+    // Check complete
+    if(czPuzzleBoard.every((v,i)=>v===i)){
+      setTimeout(()=>{
+        const msg=document.getElementById('czPuzzleMsg');
+        if(msg)msg.innerHTML=`<div style="font-family:'Baloo 2',cursive;font-size:1rem;color:#a78bfa;font-weight:800;">🎉 Puzzle complete! You're brilliant!</div>
+        <button onclick="czPuzzleIdx++;czRenderPuzzle()" class="game-next-btn" style="margin-top:8px;">🧩 New Puzzle!</button>`;
+      },400);
+    }
+  } else {
+    // Wrong spot
+    boardEl.style.animation='shake .3s';
+    setTimeout(()=>boardEl.style.animation='',400);
+    const msg=document.getElementById('czPuzzleMsg');
+    if(msg)msg.innerHTML='<span style="color:#ff6b9d;font-weight:700">Not quite — try another spot! 🤔</span>';
+  }
+}
+
+// ══════════════════════════════════════
+//  2. BLOCK BUILDING
+// ══════════════════════════════════════
+let czBlkColor='#e53935', czBlkRows=8, czBlkCols=8, czBlkGrid=[];
+
+const CZ_BLK_COLORS=[
+  {c:'#e53935',name:'Red'},{c:'#ff9800',name:'Orange'},{c:'#fdd835',name:'Yellow'},
+  {c:'#43a047',name:'Green'},{c:'#1e88e5',name:'Blue'},{c:'#8e24aa',name:'Purple'},
+  {c:'#f06292',name:'Pink'},{c:'#795548',name:'Brown'},{c:'#78909c',name:'Grey'},
+  {c:'#ffffff',name:'White',border:true}
+];
+
+const CZ_BLK_MODELS=[
+  {name:'House 🏠', hint:'Build a house with a red roof!',
+   grid:`........
+........
+...rr...
+..rrrr..
+.rrrrrr.
+.yyyyyyy
+.yyyyyy.
+........`.split('\n').map(r=>r.split(''))},
+  {name:'Rocket 🚀', hint:'Build a rocket to the moon!',
+   grid:`...bb...
+..bbbb..
+.bbbbbb.
+.rrbbbb.
+.rryyyy.
+..yyyy..
+..yyyy..
+...yy...`.split('\n').map(r=>r.split(''))},
+];
+let czBlkModelIdx=0;
+
+function czRenderBlocks(){
+  czBlkGrid=Array(czBlkRows).fill(null).map(()=>Array(czBlkCols).fill(null));
+  czBlkColor=CZ_BLK_COLORS[0].c;
+  const m=CZ_BLK_MODELS[czBlkModelIdx%CZ_BLK_MODELS.length];
+  const area=document.getElementById('area');
+  area.innerHTML=czGameShell('🏗️ Block Building', czBlkHTML(m));
+  czBlkListeners();
+}
+
+function czBlkHTML(m){
+  const palette=CZ_BLK_COLORS.map((c,i)=>`
+    <div class="blk-color ${i===0?'active':''}" id="blkc_${i}" title="${c.name}"
+      style="background:${c.c};${c.border?'border:2px solid #ccc;':''}"
+      onclick="czBlkPickColor('${c.c}','blkc_${i}')"></div>`).join('');
+  const eraser=`<div class="blk-color eraser" title="Eraser" onclick="czBlkPickColor('null','eraser')"
+    style="font-size:1.1rem;display:flex;align-items:center;justify-content:center;">🧹</div>`;
+  let gridHTML='';
+  for(let r=0;r<czBlkRows;r++)
+    for(let c=0;c<czBlkCols;c++)
+      gridHTML+=`<div class="blk-cell" id="blk_${r}_${c}" data-r="${r}" data-c="${c}"></div>`;
+
+  // Build model preview
+  const colorMap={'r':'#e53935','b':'#1e88e5','y':'#fdd835','g':'#43a047','p':'#8e24aa','.':`transparent`};
+  let modelHTML='';
+  if(m&&m.grid){
+    modelHTML=`<div style="margin-bottom:12px;text-align:center;">
+      <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--text2);margin-bottom:6px;">📋 ${m.name} — ${m.hint}</div>
+      <div style="display:inline-grid;grid-template-columns:repeat(8,16px);gap:1px;background:#eee;padding:4px;border-radius:8px;">
+        ${m.grid.flat().map(c=>`<div style="width:16px;height:16px;border-radius:2px;background:${colorMap[c]||'transparent'};border:1px solid #ddd;"></div>`).join('')}
+      </div>
+    </div>`;
+  }
+  return `${modelHTML}
+    <div class="blk-palette">${palette}${eraser}</div>
+    <div style="overflow:auto;-webkit-overflow-scrolling:touch;">
+      <div class="blk-grid">${gridHTML}</div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">
+      <button onclick="czBlkClear()" style="border:none;padding:8px 18px;border-radius:50px;background:#fee2e2;color:#e53935;font-family:'Baloo 2',cursive;font-weight:700;font-size:.78rem;cursor:pointer;">🧹 Clear</button>
+      <button onclick="czBlkModelIdx++;czRenderBlocks()" style="border:none;padding:8px 18px;border-radius:50px;background:linear-gradient(135deg,#1b4332,#52b788);color:#fff;font-family:'Baloo 2',cursive;font-weight:700;font-size:.78rem;cursor:pointer;">🏗️ New Model</button>
+    </div>`;
+}
+
+function czBlkPickColor(c, btnId){
+  czBlkColor=c;
+  document.querySelectorAll('.blk-color').forEach(el=>el.classList.remove('active'));
+  const el=document.getElementById(btnId);
+  if(el)el.classList.add('active');
+}
+
+let czBlkPainting=false;
+function czBlkListeners(){
+  for(let r=0;r<czBlkRows;r++){
+    for(let c=0;c<czBlkCols;c++){
+      const el=document.getElementById(`blk_${r}_${c}`);
+      if(!el)continue;
+      const paint=()=>{
+        if(czBlkColor==='null'){el.style.background='';el.classList.remove('filled');czBlkGrid[r][c]=null;}
+        else{el.style.background=czBlkColor;el.classList.add('filled');czBlkGrid[r][c]=czBlkColor;
+          el.style.boxShadow=`inset 0 -4px 0 rgba(0,0,0,.2),inset 0 4px 0 rgba(255,255,255,.3)`;
+          el.style.borderRadius='6px';}
+      };
+      el.addEventListener('mousedown',()=>{czBlkPainting=true;paint();});
+      el.addEventListener('mouseover',()=>{if(czBlkPainting)paint();});
+      el.addEventListener('touchstart',e=>{czBlkPainting=true;paint();e.preventDefault();},{passive:false});
+      el.addEventListener('touchmove',e=>{
+        e.preventDefault();
+        const t=e.touches[0];
+        const over=document.elementFromPoint(t.clientX,t.clientY);
+        if(over&&over.classList.contains('blk-cell')) over.click();
+      },{passive:false});
+    }
+  }
+  document.addEventListener('mouseup',()=>czBlkPainting=false);
+}
+
+function czBlkClear(){
+  czBlkGrid=Array(czBlkRows).fill(null).map(()=>Array(czBlkCols).fill(null));
+  document.querySelectorAll('.blk-cell').forEach(el=>{
+    el.style.background='';el.classList.remove('filled');el.style.boxShadow='';
+  });
+}
+
+// ══════════════════════════════════════
+//  3. PATTERN MATCHING
+// ══════════════════════════════════════
+const CZ_PATTERNS = [
+  {seq:['🟢','⭐','🟢','⭐','🟢'], choices:['🟢','⭐','🔺','🔷'], ans:'⭐',
+   bg:['#4ade80','#fbbf24','#4ade80','#fbbf24','#4ade80'],label:'Green • Star Pattern'},
+  {seq:['🟦','🔺','🟦','🔺','🟦'], choices:['🔺','🟦','⭐','🟢'], ans:'🔺',
+   bg:['#60a5fa','#ef4444','#60a5fa','#ef4444','#60a5fa'],label:'Blue • Red Pattern'},
+  {seq:['🩷','💜','🩷','💜','🩷'], choices:['🩷','💜','🩷💜','⭐'], ans:'💜',
+   bg:['#f9a8d4','#c084fc','#f9a8d4','#c084fc','#f9a8d4'],label:'Hearts Pattern'},
+  {seq:['🔵','🔴','🟢','🔵','🔴'], choices:['🔵','🔴','🟢','⭐'], ans:'🟢',
+   bg:['#60a5fa','#f87171','#4ade80','#60a5fa','#f87171'],label:'Circles Pattern'},
+  {seq:['⭐','⭐','🌙','⭐','⭐'], choices:['🌙','⭐','☀️','🔵'], ans:'🌙',
+   bg:['#fbbf24','#fbbf24','#c084fc','#fbbf24','#fbbf24'],label:'Star & Moon Pattern'},
+  {seq:['🐶','🐱','🐶','🐱','🐶'], choices:['🐱','🐶','🐭','🐰'], ans:'🐱',
+   bg:['#fed7aa','#fce7f3','#fed7aa','#fce7f3','#fed7aa'],label:'Animal Pattern'},
+];
+let czPmIdx=0, czPmAnswered=false;
+
+function czRenderPattern(){
+  czPmAnswered=false;
+  const p=CZ_PATTERNS[czPmIdx%CZ_PATTERNS.length];
+  const area=document.getElementById('area');
+  area.innerHTML=czGameShell('🔷 Pattern Matching', czPatternHTML(p));
+}
+
+function czPatternHTML(p){
+  const seqHTML=p.seq.map((s,i)=>`
+    <div class="pm-shape" style="background:${p.bg[i]};box-shadow:0 4px 12px ${p.bg[i]}88;">
+      <span style="font-size:1.8rem;">${s}</span>
+    </div>`).join('');
+  const qHTML=`<div class="pm-blank"><span style="font-size:1.8rem;">?</span></div>`;
+  const choicesHTML=`<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px;">
+    ${p.choices.map((c,i)=>`<div class="pm-choice" id="pmc_${i}"
+      style="background:${p.bg[i%p.bg.length]}44;font-size:1.8rem;"
+      onclick="czPmPick(${i},'${c}')">${c}</div>`).join('')}
+  </div>`;
+  return `
+    <div style="font-family:'Baloo 2',cursive;font-size:.88rem;font-weight:700;color:var(--purple);text-align:center;margin-bottom:12px;">What comes next? 🤔</div>
+    <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-bottom:8px;">${p.label}</div>
+    <div style="background:var(--inputbg);border-radius:16px;padding:14px;margin-bottom:4px;">
+      <div class="pm-row">${seqHTML}${qHTML}</div>
+    </div>
+    ${choicesHTML}
+    <div id="czPmMsg" style="text-align:center;min-height:40px;margin-top:10px;"></div>`;
+}
+
+function czPmPick(idx, choice){
+  if(czPmAnswered)return;
+  const p=CZ_PATTERNS[czPmIdx%CZ_PATTERNS.length];
+  const el=document.getElementById('pmc_'+idx);
+  if(choice===p.ans){
+    czPmAnswered=true;
+    if(el)el.classList.add('chosen-correct');
+    playCorrect(); burst();
+    const msg=document.getElementById('czPmMsg');
+    if(msg) msg.innerHTML=`<div style="font-family:'Baloo 2',cursive;font-weight:800;color:#52b788;font-size:.95rem;">🎉 Correct! You spotted the pattern!</div>
+      <button onclick="czPmIdx++;czRenderPattern()" class="game-next-btn" style="margin-top:8px;">🔷 Next Pattern!</button>`;
+  } else {
+    if(el){el.classList.add('chosen-wrong');setTimeout(()=>el.classList.remove('chosen-wrong'),400);}
+    const msg=document.getElementById('czPmMsg');
+    if(msg) msg.innerHTML='<span style="color:#ff6b9d;font-weight:700">Look at the pattern again! 🤔</span>';
+  }
+}
+
+// ══════════════════════════════════════
+//  4. COLOURING PAGES
+// ══════════════════════════════════════
+const CZ_COLOURS=[
+  '#e53935','#ff9800','#fdd835','#43a047','#1e88e5','#8e24aa',
+  '#f06292','#795548','#000000','#fff9c4','#b3e5fc','#c8e6c9',
+  '#ffccbc','#d1c4e9','#ffffff'
+];
+const CZ_COLOUR_PAGES=[
+  {name:'Friendly Dino', draw: czDrawDino},
+  {name:'Sunshine House', draw: czDrawHouse},
+  {name:'Ocean Fish', draw: czDrawFish},
+];
+let czColourIdx=0, czColourActive='#e53935', czColourBrush=16, czColourPainting=false;
+let czColourCanvas=null, czColourCtx=null;
+
+function czRenderColour(){
+  czColourActive='#e53935'; czColourBrush=16; czColourPainting=false;
+  const page=CZ_COLOUR_PAGES[czColourIdx%CZ_COLOUR_PAGES.length];
+  const area=document.getElementById('area');
+  area.innerHTML=czGameShell('🖌️ '+page.name, czColourHTML(page));
+  czColourCanvas=document.getElementById('czCanvas');
+  czColourCtx=czColourCanvas.getContext('2d');
+  page.draw(czColourCtx, czColourCanvas.width, czColourCanvas.height);
+  czColourListeners();
+}
+
+function czColourHTML(page){
+  const sw=CZ_COLOURS.map((c,i)=>`<div class="col-swatch ${i===0?'active':''}" id="csw_${i}"
+    style="background:${c};${c==='#ffffff'?'border:2px solid #ccc;':''}"
+    onclick="czColourPick('${c}','csw_${i}')"></div>`).join('');
+  const eraserSw=`<div class="col-swatch eraser-sw active" id="csw_er"
+    style="font-size:1rem;display:flex;align-items:center;justify-content:center;"
+    onclick="czColourPick('eraser','csw_er')">🧹</div>`;
+  return `
+    <div class="col-palette">${sw}${eraserSw}</div>
+    <div class="col-brushrow">
+      <button class="col-brush active" onclick="czSetBrush(10,this)">Fine</button>
+      <button class="col-brush" onclick="czSetBrush(18,this)">Medium</button>
+      <button class="col-brush" onclick="czSetBrush(28,this)">Wide</button>
+    </div>
+    <canvas id="czCanvas" width="300" height="240" style="max-width:100%;"></canvas>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">
+      <button onclick="czColourClear()" style="border:none;padding:8px 18px;border-radius:50px;background:#fee2e2;color:#e53935;font-family:'Baloo 2',cursive;font-weight:700;font-size:.78rem;cursor:pointer;">🧹 Clear</button>
+      <button onclick="czColourIdx++;czRenderColour()" style="border:none;padding:8px 18px;border-radius:50px;background:linear-gradient(135deg,#ff6b9d,#a78bfa);color:#fff;font-family:'Baloo 2',cursive;font-weight:700;font-size:.78rem;cursor:pointer;">🎨 New Page</button>
+    </div>`;
+}
+
+function czColourPick(c, btnId){
+  czColourActive=c;
+  document.querySelectorAll('.col-swatch').forEach(el=>el.classList.remove('active'));
+  const el=document.getElementById(btnId);
+  if(el)el.classList.add('active');
+}
+function czSetBrush(s, btn){
+  czColourBrush=s;
+  document.querySelectorAll('.col-brush').forEach(el=>el.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+}
+function czColourClear(){
+  const page=CZ_COLOUR_PAGES[czColourIdx%CZ_COLOUR_PAGES.length];
+  if(czColourCtx) page.draw(czColourCtx, czColourCanvas.width, czColourCanvas.height);
+}
+
+function czColourListeners(){
+  const canvas=czColourCanvas;
+  if(!canvas)return;
+  const getPos=(e)=>{
+    const r=canvas.getBoundingClientRect();
+    const scaleX=canvas.width/r.width, scaleY=canvas.height/r.height;
+    const src=e.touches?e.touches[0]:e;
+    return {x:(src.clientX-r.left)*scaleX, y:(src.clientY-r.top)*scaleY};
+  };
+  const drawAt=(x,y)=>{
+    const ctx=czColourCtx;
+    if(czColourActive==='eraser'){ctx.globalCompositeOperation='destination-out';}
+    else{ctx.globalCompositeOperation='source-over';ctx.fillStyle=czColourActive;}
+    ctx.beginPath();ctx.arc(x,y,czColourBrush,0,Math.PI*2);
+    if(czColourActive==='eraser') ctx.fill();
+    else{ctx.fill();}
+    ctx.globalCompositeOperation='source-over';
+  };
+  canvas.addEventListener('mousedown',e=>{czColourPainting=true;const p=getPos(e);drawAt(p.x,p.y);});
+  canvas.addEventListener('mousemove',e=>{if(czColourPainting){const p=getPos(e);drawAt(p.x,p.y);}});
+  canvas.addEventListener('mouseup',()=>czColourPainting=false);
+  canvas.addEventListener('touchstart',e=>{czColourPainting=true;const p=getPos(e);drawAt(p.x,p.y);e.preventDefault();},{passive:false});
+  canvas.addEventListener('touchmove',e=>{if(czColourPainting){const p=getPos(e);drawAt(p.x,p.y);}e.preventDefault();},{passive:false});
+  canvas.addEventListener('touchend',()=>czColourPainting=false);
+}
+
+// Drawing functions
+function czDrawDino(ctx, w, h){
+  ctx.clearRect(0,0,w,h);
+  // Background
+  ctx.fillStyle='#f0faf4'; ctx.fillRect(0,0,w,h);
+  // Ground
+  ctx.fillStyle='#d4ede0'; ctx.fillRect(0,h*0.8,w,h*0.2);
+  // Sun
+  ctx.beginPath(); ctx.arc(w*0.85,h*0.12,22,0,Math.PI*2);
+  ctx.strokeStyle='#333'; ctx.lineWidth=2; ctx.stroke();
+  // Dino body
+  ctx.beginPath();
+  ctx.ellipse(w*0.45,h*0.55,60,70,0,0,Math.PI*2);
+  ctx.strokeStyle='#333'; ctx.lineWidth=2.5; ctx.stroke();
+  // Dino neck
+  ctx.beginPath();
+  ctx.moveTo(w*0.45,h*0.3); ctx.bezierCurveTo(w*0.5,h*0.15,w*0.6,h*0.12,w*0.65,h*0.22);
+  ctx.lineWidth=2.5; ctx.stroke();
+  // Dino head
+  ctx.beginPath(); ctx.ellipse(w*0.67,h*0.27,18,13,0.3,0,Math.PI*2); ctx.stroke();
+  // Eye
+  ctx.beginPath(); ctx.arc(w*0.72,h*0.23,4,0,Math.PI*2); ctx.stroke();
+  // Legs
+  ctx.beginPath(); ctx.moveTo(w*0.35,h*0.72); ctx.lineTo(w*0.3,h*0.82); ctx.lineWidth=3; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(w*0.55,h*0.72); ctx.lineTo(w*0.6,h*0.82); ctx.lineWidth=3; ctx.stroke();
+  // Arms
+  ctx.beginPath(); ctx.moveTo(w*0.34,h*0.48); ctx.lineTo(w*0.22,h*0.55); ctx.lineWidth=2.5; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(w*0.56,h*0.48); ctx.lineTo(w*0.62,h*0.55); ctx.lineWidth=2.5; ctx.stroke();
+  // Spots
+  ctx.beginPath(); ctx.arc(w*0.42,h*0.52,6,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(w*0.5,h*0.45,5,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(w*0.38,h*0.6,4,0,Math.PI*2); ctx.stroke();
+  // Tail
+  ctx.beginPath(); ctx.moveTo(w*0.2,h*0.65); ctx.bezierCurveTo(w*0.05,h*0.7,w*0.02,h*0.8,w*0.1,h*0.82);
+  ctx.lineWidth=2; ctx.stroke();
+}
+
+function czDrawHouse(ctx, w, h){
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle='#e0f4ff'; ctx.fillRect(0,0,w,h);
+  // Ground
+  ctx.fillStyle='#c8e6c9'; ctx.fillRect(0,h*0.72,w,h*0.28);
+  // Sun
+  ctx.beginPath(); ctx.arc(w*0.82,h*0.18,20,0,Math.PI*2);
+  ctx.strokeStyle='#333'; ctx.lineWidth=2; ctx.stroke();
+  // Clouds
+  ctx.beginPath(); ctx.arc(w*0.25,h*0.15,15,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(w*0.35,h*0.12,12,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(w*0.15,h*0.17,11,0,Math.PI*2); ctx.stroke();
+  // House body
+  const hx=w*0.2, hy=h*0.45, hw=w*0.6, hh=h*0.28;
+  ctx.strokeRect(hx,hy,hw,hh); ctx.lineWidth=2.5;
+  // Roof
+  ctx.beginPath(); ctx.moveTo(hx-10,hy); ctx.lineTo(hx+hw/2,hy-h*0.18); ctx.lineTo(hx+hw+10,hy);
+  ctx.closePath(); ctx.stroke();
+  // Door
+  ctx.beginPath(); ctx.rect(hx+hw/2-15,hy+hh/2,30,hh/2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(hx+hw/2+10,hy+hh*0.78,3,0,Math.PI*2); ctx.fill();
+  // Windows
+  ctx.strokeRect(hx+20,hy+15,30,25);
+  ctx.strokeRect(hx+hw-50,hy+15,30,25);
+  // Cross in windows
+  ctx.beginPath(); ctx.moveTo(hx+35,hy+15); ctx.lineTo(hx+35,hy+40);
+  ctx.moveTo(hx+20,hy+27); ctx.lineTo(hx+50,hy+27); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(hx+hw-35,hy+15); ctx.lineTo(hx+hw-35,hy+40);
+  ctx.moveTo(hx+hw-50,hy+27); ctx.lineTo(hx+hw-20,hy+27); ctx.stroke();
+  // Chimney
+  ctx.strokeRect(hx+hw*0.6,hy-h*0.18,18,h*0.1);
+  // Flowers
+  for(let i=0;i<4;i++){
+    const fx=hx+10+i*40, fy=hy+hh;
+    ctx.beginPath(); ctx.arc(fx,fy,10,0,Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(fx,fy); ctx.lineTo(fx,fy+18); ctx.stroke();
+  }
+}
+
+function czDrawFish(ctx, w, h){
+  ctx.clearRect(0,0,w,h);
+  // Ocean bg
+  const grad=ctx.createLinearGradient(0,0,0,h);
+  grad.addColorStop(0,'#87ceeb'); grad.addColorStop(0.3,'#0077b6');
+  grad.addColorStop(1,'#03045e');
+  ctx.fillStyle=grad; ctx.fillRect(0,0,w,h);
+  // Sand
+  ctx.strokeStyle='#333'; ctx.lineWidth=2;
+  ctx.fillStyle='#d4a853'; ctx.fillRect(0,h*0.85,w,h*0.15);
+  // Big fish body
+  ctx.beginPath();
+  ctx.ellipse(w*0.5,h*0.42,70,40,0,0,Math.PI*2);
+  ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+  // Tail
+  ctx.beginPath(); ctx.moveTo(w*0.18,h*0.42);
+  ctx.lineTo(w*0.05,h*0.28); ctx.lineTo(w*0.05,h*0.56);
+  ctx.closePath(); ctx.stroke();
+  // Fins
+  ctx.beginPath(); ctx.moveTo(w*0.45,h*0.22);
+  ctx.lineTo(w*0.38,h*0.1); ctx.lineTo(w*0.58,h*0.22); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(w*0.45,h*0.62);
+  ctx.lineTo(w*0.38,h*0.76); ctx.lineTo(w*0.58,h*0.62); ctx.stroke();
+  // Eye
+  ctx.beginPath(); ctx.arc(w*0.73,h*0.38,8,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(w*0.73,h*0.38,3,0,Math.PI*2); ctx.fillStyle='#333'; ctx.fill();
+  ctx.fillStyle='#fff';
+  ctx.beginPath(); ctx.arc(w*0.75,h*0.36,2,0,Math.PI*2); ctx.fill();
+  // Scales lines
+  for(let i=0;i<4;i++){
+    ctx.beginPath(); ctx.arc(w*(0.35+i*0.08),h*0.42,12,Math.PI*0.1,Math.PI*0.9);
+    ctx.strokeStyle='rgba(255,255,255,.5)'; ctx.lineWidth=1.5; ctx.stroke();
+  }
+  ctx.strokeStyle='#333'; ctx.lineWidth=2;
+  // Small fish
+  ctx.beginPath(); ctx.ellipse(w*0.2,h*0.7,20,12,0.3,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(w*0.02,h*0.7); ctx.lineTo(w*0.06,h*0.63); ctx.lineTo(w*0.06,h*0.77); ctx.closePath(); ctx.stroke();
+  // Bubbles
+  [h*0.25,h*0.4,h*0.15].forEach((by,i)=>{
+    ctx.beginPath(); ctx.arc(w*(0.78+i*0.03),by,4+i*2,0,Math.PI*2);
+    ctx.strokeStyle='rgba(255,255,255,.6)'; ctx.lineWidth=1.5; ctx.stroke();
+  });
+  ctx.strokeStyle='#333'; ctx.lineWidth=2;
+  // Coral
+  ctx.beginPath(); ctx.moveTo(w*0.12,h*0.85); ctx.lineTo(w*0.12,h*0.7);
+  ctx.moveTo(w*0.12,h*0.78); ctx.lineTo(w*0.06,h*0.72);
+  ctx.moveTo(w*0.12,h*0.75); ctx.lineTo(w*0.18,h*0.69); ctx.stroke();
+}
+
+// ══════════════════════════════════════
+//  5. STICKER SCENES
+// ══════════════════════════════════════
+const CZ_STICKERS=[
+  {e:'☀️',label:'Sun'},{e:'🐦',label:'Bird'},{e:'🦋',label:'Butterfly'},
+  {e:'👦',label:'Boy'},{e:'🌸',label:'Flower'},{e:'🌳',label:'Tree'},
+  {e:'🐕',label:'Dog'},{e:'🌈',label:'Rainbow'},{e:'⭐',label:'Star'},
+  {e:'🏠',label:'House'},{e:'🐱',label:'Cat'},{e:'🌻',label:'Sunflower'},
+  {e:'🦆',label:'Duck'},{e:'🍄',label:'Mushroom'},{e:'🧸',label:'Teddy'},
+  {e:'🚂',label:'Train'},
+];
+let czStickerDragging=null, czStickerDragOffset={x:0,y:0};
+
+function czRenderStickers(){
+  const area=document.getElementById('area');
+  area.innerHTML=czGameShell('⭐ Sticker Scenes', czStickerHTML());
+  czStickerListeners();
+}
+
+function czStickerHTML(){
+  const sceneBgs=[
+    {name:'Park',sky:'#87ceeb',ground:'#4ade80',features:`
+      <rect x="0" y="65%" width="100%" height="35%" fill="#4ade80"/>
+      <circle cx="72%" cy="38%" r="15%" fill="#16a34a"/>
+      <rect x="70%" y="52%" width="4%" height="16%" fill="#8B4513"/>
+      <rect x="20%" y="75%" width="22%" height="6%" rx="4" fill="#a67c52"/>
+      <ellipse cx="31%" cy="78%" rx="4%" ry="8%" fill="#a67c52" transform="rotate(-90 31% 78%)"/>
+    `},
+  ];
+  const bg=sceneBgs[0];
+  const trayBtns=CZ_STICKERS.map((s,i)=>`<div class="stk-btn" onclick="czAddSticker('${s.e}')" title="${s.label}">${s.e}</div>`).join('');
+  return `
+    <div style="position:relative;border-radius:16px;overflow:hidden;background:${bg.sky};
+      box-shadow:0 6px 20px rgba(0,0,0,.15);margin-bottom:12px;" id="stickerScene">
+      <svg viewBox="0 0 400 220" width="100%" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+        <defs><linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#87ceeb"/><stop offset="100%" stop-color="#b3e0f2"/>
+        </linearGradient></defs>
+        <rect width="400" height="220" fill="url(#skyGrad)"/>
+        <!-- Clouds -->
+        <ellipse cx="80" cy="45" rx="40" ry="22" fill="rgba(255,255,255,.9)"/>
+        <ellipse cx="105" cy="38" rx="30" ry="18" fill="rgba(255,255,255,.95)"/>
+        <ellipse cx="280" cy="35" rx="35" ry="18" fill="rgba(255,255,255,.85)"/>
+        <!-- Ground -->
+        <rect x="0" y="148" width="400" height="72" fill="#4ade80"/>
+        <rect x="0" y="148" width="400" height="12" fill="#22c55e"/>
+        <!-- Path -->
+        <ellipse cx="200" cy="195" rx="40" ry="12" fill="#a8a46a" opacity=".5"/>
+        <rect x="185" y="148" width="30" height="60" fill="#c8b06a" opacity=".6" rx="4"/>
+        <!-- Trees -->
+        <rect x="315" y="108" width="10" height="45" fill="#7c3a1a"/>
+        <circle cx="320" cy="95" r="28" fill="#16a34a"/>
+        <circle cx="308" cy="100" r="20" fill="#15803d"/>
+        <!-- Bench -->
+        <rect x="55" y="155" width="55" height="7" rx="3" fill="#a67c52"/>
+        <rect x="60" y="162" width="7" height="14" rx="2" fill="#8B5E3C"/>
+        <rect x="97" y="162" width="7" height="14" rx="2" fill="#8B5E3C"/>
+        <!-- Pond -->
+        <ellipse cx="200" cy="185" rx="35" ry="14" fill="#60a5fa" opacity=".7"/>
+        <ellipse cx="200" cy="185" rx="35" ry="14" fill="none" stroke="#3b82f6" stroke-width="1.5" opacity=".5"/>
+        <!-- Flowers -->
+        ${[60,90,120,340,360].map(x=>`<circle cx="${x}" cy="150" r="5" fill="#f472b6"/>
+          <circle cx="${x}" cy="145" r="3.5" fill="#fbbf24"/>`).join('')}
+      </svg>
+      <!-- Sticker drop zone -->
+      <div id="stickerDropZone" style="position:absolute;inset:0;"></div>
+    </div>
+    <div style="font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:700;color:var(--text2);margin-bottom:6px;text-align:center;">
+      👇 Tap a sticker to add it to the scene!
+    </div>
+    <div class="stk-tray">${trayBtns}</div>
+    <div style="text-align:center;margin-top:8px;">
+      <button onclick="document.getElementById('stickerDropZone').innerHTML=''" 
+        style="border:none;padding:8px 18px;border-radius:50px;background:#fee2e2;color:#e53935;font-family:'Baloo 2',cursive;font-weight:700;font-size:.78rem;cursor:pointer;">🧹 Clear Stickers</button>
+    </div>`;
+}
+
+function czAddSticker(emoji){
+  const zone=document.getElementById('stickerDropZone');
+  if(!zone)return;
+  const scene=document.getElementById('stickerScene');
+  const r=scene.getBoundingClientRect();
+  // Place near center with slight random offset
+  const x=35+Math.random()*55; // % of width
+  const y=30+Math.random()*45; // % of height
+  const stk=document.createElement('div');
+  stk.className='stk-item';
+  stk.textContent=emoji;
+  stk.style.left=x+'%';
+  stk.style.top=y+'%';
+  stk.style.fontSize='2.6rem';
+  stk.style.lineHeight='1';
+  stk.style.cursor='grab';
+  stk.style.position='absolute';
+  stk.style.userSelect='none';
+  stk.style.filter='drop-shadow(2px 4px 8px rgba(0,0,0,.4))';
+  // Make draggable
+  let isDragging=false, startX=0, startY=0, startLeft=0, startTop=0;
+  const dragStart=(e)=>{
+    isDragging=true; stk.style.cursor='grabbing'; stk.style.zIndex=99; stk.style.transform='scale(1.2)';
+    const src=e.touches?e.touches[0]:e;
+    const pr=zone.getBoundingClientRect();
+    startX=src.clientX; startY=src.clientY;
+    startLeft=parseFloat(stk.style.left); startTop=parseFloat(stk.style.top);
+    e.preventDefault();
+  };
+  const dragMove=(e)=>{
+    if(!isDragging)return;
+    const src=e.touches?e.touches[0]:e;
+    const pr=zone.getBoundingClientRect();
+    const dx=(src.clientX-startX)/pr.width*100;
+    const dy=(src.clientY-startY)/pr.height*100;
+    stk.style.left=Math.max(0,Math.min(90,startLeft+dx))+'%';
+    stk.style.top=Math.max(0,Math.min(85,startTop+dy))+'%';
+    e.preventDefault();
+  };
+  const dragEnd=()=>{isDragging=false; stk.style.cursor='grab'; stk.style.transform=''; stk.style.zIndex=10;};
+  stk.addEventListener('mousedown',dragStart);
+  stk.addEventListener('touchstart',dragStart,{passive:false});
+  document.addEventListener('mousemove',dragMove);
+  document.addEventListener('touchmove',dragMove,{passive:false});
+  document.addEventListener('mouseup',dragEnd);
+  document.addEventListener('touchend',dragEnd);
+  // Double-tap to remove
+  stk.addEventListener('dblclick',()=>stk.remove());
+  zone.appendChild(stk);
+  playClick();
+}
+
+function czStickerListeners(){ /* drag handled per-sticker */ }
+
   {start:'One sunny morning, a little rabbit found a big golden key 🗝️...',
    q:'What did the rabbit do with the key?',
    choices:[
