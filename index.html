@@ -1086,129 +1086,178 @@ canvas.trace-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:cros
 /* ══════════════════════════════════════
    PARENT DASHBOARD — redesigned
 ══════════════════════════════════════ */
-.parent-dash{margin-bottom:12px;}
+/* ══════════════════════════════
+   PARENT DASHBOARD — TABBED v2
+══════════════════════════════ */
+.parent-dash{padding-bottom:80px;}
 
-/* Header banner */
-.pd-header{background:linear-gradient(135deg,#1c1c2e 0%,#2d1b4e 60%,#1a2940 100%);
-  border-radius:var(--r);padding:22px 20px 18px;margin-bottom:14px;
-  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
-body.bedtime .pd-header{background:linear-gradient(135deg,#0f0f1e,#1a0e2e,#0a1420);}
-.pd-greeting{font-size:.85rem;color:rgba(255,255,255,.55);letter-spacing:.5px;margin-bottom:2px;}
-.pd-child-name{font-family:'Baloo 2',cursive;font-size:1.7rem;font-weight:800;color:#fff;line-height:1.1;}
-.pd-child-sub{font-size:.8rem;color:rgba(255,255,255,.45);margin-top:5px;}
-.pd-avatar{width:54px;height:54px;border-radius:50%;
-  background:linear-gradient(135deg,var(--purple),var(--mint));
-  display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+/* ── Compact Header ── */
+.pd-head{background:linear-gradient(135deg,#1b4332,#2d6a4f,#40916c);
+  padding:14px 14px 16px;position:relative;overflow:hidden;}
+.pd-head::before{content:'📊';position:absolute;right:-8px;top:-8px;font-size:5rem;
+  opacity:.08;transform:rotate(12deg);pointer-events:none;}
+body.bedtime .pd-head{background:linear-gradient(135deg,#0f1f18,#1a3028,#0f2820);}
+.pd-head-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.pd-greeting-lbl{font-size:.62rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;
+  color:rgba(255,255,255,.5);margin-bottom:2px;}
+.pd-child-name{font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:#fff;line-height:1.1;}
+.pd-child-sub{font-size:.65rem;color:rgba(255,255,255,.45);margin-top:3px;}
+.pd-avatar-ring{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.15);
+  border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;
+  justify-content:center;font-size:1.5rem;flex-shrink:0;}
+.pd-head-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.phs{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
+  border-radius:12px;padding:7px 4px;text-align:center;}
+.phs-num{font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;color:#fff;line-height:1;}
+.phs-lbl{font-size:.55rem;font-weight:700;color:rgba(255,255,255,.55);
+  text-transform:uppercase;letter-spacing:.3px;margin-top:2px;}
+.phs-delta{font-size:.52rem;color:rgba(255,255,255,.45);margin-top:1px;}
 
-/* Stats row */
-.dash-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px;}
-.dash-stat{background:var(--cardbg);border-radius:16px;padding:14px 12px;text-align:center;
-  box-shadow:0 4px 14px var(--shadow2);border:1.5px solid var(--border);}
-.dash-stat .ds-num{font-family:'Baloo 2',cursive;font-size:1.9rem;font-weight:800;line-height:1;}
-.dash-stat .ds-label{font-size:.72rem;color:var(--text4);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:4px;}
-.dash-stat .ds-delta{font-size:.72rem;margin-top:6px;font-weight:600;}
+/* ── Sticky Tab Nav ── */
+.pd-nav{display:flex;overflow-x:auto;scrollbar-width:none;
+  background:var(--cardbg);border-bottom:2px solid var(--border);
+  position:sticky;top:0;z-index:10;}
+.pd-nav::-webkit-scrollbar{display:none;}
+body.bedtime .pd-nav{background:var(--cardbg);border-bottom-color:var(--border);}
+.pd-nav-btn{flex:0 0 auto;padding:10px 14px;font-family:'Baloo 2',cursive;
+  font-size:.7rem;font-weight:800;color:var(--text4);border:none;background:none;
+  cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;
+  margin-bottom:-2px;transition:all .2s;display:flex;flex-direction:column;
+  align-items:center;gap:1px;}
+.pd-nav-btn.active{color:var(--j1);border-bottom-color:var(--j3);}
+body.bedtime .pd-nav-btn.active{color:var(--mint);}
+.pd-nav-btn .pnb-icon{font-size:1rem;}
+
+/* ── Tab Panels ── */
+.pd-panel{display:none;padding:12px 12px 0;}
+.pd-panel.active{display:block;}
+
+/* ── Card Base ── */
+.pc{background:var(--cardbg);border-radius:16px;padding:13px;
+  box-shadow:0 3px 14px var(--shadow2);border:1.5px solid var(--border);margin-bottom:10px;}
+body.bedtime .pc{background:var(--cardbg);}
+.pc-title{font-family:'Baloo 2',cursive;font-size:.68rem;font-weight:800;
+  text-transform:uppercase;letter-spacing:.7px;color:var(--j2);margin-bottom:10px;
+  display:flex;align-items:center;justify-content:space-between;}
+body.bedtime .pc-title{color:var(--mint);}
+.pc-badge{font-size:.58rem;font-weight:700;padding:2px 8px;border-radius:50px;
+  background:var(--j4);color:var(--j1);}
+
+/* ── Compact Skill bars ── */
+.pd-skill-row{display:flex;align-items:center;gap:7px;margin-bottom:8px;}
+.pd-skill-row:last-child{margin-bottom:0;}
+.psk-emoji{font-size:.95rem;flex-shrink:0;width:20px;text-align:center;}
+.psk-name{font-size:.68rem;font-weight:700;color:var(--text2);width:50px;flex-shrink:0;}
+.psk-track{flex:1;height:8px;background:var(--inputbg);border-radius:50px;overflow:hidden;}
+body.bedtime .psk-track{background:#333355;}
+.psk-fill{height:100%;border-radius:50px;transition:width .7s ease;}
+.psk-num{font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:800;color:var(--text3);
+  min-width:18px;text-align:right;}
+
+/* ── Compact Week dots ── */
+.pd-week-row{display:flex;gap:4px;margin-bottom:10px;}
+.pdw{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.pdw-c{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:.62rem;font-weight:800;}
+.pdw-c.pdw-done{background:linear-gradient(135deg,#52b788,#4ecdc4);color:#fff;}
+.pdw-c.pdw-today{background:linear-gradient(135deg,#1b4332,#52b788);color:#fff;
+  box-shadow:0 2px 8px rgba(27,67,50,.3);}
+.pdw-c.pdw-empty{background:var(--inputbg);color:var(--text5);}
+body.bedtime .pdw-c.pdw-empty{background:#2a2a4e;}
+.pdw-lbl{font-size:.54rem;font-weight:800;color:var(--text4);}
+.pdw-s{font-size:.5rem;color:var(--text3);}
+
+/* ── Compact Mood chips ── */
+.pd-mood-row{display:flex;gap:5px;}
+.pd-mood-c{flex:1;background:var(--inputbg);border-radius:9px;padding:5px 2px;text-align:center;
+  border:1.5px solid var(--border);}
+.pd-mood-c .pmc-e{font-size:1rem;}
+.pd-mood-c .pmc-d{font-size:.52rem;font-weight:700;color:var(--text4);}
+
+/* ── Insight items ── */
+.pd-insight{display:flex;align-items:flex-start;gap:8px;padding:8px 0;
+  border-bottom:1.5px solid var(--border);}
+.pd-insight:last-child{border-bottom:none;padding-bottom:0;}
+.pdi-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.pdi-dot.green{background:#52b788;}.pdi-dot.amber{background:#ffb830;}
+.pdi-dot.purple{background:#a78bfa;}.pdi-dot.blue{background:#4fa3e0;}
+.pdi-t{font-size:.76rem;font-weight:700;color:var(--text);line-height:1.3;}
+.pdi-s{font-size:.66rem;color:var(--text3);margin-top:1px;line-height:1.4;}
+.pdi-badge{display:inline-block;padding:1px 8px;border-radius:50px;font-size:.65rem;
+  font-weight:700;background:#f0e8ff;color:var(--purple);}
+
+/* ── Achievement strip ── */
+.ach-strip{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:3px;}
+.ach-strip::-webkit-scrollbar{display:none;}
+.ach-item{flex:0 0 auto;background:var(--inputbg);border-radius:12px;padding:9px 12px;
+  text-align:center;border:1.5px solid var(--border);min-width:76px;}
+.ach-item.earned{background:linear-gradient(135deg,#fff8e1,#fffde7);border-color:#ffb830;}
+.ach-item .ai-icon{font-size:1.4rem;}
+.ach-item .ai-name{font-size:.58rem;font-weight:800;color:var(--text2);margin-top:4px;line-height:1.2;}
+.ach-item .ai-sub{font-size:.52rem;color:var(--text4);}
+
+/* ── Monthly compact ── */
+.pd-month-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.pd-month-sel{font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:700;
+  color:var(--j1);background:var(--inputbg);border:1.5px solid var(--border);
+  border-radius:8px;padding:4px 8px;cursor:pointer;}
+.pd-month-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;}
+.pdmc{background:var(--inputbg);border-radius:10px;padding:7px 4px;text-align:center;
+  border:1.5px solid var(--border);}
+.pdmc-n{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--j1);}
+.pdmc-l{font-size:.55rem;font-weight:700;color:var(--text4);text-transform:uppercase;}
+
+/* ── Settings grid ── */
+.pd-set-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.pd-set-item{display:flex;align-items:center;gap:9px;padding:10px 11px;
+  border-radius:13px;border:1.5px solid var(--border);background:var(--inputbg);
+  cursor:pointer;transition:all .2s;}
+.pd-set-item:active{transform:scale(.97);}
+.pd-set-item.psi-on{background:linear-gradient(135deg,#e8f8f0,#f0faf4);border-color:var(--j4);}
+.pd-set-item.psi-danger{border-color:rgba(255,107,107,.3);background:rgba(255,107,107,.03);}
+body.bedtime .pd-set-item{background:var(--cardbg);}
+body.bedtime .pd-set-item.psi-on{background:linear-gradient(135deg,#0f2820,#1a3028);border-color:#2d6a4f;}
+.psi-icon{font-size:1.15rem;flex-shrink:0;}
+.psi-body{flex:1;min-width:0;}
+.psi-lbl{font-size:.68rem;font-weight:700;color:var(--text2);line-height:1.2;}
+.psi-val{font-size:.58rem;font-weight:700;color:var(--text4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.psi-tog{font-size:.58rem;font-weight:800;padding:2px 7px;border-radius:50px;flex-shrink:0;}
+.psi-tog.on{background:#2d6a4f;color:#fff;}
+.psi-tog.off{background:#e0e0e0;color:#888;}
+
+/* ── Voice list ── */
+.voice-list{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;padding-right:2px;}
+
+/* ── Notes ── */
+.note-input{width:100%;padding:10px;border:1.5px solid var(--border);border-radius:11px;
+  background:var(--inputbg);color:var(--text);font-family:'Nunito',sans-serif;font-size:.82rem;
+  resize:none;height:70px;line-height:1.5;box-sizing:border-box;transition:border-color .2s;}
+.note-input:focus{outline:none;border-color:var(--purple);}
+.note-save{border:none;padding:8px 18px;border-radius:50px;font-family:'Baloo 2',cursive;
+  font-size:.78rem;font-weight:800;cursor:pointer;color:#fff;margin-top:6px;
+  background:linear-gradient(135deg,#1b4332,#52b788);}
+.note-list{margin-top:10px;}
+.note-entry{background:var(--inputbg);border-radius:11px;padding:9px 11px;margin-bottom:7px;
+  border-left:3px solid var(--j3);}
+.note-date{font-size:.65rem;color:var(--text4);font-weight:700;}
+.note-mood{font-size:.85rem;margin:0 4px;}
+.note-text{font-size:.78rem;color:var(--text2);margin-top:3px;line-height:1.4;}
+
+/* ── DTA compact ── */
+.dta-prog-wrap{background:#e0f0e8;border-radius:50px;height:8px;overflow:hidden;margin:6px 0 10px;}
+body.bedtime .dta-prog-wrap{background:#1a3028;}
+.dta-prog-fill{height:100%;background:linear-gradient(90deg,#1b4332,#52b788,#4ecdc4);border-radius:50px;transition:width .8s;}
+
+/* ── Legacy ds-* delta helpers (kept for compat) ── */
 .ds-up{color:var(--green);}
 .ds-down{color:var(--coral);}
 .ds-neutral{color:var(--text5);}
 
-/* Two-column inner grid */
-.pd-inner{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
-.pd-card{background:var(--cardbg);border-radius:16px;padding:18px;
-  box-shadow:0 4px 14px var(--shadow2);border:1.5px solid var(--border);}
-.pd-card-full{grid-column:1/-1;}
-.pd-card-title{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;
-  color:var(--text3);margin-bottom:14px;}
-
-/* Skill bars */
-.skill-bar{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
-.skill-label{font-size:.84rem;font-weight:700;color:var(--text2);width:66px;flex-shrink:0;}
-.skill-track{flex:1;height:8px;background:var(--inputbg);border-radius:50px;overflow:hidden;}
-body.bedtime .skill-track{background:#333355;}
-.skill-fill{height:100%;border-radius:50px;transition:width .7s cubic-bezier(.68,-.55,.27,1.55);}
-.skill-pct{font-size:.78rem;color:var(--text3);flex-shrink:0;width:32px;text-align:right;}
-
-/* Week activity dots */
-.week-activity{margin-top:4px;}
-.streak-row{display:flex;gap:5px;}
-.streak-dot{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
-.sd-circle{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;
-  justify-content:center;font-size:.82rem;font-weight:700;}
-.sd-circle.sd-done{background:linear-gradient(135deg,var(--green),var(--mint));color:#fff;}
-.sd-circle.sd-today{background:var(--purple);color:#fff;box-shadow:0 0 0 3px rgba(167,139,250,.25);}
-.sd-circle.sd-empty{background:var(--inputbg);color:var(--text5);}
-.sd-label{font-size:.62rem;color:var(--text5);font-weight:700;}
-
-/* Mood row */
-.mood-row{display:flex;gap:5px;margin-top:4px;}
-.mood-block{flex:1;border-radius:10px;padding:8px 4px;text-align:center;
-  background:var(--inputbg);border:1.5px solid var(--border);}
-.mood-emoji{font-size:18px;display:block;margin-bottom:3px;}
-.mood-day{font-size:.68rem;color:var(--text4);}
-
-/* Insight items */
-.insight-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;
-  border-bottom:1px solid var(--border);}
-.insight-item:last-child{border-bottom:none;padding-bottom:0;}
-.ins-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:5px;}
-.ins-green{background:var(--green);}
-.ins-amber{background:var(--sun);}
-.ins-purple{background:var(--purple);}
-.ins-text{font-size:.9rem;color:var(--text);font-weight:600;}
-.ins-sub{font-size:.8rem;color:var(--text3);margin-top:3px;line-height:1.45;}
-.ins-badge{display:inline-block;padding:2px 10px;border-radius:50px;font-size:.75rem;
-  font-weight:700;background:#f0e8ff;color:var(--purple);}
-
-/* Calendar heatmap */
-.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;margin-top:6px;}
-.cal-header-cell{font-size:.68rem;font-weight:700;color:var(--text5);text-align:center;padding-bottom:3px;}
-.cal-cell{aspect-ratio:1;border-radius:5px;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;}
-.cal-cell.cal-empty{background:transparent;}
-.cal-cell.cal-none{background:var(--inputbg);}
-.cal-cell.cal-low{background:#afa9ec;}
-.cal-cell.cal-mid{background:#4ecdc4;}
-.cal-cell.cal-high{background:#ffb830;}
-.cal-cell.cal-today{outline:2px solid var(--pink);outline-offset:-1px;}
-.cal-cell-num{font-size:.62rem;font-weight:700;color:var(--text4);}
-.cal-cell.cal-low .cal-cell-num,.cal-cell.cal-mid .cal-cell-num,.cal-cell.cal-high .cal-cell-num{color:#fff;}
-.cal-legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
-.cal-legend span{font-size:.75rem;color:var(--text3);display:flex;align-items:center;gap:5px;}
-.cal-legend-dot{width:11px;height:11px;border-radius:2px;display:inline-block;}
-
-/* Quick settings */
-.pd-settings-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
-.pd-set-btn{display:flex;align-items:center;gap:6px;padding:10px 16px;
-  border-radius:50px;border:1.5px solid var(--border);background:var(--inputbg);
-  color:var(--text);font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;
-  cursor:pointer;transition:all .15s;}
-.pd-set-btn:hover{background:var(--border);}
-.pd-set-btn:active{transform:scale(.95);}
-.pd-set-btn.danger{border-color:rgba(255,107,107,.35);color:#e05050;}
-
-/* Voice list keeps existing style */
-.voice-list{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;padding-right:2px;}
-
-/* Notes keep existing */
-.note-input{width:100%;padding:13px;border:1.5px solid var(--border);border-radius:12px;
-  background:var(--inputbg);color:var(--text);font-family:'Nunito',sans-serif;font-size:.92rem;
-  resize:vertical;min-height:80px;transition:border-color .2s;box-sizing:border-box;}
-.note-input:focus{outline:none;border-color:var(--purple);}
-.note-save{border:none;padding:11px 22px;border-radius:50px;font-family:'Baloo 2',cursive;
-  font-size:.88rem;font-weight:700;cursor:pointer;color:#fff;margin-top:9px;
-  background:linear-gradient(135deg,var(--purple),var(--blue));}
-.note-list{margin-top:12px;}
-.note-entry{background:var(--inputbg);border-radius:12px;padding:11px 14px;margin-bottom:7px;
-  border-left:3px solid var(--purple);}
-.note-date{font-size:.75rem;color:var(--text4);font-weight:700;}
-.note-mood{font-size:.9rem;margin:0 4px;}
-.note-text{font-size:.86rem;color:var(--text2);margin-top:4px;line-height:1.5;}
-
-/* Responsive: collapse 4-col stats to 2-col on small screens */
+/* ── Responsive ── */
 @media(max-width:480px){
-  .dash-grid{grid-template-columns:1fr 1fr;}
-  .pd-inner{grid-template-columns:1fr;}
-  .pd-card-full{grid-column:auto;}
-  .pd-child-name{font-size:1.4rem;}
+  .pd-head-stats{grid-template-columns:repeat(4,1fr);}
+  .pd-set-grid{grid-template-columns:1fr 1fr;}
+  .pd-month-chips{grid-template-columns:repeat(4,1fr);}
 }
 
 /* UNLOCKABLES SHOP */
@@ -9095,231 +9144,329 @@ function renderParentDash(){
   const strongest=sorted[0];const weakest=sorted[sorted.length-1];
   const diffNames=['Easy','Medium','Hard'];
 
-  // Mood history for the week
+  // Mood history
   const moodHist=JSON.parse(localStorage.getItem('c_mood_hist')||'[]');
   const recentMoods=moodHist.slice(-7);
   const moodDays=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const moodRowHTML=recentMoods.length?recentMoods.slice(-5).map((m,i)=>
-    `<div class="mood-block"><span class="mood-emoji">${m.mood||'😊'}</span><div class="mood-day">${moodDays[i]||''}</div></div>`
-  ).join(''):'<div style="font-size:.75rem;color:var(--text4);padding:8px 0">No mood data yet. Check in each morning!</div>';
 
-  // Week activity dots
-  const weekDotsHTML=streakArr.map(s=>{
-    const cls=s.isToday?'sd-today':s.stars>0?'sd-done':'sd-empty';
-    return `<div class="streak-dot"><div class="sd-circle ${cls}" title="${s.short}: ${s.stars} ⭐">${s.day}</div><div class="sd-label">${s.isToday?'●':''}</div></div>`;
-  }).join('');
-
-  // Today's delta hint
+  // Delta vs yesterday
   const yesterdayKey=(()=>{const y=new Date(today);y.setDate(today.getDate()-1);return `${y.getFullYear()}-${y.getMonth()+1}-${y.getDate()}`;})();
   const yesterdayStars=ws[yesterdayKey]||0;
   const todayStars=ws[todayKey()]||stars;
   const deltaVal=todayStars-yesterdayStars;
-  const deltaHTML=deltaVal>0?`<div class="ds-delta ds-up">+${deltaVal} vs yesterday</div>`:
-    deltaVal<0?`<div class="ds-delta ds-down">${deltaVal} vs yesterday</div>`:
-    `<div class="ds-delta ds-neutral">Same as yesterday</div>`;
+  const deltaStr=deltaVal>0?`+${deltaVal} vs yday`:deltaVal<0?`${deltaVal} vs yday`:'Same as yday';
+
+  // Week dots HTML
+  const weekDotsHTML=streakArr.map(s=>{
+    const cls=s.isToday?'pdw-today':s.stars>0?'pdw-done':'pdw-empty';
+    return `<div class="pdw">
+      <div class="pdw-c ${cls}" title="${s.short}: ${s.stars}⭐">${s.day}</div>
+      <div class="pdw-s">${s.stars>0?'⭐'+s.stars:'—'}</div>
+      <div class="pdw-lbl">${s.short}</div>
+    </div>`;
+  }).join('');
+
+  // Mood chips HTML
+  const moodChipsHTML=recentMoods.length
+    ? recentMoods.slice(-5).map((m,i)=>`<div class="pd-mood-c"><div class="pmc-e">${m.mood||'😊'}</div><div class="pmc-d">${moodDays[i]||''}</div></div>`).join('')
+    : `<div style="font-size:.72rem;color:var(--text4);padding:6px 0">No mood data yet. Check in each morning!</div>`;
+
+  // Month selector options
+  const monthOptHTML=(()=>{
+    const now=new Date();let opts='';
+    for(let i=0;i<6;i++){
+      const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+      const val=`${d.getFullYear()}-${d.getMonth()+1}`;
+      const label=d.toLocaleString('default',{month:'short',year:'numeric'});
+      opts+=`<option value="${val}"${i===0?' selected':''}>${label}</option>`;
+    }
+    return opts;
+  })();
+
+  // Notes + mood history for Notes tab
+  const moodHist2=JSON.parse(localStorage.getItem('c_mood_hist')||'[]');
+  const notes=JSON.parse(localStorage.getItem('c_parent_notes')||'[]');
+  const recentNotes=notes.slice(-10).reverse();
+  const recentM7=moodHist2.slice(-7);
 
   document.getElementById('area').innerHTML=`
-    <div class="parent-dash">
+  <div class="parent-dash">
 
-      <!-- ── HEADER BANNER ── -->
-      <div class="pd-header">
+    <!-- ══════════════════════════════
+         COMPACT HEADER
+    ══════════════════════════════ -->
+    <div class="pd-head">
+      <div class="pd-head-row">
         <div>
-          <div class="pd-greeting">Parent Dashboard</div>
-          <div class="pd-child-name">👨‍👩‍👧 Your Little Star</div>
-          <div class="pd-child-sub">${today.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})} &nbsp;·&nbsp; ${allUsed.length} activities completed all-time</div>
+          <div class="pd-greeting-lbl">👨‍👩‍👧 Parent Dashboard</div>
+          <div class="pd-child-name">Your Little Star ${friendEmoji||'⭐'}</div>
+          <div class="pd-child-sub">${today.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})} &nbsp;·&nbsp; ${allUsed.length} activities all-time</div>
         </div>
-        <div class="pd-avatar">${friendEmoji||'🌟'}</div>
+        <div class="pd-avatar-ring">${friendEmoji||'🌟'}</div>
       </div>
-
-      <!-- ── STATS ROW ── -->
-      <div class="dash-grid">
-        <div class="dash-stat">
-          <div class="ds-num" style="color:var(--purple)">${done.length}</div>
-          <div class="ds-label">Done Today</div>
-          <div class="ds-delta ds-neutral">${done.length===0?'Start exploring!':'Great going!'}</div>
+      <div class="pd-head-stats">
+        <div class="phs">
+          <div class="phs-num" style="color:#a78bfa">${done.length}</div>
+          <div class="phs-lbl">Done Today</div>
+          <div class="phs-delta">${done.length===0?'Start!':'Great!'}</div>
         </div>
-        <div class="dash-stat">
-          <div class="ds-num" style="color:var(--sun)">${stars}</div>
-          <div class="ds-label">Stars Today</div>
-          ${deltaHTML}
+        <div class="phs">
+          <div class="phs-num" style="color:#ffb830">${stars}</div>
+          <div class="phs-lbl">Stars Today</div>
+          <div class="phs-delta">${deltaStr}</div>
         </div>
-        <div class="dash-stat">
-          <div class="ds-num" style="color:var(--green)">${weekStars}</div>
-          <div class="ds-label">This Week</div>
-          <div class="ds-delta ds-neutral">${streakDays} active days</div>
+        <div class="phs">
+          <div class="phs-num" style="color:#52b788">${weekStars}</div>
+          <div class="phs-lbl">This Week</div>
+          <div class="phs-delta">${streakDays} active days</div>
         </div>
-        <div class="dash-stat">
-          <div class="ds-num" style="color:var(--coral)">${streakDays}</div>
-          <div class="ds-label">Streak Days</div>
-          <div class="ds-delta ${streakDays>=5?'ds-up':'ds-neutral'}">${streakDays>=5?'On fire! 🔥':'Keep it going!'}</div>
+        <div class="phs">
+          <div class="phs-num" style="color:#ff8c69">${streakDays>=5?'🔥':''}${streakDays}</div>
+          <div class="phs-lbl">Streak</div>
+          <div class="phs-delta">${streakDays>=5?'on fire!':'keep going!'}</div>
         </div>
       </div>
+    </div>
 
-      <!-- ── MAIN INNER GRID ── -->
-      <div class="pd-inner">
+    <!-- ══════════════════════════════
+         STICKY TAB NAV
+    ══════════════════════════════ -->
+    <div class="pd-nav">
+      <button class="pd-nav-btn active" onclick="pdTab('overview')"><span class="pnb-icon">📊</span>Overview</button>
+      <button class="pd-nav-btn" onclick="pdTab('progress')"><span class="pnb-icon">📅</span>Progress</button>
+      <button class="pd-nav-btn" onclick="pdTab('teaching')"><span class="pnb-icon">📖</span>Teaching</button>
+      <button class="pd-nav-btn" onclick="pdTab('rewards')"><span class="pnb-icon">⭐</span>Rewards</button>
+      <button class="pd-nav-btn" onclick="pdTab('settings')"><span class="pnb-icon">⚙️</span>Settings</button>
+      <button class="pd-nav-btn" onclick="pdTab('notes')"><span class="pnb-icon">📝</span>Notes</button>
+    </div>
 
-        <!-- Learning Areas -->
-        <div class="pd-card">
-          <div class="pd-card-title">📊 Learning areas · all time</div>
-          ${Object.entries(allTimeSubj).map(([k,v])=>`
-            <div class="skill-bar">
-              <span class="skill-label">${emojis[k]} ${names[k]}</span>
-              <div class="skill-track"><div class="skill-fill" style="width:${maxSubj>0?Math.round((v/maxSubj)*100):0}%;background:${skillColors[k]}"></div></div>
-              <span class="skill-pct">${v}</span>
-            </div>`).join('')}
-        </div>
+    <!-- ══════════════════════════════
+         TAB 1 — OVERVIEW
+    ══════════════════════════════ -->
+    <div class="pd-panel active" id="pdtab-overview">
 
-        <!-- 7-day + Mood -->
-        <div class="pd-card">
-          <div class="pd-card-title">🔥 7-day activity</div>
-          <div class="streak-row">${weekDotsHTML}</div>
-          <div style="margin-top:14px">
-            <div class="pd-card-title">😊 Recent moods</div>
-            <div class="mood-row">${moodRowHTML}</div>
-          </div>
-        </div>
-
-        <!-- Smart Insights -->
-        <div class="pd-card">
-          <div class="pd-card-title">🧠 Smart insights</div>
-          ${strongest[1]>0?`
-          <div class="insight-item">
-            <div class="ins-dot ins-green"></div>
-            <div>
-              <div class="ins-text">Strongest in ${emojis[strongest[0]]} ${names[strongest[0]]}</div>
-              <div class="ins-sub">${strongest[1]} activities completed — excellent momentum!</div>
-            </div>
-          </div>`:''}
-          ${weakest[1]<strongest[1]&&strongest[1]>0?`
-          <div class="insight-item">
-            <div class="ins-dot ins-amber"></div>
-            <div>
-              <div class="ins-text">${emojis[weakest[0]]} ${names[weakest[0]]} needs more practice</div>
-              <div class="ins-sub">Only ${weakest[1]} activities so far — try a few more this week.</div>
-            </div>
-          </div>`:''}
-          ${strongest[1]===0?`
-          <div class="insight-item">
-            <div class="ins-dot ins-purple"></div>
-            <div><div class="ins-text">Complete activities to see insights!</div></div>
-          </div>`:''}
-          <div class="insight-item">
-            <div class="ins-dot ins-purple"></div>
-            <div>
-              <div class="ins-text">Game difficulty auto-set to <span class="ins-badge">${diffNames[diffLevel-1]}</span></div>
-              <div class="ins-sub">Adjusts automatically based on performance.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Monthly Calendar -->
-        <div class="pd-card">
-          <div class="pd-card-title" style="display:flex;align-items:center;justify-content:space-between">
-            <span>📅 Monthly report</span>
-            <select id="reportMonthSel" onchange="renderMonthlyReport()" style="padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--inputbg);color:var(--text);font-family:'Baloo 2',cursive;font-size:.65rem;cursor:pointer">
-              ${(()=>{
-                const now=new Date();let opts='';
-                for(let i=0;i<6;i++){
-                  const d=new Date(now.getFullYear(),now.getMonth()-i,1);
-                  const val=`${d.getFullYear()}-${d.getMonth()+1}`;
-                  const label=d.toLocaleString('default',{month:'short',year:'numeric'});
-                  opts+=`<option value="${val}"${i===0?' selected':''}>${label}</option>`;
-                }
-                return opts;
-              })()}
-            </select>
-          </div>
-          <div id="monthlyCalBody"></div>
-          <div class="cal-legend">
-            <span><span class="cal-legend-dot" style="background:#afa9ec"></span>1–2 ⭐</span>
-            <span><span class="cal-legend-dot" style="background:#4ecdc4"></span>3–9 ⭐</span>
-            <span><span class="cal-legend-dot" style="background:#ffb830"></span>10+ ⭐</span>
-          </div>
-        </div>
-
-        <!-- Session Breakdown (full width) -->
-        <div class="pd-card pd-card-full" id="monthlyReportSection">
-          <div class="pd-card-title">📈 Session breakdown this month</div>
-          <div id="monthlyReportBody"></div>
-        </div>
-
-        <!-- ✅ DAILY TEACHING ACTIVITY (full width) -->
-        <div class="pd-card pd-card-full" id="dtaCard">
-          ${renderDtaCard()}
-        </div>
-
-        <!-- ⭐ STAR REWARDS SYSTEM (full width) -->
-        <div class="pd-card pd-card-full" id="srCard">
-          <div class="pd-card-title" style="margin-bottom:14px">⭐ Star Rewards System</div>
-          <!-- Sub-navigation tabs -->
-          <div class="sr-tabs">
-            <button class="sr-tab-btn active" data-p="stars"  onclick="srSwitch('stars')">⭐<br>Stars</button>
-            <button class="sr-tab-btn"         data-p="log"   onclick="srSwitch('log')">📋<br>Log</button>
-            <button class="sr-tab-btn"         data-p="beh"   onclick="srSwitch('beh')">🌟<br>Behaviours</button>
-            <button class="sr-tab-btn"         data-p="rwds"  onclick="srSwitch('rwds')">🎁<br>Rewards</button>
-          </div>
-          <!-- Panel content injected by JS -->
-          <div id="srPanelContent"></div>
-        </div>
-
-        <!-- Quick Settings (full width) -->
-        <div class="pd-card pd-card-full">
-          <div class="pd-card-title">⚙️ Quick settings</div>
-          <div class="pd-settings-row">
-            <button class="pd-set-btn" onclick="toggleBedtime()">🌙 Bedtime: <strong style="color:var(--purple);margin-left:3px">${bedtimeMode?'ON':'OFF'}</strong></button>
-            <button class="pd-set-btn" id="pdSoundBtn" onclick="toggleSound()">🔊 Sound: <strong id="pdSoundLabel" style="color:var(--green);margin-left:3px">${soundOn?'ON':'OFF'}</strong></button>
-            <button class="pd-set-btn" onclick="changeFamilyCode()">👤 Account: <strong style="color:var(--sun);margin-left:3px">${_currentUser?(_currentUser.email||'Signed in'):'not signed in'}</strong></button>
-            <button class="pd-set-btn" onclick="signOutUser()" style="border-color:var(--pink);color:var(--pink)">🚪 Sign Out</button>
-            <button class="pd-set-btn" onclick="showSyncDebug()" style="background:linear-gradient(135deg,#333,#555)">🔍 Debug Sync Status</button>
-            <button class="pd-set-btn" onclick="forceUploadAll()" style="border-color:var(--sun);color:var(--sun)">📤 Force Upload to Cloud</button>
-            <button class="pd-set-btn" onclick="forceDownloadAll()" style="border-color:var(--blue);color:var(--blue)">📥 Force Download from Cloud</button>
-            <button class="pd-set-btn" onclick="forceWeekSync()" style="border-color:var(--mint);color:var(--mint)">📅 Fix Week Sync</button>
-            <button class="pd-set-btn danger" onclick="parentReset()">🔄 Reset journey</button>
-          </div>
-        </div>
-
-        <!-- Voice Selection (full width) -->
-        <div class="pd-card pd-card-full">
-          <div class="pd-accordion-header" onclick="toggleVoiceAccordion()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
-            <div>
-              <div class="pd-card-title" style="margin-bottom:2px;">🎤 Voice Selection</div>
-              <div style="font-size:.82rem;color:var(--text2);">Current: <strong style="color:var(--purple)">${selectedVoiceName||'Default'}</strong></div>
-            </div>
-            <div id="voiceAccordionArrow" style="font-size:1.2rem;color:var(--purple);transition:transform .3s;padding:4px 8px;">▼</div>
-          </div>
-          <div id="voiceAccordionBody" style="display:none;margin-top:14px;border-top:1.5px solid var(--border);padding-top:14px;">
-            <p style="font-size:.8rem;color:var(--text4);margin-bottom:10px;">Tap a voice to select it. Press ▶ Test to hear a sample first.</p>
-            <div class="voice-list" id="voiceList">${buildVoiceListHTML()}</div>
-          </div>
-        </div>
-
-        <!-- Parent Notes (full width) -->
-        <div class="pd-card pd-card-full">
-          <div class="pd-card-title">📝 Parent notes</div>
-          ${(()=>{
-            const moodHist2=JSON.parse(localStorage.getItem('c_mood_hist')||'[]');
-            const notes=JSON.parse(localStorage.getItem('c_parent_notes')||'[]');
-            const recent=notes.slice(-10).reverse();
-            const recentM=moodHist2.slice(-7);
-            return `${recentM.length?`<div style="font-size:.72rem;color:var(--text4);margin-bottom:8px">Recent moods: ${recentM.map(m=>m.mood).join(' ')}</div>`:''}
-            <textarea class="note-input" id="parentNoteInput" placeholder="Write a note about today... (milestones, struggles, fun moments)"></textarea>
-            <button class="note-save" onclick="saveParentNote()">💾 Save Note</button>
-            ${recent.length?`<div class="note-list">${recent.map(n=>`<div class="note-entry"><span class="note-date">${n.date}</span>${n.mood?`<span class="note-mood">${n.mood}</span>`:''}<div class="note-text">${n.text}</div></div>`).join('')}</div>`:'<div style="font-size:.72rem;color:var(--text5);margin-top:8px">No notes yet. Start writing!</div>'}`;
-          })()}
-        </div>
-
-        <!-- Little Star Friend (full width) -->
-        <div class="pd-card pd-card-full">
-          ${renderFriendSection()}
-        </div>
-
+      <!-- Learning Areas -->
+      <div class="pc">
+        <div class="pc-title">📚 Learning areas · all time <span class="pc-badge">${allUsed.length} total</span></div>
+        ${Object.entries(allTimeSubj).map(([k,v])=>`
+          <div class="pd-skill-row">
+            <span class="psk-emoji">${emojis[k]}</span>
+            <span class="psk-name">${names[k]}</span>
+            <div class="psk-track"><div class="psk-fill" style="width:${maxSubj>0?Math.round((v/maxSubj)*100):0}%;background:${skillColors[k]}"></div></div>
+            <span class="psk-num">${v}</span>
+          </div>`).join('')}
+        ${weakest[1]<strongest[1]&&strongest[1]>0?`
+        <div style="margin-top:10px;background:#fff7e0;border-radius:10px;padding:8px 10px;display:flex;gap:7px;align-items:flex-start;">
+          <span style="font-size:.85rem;flex-shrink:0">💡</span>
+          <div style="font-size:.68rem;color:#7a5a00;font-weight:600;line-height:1.4">${emojis[weakest[0]]} ${names[weakest[0]]} needs more practice — only ${weakest[1]} activities. Try a few more this week!</div>
+        </div>`:''}
       </div>
-    </div>`;
 
-  // Render the calendar heatmap + session bars
+      <!-- 7-day + Mood -->
+      <div class="pc">
+        <div class="pc-title">🔥 7-day activity</div>
+        <div class="pd-week-row">${weekDotsHTML}</div>
+        <div style="font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--text4);margin-bottom:6px;">😊 Recent moods</div>
+        <div class="pd-mood-row">${moodChipsHTML}</div>
+      </div>
+
+      <!-- Smart Insights -->
+      <div class="pc">
+        <div class="pc-title">🧠 Smart insights</div>
+        ${strongest[1]>0?`<div class="pd-insight">
+          <div class="pdi-dot green"></div>
+          <div><div class="pdi-t">Strongest in ${emojis[strongest[0]]} ${names[strongest[0]]}</div>
+          <div class="pdi-s">${strongest[1]} activities completed — excellent momentum!</div></div>
+        </div>`:''}
+        ${weakest[1]<strongest[1]&&strongest[1]>0?`<div class="pd-insight">
+          <div class="pdi-dot amber"></div>
+          <div><div class="pdi-t">${emojis[weakest[0]]} ${names[weakest[0]]} needs more practice</div>
+          <div class="pdi-s">Only ${weakest[1]} activities so far — try a few more this week.</div></div>
+        </div>`:''}
+        ${strongest[1]===0?`<div class="pd-insight">
+          <div class="pdi-dot purple"></div>
+          <div><div class="pdi-t">Complete activities to see insights!</div></div>
+        </div>`:''}
+        <div class="pd-insight">
+          <div class="pdi-dot purple"></div>
+          <div><div class="pdi-t">Game difficulty auto-set to <span class="pdi-badge">${diffNames[diffLevel-1]}</span></div>
+          <div class="pdi-s">Adjusts automatically based on her performance.</div></div>
+        </div>
+        <div class="pd-insight">
+          <div class="pdi-dot blue"></div>
+          <div><div class="pdi-t">Best learning streak: ${streakDays} days</div>
+          <div class="pdi-s">${streakDays>=5?'On fire this week! Keep it up 🔥':'Every day counts — aim for 5 days in a row!'}</div></div>
+        </div>
+      </div>
+
+      <!-- Little Star Friend -->
+      <div class="pc">
+        ${renderFriendSection()}
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════
+         TAB 2 — PROGRESS
+    ══════════════════════════════ -->
+    <div class="pd-panel" id="pdtab-progress">
+
+      <!-- Month picker + summary + heatmap -->
+      <div class="pc">
+        <div class="pd-month-top">
+          <div class="pc-title" style="margin-bottom:0">📅 Monthly report</div>
+          <select id="reportMonthSel" class="pd-month-sel" onchange="renderMonthlyReport()">${monthOptHTML}</select>
+        </div>
+        <div class="pd-month-chips" style="margin-top:8px">
+          <div class="pdmc"><div class="pdmc-n" id="pdmc-stars" style="color:var(--sun)">—</div><div class="pdmc-l">⭐ Stars</div></div>
+          <div class="pdmc"><div class="pdmc-n" id="pdmc-days" style="color:var(--green)">—</div><div class="pdmc-l">📅 Days</div></div>
+          <div class="pdmc"><div class="pdmc-n" id="pdmc-acts" style="color:var(--purple)">—</div><div class="pdmc-l">✅ Acts</div></div>
+          <div class="pdmc"><div class="pdmc-n" id="pdmc-best" style="color:var(--coral)">—</div><div class="pdmc-l">🏆 Best</div></div>
+        </div>
+        <div id="monthlyCalBody"></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+          <span style="font-size:.58rem;color:var(--text4);display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;background:#a78bfa;border-radius:2px;display:inline-block"></span>1–2⭐</span>
+          <span style="font-size:.58rem;color:var(--text4);display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;background:#4ecdc4;border-radius:2px;display:inline-block"></span>3–5⭐</span>
+          <span style="font-size:.58rem;color:var(--text4);display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;background:#56cf81;border-radius:2px;display:inline-block"></span>6–9⭐</span>
+          <span style="font-size:.58rem;color:var(--text4);display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;background:#ffb830;border-radius:2px;display:inline-block"></span>10+⭐</span>
+        </div>
+      </div>
+
+      <!-- Session Breakdown -->
+      <div class="pc" id="monthlyReportSection">
+        <div class="pc-title">🗂️ Session breakdown</div>
+        <div id="monthlyReportBody"><div style="font-size:.76rem;color:var(--text4);padding:8px 0">Loading...</div></div>
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════
+         TAB 3 — TEACHING ACTIVITY
+    ══════════════════════════════ -->
+    <div class="pd-panel" id="pdtab-teaching">
+      <div class="pc" id="dtaCard">
+        ${renderDtaCard()}
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         TAB 4 — STAR REWARDS
+    ══════════════════════════════ -->
+    <div class="pd-panel" id="pdtab-rewards">
+      <div class="pc" id="srCard">
+        <div class="pc-title" style="margin-bottom:12px">⭐ Star Rewards System</div>
+        <div class="sr-tabs">
+          <button class="sr-tab-btn active" data-p="stars"  onclick="srSwitch('stars')">⭐<br>Stars</button>
+          <button class="sr-tab-btn"         data-p="log"   onclick="srSwitch('log')">📋<br>Log</button>
+          <button class="sr-tab-btn"         data-p="beh"   onclick="srSwitch('beh')">🌟<br>Behaviours</button>
+          <button class="sr-tab-btn"         data-p="rwds"  onclick="srSwitch('rwds')">🎁<br>Rewards</button>
+        </div>
+        <div id="srPanelContent"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         TAB 5 — SETTINGS
+    ══════════════════════════════ -->
+    <div class="pd-panel" id="pdtab-settings">
+
+      <div class="pc">
+        <div class="pc-title">⚙️ Quick settings</div>
+        <div class="pd-set-grid">
+          <div class="pd-set-item ${bedtimeMode?'psi-on':''}" onclick="toggleBedtime();renderParentDash();pdTab('settings')">
+            <span class="psi-icon">🌙</span>
+            <div class="psi-body"><div class="psi-lbl">Bedtime Mode</div><div class="psi-val">Dark theme</div></div>
+            <span class="psi-tog ${bedtimeMode?'on':'off'}">${bedtimeMode?'ON':'OFF'}</span>
+          </div>
+          <div class="pd-set-item ${soundOn?'psi-on':''}" id="pdSoundBtn" onclick="toggleSound();renderParentDash();pdTab('settings')">
+            <span class="psi-icon">🔊</span>
+            <div class="psi-body"><div class="psi-lbl">Sound Effects</div><div class="psi-val" id="pdSoundLabel">${soundOn?'Enabled':'Muted'}</div></div>
+            <span class="psi-tog ${soundOn?'on':'off'}">${soundOn?'ON':'OFF'}</span>
+          </div>
+          <div class="pd-set-item" onclick="changeFamilyCode()">
+            <span class="psi-icon">👤</span>
+            <div class="psi-body"><div class="psi-lbl">Account</div><div class="psi-val">${_currentUser?(_currentUser.email||'Signed in'):'Not signed in'}</div></div>
+          </div>
+          <div class="pd-set-item" onclick="signOutUser()">
+            <span class="psi-icon">🚪</span>
+            <div class="psi-body"><div class="psi-lbl">Sign Out</div><div class="psi-val">Tap to sign out</div></div>
+          </div>
+          <div class="pd-set-item" onclick="forceUploadAll()">
+            <span class="psi-icon">📤</span>
+            <div class="psi-body"><div class="psi-lbl">Force Upload</div><div class="psi-val">Sync to cloud</div></div>
+          </div>
+          <div class="pd-set-item" onclick="forceDownloadAll()">
+            <span class="psi-icon">📥</span>
+            <div class="psi-body"><div class="psi-lbl">Force Download</div><div class="psi-val">Restore from cloud</div></div>
+          </div>
+          <div class="pd-set-item" onclick="forceWeekSync()">
+            <span class="psi-icon">📅</span>
+            <div class="psi-body"><div class="psi-lbl">Fix Week Sync</div><div class="psi-val">Repair week data</div></div>
+          </div>
+          <div class="pd-set-item" onclick="showSyncDebug()">
+            <span class="psi-icon">🔍</span>
+            <div class="psi-body"><div class="psi-lbl">Debug Sync</div><div class="psi-val">View sync status</div></div>
+          </div>
+          <div class="pd-set-item psi-danger" onclick="parentReset()">
+            <span class="psi-icon">🔄</span>
+            <div class="psi-body"><div class="psi-lbl" style="color:#e05050">Reset Journey</div><div class="psi-val" style="color:rgba(224,80,80,.7)">Wipes all progress</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Voice accordion -->
+      <div class="pc">
+        <div onclick="toggleVoiceAccordion()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
+          <div>
+            <div class="pc-title" style="margin-bottom:2px">🎤 Voice Selection</div>
+            <div style="font-size:.76rem;color:var(--text2)">Current: <strong style="color:var(--purple)">${selectedVoiceName||'Default'}</strong></div>
+          </div>
+          <div id="voiceAccordionArrow" style="font-size:1.1rem;color:var(--purple);transition:transform .3s;padding:4px 8px;">▼</div>
+        </div>
+        <div id="voiceAccordionBody" style="display:none;margin-top:12px;border-top:1.5px solid var(--border);padding-top:12px;">
+          <p style="font-size:.74rem;color:var(--text4);margin-bottom:10px;">Tap a voice to select it. Press ▶ Test to hear a sample first.</p>
+          <div class="voice-list" id="voiceList">${buildVoiceListHTML()}</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════
+         TAB 6 — NOTES
+    ══════════════════════════════ -->
+    <div class="pd-panel" id="pdtab-notes">
+      <div class="pc">
+        <div class="pc-title">📝 Parent notes</div>
+        ${recentM7.length?`<div style="font-size:.65rem;color:var(--text4);margin-bottom:8px">Recent moods: ${recentM7.map(m=>m.mood).join(' ')}</div>`:''}
+        <textarea class="note-input" id="parentNoteInput" placeholder="Write a note about today... (milestones, struggles, fun moments)"></textarea>
+        <button class="note-save" onclick="saveParentNote()">💾 Save Note</button>
+        ${recentNotes.length
+          ?`<div class="note-list">${recentNotes.map(n=>`<div class="note-entry"><span class="note-date">${n.date}</span>${n.mood?`<span class="note-mood">${n.mood}</span>`:''}<div class="note-text">${n.text}</div></div>`).join('')}</div>`
+          :`<div style="font-size:.72rem;color:var(--text5);margin-top:8px">No notes yet. Start writing!</div>`}
+      </div>
+    </div>
+
+  </div>`;
+
+  // Render calendar heatmap + session bars
   setTimeout(()=>renderMonthlyReport(),50);
-  // Render Star Rewards System panel
+  // Render Star Rewards System
   srRender();
+}
+
+/* Switch between dashboard tabs */
+function pdTab(id){
+  document.querySelectorAll('.pd-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.pd-nav-btn').forEach(b=>b.classList.remove('active'));
+  const panel=document.getElementById('pdtab-'+id);
+  if(panel) panel.classList.add('active');
+  const map={overview:0,progress:1,teaching:2,rewards:3,settings:4,notes:5};
+  const btns=document.querySelectorAll('.pd-nav-btn');
+  if(btns[map[id]]) btns[map[id]].classList.add('active');
+  if(btns[map[id]]) btns[map[id]].scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  if(id==='progress') setTimeout(()=>renderMonthlyReport(),30);
+  if(id==='rewards') srRender();
+  if(typeof playClick==='function') playClick();
 }
 
 function toggleVoiceAccordion(){
@@ -9486,9 +9633,21 @@ function renderMonthlyReport(){
   const calBodyEl=document.getElementById('monthlyCalBody');
   if(calBodyEl) calBodyEl.innerHTML=calHTML;
 
+  // Populate compact summary chips (new tabbed layout)
+  const pdmcStars=document.getElementById('pdmc-stars');
+  const pdmcDays=document.getElementById('pdmc-days');
+  const pdmcActs=document.getElementById('pdmc-acts');
+  const pdmcBest=document.getElementById('pdmc-best');
+  const totalActsMonth=dailyData.reduce((s,d)=>s+d.acts.length,0);
+  if(pdmcStars) pdmcStars.textContent=totalStarsMonth;
+  if(pdmcDays)  pdmcDays.textContent=activeDays;
+  if(pdmcActs)  pdmcActs.textContent=totalActsMonth;
+  if(pdmcBest)  pdmcBest.textContent=bestDay>0?bestDay+'⭐':'-';
+
   // Summary + session bars go in full-width section
-  document.getElementById('monthlyReportBody').innerHTML=
-    noDataHTML||( legendHTML + summaryHTML + sessionBarsHTML + strengthHTML + improveHTML );
+  const monthlyBodyEl=document.getElementById('monthlyReportBody');
+  if(monthlyBodyEl) monthlyBodyEl.innerHTML=
+    noDataHTML||( summaryHTML + sessionBarsHTML + strengthHTML + improveHTML );
 }
 
 // ══════════════════════════════════════
