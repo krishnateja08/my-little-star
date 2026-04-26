@@ -1253,11 +1253,188 @@ body.bedtime .dta-prog-wrap{background:#1a3028;}
 .ds-down{color:var(--coral);}
 .ds-neutral{color:var(--text5);}
 
-/* ── Responsive ── */
+/* ══════════════════════════════════════════
+   PARENT DASHBOARD — RESPONSIVE BREAKPOINTS
+══════════════════════════════════════════ */
+
+/* ── Very small phones (≤340px) ── */
+@media(max-width:340px){
+  .pd-head{padding:12px 10px 14px;}
+  .pd-child-name{font-size:1.1rem;}
+  .phs-num{font-size:.95rem;}
+  .phs-lbl{font-size:.48rem;}
+  .phs-delta{display:none;}
+  .pd-nav-btn{padding:8px 10px;font-size:.6rem;}
+  .pd-panel{padding:8px 8px 0;}
+  .pc{padding:11px 10px;}
+  .pdmc-n{font-size:.85rem;}
+  .pdmc-l{font-size:.48rem;}
+  .pd-month-chips{grid-template-columns:1fr 1fr;gap:5px;}
+  .pd-set-grid{grid-template-columns:1fr 1fr;gap:5px;}
+  .pdw-c{width:28px;height:28px;font-size:.55rem;}
+  .pd-mood-c .pmc-e{font-size:.85rem;}
+  .psk-name{width:42px;font-size:.62rem;}
+}
+
+/* ── Standard mobile (≤480px) ── */
 @media(max-width:480px){
   .pd-head-stats{grid-template-columns:repeat(4,1fr);}
   .pd-set-grid{grid-template-columns:1fr 1fr;}
   .pd-month-chips{grid-template-columns:repeat(4,1fr);}
+  /* Ensure tap targets are touch-friendly */
+  .pd-nav-btn{min-height:48px;}
+  .pd-set-item{min-height:52px;}
+  .pd-set-item .psi-icon{font-size:1.25rem;}
+}
+
+/* ── Medium phones (481px–767px) ── */
+@media(min-width:481px) and (max-width:767px){
+  .pd-head{padding:16px 16px 18px;}
+  .pd-child-name{font-size:1.45rem;}
+  .phs-num{font-size:1.25rem;}
+  .phs-lbl{font-size:.6rem;}
+  .pd-nav-btn{padding:11px 16px;font-size:.75rem;}
+  .pd-nav-btn .pnb-icon{font-size:1.1rem;}
+  .pd-panel{padding:14px 14px 0;}
+  .pc{padding:15px;}
+  .pdw-c{width:36px;height:36px;font-size:.68rem;}
+  .pd-mood-c{padding:7px 3px;}
+  .pd-mood-c .pmc-e{font-size:1.15rem;}
+  .pdmc-n{font-size:1.1rem;}
+  .pd-set-grid{grid-template-columns:1fr 1fr;}
+  .pd-set-item{min-height:56px;padding:12px 13px;}
+  .psi-icon{font-size:1.25rem;}
+  .psi-lbl{font-size:.72rem;}
+  .psi-val{font-size:.63rem;}
+  .pdi-t{font-size:.8rem;}
+  .pdi-s{font-size:.7rem;}
+  .psk-name{width:56px;font-size:.72rem;}
+  .psk-num{font-size:.78rem;}
+  .note-input{height:80px;font-size:.86rem;}
+}
+
+/* ── iPad & Tablets (768px+) — 2-col panel grid ── */
+@media(min-width:768px){
+  .pd-head{padding:18px 20px 20px;}
+  .pd-head-row{margin-bottom:14px;}
+  .pd-child-name{font-size:1.6rem;}
+  .pd-child-sub{font-size:.72rem;}
+  .pd-avatar-ring{width:52px;height:52px;font-size:1.8rem;}
+  .pd-head-stats{gap:10px;}
+  .phs{padding:9px 8px;border-radius:14px;}
+  .phs-num{font-size:1.35rem;}
+  .phs-lbl{font-size:.62rem;}
+  .phs-delta{font-size:.58rem;}
+
+  /* Tab nav — equal width, bigger tap target */
+  .pd-nav-btn{flex:1;padding:12px 10px;font-size:.76rem;min-height:54px;}
+  .pd-nav-btn .pnb-icon{font-size:1.2rem;}
+
+  /* Panels get more padding */
+  .pd-panel{padding:16px 16px 0;}
+
+  /* Cards */
+  .pc{padding:16px;border-radius:18px;}
+  .pc-title{font-size:.74rem;margin-bottom:12px;}
+
+  /* 2-column panel grid for Overview & Progress */
+  #pdtab-overview,#pdtab-progress{
+    display:none; /* kept by .active only */
+  }
+  #pdtab-overview.active,#pdtab-progress.active{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    align-items:start;
+  }
+  /* Full-width cards inside 2-col grid */
+  #pdtab-overview .pc:first-child,
+  #pdtab-overview .pc:nth-child(3),
+  #pdtab-progress .pc:first-child{
+    grid-column:1/-1;
+  }
+
+  /* Skill bars */
+  .psk-name{width:60px;font-size:.74rem;}
+  .psk-track{height:10px;}
+  .psk-num{font-size:.78rem;}
+
+  /* Week dots */
+  .pdw-c{width:38px;height:38px;font-size:.72rem;}
+  .pdw-lbl{font-size:.6rem;}
+  .pdw-s{font-size:.56rem;}
+
+  /* Mood */
+  .pd-mood-c{padding:8px 4px;border-radius:11px;}
+  .pd-mood-c .pmc-e{font-size:1.2rem;}
+  .pd-mood-c .pmc-d{font-size:.58rem;}
+
+  /* Insights */
+  .pd-insight{padding:10px 0;}
+  .pdi-dot{width:9px;height:9px;}
+  .pdi-t{font-size:.82rem;}
+  .pdi-s{font-size:.72rem;}
+
+  /* Month chips */
+  .pd-month-chips{gap:10px;}
+  .pdmc{padding:10px 6px;border-radius:12px;}
+  .pdmc-n{font-size:1.2rem;}
+  .pdmc-l{font-size:.6rem;}
+
+  /* Settings — full grid still 2-col but bigger */
+  .pd-set-grid{gap:10px;}
+  .pd-set-item{min-height:60px;padding:13px 14px;border-radius:16px;}
+  .psi-icon{font-size:1.3rem;}
+  .psi-lbl{font-size:.74rem;}
+  .psi-val{font-size:.64rem;}
+  .psi-tog{font-size:.64rem;padding:3px 9px;}
+
+  /* Notes */
+  .note-input{height:90px;font-size:.88rem;}
+  .note-save{padding:10px 24px;font-size:.82rem;}
+
+  /* DTA */
+  .dta-prog-wrap{height:10px;}
+}
+
+/* ── iPad landscape & small desktop (1024px+) ── */
+@media(min-width:1024px){
+  .pd-head{padding:20px 28px 22px;}
+  .pd-child-name{font-size:1.75rem;}
+  .phs-num{font-size:1.5rem;}
+
+  /* Nav — full row, equal width tabs */
+  .pd-nav-btn{font-size:.82rem;min-height:58px;}
+  .pd-nav-btn .pnb-icon{font-size:1.3rem;}
+
+  .pd-panel{padding:18px 18px 0;}
+  .pc{padding:18px;border-radius:20px;}
+  .pc-title{font-size:.78rem;}
+
+  /* Settings — can go 3-col */
+  .pd-set-grid{grid-template-columns:1fr 1fr 1fr;}
+  .pd-set-item{min-height:64px;}
+  .psi-lbl{font-size:.78rem;}
+
+  /* Overview 2-col */
+  #pdtab-overview.active{gap:14px;}
+
+  /* Week dots */
+  .pdw-c{width:42px;height:42px;font-size:.76rem;}
+  .pdw-s{font-size:.6rem;}
+
+  /* Notes */
+  .note-input{height:100px;}
+}
+
+/* ── Touch devices — ensure minimum tap targets ── */
+@media(pointer:coarse){
+  .pd-nav-btn{min-height:48px;padding-top:10px;padding-bottom:10px;}
+  .pd-set-item{min-height:52px;}
+  .pd-mood-c{min-height:44px;}
+  .pdw-c{min-width:32px;min-height:32px;}
+  .note-save{min-height:44px;}
+  .pd-month-sel{min-height:38px;font-size:.78rem;}
 }
 
 /* UNLOCKABLES SHOP */
