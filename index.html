@@ -1323,6 +1323,13 @@ body.bedtime .dta-prog-wrap{background:#1a3028;}
   #pdtab-overview .pc:nth-child(4){
     grid-column:1/-1;
   }
+  /* Progress tab: Monthly Report + Session Breakdown side by side */
+  #pdtab-progress.active{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    align-items:start;
+  }
 }
 
 /* ── iPad & Tablets (768px+) — 2-col panel grid ── */
@@ -1359,12 +1366,12 @@ body.bedtime .dta-prog-wrap{background:#1a3028;}
     gap:12px;
     align-items:start;
   }
-  /* Full-width cards: Learning Areas (1st) + Friend section (4th/last) */
+  /* Full-width cards: Learning Areas (1st) + Friend section (4th) in Overview only */
   #pdtab-overview .pc:first-child,
-  #pdtab-overview .pc:nth-child(4),
-  #pdtab-progress .pc:first-child{
+  #pdtab-overview .pc:nth-child(4){
     grid-column:1/-1;
   }
+  /* Progress tab: both cards side by side — no full-width overrides needed */
 
   /* Skill bars */
   .psk-name{width:60px;font-size:.74rem;}
