@@ -9738,10 +9738,12 @@ function renderMonthlyReport(){
   dailyData.forEach(({day,stars})=>{
     const isToday=new Date().getDate()===day&&new Date().getMonth()+1===mo&&new Date().getFullYear()===yr;
     const bg=stars>=10?'#ffb830':stars>=6?'#56cf81':stars>=3?'#4ecdc4':stars>0?'#a78bfa':'var(--inputbg)';
-    const txtColor=stars>0?'#fff':'var(--text5)';
+    // Use dark text on light/yellow bg, white on darker colours, muted on empty
+    const txtColor=stars>=10?'#5a3a00':stars>0?'#fff':'var(--text5)';
+    const starColor=stars>=10?'#7a4f00':stars>0?'rgba(255,255,255,.9)':'var(--text5)';
     calHTML+=`<div style="aspect-ratio:1;border-radius:8px;background:${bg};display:flex;flex-direction:column;align-items:center;justify-content:center;border:${isToday?'2px solid var(--pink)':'2px solid transparent'};cursor:default" title="Day ${day}: ${stars} stars">
-      <span style="font-size:.62rem;font-weight:700;color:${txtColor}">${day}</span>
-      ${stars>0?`<span style="font-size:.55rem;color:${txtColor}">⭐${stars}</span>`:''}
+      <span style="font-size:.62rem;font-weight:800;color:${txtColor}">${day}</span>
+      ${stars>0?`<span style="font-size:.55rem;font-weight:800;color:${starColor}">⭐${stars}</span>`:''}
     </div>`;
   });
   calHTML+='</div>';
