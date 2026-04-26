@@ -172,6 +172,57 @@ header h1{font-family:'Baloo 2',cursive;font-size:1.7rem;color:#fff;text-shadow:
   border-radius:50%;width:20px;height:20px;display:flex;align-items:center;
   justify-content:center;font-size:.6rem;font-weight:800;color:#fff;}
 
+/* ══════════════════════════════════════════════
+   DAILY TEACHING ACTIVITY — PARENT DASHBOARD
+══════════════════════════════════════════════ */
+.dta-card{background:linear-gradient(135deg,#fff8e1,#e8f5ee);border-radius:20px;padding:18px 18px 14px;margin-bottom:14px;border-left:5px solid #ffb830;box-shadow:0 4px 18px rgba(27,67,50,.1);position:relative;overflow:hidden;}
+.dta-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#ffb830,#ff8c69,#ff6b9d,#a78bfa,#4ecdc4);border-radius:4px 4px 0 0;}
+body.bedtime .dta-card{background:linear-gradient(135deg,#1a1800,#0a1f0e);border-left-color:#ffb830;}
+.dta-title{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:#1b4332;display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+body.bedtime .dta-title{color:var(--text);}
+.dta-badge{background:linear-gradient(135deg,#ffb830,#ff8c69);color:#fff;font-size:.6rem;font-family:'Baloo 2',cursive;font-weight:800;border-radius:50px;padding:2px 10px;letter-spacing:.5px;}
+.dta-progress-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.dta-prog-bar{flex:1;height:10px;background:rgba(0,0,0,.08);border-radius:50px;overflow:hidden;}
+.dta-prog-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,#ffb830,#4ecdc4);transition:width .7s ease;}
+.dta-prog-label{font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800;color:var(--text3);white-space:nowrap;}
+.dta-activity-box{background:#fff;border-radius:16px;padding:16px 16px 12px;border:2px solid #e0f0e8;margin-bottom:12px;}
+body.bedtime .dta-activity-box{background:#0d2218;border-color:#1b5e20;}
+.dta-act-icon{font-size:2.8rem;text-align:center;display:block;margin-bottom:8px;animation:wiggle 3s ease-in-out infinite;}
+.dta-act-name{font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;color:#1b4332;text-align:center;margin-bottom:4px;}
+body.bedtime .dta-act-name{color:var(--text);}
+.dta-act-desc{font-size:.78rem;color:var(--text3);text-align:center;margin-bottom:12px;line-height:1.5;}
+.dta-steps{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.dta-step{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:12px;background:linear-gradient(135deg,#f0faf4,#e8f5ee);border-left:3px solid #52b788;}
+body.bedtime .dta-step{background:linear-gradient(135deg,#081a0f,#0d2218);border-left-color:#2d6a4f;}
+.dta-step-num{font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800;color:#fff;background:#52b788;border-radius:50%;min-width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.dta-step-text{font-size:.8rem;color:var(--text2);line-height:1.5;font-weight:600;}
+.dta-say-box{background:linear-gradient(135deg,#fff5d4,#ffe0a0);border-radius:12px;padding:11px 14px;margin-bottom:12px;border-left:4px solid #ffb830;display:flex;gap:10px;align-items:flex-start;}
+body.bedtime .dta-say-box{background:linear-gradient(135deg,#2a1800,#1a1000);border-left-color:#ffb830;}
+.dta-say-label{font-family:'Baloo 2',cursive;font-size:.62rem;font-weight:800;color:#ff8c00;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;margin-top:2px;}
+.dta-say-text{font-size:.8rem;color:#7a4500;font-weight:700;line-height:1.5;font-style:italic;}
+body.bedtime .dta-say-text{color:#ffd580;}
+.dta-done-btn{width:100%;padding:15px;border-radius:16px;border:none;background:linear-gradient(135deg,#52b788,#4ecdc4);color:#fff;font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;cursor:pointer;box-shadow:0 5px 16px rgba(82,183,136,.35);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.dta-done-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(82,183,136,.4);}
+.dta-done-btn:active{transform:scale(.97);}
+.dta-done-btn.completed{background:linear-gradient(135deg,#a78bfa,#4ecdc4);cursor:default;}
+.dta-completed-banner{background:linear-gradient(135deg,#e8fff4,#f0fff8);border-radius:14px;border:2px solid #52b788;padding:14px 16px;text-align:center;margin-bottom:10px;}
+body.bedtime .dta-completed-banner{background:linear-gradient(135deg,#081a0f,#0d2218);border-color:#2d6a4f;}
+.dta-completed-banner .cb-icon{font-size:2.2rem;display:block;margin-bottom:6px;}
+.dta-completed-banner .cb-title{font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800;color:#1b4332;margin-bottom:3px;}
+body.bedtime .dta-completed-banner .cb-title{color:var(--text);}
+.dta-completed-banner .cb-sub{font-size:.75rem;color:var(--text3);}
+.dta-next-preview{background:rgba(255,255,255,.6);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;border:1.5px dashed var(--border);margin-top:10px;}
+body.bedtime .dta-next-preview{background:rgba(0,0,0,.2);}
+.dta-next-label{font-size:.67rem;font-weight:800;color:var(--text4);text-transform:uppercase;letter-spacing:.5px;font-family:'Baloo 2',cursive;}
+.dta-next-name{font-size:.78rem;font-weight:700;color:var(--text2);}
+.dta-all-done{text-align:center;padding:16px;background:linear-gradient(135deg,#fff5d4,#f0fff8);border-radius:16px;}
+body.bedtime .dta-all-done{background:linear-gradient(135deg,#1a1800,#0a1f0e);}
+.dta-all-done .ad-icon{font-size:3rem;display:block;margin-bottom:8px;}
+.dta-all-done .ad-title{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:#1b4332;margin-bottom:4px;}
+body.bedtime .dta-all-done .ad-title{color:var(--text);}
+.dta-all-done .ad-sub{font-size:.75rem;color:var(--text3);}
+.dta-restart-btn{margin-top:12px;padding:10px 22px;border-radius:50px;border:none;background:linear-gradient(135deg,#a78bfa,#4ecdc4);color:#fff;font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:800;cursor:pointer;}
+
 /* ── BOTTOM NAV ── */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:500;
   background:#fff;border-top:2px solid var(--border);
@@ -9192,6 +9243,11 @@ function renderParentDash(){
           <div id="monthlyReportBody"></div>
         </div>
 
+        <!-- ✅ DAILY TEACHING ACTIVITY (full width) -->
+        <div class="pd-card pd-card-full" id="dtaCard">
+          ${renderDtaCard()}
+        </div>
+
         <!-- ⭐ STAR REWARDS SYSTEM (full width) -->
         <div class="pd-card pd-card-full" id="srCard">
           <div class="pd-card-title" style="margin-bottom:14px">⭐ Star Rewards System</div>
@@ -14685,6 +14741,602 @@ function srDelRwd(id){
 
 // ── Utility ──
 function srCloseM(id){const el=document.getElementById(id);if(el)el.remove();}
+
+// ════════════════════════════════════════════════════════
+//  📚 DAILY TEACHING ACTIVITY — PARENT TEACHES CHILD
+//  One curated activity per day for a 5-year-old.
+//  Parent confirms Done → moves to next activity.
+// ════════════════════════════════════════════════════════
+
+const DTA_ACTIVITIES = [
+  {
+    id:'dta_days_week', icon:'📅', name:'Days of the Week',
+    desc:'Teach your child the 7 days in order — a lifelong skill!',
+    steps:[
+      'Sit together and say each day clearly: "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday."',
+      'Ask her to repeat after you, one day at a time.',
+      'Clap once for each day as you say it together.',
+      'Ask: "What day is TODAY?" and help her find the answer.',
+      'Ask: "What day comes AFTER Tuesday?" — make it a game!'
+    ],
+    say:'"Today is [say today's day]. Say it with me! The days of the week are: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday. Can you say them all? Amazing! 🌟"',
+    tip:'Use a weekly calendar on the wall. Every morning, point and say the day together!',
+    stars:3
+  },
+  {
+    id:'dta_abc_a_f', icon:'🔤', name:'Alphabet: A to F',
+    desc:'Introduce the first six letters with their sounds and words.',
+    steps:[
+      'Point to the letter A and say: "A is for Apple 🍎 — the sound is Ahh."',
+      'Do the same for B (Ball), C (Cat), D (Dog), E (Elephant), F (Fish).',
+      'Write each letter BIG on paper and let her trace it with her finger.',
+      'Ask: "Can you think of another word that starts with A?" — celebrate every answer!',
+      'Sing the ABC song stopping after F: "A B C D E F… ♪"'
+    ],
+    say:'"A says Ahh like Apple 🍎, B says Buh like Ball ⚽, C says Cuh like Cat 🐱… Let's say them together!"',
+    tip:'Stick letter flashcards on the fridge. Point to them during breakfast!',
+    stars:3
+  },
+  {
+    id:'dta_abc_g_l', icon:'🔤', name:'Alphabet: G to L',
+    desc:'Continue the alphabet — letters G through L with fun sounds.',
+    steps:[
+      'Review A-F quickly first (30 seconds).',
+      'Introduce G (Goat), H (Hat), I (Ice cream), J (Jelly), K (Kite), L (Lion).',
+      'Make animal sounds together for G (goat: meh!) and L (lion: roar!).',
+      'Write G, H, I, J, K, L on paper and trace together.',
+      'Quiz: "What does G stand for in our letters? What sound does it make?"'
+    ],
+    say:'"G says Guh like Goat 🐐, H says Huh like Hat 🎩, I says Ee like Ice Cream 🍦… Can you roar like a LION for L? 🦁"',
+    tip:'Look for G-L letters on cereal boxes or books you read together!',
+    stars:3
+  },
+  {
+    id:'dta_abc_m_r', icon:'🔤', name:'Alphabet: M to R',
+    desc:'Learn letters M through R — we\'re more than halfway through!',
+    steps:[
+      'Quick A-L review — how many can she remember?',
+      'Introduce M (Moon), N (Nose), O (Orange), P (Penguin), Q (Queen), R (Rainbow).',
+      'Touch your nose for N, draw a rainbow for R, pretend to be a queen for Q!',
+      'Write M, N, O, P, Q, R and trace each one.',
+      'Play "I Spy": "I spy something that starts with M" (moon, mug, mat, etc.)'
+    ],
+    say:'"M says Mmm like Moon 🌙, N says Nnn — touch your Nose! 👃, O says Oh like Orange 🍊… Let\'s draw a Rainbow for R together! 🌈"',
+    tip:'The letter O makes a great drawing activity — it\'s just a circle! Add faces to make Os together.',
+    stars:3
+  },
+  {
+    id:'dta_abc_s_z', icon:'🔤', name:'Alphabet: S to Z',
+    desc:'Finish the alphabet! S through Z — the final stretch!',
+    steps:[
+      'Review M-R first, then dive into S-Z.',
+      'Introduce S (Sun), T (Tree), U (Umbrella), V (Volcano), W (Whale), X (Xylophone), Y (Yellow), Z (Zebra).',
+      'Make a snake sound for S (sssss), and a buzzing bee for Z (zzzzz)!',
+      'Sing the FULL ABC song from A to Z together — celebrate when done!',
+      'Ask: "What letter does YOUR name start with?" Help her find it in the alphabet.'
+    ],
+    say:'"S says Ssss like a Snake 🐍! W says Wuh like a Whale 🐋! And Z — Zzzzz — like a Zebra 🦓! Now let\'s sing the WHOLE alphabet together! A B C D…"',
+    tip:'After today, she knows all 26 letters! Celebrate with a big sticker or high-five!',
+    stars:4
+  },
+  {
+    id:'dta_numbers_1_5', icon:'🔢', name:'Counting 1 to 5',
+    desc:'Master numbers 1-5 with fingers, objects, and movement!',
+    steps:[
+      'Hold up fingers and count together: 1, 2, 3, 4, 5.',
+      'Count real objects around you: "How many apples? Let\'s count!"',
+      'Jump that many times: "We say 3 — let\'s jump 3 times! 1… 2… 3!"',
+      'Ask her to show you 4 fingers — then 2 fingers — then 5.',
+      'Draw the numbers 1-5 on paper, and draw dots below each one.'
+    ],
+    say:'"1 is ONE finger — one nose on your face! 2 is TWO — like your two eyes! Let\'s count together: 1… 2… 3… 4… 5! Can you show me 3 fingers? Amazing!"',
+    tip:'Count steps as you go upstairs, count grapes at snack time — make numbers part of daily life!',
+    stars:3
+  },
+  {
+    id:'dta_numbers_6_10', icon:'🔢', name:'Counting 6 to 10',
+    desc:'Continue counting — from 6 all the way to 10!',
+    steps:[
+      'Review counting 1-5 together with fingers.',
+      'Now add 6, 7, 8, 9, 10 — use both hands!',
+      'Count 10 objects (toys, spoons, shoes, buttons — anything nearby).',
+      'Count backwards from 10 to 1 like a rocket launch: "10, 9, 8… BLAST OFF! 🚀"',
+      'Write numbers 6-10 on paper and draw that many dots or stars next to each.'
+    ],
+    say:'"After 5 comes 6 — six legs on a beetle! 7 — seven days in a week! 8 — like a snowman with two circles! 9 — just one less than 10! And 10 — all ten fingers! Count with me: 6, 7, 8, 9, 10! 🎉"',
+    tip:'Play "how many" at dinner — how many peas? How many spoons on the table?',
+    stars:3
+  },
+  {
+    id:'dta_colors_primary', icon:'🎨', name:'Primary Colors',
+    desc:'Red, Blue, and Yellow — the three original colours!',
+    steps:[
+      'Show her something RED, something BLUE, and something YELLOW in the room.',
+      'Explain: "These are called PRIMARY colours — they\'re the most important ones!"',
+      'Mix red and blue paint or playdough: "What colour do we get?" (purple!).',
+      'Name 5 things that are RED together. Then BLUE. Then YELLOW.',
+      'Draw a rainbow using only red, yellow, and blue crayons.'
+    ],
+    say:'"RED is the colour of roses 🌹 and fire trucks 🚒! BLUE is the colour of the sky ☀️ and the sea 🌊! YELLOW is the colour of the sun ☀️ and bananas 🍌! Which is your favourite?"',
+    tip:'Point out primary colours on everything you see: "Your shirt is BLUE! The cup is RED!"',
+    stars:3
+  },
+  {
+    id:'dta_colors_secondary', icon:'🎨', name:'Secondary Colours',
+    desc:'Orange, Green, Purple — what happens when colours mix!',
+    steps:[
+      'Review: "What are the three primary colours?" (Red, Blue, Yellow).',
+      'Mix red + yellow → Orange 🍊. Mix blue + yellow → Green 🌿. Mix red + blue → Purple 💜.',
+      'Find orange, green and purple objects around the house.',
+      'Draw a big flower 🌸 and colour petals in orange, green and purple.',
+      'Quiz: "If I mix red and yellow, what do I get?" (Orange — great!)'
+    ],
+    say:'"Red + Yellow = ORANGE 🍊, like an orange fruit! Blue + Yellow = GREEN 🌿, like grass! Red + Blue = PURPLE 💜, like a grape! Colours mix to make NEW colours — isn\'t that magical? ✨"',
+    tip:'Do a painting session! Let her mix colours herself with watercolours or playdough.',
+    stars:3
+  },
+  {
+    id:'dta_shapes', icon:'🔷', name:'Basic Shapes',
+    desc:'Circle, square, triangle and rectangle — shapes are everywhere!',
+    steps:[
+      'Draw a CIRCLE and say: "A circle is round with no corners — like the sun ☀️!"',
+      'Draw a SQUARE: "4 equal sides and 4 corners — like a window!"',
+      'Draw a TRIANGLE: "3 sides and 3 pointy corners — like a pizza slice! 🍕"',
+      'Draw a RECTANGLE: "Like a square but stretched longer — like a door!"',
+      'Shape hunt: find a circle, square, triangle, and rectangle in the room.'
+    ],
+    say:'"How many corners does a triangle have? Count with me: 1… 2… 3! And a square? 1, 2, 3, 4! A circle has NO corners at all — it\'s perfectly round! 🌀"',
+    tip:'Cut shapes from coloured paper and make a collage — a house (square + triangle), a sun (circle + lines)!',
+    stars:3
+  },
+  {
+    id:'dta_animals_sounds', icon:'🐾', name:'Animals & Their Sounds',
+    desc:'Match animals to the sounds they make — super fun and silly!',
+    steps:[
+      'Name 10 animals one by one: dog, cat, cow, sheep, duck, horse, lion, frog, bee, elephant.',
+      'Make the sound together for each: "The dog goes WOOF! The cow goes MOO!"',
+      'Play "What animal am I?" — you make a sound and she guesses!',
+      'Ask: "Where do these animals live?" (farm, jungle, sea).',
+      'Draw your favourite animal together and label it.'
+    ],
+    say:'"Let\'s be silly! Can you MOO like a cow? 🐄 Can you ROAR like a lion? 🦁 Can you BUZZ like a bee? 🐝 What sound does a frog make? RIBBIT! RIBBIT! 🐸 Your turn to make any animal sound!"',
+    tip:'Visit a farm or zoo soon — or watch a short animal video together to reinforce sounds!',
+    stars:3
+  },
+  {
+    id:'dta_body_parts', icon:'🧍', name:'Body Parts',
+    desc:'Head, shoulders, knees and toes — and much more!',
+    steps:[
+      'Touch and name: head, hair, eyes, ears, nose, mouth, chin, neck.',
+      'Then: shoulders, arms, elbows, hands, fingers.',
+      'Then: tummy, back, legs, knees, feet, toes.',
+      'Sing "Head, Shoulders, Knees and Toes" together with actions!',
+      'Ask: "How many fingers do you have? How many eyes?"'
+    ],
+    say:'"Touch your nose! Touch your ears! Now your knees! Now wiggle your toes! 🦶 You know so many body parts! Your brain is inside your head — it helps you learn new things every day! 🧠"',
+    tip:'Make it a game at bath time — name each part as you wash it!',
+    stars:3
+  },
+  {
+    id:'dta_time_oclock', icon:'🕐', name:'Telling Time: O\'Clock',
+    desc:'Introduce the clock and what o\'clock means.',
+    steps:[
+      'Show a real clock or draw one. Point to the big hand and small hand.',
+      'Explain: "When the big hand (minute hand) points to 12, it\'s O\'CLOCK."',
+      'Show 1 o\'clock, 3 o\'clock, 7 o\'clock on the clock face.',
+      'Ask: "What time do you wake up? What time do you eat lunch?"',
+      'Draw clock faces together and set them to 1, 2, 3 o\'clock.'
+    ],
+    say:'"See this clock? The short hand tells us the HOUR. When the long hand points all the way UP to the 12, we say O\'CLOCK! So this is 3 o\'clock 🕒 — that\'s when we might have a snack! What time is it right now? Let\'s look!"',
+    tip:'Keep a simple clock on the wall she can see. Ask "what time is it?" throughout the day!',
+    stars:3
+  },
+  {
+    id:'dta_seasons', icon:'🌸', name:'The Four Seasons',
+    desc:'Spring, Summer, Autumn, Winter — why the world changes!',
+    steps:[
+      'Explain: "The year is split into 4 seasons — each one feels different!"',
+      'SPRING 🌸: flowers bloom, birds sing, it rains. SUMMER ☀️: hot, sunny, holidays.',
+      'AUTUMN 🍂: leaves turn orange and fall. WINTER ❄️: cold, coats, maybe snow!',
+      'Ask: "What season is it RIGHT NOW? How do we know?"',
+      'Draw all 4 seasons on a piece of paper — one in each corner.'
+    ],
+    say:'"In SPRING 🌸 flowers wake up! In SUMMER ☀️ we play outside! In AUTUMN 🍂 leaves fall like confetti! In WINTER ❄️ we wear big coats and drink hot cocoa! Which season is YOUR favourite? Why?"',
+    tip:'Check the weather each morning and say which season it feels like!',
+    stars:3
+  },
+  {
+    id:'dta_weather', icon:'⛅', name:'Types of Weather',
+    desc:'Sunny, cloudy, rainy, windy, snowy — learning to describe weather!',
+    steps:[
+      'Look out the window together: "What\'s the weather like today?"',
+      'Name weather types: sunny ☀️, cloudy ☁️, rainy 🌧️, windy 🌬️, foggy, stormy ⛈️, snowy ❄️.',
+      'Ask: "What clothes do we wear when it\'s raining? What about sunny?"',
+      'Draw a weather chart for the week — fill in today\'s weather.',
+      'Make a rain sound by tapping fingers on the table, getting faster and louder!'
+    ],
+    say:'"Look outside! Is it sunny ☀️ or cloudy ☁️? If it rains we need an umbrella ☔! If it\'s sunny we wear sunscreen 🕶️! If it\'s cold we wear a coat 🧥! You\'re becoming a little weather reporter! What\'s the weather TODAY?"',
+    tip:'Start a weather journal — draw the weather each day for a week together!',
+    stars:3
+  },
+  {
+    id:'dta_fruits_veg', icon:'🍎', name:'Fruits and Vegetables',
+    desc:'Name and sort fruits and vegetables — and why we eat them!',
+    steps:[
+      'Gather 5-6 real fruits or vegetables from the kitchen (or draw them).',
+      'Name each one together and say what colour it is.',
+      'Sort them: "Is this a FRUIT or a VEGETABLE?" — fruits usually have seeds inside!',
+      'Ask: "Which is your favourite? Which is mine? Which is the yummiest colour?"',
+      'Count how many fruits and vegetables you have at home together.'
+    ],
+    say:'"Fruits and vegetables make us STRONG and HEALTHY! 💪 An apple 🍎 is a fruit — it has seeds inside! A carrot 🥕 is a vegetable — it grows underground! Can you name 3 fruits? Can you name 3 vegetables? Let\'s find them in the kitchen!"',
+    tip:'Let her help pick one fruit or vegetable at the supermarket next time!',
+    stars:3
+  },
+  {
+    id:'dta_family', icon:'👨‍👩‍👧', name:'My Family',
+    desc:'Learn family member names and what makes a family special.',
+    steps:[
+      'Look at family photos together and name each person.',
+      'Talk about roles: "I am your MUMMY/DADDY. She is your GRANDMA. He is your UNCLE."',
+      'Ask: "How many people are in our family? Can you name them all?"',
+      'Draw a family picture together — everyone in the family.',
+      'Talk about one special memory with a family member: "Remember when Grandma...?"'
+    ],
+    say:'"You have a family who LOVES you so much! 💕 Mummy, Daddy, Grandma, Grandpa, aunties, uncles, cousins — they all care about you! You are our most precious little star 🌟! Who in our family makes you laugh the most?"',
+    tip:'Make a simple family tree drawing together — photos or drawings, names underneath!',
+    stars:3
+  },
+  {
+    id:'dta_opposites', icon:'↔️', name:'Opposites',
+    desc:'Big & small, hot & cold, fast & slow — learning pairs of opposites!',
+    steps:[
+      'Start with BIG 🐘 and SMALL 🐭 — show examples in the room.',
+      'Hot 🔥 and Cold ❄️ — touch the warm kettle (safely!) vs cold fridge.',
+      'Fast 🐇 and Slow 🐢 — run fast! Then walk super slow!',
+      'Do the same for: up/down, in/out, loud/quiet, happy/sad, day/night.',
+      'Quiz: "What is the opposite of BIG? What is the opposite of HOT?"'
+    ],
+    say:'"Opposites are words that mean the TOTAL OPPOSITE! Big elephant 🐘 — SMALL mouse 🐭! HOT fire 🔥 — COLD ice ❄️! Run FAST like a cheetah 🐆 — then walk SLOW like a snail 🐌! What\'s the opposite of HAPPY? Yes — SAD! You\'re so clever! 🌟"',
+    tip:'Play "opposites" at the park: run fast then slow, go up then down on the slide!',
+    stars:3
+  },
+  {
+    id:'dta_numbers_11_20', icon:'🔢', name:'Numbers 11 to 20',
+    desc:'Extend counting beyond 10 — the teen numbers!',
+    steps:[
+      'Review 1-10 with fingers, then keep going: 11, 12, 13…',
+      'Explain: "11 is ten + one more, 12 is ten + two more!"',
+      'Count 15 objects — use small toys, blocks, or pasta shapes.',
+      'Write numbers 11-20 on paper; she traces them with her finger.',
+      'Count backwards from 20 to 11 — then all the way to 1!'
+    ],
+    say:'"After 10 comes ELEVEN — that\'s 10 fingers AND one more! 11, 12, 13, 14, 15, 16, 17, 18, 19, 20! Let\'s count these toys: 1, 2, 3… all the way to 20! You can count to TWENTY — amazing! 🎉"',
+    tip:'Play "counting steps" — count every step as you walk upstairs, aim to reach 20!',
+    stars:3
+  },
+  {
+    id:'dta_patterns', icon:'🔵', name:'Patterns',
+    desc:'AB, ABB, ABC patterns — seeing and continuing sequences.',
+    steps:[
+      'Create an AB pattern: red block, blue block, red block, blue block… "What comes next?"',
+      'Try ABB: apple, grape, grape, apple, grape, grape… "What comes next?"',
+      'Try ABC: triangle, circle, square, triangle, circle, square… "What comes next?"',
+      'Make patterns with clapping: clap-stomp, clap-stomp, clap-stomp.',
+      'She makes her OWN pattern and you have to continue it!'
+    ],
+    say:'"Look at this pattern: RED, BLUE, RED, BLUE — what comes next? RED! You spotted it! Patterns repeat! They go on and on! Now let\'s try: clap, clap, stomp, clap, clap, stomp — can you continue it? 👏👏🦶"',
+    tip:'Point out patterns on clothes, tiles, wrapping paper — patterns are everywhere!',
+    stars:3
+  },
+  {
+    id:'dta_simple_addition', icon:'➕', name:'Simple Addition',
+    desc:'1+1=2, 2+1=3 — introducing adding with objects!',
+    steps:[
+      'Place 2 apples on the table. Then add 1 more. "We had 2 — now we have 3!"',
+      'Use fingers: hold up 2 on one hand, 1 on other. Count ALL fingers together.',
+      'Practice: 1+1, 2+1, 1+2, 2+2, 3+1, 1+3.',
+      'Write simple sums on paper: 2 + 1 = ___ and solve together.',
+      'Make a story: "You have 3 sweets 🍬, I give you 2 more — how many now?"'
+    ],
+    say:'"Adding means PUTTING TOGETHER! If you have 2 teddies 🧸🧸 and I give you 1 more 🧸 — how many teddies do you have? Count them! 1, 2, 3! That\'s what plus means — it\'s like making a bigger group! Can you help me: 3 + 2 = ?"',
+    tip:'Use real objects — raisins, buttons, pennies — to make addition real and tangible!',
+    stars:4
+  },
+  {
+    id:'dta_simple_subtraction', icon:'➖', name:'Simple Subtraction',
+    desc:'Taking away — what\'s left when we remove some?',
+    steps:[
+      'Place 5 grapes on the table. Eat 2. "We had 5 — now how many are left?"',
+      'Use fingers: hold up 4, fold down 1. "4 take away 1 = 3!"',
+      'Practice: 5-1, 4-1, 3-1, 5-2, 4-2.',
+      'Write simple sums: 5 − 2 = ___ and solve together.',
+      'Story time: "You had 4 biscuits 🍪, you ate 2 — how many left?"'
+    ],
+    say:'"Taking away means REMOVING some! If you have 5 sweets 🍬🍬🍬🍬🍬 and eat 3 — 5 take away 3 — how many are left? Count what\'s there: 1, 2! TWO are left! Subtraction is just counting what remains! Brilliant! 🌟"',
+    tip:'Snack time is perfect! "You had 6 grapes — you ate 2 — how many are left?"',
+    stars:4
+  },
+  {
+    id:'dta_rhyming', icon:'🎵', name:'Rhyming Words',
+    desc:'Cat and hat, dog and log — playing with words that rhyme!',
+    steps:[
+      'Say two rhyming words clearly: "CAT and HAT — they sound the same at the end!"',
+      'More pairs: dog/log, sun/fun, cake/lake, ball/tall, red/bed, star/car.',
+      'Read a short rhyming poem or nursery rhyme together (Humpty Dumpty, etc.).',
+      'Finish the rhyme: "I have a cat who wears a ___?" (hat!).',
+      'Make silly rhymes: "Silly Billy ate a chilly… " and let her make up a rhyme!'
+    ],
+    say:'"Cat… hat… they RHYME! They both end in AT! Hop on POP — hop and pop rhyme! Twinkle twinkle little STAR — how I wonder what you ARE — star and are rhyme! Can you think of a word that rhymes with MOON? 🌙 (spoon, soon, June… yes!)"',
+    tip:'Read Dr Seuss or other rhyming books at bedtime — the best rhyming practice!',
+    stars:3
+  },
+  {
+    id:'dta_my_details', icon:'🏠', name:'My Name, Address & Number',
+    desc:'Every child should know their full name, address, and a parent\'s phone number.',
+    steps:[
+      'Teach her FULL NAME: first name + last name. Practice saying it clearly.',
+      'Teach HOME ADDRESS: house number, street, town. Repeat slowly several times.',
+      'Teach one PARENT PHONE NUMBER — say it as a rhythm or song.',
+      'Quiz: "What is your full name? Where do you live? Who do you call?"',
+      'Explain WHY: "If you ever get lost, you tell a safe adult these things."'
+    ],
+    say:'"Your full name is [child\'s full name]. Say it! Great! Now your address: [your address] — say it with me! And if you need help, you can tell a safe adult: a police officer, a shop worker with a badge, or another mum or dad with children. You are so brave and smart! 💪"',
+    tip:'Make it a fun daily ritual — say name, address and number together every morning for a week!',
+    stars:4
+  },
+  {
+    id:'dta_safety', icon:'🛡️', name:'Staying Safe',
+    desc:'Simple safety rules every child should know — taught with love, not fear.',
+    steps:[
+      'Talk about SAFE vs UNSAFE touches: "Your body belongs to YOU."',
+      'Explain the "NO GO TELL" rule: if something feels wrong, say No, Go away, Tell an adult.',
+      'Identify 3 SAFE ADULTS she can always go to (you, grandparent, teacher).',
+      'Talk about online safety basics: "We don\'t talk to strangers online."',
+      'Role play: "If a stranger says come with me, what do you do?" Practice the answer.'
+    ],
+    say:'"You are precious and safe 💕. Your body belongs only to you. If ANYONE ever makes you feel scared or uncomfortable — even someone you know — you ALWAYS tell Mummy or Daddy. We will ALWAYS believe you and help you. There is nothing you can\'t tell us. You are never in trouble for telling the truth. 💛"',
+    tip:'Keep this conversation open and calm. Revisit it gently every few months.',
+    stars:4
+  },
+  {
+    id:'dta_telling_time_half', icon:'🕧', name:'Telling Time: Half Past',
+    desc:'Half past the hour — the next step in reading clocks!',
+    steps:[
+      'Review o\'clock: "When the long hand points to 12, it\'s o\'clock."',
+      'Now: "When the long hand points to 6, it\'s HALF PAST!"',
+      'Show half past 1, half past 3, half past 7 on a clock.',
+      'Ask: "What time is half past 2? Where does the long hand point?" (to 6).',
+      'Draw 4 clock faces — she draws the hands for given times.'
+    ],
+    say:'"O\'clock is when the long hand points UP ⬆️ to the 12. HALF PAST is when the long hand points DOWN ⬇️ to the 6 — it\'s gone HALF WAY around the clock! So half past 3 means: short hand on 3, long hand on 6! Can you set the clock to half past 5? 🕠"',
+    tip:'Ask "Is it closer to o\'clock or half past?" when you check the time during the day!',
+    stars:3
+  },
+  {
+    id:'dta_emotions', icon:'😊', name:'Feelings and Emotions',
+    desc:'Name and understand different emotions — emotional intelligence for life!',
+    steps:[
+      'Make faces together: happy 😊, sad 😢, angry 😠, scared 😨, excited 🤩, surprised 😮.',
+      'Ask: "When do YOU feel happy? When do you feel sad? That\'s okay!"',
+      'Talk about healthy ways to express feelings: "When I\'m angry, I take 3 deep breaths."',
+      'Read or make up a story where a character feels different emotions.',
+      'Give big hugs and say: "All feelings are okay. We can always talk about them."'
+    ],
+    say:'"Feelings live in our hearts 💛. Happy, sad, scared, excited, angry — ALL feelings are okay! It\'s what we DO with them that matters. When you\'re angry, try: take a DEEP BREATH in… and blow it out slowly. Feel better? Sometimes we need a HUG too. Can I have a hug? 🤗"',
+    tip:'Make an emotions chart for the wall — her own drawn faces for different feelings!',
+    stars:3
+  },
+  {
+    id:'dta_nature_science', icon:'🌿', name:'Nature & Simple Science',
+    desc:'Plants, animals, water, and the world around us — curiosity begins here!',
+    steps:[
+      'Go outside or look at the garden/window. Name 5 things you see in nature.',
+      'Explain: "Plants need sunlight ☀️, water 💧, and soil 🌱 to grow."',
+      'Do a simple experiment: put a celery stalk in coloured water — watch it change overnight!',
+      'Ask: "Why does rain fall? Where does it go?" (evaporation → clouds → rain!)',
+      'Collect leaves, pebbles or flowers and make a nature collage.'
+    ],
+    say:'"Everything in nature is connected! Plants make OXYGEN — that\'s the air we breathe! 🌬️ The sun makes plants grow, and animals eat plants, and WE eat animals and plants — it\'s a big circle called the food chain! Isn\'t nature incredible? What\'s your favourite thing in nature?"',
+    tip:'Start a simple plant from a seed on the windowsill — let her water it every day!',
+    stars:3
+  },
+  {
+    id:'dta_creative_storytelling', icon:'📖', name:'Storytelling Together',
+    desc:'Build imagination and language — make up a story together!',
+    steps:[
+      'Start with: "Once upon a time there was a [she picks: a princess? a dinosaur? a robot?]..."',
+      'Take turns adding to the story: you say one sentence, she says the next.',
+      'Include a PROBLEM and a SOLUTION in the story together.',
+      'Ask: "What happened in the END? Was it a happy ending?"',
+      'Draw one scene from the story together on paper.'
+    ],
+    say:'"Stories begin with ONCE UPON A TIME… and they end with HAPPILY EVER AFTER! ✨ But in between — amazing things happen! Let\'s make a story together. I\'ll start: Once upon a time, there was a very brave little girl named… [say her name!] And one day she found a magical [you decide together]… What happened next?"',
+    tip:'Record her telling a story on your phone — it\'s magical to listen back months later!',
+    stars:3
+  },
+  {
+    id:'dta_music_rhythm', icon:'🎵', name:'Music and Rhythm',
+    desc:'Clapping, tapping, singing — rhythm is maths in disguise!',
+    steps:[
+      'Clap a simple rhythm and she repeats it: clap-clap-pause, clap-clap-pause.',
+      'Tap on knees, table, floor — making different sounds.',
+      'Sing a favourite nursery rhyme together.',
+      'Make music with household items: pots as drums, rice in a bottle as a shaker!',
+      'Move to music — jump when the beat goes fast, sway when it\'s slow!'
+    ],
+    say:'"Music lives in RHYTHM — that\'s the beat, the pattern of sound! Clap with me: 1-2-3, 1-2-3! Music can make us feel happy or calm or excited — just like our feelings! What song makes YOU want to dance? Let\'s dance together right now! 💃"',
+    tip:'10 minutes of music and movement a day helps with language, maths, and mood!',
+    stars:3
+  },
+  {
+    id:'dta_helping_manners', icon:'💛', name:'Kindness and Good Manners',
+    desc:'Please, thank you, sharing and caring — the foundation of character.',
+    steps:[
+      'Talk about WHY manners matter: "Kind words make people feel good inside."',
+      'Practice: "please", "thank you", "sorry", "excuse me", "may I?"',
+      'Role play a situation: ordering food, asking to play, apologising.',
+      'Ask: "What is something KIND you did for someone this week?"',
+      'Do a random act of kindness together: draw a card for someone you love!'
+    ],
+    say:'"A smile 😊 is free and it changes someone\'s whole day! Saying PLEASE and THANK YOU makes you warm inside and out. SORRY when you make a mistake makes everything better. SHARING is hard sometimes — but it shows love! You are one of the KINDEST little people I know. I\'m so proud of you. 💛"',
+    tip:'Model it yourself — "Thank you for helping me, that was so kind of you!" every single day.',
+    stars:3
+  }
+];
+
+// ── DTA Storage ──
+function dtaKey(){ return 'c_dta_v1'; }
+function dtaLoad(){
+  const raw=localStorage.getItem(dtaKey());
+  if(raw) try { return JSON.parse(raw); } catch(e){}
+  return { currentIndex:0, completedIds:[], completedDates:{} };
+}
+function dtaSave(state){
+  localStorage.setItem(dtaKey(), JSON.stringify(state));
+  if(typeof fbWrite==='function'&&typeof _syncReady!=='undefined'&&_syncReady&&_currentUser)
+    fbWrite(dtaKey(), JSON.stringify(state));
+}
+
+// ── Render the Daily Teaching Activity card ──
+function renderDtaCard(){
+  const state = dtaLoad();
+  const totalActs = DTA_ACTIVITIES.length;
+  const completed = state.completedIds.length;
+  const pct = Math.round((completed/totalActs)*100);
+
+  // If all done, show celebration
+  if(completed >= totalActs){
+    return `
+    <div class="dta-card">
+      <div class="dta-title">📚 Daily Teaching Activity <span class="dta-badge">ALL DONE!</span></div>
+      <div class="dta-all-done">
+        <span class="ad-icon">🏆</span>
+        <div class="ad-title">You completed all ${totalActs} activities! 🎉</div>
+        <div class="ad-sub">What an incredible parent–child journey! Your daughter has learned so much. Ready to start over?</div>
+        <button class="dta-restart-btn" onclick="dtaRestart()">🔄 Start Over (Repeat Programme)</button>
+      </div>
+    </div>`;
+  }
+
+  const act = DTA_ACTIVITIES[state.currentIndex];
+  if(!act) return '';
+  const isDoneToday = state.completedIds.includes(act.id);
+  const nextAct = DTA_ACTIVITIES[state.currentIndex+1];
+
+  const stepsHTML = act.steps.map((s,i)=>`
+    <div class="dta-step">
+      <div class="dta-step-num">${i+1}</div>
+      <div class="dta-step-text">${s}</div>
+    </div>`).join('');
+
+  const doneBanner = isDoneToday ? `
+    <div class="dta-completed-banner">
+      <span class="cb-icon">✅</span>
+      <div class="cb-title">Activity done! Great teaching today!</div>
+      <div class="cb-sub">Come back tomorrow for the next activity. You're building something amazing! 🌟</div>
+    </div>` : '';
+
+  const nextPreview = nextAct && !isDoneToday ? `
+    <div class="dta-next-preview">
+      <span style="font-size:1.4rem">${nextAct.icon}</span>
+      <div>
+        <div class="dta-next-label">Up Next</div>
+        <div class="dta-next-name">${nextAct.name}</div>
+      </div>
+    </div>` : '';
+
+  const doneBtn = isDoneToday ?
+    `<button class="dta-done-btn completed" disabled>✅ Done for today! See you tomorrow 👋</button>` :
+    `<button class="dta-done-btn" onclick="dtaMarkDone()">✅ We Did It! Mark as Done 🌟</button>`;
+
+  return `
+  <div class="dta-card">
+    <div class="dta-title">
+      📚 Daily Teaching Activity
+      <span class="dta-badge">Activity ${state.currentIndex+1} of ${totalActs}</span>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="dta-progress-row">
+      <div class="dta-prog-bar"><div class="dta-prog-fill" style="width:${pct}%"></div></div>
+      <div class="dta-prog-label">${completed}/${totalActs} done</div>
+    </div>
+
+    <!-- Activity box -->
+    <div class="dta-activity-box">
+      <span class="dta-act-icon">${act.icon}</span>
+      <div class="dta-act-name">${act.name}</div>
+      <div class="dta-act-desc">${act.desc}</div>
+
+      <div style="font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:800;color:var(--j2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">
+        📋 How to teach it:
+      </div>
+      <div class="dta-steps">${stepsHTML}</div>
+
+      <div class="dta-say-box">
+        <div class="dta-say-label">💬 Say:</div>
+        <div class="dta-say-text">${act.say}</div>
+      </div>
+
+      <div style="background:linear-gradient(135deg,#f0e8ff,#e8f0ff);border-radius:10px;padding:9px 12px;margin-bottom:12px;display:flex;gap:8px;align-items:flex-start;">
+        <span style="font-size:1rem;flex-shrink:0">💡</span>
+        <div style="font-size:.76rem;color:#4a4080;font-weight:600;line-height:1.5">${act.tip}</div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;font-size:.74rem;color:var(--text3);font-family:'Baloo 2',cursive;font-weight:700;">
+        <span style="font-size:1rem">⭐</span> +${act.stars} stars when you mark done
+      </div>
+
+      ${doneBanner}
+      ${doneBtn}
+      ${nextPreview}
+    </div>
+  </div>`;
+}
+
+function dtaMarkDone(){
+  const state = dtaLoad();
+  const act = DTA_ACTIVITIES[state.currentIndex];
+  if(!act || state.completedIds.includes(act.id)) return;
+
+  // Mark done
+  state.completedIds.push(act.id);
+  state.completedDates[act.id] = new Date().toISOString();
+  // Advance to next
+  if(state.currentIndex < DTA_ACTIVITIES.length-1) state.currentIndex++;
+  dtaSave(state);
+
+  // Award stars
+  const s = act.stars||3;
+  stars+=s; totalStarsEver+=s;
+  localStorage.setItem('cs_'+todayKey(),stars);
+  localStorage.setItem('c_total_stars',totalStarsEver);
+  const ws=JSON.parse(localStorage.getItem('cws')||'{}');
+  ws[todayKey()]=(ws[todayKey()]||0)+s;
+  localStorage.setItem('cws',JSON.stringify(ws));
+  if(typeof fbWrite==='function'&&typeof _syncReady!=='undefined'&&_syncReady&&_currentUser){
+    fbWrite('c_total_stars',totalStarsEver);
+    fbWrite('cs_'+todayKey(),stars);
+    fbWrite('cws',JSON.stringify(ws));
+  }
+
+  if(typeof playStar==='function')playStar();
+  if(typeof burst==='function')burst();
+  if(typeof showToast==='function')showToast('🌟 Activity done! +'+s+' stars!');
+  if(typeof mascotSay==='function')mascotSay('Amazing teaching! +'+s+' stars! 🌟',3000);
+  if(typeof showSpill==='function')showSpill();
+
+  // Refresh dashboard
+  renderParentDash();
+}
+
+function dtaRestart(){
+  if(!confirm('This will reset all activity progress and start from Activity 1. Continue?')) return;
+  dtaSave({currentIndex:0, completedIds:[], completedDates:{}});
+  renderParentDash();
+  if(typeof showToast==='function') showToast('🔄 Programme restarted — let\'s go!');
+}
 
 // ── Main render entry (called from renderParentDash) ──
 function srRender(){
