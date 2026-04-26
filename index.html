@@ -10092,7 +10092,13 @@ function switchTab(t){
   }
 
   if(t==='hearts'){renderHeartsTab();return;}
-  if(t==='body'){renderBodyTab();return;}
+  if(t==='body'){renderBodyTab();
+    setTimeout(()=>{
+      const state=bodyLoad();const card=BODY_CARDS[state.currentIndex];
+      if(card&&typeof mascotSay==='function')mascotSay('Let\'s learn about your '+card.part+' today! 🫀',2500);
+    },400);
+    return;
+  }
   fetchNext();
 }
 // ══════════════════════════════════════
@@ -15836,10 +15842,23 @@ function renderBodyTab(){
   const isDone=state.completedIds.includes(card.id);
   const next=BODY_CARDS[state.currentIndex+1];
 
+  // ── Build full speech text (same pattern as other cards) ──
+  const fullSpeech=[
+    'Body Explorer. Part '+(state.currentIndex+1)+' of '+total+'. Today we learn about the '+card.part+'.',
+    card.learn,
+    'Fun fact! '+card.fun,
+    'Try this:',
+    ...card.steps.map((s,i)=>'Step '+(i+1)+': '+s),
+    'Now say this out loud: '+card.say.replace(/["""]/g,'')
+  ].filter(Boolean).join('. ');
+  window._lastSpeech=fullSpeech;
+
+  const listenBtn=`<button class="listen-btn" onclick="speakText(window._lastSpeech)" style="margin-bottom:12px;width:100%">🔊 Tap to hear everything read aloud</button>`;
+
   const stepsHTML=card.steps.map((s,i)=>`
-    <div class="dta-step">
+    <div class="dta-step" onclick="speakText('Step ${i+1}. ${s.replace(/'/g,"\\'")}');this.style.background='linear-gradient(135deg,#d8f3dc,#b7e4c7)';setTimeout(()=>this.style.background='',1800)" style="cursor:pointer">
       <div class="dta-step-num">${i+1}</div>
-      <div class="dta-step-text">${s}</div>
+      <div class="dta-step-text">${s} <span style="font-size:.6rem;color:var(--blue)">🔊</span></div>
     </div>`).join('');
 
   const doneBanner=isDone?`<div class="dta-completed-banner">
@@ -15866,20 +15885,21 @@ function renderBodyTab(){
       <div class="dta-prog-label">${completed}/${total} learned</div>
     </div>
     <div class="dta-activity-box">
-      <div style="text-align:center;padding:8px 0 2px;">${bodyAnimSVG(card.anim)}</div>
-      <div class="dta-act-name">${card.emoji} ${card.part}</div>
-      <div class="dta-act-desc">${card.learn}</div>
-      <div style="background:linear-gradient(135deg,#fff5d4,#ffe0a0);border-radius:12px;padding:10px 13px;margin-bottom:11px;border-left:4px solid #ffb830;display:flex;gap:9px;align-items:flex-start;">
+      ${listenBtn}
+      <div style="text-align:center;padding:8px 0 2px;" onclick="speakText('${card.part}! ${card.learn.replace(/'/g,"\\'")}');" style="cursor:pointer">${bodyAnimSVG(card.anim)}</div>
+      <div class="dta-act-name" onclick="speakText('${card.part}')" style="cursor:pointer">${card.emoji} ${card.part} <span style="font-size:.7rem;color:var(--blue)">🔊</span></div>
+      <div class="dta-act-desc" onclick="speakText('${card.learn.replace(/'/g,"\\'")}')" style="cursor:pointer">${card.learn} <span style="font-size:.65rem;color:var(--blue)">🔊 tap to hear</span></div>
+      <div style="background:linear-gradient(135deg,#fff5d4,#ffe0a0);border-radius:12px;padding:10px 13px;margin-bottom:11px;border-left:4px solid #ffb830;display:flex;gap:9px;align-items:flex-start;cursor:pointer" onclick="speakText('Fun fact! ${card.fun.replace(/'/g,"\\'")}')">
         <span style="font-size:1rem;flex-shrink:0">⚡</span>
         <div>
-          <div style="font-size:.62rem;font-family:'Baloo 2',cursive;font-weight:800;color:#ff8c00;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">Fun Fact!</div>
+          <div style="font-size:.62rem;font-family:'Baloo 2',cursive;font-weight:800;color:#ff8c00;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">Fun Fact! 🔊 tap</div>
           <div style="font-size:.8rem;color:#7a4500;font-weight:700;line-height:1.5">${card.fun}</div>
         </div>
       </div>
-      <div style="font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:800;color:var(--j2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">🔍 Try This:</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:800;color:var(--j2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">🔍 Try This: <span style="font-size:.6rem;color:var(--blue);font-weight:600">tap each step to hear it</span></div>
       <div class="dta-steps">${stepsHTML}</div>
-      <div class="dta-say-box">
-        <div class="dta-say-label">💬 Say:</div>
+      <div class="dta-say-box" onclick="speakText('${card.say.replace(/["""]/g,'').replace(/'/g,"\\'")}') " style="cursor:pointer">
+        <div class="dta-say-label">💬 Say: 🔊 tap</div>
         <div class="dta-say-text">${card.say}</div>
       </div>
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;font-size:.74rem;color:var(--text3);font-family:'Baloo 2',cursive;font-weight:700;">
