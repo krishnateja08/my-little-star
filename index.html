@@ -2590,6 +2590,10 @@ body.bedtime .sr-stat,.body.bedtime .sr-log-entry,.body.bedtime .sr-cat-card,.bo
       <div class="mt-badge" id="ts_think">&#x1F9E9;</div>
       <span class="mt-icon">&#x1F9E0;</span><div class="mt-name">Think</div>
     </div>
+    <div class="mini-tile" style="background:linear-gradient(135deg,#ff6b9d,#ffb830);" onclick="goToSection('body')">
+      <div class="mt-badge" id="ts_body">&#x1FAC0;</div>
+      <span class="mt-icon">&#x1FAC0;</span><div class="mt-name">Body</div>
+    </div>
   </div>
 
   <!-- ── DAILY DASHBOARD WIDGETS (home only) ── -->
@@ -2773,7 +2777,11 @@ body.bedtime .sr-stat,.body.bedtime .sr-log-entry,.body.bedtime .sr-cat-card,.bo
     <span class="bn-icon">&#x1F3AE;</span><span class="bn-label">Games</span>
   </button>
   <button class="bn-item" id="bn_stories" onclick="goToSection('stories')">
-    <span class="bn-icon">&#x1F4D6;</span><span class="bn-label">Stories</span>
+    <span class="bn-icon">&#x1F4D6;</span><span class="bn-label">Read</span>
+  </button>
+  <button class="bn-item" id="bn_body" onclick="goToSection('body')">
+    <span class="bn-icon">&#x1FAC0;</span><span class="bn-label">Body</span>
+    <span class="bn-dot"></span>
   </button>
   <button class="bn-item" id="bn_parent" onclick="switchTab('parent')">
     <span class="bn-icon">&#x1F46A;</span><span class="bn-label">Parent</span>
@@ -10063,7 +10071,7 @@ function switchTab(t){
   if(t!=='learning') subj='all';
 
   // Show/hide elements based on tab
-  const isSpecial=t==='create'||t==='parent'||t==='stories'||t==='hearts';
+  const isSpecial=t==='create'||t==='parent'||t==='stories'||t==='hearts'||t==='body';
   const pb=document.getElementById('progBar');if(pb)pb.style.display=isSpecial?'none':'flex';
   // storyBanner only on morning
   const sb=document.getElementById('storyBanner');
@@ -10084,6 +10092,7 @@ function switchTab(t){
   }
 
   if(t==='hearts'){renderHeartsTab();return;}
+  if(t==='body'){renderBodyTab();return;}
   fetchNext();
 }
 // ══════════════════════════════════════
@@ -10723,6 +10732,7 @@ const SECTION_META={
   evening: {name:'Evening Wind Down',sub:'Calm time & getting ready for sleep',icon:'🌿',bn:'bn_evening'},
   create:  {name:'Create & Draw',   sub:'Art, music, stickers & more',      icon:'🎨',bn:'bn_create'},
   stories: {name:'Story Time',      sub:'Read amazing adventure stories',    icon:'📖',bn:'bn_stories'},
+  body:    {name:'Body Explorer',   sub:'Learn one body part today — one a day!', icon:'🫀',bn:'bn_body'},
   hearts:  {name:'Hearts & Feelings',sub:'Understand your emotions',         icon:'❤️',bn:'bn_hearts'},
   think:   {name:'Think & Puzzle',  sub:'Patterns, logic & coding',          icon:'🧠',bn:'bn_think'},
   parent:  {name:'Parent Dashboard',sub:'View progress & settings',          icon:'👨‍👩‍👧',bn:'bn_parent'},
@@ -15700,6 +15710,215 @@ function dtaRestart(){
 function srRender(){
   srInit();
   setTimeout(()=>srSwitch(srPanel||'stars'),30);
+}
+
+// ══════════════════════════════════════
+//  🫀 BODY EXPLORER — One Body Part Per Day
+// ══════════════════════════════════════
+const BODY_CARDS=[
+  {id:'body_heart',part:'Heart',emoji:'❤️',shortName:'Heart',
+   color:'linear-gradient(135deg,#ff6b9d,#ffb830)',
+   fun:'Your heart beats about 100,000 times every single day — even while you sleep!',
+   learn:'Your heart is a strong muscle inside your chest. It pumps blood to every single part of your body like a little engine. Put your hand on your chest — can you feel it? Lub-dub, lub-dub — that is your heart saying hello!',
+   steps:['Make a fist — that is exactly how big your heart is! Squeeze it again and again — that is what your heart does all day!','Put your hand on your chest and feel the beats: 1-2, 1-2... count 10 beats!','Jump up and down 10 times then feel your heart again — it beats faster because it is working harder!','Say out loud: My heart pumps blood and keeps me alive — it never stops!'],
+   say:'"Your heart is the hardest worker in your whole body — it NEVER takes a rest!"',
+   anim:'heart',stars:4},
+  {id:'body_brain',part:'Brain',emoji:'🧠',shortName:'Brain',
+   color:'linear-gradient(135deg,#a78bfa,#4ecdc4)',
+   fun:'Your brain has 86 BILLION tiny cells — more than all the stars you can see in the night sky!',
+   learn:'Your brain lives inside your skull — the hard bone in your head — to keep it safe. It controls everything you do: thinking, moving, dreaming, feeling happy or sad! Your brain sends messages faster than any racing car!',
+   steps:['Gently tap the top of your head — feel the hard skull protecting your brain inside!','Think of your favourite food right now — your brain just sent a super-fast message to make you imagine it!','Try patting your head AND rubbing your tummy at the same time — your brain is doing two things at once!','Say: My brain is the cleverest thing ever — and it belongs to ME!'],
+   say:'"Every time you learn something new, your brain grows a tiny bit stronger — just like a muscle!"',
+   anim:'brain',stars:5},
+  {id:'body_lungs',part:'Lungs',emoji:'🫁',shortName:'Lungs',
+   color:'linear-gradient(135deg,#4fa3e0,#4ecdc4)',
+   fun:'You breathe about 20,000 times every single day without even thinking about it!',
+   learn:'You have two lungs — one on each side of your chest. When you breathe IN, they fill up like balloons and grab oxygen from the air for your body. When you breathe OUT, they push out a waste gas. Lungs love clean fresh air!',
+   steps:['Put both hands on your chest. Take a HUGE deep breath in — feel your chest get bigger as your lungs fill up like balloons!','Now breathe out slowly like blowing a birthday candle — whooooosh!','Hold your breath for 5 seconds and count — feel how your body REALLY wants that next breath?','Say: Every breath I take gives my body the oxygen it needs to live!'],
+   say:'"Your lungs never stop — even right now they are filling up with air and giving your blood what it needs!"',
+   anim:'lungs',stars:4},
+  {id:'body_bones',part:'Bones',emoji:'🦴',shortName:'Bones',
+   color:'linear-gradient(135deg,#ffb830,#52b788)',
+   fun:'You have 206 bones! Babies are born with about 300 — they join together as you grow!',
+   learn:'Your bones are your body\'s frame — like the walls and roof of a house! They hold you up so you can stand, run and jump. Bones are ALIVE — they grow as you grow and can even fix themselves if they break! Calcium from milk makes them strong!',
+   steps:['Feel your arm — underneath your soft skin and muscle, feel the hard bone inside!','Touch the front of your lower leg (your shin) — that hard bone is called your tibia!','Feel the little bumps on your fingers — those are the bones called knuckles!','Say: My bones are my body\'s strong living frame — they help me do everything!'],
+   say:'"Drink your milk! Calcium is the special food that helps your bones grow big and strong!"',
+   anim:'bones',stars:4},
+  {id:'body_muscles',part:'Muscles',emoji:'💪',shortName:'Muscles',
+   color:'linear-gradient(135deg,#ff8c69,#a78bfa)',
+   fun:'You have over 600 muscles — you use 200 of them just to take ONE single step!',
+   learn:'Muscles are attached to your bones. When your brain sends a message, your muscles pull on the bones to make you move! You have muscles in your arms, legs, face (for smiling!) and even in your heart. Exercise makes muscles bigger and stronger!',
+   steps:['Bend your arm and squeeze tight — feel the bump? That is your bicep muscle getting shorter and fatter!','Now straighten your arm — the muscle stretches long again. Bend and straighten 5 times!','Smile as wide as you possibly can — you just used more than 12 different face muscles!','Say: My muscles work together to help me move, dance, jump and smile!'],
+   say:'"Every time you run, jump or dance, your muscles are getting a little bit stronger — so keep moving!"',
+   anim:'muscles',stars:4},
+  {id:'body_eyes',part:'Eyes',emoji:'👁️',shortName:'Eyes',
+   color:'linear-gradient(135deg,#4fa3e0,#52b788)',
+   fun:'Your eyes can spot up to 10 MILLION different colours — you are an amazing colour-spotter!',
+   learn:'Your eyes are like magic cameras! Light bounces off everything around you, enters your eye, and your brain turns it into the picture you see. The coloured ring in your eye is called the IRIS — it might be brown, blue, green or hazel!',
+   steps:['Look in a mirror — what colour is your iris? That is YOUR unique eye colour, special to you!','Blink slowly — your eyelids are cleaning your eyes like tiny windscreen wipers!','Look at something very near, then look at something far away — your eyes zoom in and out like a camera lens!','Say: My eyes send millions of pictures to my brain so I can see the beautiful world!'],
+   say:'"Your eyes blink about 15 times every minute — that keeps them clean and moist without you even noticing!"',
+   anim:'eyes',stars:4},
+  {id:'body_ears',part:'Ears',emoji:'👂',shortName:'Ears',
+   color:'linear-gradient(135deg,#ffb830,#ff6b9d)',
+   fun:'Your ears also help you balance — without them you could not stand up straight!',
+   learn:'Sound is made of invisible waves in the air — like ripples in water. Your ears catch these waves and send them to a tiny drum deep inside called your EARDRUM. It vibrates and your brain hears the sound. Amazing!',
+   steps:['Cup your hands behind your ears like big ear flaps — sounds get louder! You made bigger sound collectors!','Sit very still and listen carefully — how many different sounds can you hear right now? Count them!','Hum a tune and feel your throat and head vibrate — those are sound waves from inside you!','Say: My ears catch invisible sound waves and turn them into voices, music and laughter!'],
+   say:'"Your ears never fully switch off — even while you sleep, they are still listening, which is why loud sounds wake you up!"',
+   anim:'ears',stars:4},
+  {id:'body_nose',part:'Nose',emoji:'👃',shortName:'Nose',
+   color:'linear-gradient(135deg,#52b788,#4ecdc4)',
+   fun:'You can smell over ONE TRILLION different smells — your nose is a supercomputer!',
+   learn:'Inside your nose are millions of tiny smell sensors. When you sniff, tiny smell particles float in, your sensors detect them, and send a message to your brain. Your nose also warms and cleans the air before it goes to your lungs to protect you!',
+   steps:['Take a big sniff through your nose — what can you smell right now? Your nose never stops working!','Hold your nose tightly and take a bite of something — does it taste different? Smell and taste are a team!','Find something nice to smell — a flower, an orange, or your dinner — notice how smell can make you feel happy!','Say: My nose protects my lungs by cleaning the air AND lets me enjoy all the wonderful smells in the world!'],
+   say:'"A smell can bring back a memory from long ago — that is why familiar smells can make you feel happy or cosy!"',
+   anim:'nose',stars:3},
+  {id:'body_teeth',part:'Teeth',emoji:'🦷',shortName:'Teeth',
+   color:'linear-gradient(135deg,#4ecdc4,#a78bfa)',
+   fun:'Teeth are the HARDEST thing in your whole body — even harder than bone!',
+   learn:'You have milk teeth now — 20 of them! They will slowly be replaced by 32 bigger adult teeth as you grow. The white outside of your tooth is called ENAMEL and it is super tough. Brushing twice a day keeps sugar-bugs away!',
+   steps:['Use your tongue to count your teeth — how many can you feel? Touch each one!','Bite into something soft like a banana — your front teeth called incisors do the biting!','Move your jaw side to side — your back teeth called molars grind and crush the food into tiny pieces!','Say: I will brush my teeth twice every day to keep them strong, clean and healthy for life!'],
+   say:'"Every time you brush your teeth, you are a superhero fighting the sugar-bugs that want to make holes — brush them away!"',
+   anim:'teeth',stars:4},
+  {id:'body_tummy',part:'Tummy',emoji:'🍕',shortName:'Tummy',
+   color:'linear-gradient(135deg,#ff8c69,#52b788)',
+   fun:'Your tummy (stomach) is as small as your fist when empty, but stretches to hold a whole big meal!',
+   learn:'When you eat food, it travels down your throat into your stomach. Your stomach squeezes and mixes the food with special juices that break it into tiny pieces. Then it goes into your intestines — long tubes that soak up all the goodness to give your body energy to run, play and grow!',
+   steps:['Put your hand on your tummy and press gently — you might feel or hear a gurgle! That is your tummy working!','Think of your favourite meal — do you feel your tummy reacting? That is real!','Drink a glass of water slowly and trace where it goes with your hand from mouth to tummy!','Say: My tummy breaks down my food so every part of my body gets the energy it needs to grow!'],
+   say:'"Every fruit and vegetable you eat is like putting the best fuel into your body engine — it makes you strong and full of energy!"',
+   anim:'tummy',stars:4}
+];
+
+function bodyAnimSVG(type){
+  const s={
+    heart:`<svg viewBox="0 0 100 88" width="110" height="97" style="display:block;margin:0 auto 6px;"><style>.hb{animation:hbeat .85s ease-in-out infinite;transform-origin:50px 44px}@keyframes hbeat{0%,100%{transform:scale(1)}15%{transform:scale(1.22)}30%{transform:scale(1)}45%{transform:scale(1.14)}70%{transform:scale(1)}}</style><g class="hb"><path d="M50 76C20 55 5 38 5 24 5 12 14 4 25 4 33 4 41 9 50 19 59 9 67 4 75 4 86 4 95 12 95 24 95 38 80 55 50 76Z" fill="#ff6b9d" stroke="#e0356a" stroke-width="2.5"/><path d="M22 22C22 16 28 11 35 13" stroke="rgba(255,255,255,.45)" stroke-width="3" stroke-linecap="round" fill="none"/></g></svg>`,
+    brain:`<svg viewBox="0 0 110 88" width="121" height="97" style="display:block;margin:0 auto 6px;"><style>.bp{animation:bpulse 2s ease-in-out infinite;transform-origin:55px 44px}@keyframes bpulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:.85}}.bw{animation:bwave 2s linear infinite;stroke-dasharray:6 3}@keyframes bwave{0%{stroke-dashoffset:0}100%{stroke-dashoffset:-30}}</style><g class="bp"><ellipse cx="55" cy="50" rx="32" ry="26" fill="#ddd6fe" stroke="#a78bfa" stroke-width="2"/><path d="M28 44Q38 28 55 34Q72 28 82 44" fill="none" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="55" cy="50" rx="20" ry="15" fill="none" stroke="#7c3aed" stroke-width="1.5" class="bw"/><circle cx="42" cy="49" r="5.5" fill="#c4b5fd"/><circle cx="68" cy="49" r="5.5" fill="#c4b5fd"/><circle cx="55" cy="60" r="4" fill="#ede9fe"/></g></svg>`,
+    lungs:`<svg viewBox="0 0 110 96" width="121" height="106" style="display:block;margin:0 auto 6px;"><style>.lb{animation:lbreath 2.2s ease-in-out infinite;transform-origin:55px 52px}@keyframes lbreath{0%,100%{transform:scaleX(.88) scaleY(.82);opacity:.75}50%{transform:scaleX(1.06) scaleY(1.08);opacity:1}}</style><g class="lb"><line x1="55" y1="18" x2="55" y2="56" stroke="#4fa3e0" stroke-width="4" stroke-linecap="round"/><path d="M30 56C14 56 9 46 11 32 13 20 22 16 30 21 38 26 40 36 40 46L40 64C35 70 24 70 30 56Z" fill="#93c5fd" stroke="#4fa3e0" stroke-width="2"/><path d="M80 56C96 56 101 46 99 32 97 20 88 16 80 21 72 26 70 36 70 46L70 64C75 70 86 70 80 56Z" fill="#93c5fd" stroke="#4fa3e0" stroke-width="2"/></g></svg>`,
+    bones:`<svg viewBox="0 0 90 110" width="99" height="121" style="display:block;margin:0 auto 6px;"><style>.bsh{animation:bshine 1.8s ease-in-out infinite}@keyframes bshine{0%,100%{fill:#fef9c3}50%{fill:#fde68a}}</style><rect x="38" y="12" width="14" height="86" rx="7" fill="#fef9c3" stroke="#fbbf24" stroke-width="2"/><circle cx="45" cy="16" r="13" class="bsh" stroke="#fbbf24" stroke-width="2"/><circle cx="45" cy="94" r="13" class="bsh" stroke="#fbbf24" stroke-width="2"/><circle cx="45" cy="16" r="6" fill="#f59e0b"/><circle cx="45" cy="94" r="6" fill="#f59e0b"/></svg>`,
+    muscles:`<svg viewBox="0 0 110 90" width="121" height="99" style="display:block;margin:0 auto 6px;"><style>.mf{animation:mflex 1.4s ease-in-out infinite;transform-origin:55px 48px}@keyframes mflex{0%,100%{transform:scaleX(.88) scaleY(.94)}50%{transform:scaleX(1.1) scaleY(1.1)}}</style><g class="mf"><path d="M20 62C20 40 30 24 55 21 80 24 90 40 90 62 90 74 80 82 55 82 30 82 20 74 20 62Z" fill="#fca5a5" stroke="#ef4444" stroke-width="2.5"/><path d="M34 44C40 36 50 33 55 33 60 33 70 36 76 44" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/><path d="M28 60C38 52 48 49 55 49 62 49 72 52 82 60" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/></g></svg>`,
+    eyes:`<svg viewBox="0 0 110 68" width="121" height="75" style="display:block;margin:0 auto 6px;"><style>.ebg{animation:eblink 3.5s ease-in-out infinite;transform-origin:55px 34px}@keyframes eblink{0%,88%,100%{transform:scaleY(1)}94%{transform:scaleY(.06)}}</style><g class="ebg"><ellipse cx="28" cy="34" rx="23" ry="16" fill="#e0f2fe" stroke="#4fa3e0" stroke-width="2.5"/><circle cx="28" cy="34" r="10" fill="#3b82f6"/><circle cx="28" cy="34" r="5" fill="#1e3a5f"/><circle cx="24" cy="30" r="2.5" fill="#fff"/><ellipse cx="82" cy="34" rx="23" ry="16" fill="#e0f2fe" stroke="#4fa3e0" stroke-width="2.5"/><circle cx="82" cy="34" r="10" fill="#3b82f6"/><circle cx="82" cy="34" r="5" fill="#1e3a5f"/><circle cx="78" cy="30" r="2.5" fill="#fff"/></g></svg>`,
+    ears:`<svg viewBox="0 0 120 90" width="132" height="99" style="display:block;margin:0 auto 6px;"><style>.ew{animation:ewave 1.6s ease-in-out infinite;transform-origin:center}.wv{animation:wvout 1.8s ease-in-out infinite;opacity:0}@keyframes ewave{0%,100%{transform:scaleX(1)}50%{transform:scaleX(1.1)}}@keyframes wvout{0%{opacity:0;r:8}60%{opacity:.55}100%{opacity:0;r:22}}</style><ellipse cx="32" cy="45" rx="22" ry="32" fill="#fde68a" stroke="#fbbf24" stroke-width="2.5" class="ew" style="transform-origin:32px 45px"/><path d="M17 34C19 28 30 26 32 34 34 42 28 48 30 55 32 62 36 61 36 61" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/><ellipse cx="88" cy="45" rx="22" ry="32" fill="#fde68a" stroke="#fbbf24" stroke-width="2.5" class="ew" style="transform-origin:88px 45px;animation-delay:.3s"/><circle cx="62" cy="45" fill="none" stroke="#a78bfa" stroke-width="1.8" class="wv"/><circle cx="62" cy="45" fill="none" stroke="#a78bfa" stroke-width="1.2" class="wv" style="animation-delay:.5s"/></svg>`,
+    nose:`<svg viewBox="0 0 90 100" width="99" height="110" style="display:block;margin:0 auto 6px;"><style>.nw{animation:nwig 2s ease-in-out infinite;transform-origin:45px 50px}@keyframes nwig{0%,100%{transform:rotate(0)}25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}.ns{animation:nsniff 2s ease-in-out infinite;opacity:0}@keyframes nsniff{0%{opacity:0;transform:translateY(2px)}50%{opacity:.7;transform:translateY(-14px)}100%{opacity:0;transform:translateY(-22px)}}</style><g class="nw"><path d="M45 14 L30 60C28 70 19 75 21 83 23 90 35 90 38 81L45 73 52 81C55 90 67 90 69 83 71 75 62 70 60 60Z" fill="#fca5a5" stroke="#f87171" stroke-width="2.5"/><ellipse cx="32" cy="81" rx="9" ry="7" fill="#f87171"/><ellipse cx="58" cy="81" rx="9" ry="7" fill="#f87171"/><ellipse cx="32" cy="81" rx="4" ry="3.5" fill="#dc2626"/><ellipse cx="58" cy="81" rx="4" ry="3.5" fill="#dc2626"/></g><path d="M38 12Q32 4 28 0" stroke="#a78bfa" stroke-width="2" fill="none" stroke-linecap="round" class="ns"/><path d="M52 12Q58 4 62 0" stroke="#a78bfa" stroke-width="2" fill="none" stroke-linecap="round" class="ns" style="animation-delay:.35s"/></svg>`,
+    teeth:`<svg viewBox="0 0 120 88" width="132" height="97" style="display:block;margin:0 auto 6px;"><style>.ts2{animation:tshine 2.2s ease-in-out infinite;opacity:0}@keyframes tshine{0%,80%,100%{opacity:0}40%{opacity:1}}.tsm{animation:tsmile 1.6s ease-in-out infinite;transform-origin:60px 55px}@keyframes tsmile{0%,100%{transform:scaleX(1)}50%{transform:scaleX(1.04)}}</style><g class="tsm"><path d="M14 40Q60 27 106 40L106 56Q60 56 14 56Z" fill="#f0fdf4" stroke="#4ade80" stroke-width="2"/><line x1="34" y1="40" x2="34" y2="56" stroke="#bbf7d0" stroke-width="1.5"/><line x1="54" y1="40" x2="54" y2="56" stroke="#bbf7d0" stroke-width="1.5"/><line x1="74" y1="40" x2="74" y2="56" stroke="#bbf7d0" stroke-width="1.5"/><line x1="94" y1="40" x2="94" y2="56" stroke="#bbf7d0" stroke-width="1.5"/><path d="M14 56Q60 70 106 56L106 72Q60 84 14 72Z" fill="#f0fdf4" stroke="#4ade80" stroke-width="2"/><line x1="34" y1="56" x2="34" y2="72" stroke="#bbf7d0" stroke-width="1.5"/><line x1="54" y1="56" x2="54" y2="72" stroke="#bbf7d0" stroke-width="1.5"/><line x1="74" y1="56" x2="74" y2="72" stroke="#bbf7d0" stroke-width="1.5"/><line x1="94" y1="56" x2="94" y2="72" stroke="#bbf7d0" stroke-width="1.5"/></g><path d="M90 22L86 16M90 22L90 14M90 22L94 16" stroke="#fbbf24" stroke-width="1.8" stroke-linecap="round" class="ts2"/></svg>`,
+    tummy:`<svg viewBox="0 0 100 100" width="110" height="110" style="display:block;margin:0 auto 6px;"><style>.tg{animation:tgurgle 2s ease-in-out infinite;transform-origin:50px 50px}@keyframes tgurgle{0%,100%{transform:scale(1) rotate(0)}33%{transform:scale(1.06) rotate(-1.5deg)}66%{transform:scale(.95) rotate(1.5deg)}}.tb2{animation:tbubble 2s ease-in-out infinite;opacity:0}@keyframes tbubble{0%{opacity:0;transform:translateY(0)}55%{opacity:.8}100%{opacity:0;transform:translateY(-24px)}}</style><g class="tg"><path d="M50 14C28 14 14 30 14 50 14 70 28 86 50 86 72 86 86 70 86 50 86 30 72 14 50 14Z" fill="#fef3c7" stroke="#fbbf24" stroke-width="2.5"/><path d="M27 44C35 33 50 30 63 36 69 40 71 50 66 58 61 67 48 70 38 63 29 56 24 50 27 44Z" fill="#fde68a" stroke="#f59e0b" stroke-width="2"/></g><circle cx="44" cy="52" r="3" fill="#f59e0b" class="tb2"/><circle cx="54" cy="50" r="2.5" fill="#f59e0b" class="tb2" style="animation-delay:.55s"/><circle cx="50" cy="54" r="2" fill="#f59e0b" class="tb2" style="animation-delay:1.1s"/></svg>`
+  };
+  return s[type]||'';
+}
+
+function bodyLoad(){
+  const raw=localStorage.getItem('c_body_v1');
+  if(raw)try{return JSON.parse(raw);}catch(e){}
+  return{currentIndex:0,completedIds:[],completedDates:{}};
+}
+function bodySave(st){localStorage.setItem('c_body_v1',JSON.stringify(st));}
+
+function renderBodyTab(){
+  const el=document.getElementById('hist');
+  if(!el)return;
+  const state=bodyLoad();
+  const total=BODY_CARDS.length;
+  const completed=state.completedIds.length;
+  const pct=Math.round((completed/total)*100);
+
+  if(completed>=total){
+    el.innerHTML=`<div class="dta-card" style="border-left-color:#ff6b9d">
+      <div class="dta-title">🫀 Body Explorer <span class="dta-badge">ALL DONE! 🏆</span></div>
+      <div class="dta-all-done">
+        <span class="ad-icon">🏆</span>
+        <div class="ad-title">Wow! You learned all ${total} body parts!</div>
+        <div class="ad-sub">Your body is incredible — and now YOU know how it all works! 🌟</div>
+        <button class="dta-restart-btn" onclick="bodyRestart()">🔄 Learn Again!</button>
+      </div>
+    </div>`;return;
+  }
+
+  const card=BODY_CARDS[state.currentIndex];
+  if(!card)return;
+  const isDone=state.completedIds.includes(card.id);
+  const next=BODY_CARDS[state.currentIndex+1];
+
+  const stepsHTML=card.steps.map((s,i)=>`
+    <div class="dta-step">
+      <div class="dta-step-num">${i+1}</div>
+      <div class="dta-step-text">${s}</div>
+    </div>`).join('');
+
+  const doneBanner=isDone?`<div class="dta-completed-banner">
+    <span class="cb-icon">✅</span>
+    <div class="cb-title">Brilliant! Come back tomorrow for the next body part!</div>
+    <div class="cb-sub">One amazing part of your body every day — you are doing great! 🌟</div>
+  </div>`:'';
+
+  const doneBtn=isDone
+    ?`<button class="dta-done-btn completed" disabled>✅ See you tomorrow! 👋</button>`
+    :`<button class="dta-done-btn" onclick="bodyMarkDone()" style="background:${card.color}">✅ I Learned This! +${card.stars} Stars 🌟</button>`;
+
+  const nextPreview=next&&!isDone?`<div class="dta-next-preview">
+    <span style="font-size:1.4rem">${next.emoji}</span>
+    <div><div class="dta-next-label">Tomorrow</div><div class="dta-next-name">${next.shortName}</div></div>
+  </div>`:'';
+
+  el.innerHTML=`<div class="dta-card" style="border-left-color:#ff6b9d">
+    <div class="dta-title">🫀 Body Explorer
+      <span class="dta-badge">Part ${state.currentIndex+1} of ${total}</span>
+    </div>
+    <div class="dta-progress-row">
+      <div class="dta-prog-bar"><div class="dta-prog-fill" style="width:${pct}%;background:${card.color}"></div></div>
+      <div class="dta-prog-label">${completed}/${total} learned</div>
+    </div>
+    <div class="dta-activity-box">
+      <div style="text-align:center;padding:8px 0 2px;">${bodyAnimSVG(card.anim)}</div>
+      <div class="dta-act-name">${card.emoji} ${card.part}</div>
+      <div class="dta-act-desc">${card.learn}</div>
+      <div style="background:linear-gradient(135deg,#fff5d4,#ffe0a0);border-radius:12px;padding:10px 13px;margin-bottom:11px;border-left:4px solid #ffb830;display:flex;gap:9px;align-items:flex-start;">
+        <span style="font-size:1rem;flex-shrink:0">⚡</span>
+        <div>
+          <div style="font-size:.62rem;font-family:'Baloo 2',cursive;font-weight:800;color:#ff8c00;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">Fun Fact!</div>
+          <div style="font-size:.8rem;color:#7a4500;font-weight:700;line-height:1.5">${card.fun}</div>
+        </div>
+      </div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:800;color:var(--j2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">🔍 Try This:</div>
+      <div class="dta-steps">${stepsHTML}</div>
+      <div class="dta-say-box">
+        <div class="dta-say-label">💬 Say:</div>
+        <div class="dta-say-text">${card.say}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;font-size:.74rem;color:var(--text3);font-family:'Baloo 2',cursive;font-weight:700;">
+        <span style="font-size:1rem">⭐</span> +${card.stars} stars when you mark done
+      </div>
+      ${doneBanner}
+      ${doneBtn}
+      ${nextPreview}
+    </div>
+  </div>`;
+}
+
+function bodyMarkDone(){
+  const state=bodyLoad();
+  const card=BODY_CARDS[state.currentIndex];
+  if(!card||state.completedIds.includes(card.id))return;
+  state.completedIds.push(card.id);
+  state.completedDates[card.id]=new Date().toISOString();
+  if(state.currentIndex<BODY_CARDS.length-1)state.currentIndex++;
+  bodySave(state);
+  const s=card.stars||3;
+  stars+=s;totalStarsEver+=s;
+  localStorage.setItem('cs_'+todayKey(),stars);
+  localStorage.setItem('c_total_stars',totalStarsEver);
+  const ws=JSON.parse(localStorage.getItem('cws')||'{}');
+  ws[todayKey()]=(ws[todayKey()]||0)+s;
+  localStorage.setItem('cws',JSON.stringify(ws));
+  if(typeof playStar==='function')playStar();
+  if(typeof burst==='function')burst();
+  if(typeof showToast==='function')showToast('🌟 Great job! +'+s+' stars! See you tomorrow for '+( BODY_CARDS[state.currentIndex]?.shortName||'more')+'! 🫀');
+  if(typeof mascotSay==='function')mascotSay('Amazing! You learned about your '+card.part+'! +'+s+' stars! 🌟',3000);
+  renderBodyTab();
+}
+
+function bodyRestart(){
+  if(!confirm('Reset Body Explorer and start from the beginning?'))return;
+  bodySave({currentIndex:0,completedIds:[],completedDates:{}});
+  renderBodyTab();
+  if(typeof showToast==='function')showToast('🔄 Body Explorer restarted — Day 1 begins!');
 }
 </script>
 </body>
