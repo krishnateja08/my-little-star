@@ -1311,6 +1311,18 @@ body.bedtime .dta-prog-wrap{background:#1a3028;}
   .psk-name{width:56px;font-size:.72rem;}
   .psk-num{font-size:.78rem;}
   .note-input{height:80px;font-size:.86rem;}
+
+  /* 7-day + Insights side by side from medium phones up */
+  #pdtab-overview.active{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    align-items:start;
+  }
+  #pdtab-overview .pc:first-child,
+  #pdtab-overview .pc:nth-child(4){
+    grid-column:1/-1;
+  }
 }
 
 /* ── iPad & Tablets (768px+) — 2-col panel grid ── */
@@ -1347,9 +1359,9 @@ body.bedtime .dta-prog-wrap{background:#1a3028;}
     gap:12px;
     align-items:start;
   }
-  /* Full-width cards inside 2-col grid */
+  /* Full-width cards: Learning Areas (1st) + Friend section (4th/last) */
   #pdtab-overview .pc:first-child,
-  #pdtab-overview .pc:nth-child(3),
+  #pdtab-overview .pc:nth-child(4),
   #pdtab-progress .pc:first-child{
     grid-column:1/-1;
   }
@@ -9307,9 +9319,10 @@ function renderParentDash(){
   // Subject data
   const allActivities=[...CUR.learning,...CUR.morning,...CUR.evening];
   const allTimeSubj={abc:0,maths:0,art:0,science:0};
+  const knownSubjects=new Set(['abc','maths','art','science']);
   allUsed.forEach(title=>{
     const act=allActivities.find(a=>a.title===title);
-    if(act&&act.subj)allTimeSubj[act.subj]++;
+    if(act&&act.subj&&knownSubjects.has(act.subj))allTimeSubj[act.subj]++;
   });
   const maxSubj=Math.max(1,...Object.values(allTimeSubj));
   const names={abc:'Reading',maths:'Maths',art:'Art',science:'Science'};
@@ -9425,7 +9438,7 @@ function renderParentDash(){
       <!-- Learning Areas -->
       <div class="pc">
         <div class="pc-title">📚 Learning areas · all time <span class="pc-badge">${allUsed.length} total</span></div>
-        ${Object.entries(allTimeSubj).map(([k,v])=>`
+        ${Object.entries(allTimeSubj).filter(([k])=>names[k]&&emojis[k]).map(([k,v])=>`
           <div class="pd-skill-row">
             <span class="psk-emoji">${emojis[k]}</span>
             <span class="psk-name">${names[k]}</span>
