@@ -881,7 +881,8 @@ body.bedtime .challenge-bar{background:linear-gradient(135deg,#a78bfa11,#4ecdc41
 .alearn{background:linear-gradient(135deg,var(--learnbg1),var(--learnbg2));border-radius:13px;padding:11px 13px;margin-bottom:11px;border-left:3px solid var(--blue);}
 .alearn h4{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--blue);margin-bottom:5px;}
 .alearn p{font-size:.86rem;color:var(--text2);line-height:1.5;}
-.awhy{background:linear-gradient(135deg,#fff5d4,#ffe0f0);border-radius:13px;padding:10px 13px;margin-bottom:11px;font-size:.82rem;color:var(--text3);border-left:3px solid var(--sun);}
+.awhy{display:none;} /* Hidden from child — shown in parent dashboard only */
+.parent-mode .awhy{display:block;background:linear-gradient(135deg,#fff5d4,#ffe0f0);border-radius:13px;padding:10px 13px;margin-bottom:11px;font-size:.82rem;color:var(--text3);border-left:3px solid var(--sun);}
 body.bedtime .awhy{background:linear-gradient(135deg,#2a2a44,#2a1a3e);}
 .awhy strong{color:var(--pink);}
 .asteps{background:var(--inputbg);border-radius:13px;padding:12px;margin-bottom:15px;}
@@ -1719,10 +1720,8 @@ body.bedtime .spark-card{background:linear-gradient(135deg,#2a2a3e,#2e2a1e);bord
 .surprise-claim:active{background:#fff;color:#ff6b9d;}
 
 /* SKIP BUTTON */
-.skip-btn{width:100%;padding:11px;border:2px solid var(--border);border-radius:14px;
-  background:transparent;color:var(--text4);font-family:'Baloo 2',cursive;font-size:.9rem;
-  font-weight:700;cursor:pointer;transition:all .2s;margin-top:6px;}
-.skip-btn:active{transform:scale(.97);background:var(--border);color:var(--text3);}
+.skip-btn{background:none;border:none;color:var(--text4);font-size:.7rem;padding:6px 10px;cursor:pointer;opacity:.5;font-family:'Nunito',sans-serif;display:block;margin:4px auto 0;}
+.skip-btn:active{opacity:.8;}
 
 /* ACTIVITY PICKER */
 .picker-panel{background:var(--cardbg);border-radius:var(--r);padding:16px;margin-bottom:12px;
@@ -3297,6 +3296,7 @@ function changeFamilyCode(){
 //  VOICE + SOUND SYSTEM (#1)
 // ══════════════════════════════════════
 let soundOn=localStorage.getItem('c_sound')!=='off';
+let childName=localStorage.getItem('c_child_name')||'';
 const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
 
 function playTone(freq,dur,type='sine'){
@@ -3405,6 +3405,11 @@ document.getElementById('soundBtn').textContent=soundOn?'🔊':'🔇';
 //  MASCOT SYSTEM — Context-Aware (#6)
 // ══════════════════════════════════════
 const GREETINGS=['Good morning, little star!','Hello, superstar!','Ready to learn?','Let\'s have fun today!','You\'re amazing!'];
+function getGreeting(){
+  const n=childName||'little star';
+  const g=['Hello '+n+'! Ready to learn?','Great to see you, '+n+'! 🌟','You\'re amazing, '+n+'!','Let\'s have fun today, '+n+'!','Hi '+n+'! Let\'s go! 🚀'];
+  return g[Math.floor(Math.random()*g.length)];
+}
 let gameStreak=0; // consecutive correct answers in current session
 
 let speechTimeout;
@@ -3421,7 +3426,7 @@ function mascotTap(){
   // Context-aware tap responses
   if(done.length>=5) mascotSay('Wow, '+done.length+' activities today! 🏆');
   else if(stars>=15) mascotSay(stars+' stars! You\'re on fire! 🔥');
-  else mascotSay(GREETINGS[Math.floor(Math.random()*GREETINGS.length)]);
+  else mascotSay(getGreeting());
 }
 
 // Smart praise — reacts to streaks and milestones
@@ -3711,12 +3716,14 @@ const CUR = {
   morning:[
     {w:1,emoji:'🧺',title:'Sort the Laundry!',desc:'Sort clothes into piles — tops, bottoms, and socks. Can you match the pairs?',learn:'Sorting is a maths skill! Grouping things by type is called classifying — scientists do it too!',why:'Laundry sorting builds responsibility, fine motor skills and early maths thinking.',steps:['Tip out the clean clothes','Make a pile for tops','Make a pile for bottoms','Find matching sock pairs!'],stars:3},
     {w:1,emoji:'👗',title:'Pick My Outfit the Night Before',desc:'Choose tomorrow\'s clothes tonight and lay them out ready to go!',learn:'Preparing the night before is called being proactive — thinking ahead!',why:'Preparation habits reduce morning stress and build planning skills.',steps:['Open your wardrobe tonight','Pick tomorrow\'s full outfit','Lay it neatly on your chair','Shoes beside the chair too!'],stars:3},
+    {w:1,emoji:'⭐',title:'My Daily Affirmations',desc:'Say 3 powerful things about yourself — say them loud and proud!',learn:'An affirmation is a positive sentence about yourself that you say to help you believe in yourself. When you say good things about yourself, your brain starts to believe them — and they help you feel brave, happy and confident!',why:'Positive self-talk builds self-confidence and emotional resilience in young children.',steps:['Stand up tall and put your hands on your hips like a superhero!','Say out loud: "I am SMART!" (say it loudly!)','Say out loud: "I am KIND!" (say it with a smile!)','Say out loud: "I am BRAVE!" (say it with your fists in the air!)','Say: "I am [your name] and I can do anything!" — say it one more time, even LOUDER!'],say:'"Start every day by telling yourself something wonderful — because you are!"',stars:3},
     {w:1,emoji:'🥣',title:'Set the Breakfast Table',desc:'Put out bowls, spoons and cups before everyone sits.',learn:'Laying a table properly is called "table setting" — a real life skill!',why:'Responsibility tasks teach sequencing and teamwork.',steps:['Count how many people eat','Get that many bowls','Add a spoon for each','Pour water or juice!'],stars:2},
     {w:1,emoji:'🙏',title:'Morning Gratitude',desc:'Think of 3 happy things before you start your day.',learn:'Being grateful means noticing the good things. It makes your brain happier!',why:'Gratitude builds emotional intelligence.',steps:['Sit quietly on your mat','Close your eyes','Think of 3 happy things','Tell Mummy what they are!'],stars:1},
     {w:1,emoji:'📝',title:'Make My Own Checklist & Pack My Bag',desc:'Write or draw a checklist of what you need, then pack everything yourself!',learn:'Making a checklist before you pack is called being organised — a real superpower!',why:'Self-checking builds independence, organisation and early writing skills.',steps:['Draw or write your checklist','Books — tick!','Pencil case — tick!','Water bottle and lunch box — zip up!'],stars:4},
     {w:1,emoji:'🧹',title:'Tidy My Room in 5 Minutes!',desc:'Put toys in their place, books on the shelf, and clothes in the basket — race the clock!',learn:'Tidying up is called organising your space. A tidy room helps your brain feel calm!',why:'Timed tidy-up challenges build speed, responsibility and a sense of ownership.',steps:['Set a 5-minute timer','Pick up all toys first','Books on the shelf','Clothes in the basket — done!'],stars:3},
     {w:1,emoji:'🧼',title:'Wash My Hands the Right Way',desc:'Scrub with soap for 20 seconds — front, back, and between fingers!',learn:'Soap breaks up germs and washes them away. 20 seconds is the magic number!',why:'Proper handwashing is one of the most important health habits to build early.',steps:['Turn the tap on','Wet your hands and add soap','Scrub — front, back, between fingers — count 20!','Rinse well and dry on your towel!'],stars:2},
     {w:1,emoji:'🛁',title:'Get Ready for Bath Time Myself',desc:'Get your towel, pyjamas, and pick out your own bath toys — all before the water runs!',learn:'Getting ready yourself is called preparation — it means thinking ahead!',why:'Bath-time independence builds self-care routines and evening wind-down habits.',steps:['Get your towel from the rack','Choose your pyjamas','Pick 2 bath toys','Put them by the bath — you\'re ready!'],stars:3},
+    {w:1,emoji:'🙏',title:'My Gratitude Moment',desc:'What was the best thing about today? Let\'s count our blessings!',learn:'Gratitude means feeling thankful for the good things in your life. Scientists have discovered that people who think about what they are thankful for feel happier, sleep better and are kinder to others! Even on a tricky day, there is always something good.',why:'Evening gratitude practice improves emotional wellbeing, sleep quality and positive outlook.',steps:['Sit with Mummy or Daddy in a cosy spot','Think quietly for a moment... what made you smile today?','Say: "Today I am thankful for..." and share one thing','Now say another thing — who was kind to you today?','Give Mummy or Daddy a big hug and say thank you for being your family!'],say:'"Even on the toughest days, there is always something to be grateful for — and saying it out loud makes your heart feel warm."',stars:3},
     {w:2,emoji:'🌸',title:'Water the Plants',desc:'Give each plant a small drink of water today.',learn:'Plants drink water through their roots. Without water they droop and die!',why:'Caring for living things builds empathy and responsibility.',steps:['Fill a small cup with water','Walk to each plant','Pour gently at the base','Feel the soil — wet now?'],stars:1},
     {w:3,emoji:'🪴',title:'Morning Exercise',desc:'Do 5 jumps, 5 stretches and run in place for 20 seconds!',learn:'Exercise makes your heart beat faster, which sends more blood to your brain!',why:'Morning movement boosts brain power and focus all day.',steps:['Stand up tall and wide','Jump 5 times — count aloud!','Stretch arms to the sky','Run on the spot — count to 20!'],stars:2},
     {w:3,emoji:'📅',title:'Check Today\'s Plan',desc:'Look at your activity chart and tell Mummy what you will do today!',learn:'Planning ahead is called time management — a skill adults use every day.',why:'Planning builds self-management and excitement for learning.',steps:['Look at today\'s activities','Read each one with Mummy','Pick your favourite one','Tell Mummy your plan for the day!'],stars:2},
@@ -3801,11 +3808,11 @@ const CUR = {
     {w:9,subj:'science',emoji:'🧊',title:'Hot & Cold Science',desc:'Heat makes things melt! Cold makes things freeze! Why?',learn:'Everything is made of tiny particles. When hot, they move FAST and things melt. When cold, they slow down and freeze! Chocolate melts, water freezes!',why:'Thermodynamics basics teach cause and effect through familiar objects.',steps:['Hold an ice cube — feel it melting in your hand! Why?','Put water in the freezer — what happens?','Name 3 things that melt when hot','Name 3 things that freeze when cold'],stars:3,tag:'🔬 Science'},
     {w:10,subj:'science',emoji:'🫧',title:'Air is Real!',desc:'You can\'t see air — but it\'s everywhere and it\'s real!',learn:'Air takes up space and pushes on things. Wind is moving air. We breathe oxygen from air. Plants breathe carbon dioxide!',why:'Understanding air introduces physics and atmospheric science.',steps:['Blow into an empty bag and seal it — air inside!','Feel wind on your face — what is wind?','Blow bubbles — air fills every bubble!','Take a deep breath — say thank you to air!'],stars:3,tag:'🔬 Science'},
     // ── BHAGAVAD GITA SLOKAS 🪔 ──
-    {w:1,subj:'gita',emoji:'🪔',title:'Sloka 1 — Karmanye Vadhikaraste',desc:'Work hard without worrying about the result — just do your best!',learn:'कर्मण्येवाधिकारस्ते मा फलेषु कदाचन। मा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि॥\n\nKarmanye vadhikaraste Ma phaleshu kadachana,\nMa karma-phala-hetur bhur ma te sangostvakarmani.\n\nMeaning: You have the right to work, but never to its results. Do your best always — do not worry about winning or losing!',why:'This most famous sloka teaches children to try their hardest without fear of failure — perfect for a 5-year-old learning new things every day.',steps:['Say slowly with Mummy: Kar-ma-nye-va-dhi-ka-ras-te','What does it mean? Do your best!','When you draw, do you try your best?','Say it 3 times and earn your star! 🌟'],stars:5,tag:'🪔 Gita'},
-    {w:2,subj:'gita',emoji:'🕉️',title:'Sloka 2 — Nainam Chhindanti Shastrani',desc:'The soul inside us is forever — it never gets hurt!',learn:'नैनं छिन्दन्ति शस्त्राणि नैनं दहति पावकः। न चैनं क्लेदयन्त्यापो न शोषयति मारुतः॥\n\nNainam chhindanti shastrani nainam dahati pavakah,\nNa chainam kledayantyapo na shoshayati marutah.\n\nMeaning: The soul cannot be cut, burned, made wet, or dried by wind. The soul inside you is strong and safe always!',why:'This sloka gives children a feeling of inner safety and strength — that their true self is always protected.',steps:['Repeat: Nai-nam-chhind-anti-shas-tra-ni','What is inside all of us? Our soul — Atma!','Close your eyes and feel your heartbeat — that is life!','Say the sloka with Mummy 3 times 🙏'],stars:5,tag:'🪔 Gita'},
-    {w:3,subj:'gita',emoji:'🌸',title:'Sloka 3 — Shraddhaavan Labhate Jnanam',desc:'Those who believe and work hard will always learn and grow!',learn:'श्रद्धावान्लभते ज्ञानं तत्परः संयतेन्द्रियः। ज्ञानं लब्ध्वा परां शान्तिमचिरेणाधिगच्छति॥\n\nShraddhaavan labhate jnanam tat-parah samyatendriyah,\nJnaanam labdhva param shaantim achirenadhigacchati.\n\nMeaning: A person who has faith and works with full attention gains knowledge. And with knowledge comes peace and happiness!',why:'This sloka encourages learning with faith — perfect for a child starting school and learning new things every day.',steps:['Repeat: Shrad-dha-vaan-lab-ha-te-jnaa-nam','What is shraddha? It means FAITH and BELIEF!','Do you believe you can learn? Say YES!','Say the sloka 3 times — slowly and clearly 🌟'],stars:4,tag:'🪔 Gita'},
-    {w:4,subj:'gita',emoji:'🦁',title:'Sloka 4 — Uddharedaatmanaatmaanam',desc:'You are your own best friend — lift yourself up!',learn:'उद्धरेदात्मनात्मानं नात्मानमवसादयेत्। आत्मैव ह्यात्मनो बन्धुरात्मैव रिपुरात्मनः॥\n\nUddharedaatmanaatmaanam naatmaanam avasaadayet,\nAatmaiva hyaatmano bandhur-aatmaiva ripur-aatmanah.\n\nMeaning: Lift yourself up with your own effort — do not pull yourself down. You are your own best friend!',why:'This powerful sloka teaches self-belief and self-encouragement — helping children overcome self-doubt when they find things difficult.',steps:['Say: Ud-dha-re-daat-ma-naat-maa-nam','What does it mean? I am my own best friend!','Say out loud: I believe in myself!','Give yourself a hug — you are amazing! 🤗'],stars:4,tag:'🪔 Gita'},
-    {w:5,subj:'gita',emoji:'☀️',title:'Sloka 5 — Yogah Karmasu Kaushalam',desc:'Yoga means doing everything you do with skill and love!',learn:'योगः कर्मसु कौशलम्।\n\nYogah karmasu kaushalam.\n\nMeaning: Yoga is skill and excellence in action. Doing ANY task — drawing, eating, playing — with full attention and care IS yoga!\n\nThis is one of the shortest and most beautiful slokas in the Gita.',why:'This tiny but powerful sloka teaches mindfulness in action — that excellence in everyday tasks is spiritual. Perfect for a 5-year-old!',steps:['Repeat 5 times: Yo-gah-kar-ma-su-kau-sha-lam','What does it mean? Do everything with skill!','When you colour, colour carefully — THAT is yoga!','Eat your food carefully today — that is yoga too! 🙏'],stars:4,tag:'🪔 Gita'},
+    {w:1,subj:'gita',emoji:'🪔',title:'Sloka 1 — Karmanye Vadhikaraste',desc:'Work hard without worrying about the result — just do your best!',learn:'🎵 Say it like this: Kar-ma-nye-va-dhi-ka-ras-te\n\n💛 What it means: You have the RIGHT to work hard and try your BEST — but do not worry about winning or losing! Just do your best every single time!',why:'Sanskrit: कर्मण्येवाधिकारस्ते मा फलेषु कदाचन — Karmanye vadhikaraste Ma phaleshu kadachana, Ma karma-phala-hetur bhur ma te sangostvakarmani. This most famous sloka teaches children to try their hardest without fear of failure.',steps:['Say slowly with Mummy: Kar-ma-nye-va-dhi-ka-ras-te','What does it mean? Do your best!','When you draw, do you try your best?','Say it 3 times and earn your star! 🌟'],stars:5,tag:'🪔 Gita'},
+    {w:2,subj:'gita',emoji:'🕉️',title:'Sloka 2 — Nainam Chhindanti Shastrani',desc:'The soul inside us is forever — it never gets hurt!',learn:'🎵 Say it like this: Nai-nam-chhind-anti-shas-tra-ni\n\n💛 What it means: The soul inside you — your Atma — cannot be hurt. It is ALWAYS strong, safe and protected. You are safe inside!',why:'Sanskrit: नैनं छिन्दन्ति शस्त्राणि — Nainam chhindanti shastrani nainam dahati pavakah. This sloka gives children a feeling of inner safety and strength.',steps:['Repeat: Nai-nam-chhind-anti-shas-tra-ni','What is inside all of us? Our soul — Atma!','Close your eyes and feel your heartbeat — that is life!','Say the sloka with Mummy 3 times 🙏'],stars:5,tag:'🪔 Gita'},
+    {w:3,subj:'gita',emoji:'🌸',title:'Sloka 3 — Shraddhaavan Labhate Jnanam',desc:'Those who believe and work hard will always learn and grow!',learn:'🎵 Say it like this: Shrad-dha-vaan-lab-ha-te-jnaa-nam\n\n💛 What it means: If you BELIEVE in yourself and pay attention when learning, you will gain knowledge — and knowledge brings happiness and peace!',why:'Sanskrit: श्रद्धावान्लभते ज्ञानं — Shraddhaavan labhate jnanam. This sloka encourages learning with faith — perfect for a child starting school.',steps:['Repeat: Shrad-dha-vaan-lab-ha-te-jnaa-nam','What is shraddha? It means FAITH and BELIEF!','Do you believe you can learn? Say YES!','Say the sloka 3 times — slowly and clearly 🌟'],stars:4,tag:'🪔 Gita'},
+    {w:4,subj:'gita',emoji:'🦁',title:'Sloka 4 — Uddharedaatmanaatmaanam',desc:'You are your own best friend — lift yourself up!',learn:'🎵 Say it like this: Ud-dha-re-daat-ma-naat-maa-nam\n\n💛 What it means: YOU are your own best friend! Lift yourself up with your own belief. Never say "I can\'t" — say "I will try!"',why:'Sanskrit: उद्धरेदात्मनात्मानं — Uddharedaatmanaatmaanam. This powerful sloka teaches self-belief and self-encouragement.',steps:['Say: Ud-dha-re-daat-ma-naat-maa-nam','What does it mean? I am my own best friend!','Say out loud: I believe in myself!','Give yourself a hug — you are amazing! 🤗'],stars:4,tag:'🪔 Gita'},
+    {w:5,subj:'gita',emoji:'☀️',title:'Sloka 5 — Yogah Karmasu Kaushalam',desc:'Yoga means doing everything you do with skill and love!',learn:'🎵 Say it like this: Yo-gah-kar-ma-su-kau-sha-lam\n\n💛 What it means: YOGA is not just stretching — yoga means doing EVERYTHING with care and attention! Colouring carefully, eating neatly, playing kindly — all of that IS yoga!',why:'Sanskrit: योगः कर्मसु कौशलम् — Yogah karmasu kaushalam. This tiny but powerful sloka teaches mindfulness in action.',steps:['Repeat 5 times: Yo-gah-kar-ma-su-kau-sha-lam','What does it mean? Do everything with skill!','When you colour, colour carefully — THAT is yoga!','Eat your food carefully today — that is yoga too! 🙏'],stars:4,tag:'🪔 Gita'},
     {w:6,subj:'gita',emoji:'🌙',title:'Sloka 6 — Samatvam Yoga Uchyate',desc:'Treat happy times and sad times with equal calmness — that is yoga!',learn:'सुखदुःखे समे कृत्वा लाभालाभौ जयाजयौ। ततो युद्धाय युज्यस्व नैवं पापमवाप्स्यसि॥\n\nSukha-duhkhe same kritvaa laabha-laabhau jaya-ajayau,\nTato yuddhaya yujyasva nai-vam paapam-avaapsyasi.\n\nMeaning: Be balanced in happiness and sadness, in winning and losing. Stay calm always — that is the brave way!',why:'This sloka teaches emotional balance and resilience — helping children handle both wins and disappointments with equal grace.',steps:['Repeat: Su-kha-duh-khe-sa-me-kri-tvaa','When you win a game, stay calm and kind','When you lose, stay calm and try again!','Practice your calm face now 😌 — that is yoga!'],stars:4,tag:'🪔 Gita'},
     {w:7,subj:'gita',emoji:'🙏',title:'Sloka 7 — Daivi Sampat — Divine Qualities',desc:'Learn the golden qualities of a good person from the Gita!',learn:'अभयं सत्त्वसंशुद्धिर्ज्ञानयोगव्यवस्थितिः। दानं दमश्च यज्ञश्च स्वाध्यायस्तप आर्जवम्॥\n\nAbhayam sattva-samsuddhir jnana-yoga-vyavasthitih,\nDanam damash cha yajnash cha svadhyayas tapa arjavam.\n\nMeaning: Be fearless, pure-hearted, kind, generous, gentle, and always keep learning. These are the gifts of a good person!',why:'The divine qualities from Chapter 16 give children concrete virtues to aspire to — in simple, memorable terms.',steps:['Repeat: Ab-ha-yam-sat-tva-sam-shud-dhih','What is Abhayam? FEARLESS — brave like a lion!','What is Danam? GIVING — sharing with friends!','Which quality can you practise today? 🌟'],stars:5,tag:'🪔 Gita'},
     {w:8,subj:'gita',emoji:'💛',title:'Sloka 8 — Sarva-bhuta-hite Ratah',desc:'A truly wise and good person cares for ALL living beings!',learn:'सर्वभूतहिते रताः।\n\nSarva-bhoota-hite-ratah.\n\nMeaning: Be devoted to the well-being of all living creatures — people, animals, birds, insects — everyone!\n\nKrishna says the best person is one who loves all living beings.',why:'This sloka plants the seed of compassion and ahimsa (non-violence) — caring for all living things, which is central to Indian values.',steps:['Repeat: Sar-va-bhoo-ta-hi-te-ra-tah','What does it mean? Be kind to ALL living beings!','Can you be kind to an ant today? A plant?','Draw all the beings you will be kind to today 🌿'],stars:4,tag:'🪔 Gita'},
@@ -4031,7 +4038,7 @@ function showPhysicalAct(pa){
       <div class="asteps"><h4>📋 How to do it</h4>${steps}</div>
       <div class="showme-row"><button class="showme-btn" id="showMeBtn" onclick="showMeDone()">👋 I did it! Tap here!</button></div>
       <button class="done-btn" onclick="markDone()">✅ Done! What's next? →</button>
-      <button class="skip-btn" onclick="skipActivity()">⏭️ Skip this one</button>
+      <button class="skip-btn" onclick="skipActivity()">⏭ Skip</button>
     </div>`;
   document.getElementById('hsub').textContent=`🏃 ${pa.title}`;
   setTimeout(()=>{const bubble=document.getElementById('speechBubble');if(bubble){bubble.textContent='Time to move your body! 💪';bubble.classList.add('show');clearTimeout(speechTimeout);speechTimeout=setTimeout(()=>bubble.classList.remove('show'),2500);}},600);
@@ -6382,7 +6389,7 @@ function showAct(a){
       <div class="asteps"><h4>📋 Step by Step</h4>${steps}</div>
       ${showMeBtn}
       <button class="done-btn" onclick="markDone()">✅ Done! What's next? →</button>
-      <button class="skip-btn" onclick="skipActivity()">⏭️ Skip this one</button>
+      <button class="skip-btn" onclick="skipActivity()">⏭ Skip</button>
     </div>`;
   document.getElementById('hsub').textContent=`${a.emoji} ${a.title}`;
 
@@ -6454,7 +6461,7 @@ function renderGame(g){
   const area=document.getElementById('area');
   if(area&&!area.querySelector('.skip-btn')){
     const btn=document.createElement('button');
-    btn.className='skip-btn';btn.textContent='⏭️ Skip this game';
+    btn.className='skip-btn';btn.textContent='⏭ Skip';
     btn.onclick=()=>skipActivity();
     area.appendChild(btn);
   }
@@ -9509,6 +9516,20 @@ function renderParentDash(){
         ${renderFriendSection()}
       </div>
 
+      <!-- Weekly Star Certificate -->
+      <div class="pc">
+        <div class="pc-title">🏆 Weekly Star Certificate</div>
+        <div style="font-size:.76rem;color:var(--text2);margin-bottom:12px;line-height:1.5">Print this certificate and display it on the fridge to celebrate ${childName||'your little star'}'s achievement this week!</div>
+        <div style="background:linear-gradient(135deg,#fff5d4,#ffe0a0);border-radius:14px;padding:14px;text-align:center;border:2px dashed #ffb830;margin-bottom:12px">
+          <div style="font-size:1.8rem">🏆⭐🌟</div>
+          <div style="font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:#1b4332;margin:4px 0">Certificate of Achievement</div>
+          <div style="font-size:.8rem;color:#5a3800;margin-bottom:4px">This week ${childName||'my little star'} earned</div>
+          <div style="font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;color:#ff8c00">${weekStars} ⭐ Stars!</div>
+          <div style="font-size:.7rem;color:#5a3800;margin-top:4px">Keep shining, superstar!</div>
+        </div>
+        <button onclick="printCertificate(${weekStars})" style="width:100%;padding:12px;background:linear-gradient(135deg,#1b4332,#52b788);color:#fff;border:none;border-radius:14px;font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;cursor:pointer">🖨️ Print Certificate</button>
+      </div>
+
     </div>
 
     <!-- ══════════════════════════════
@@ -10172,6 +10193,33 @@ const HH_SCENARIOS=[
   {q:"You made a mistake and broke something by accident. The best thing is to:",
    opts:["🙈 Hide it and hope nobody notices","😊 Tell a grown-up what happened","😡 Blame your sibling"],
    correct:1, praise:"Being honest takes bravery — and honesty always builds trust!", oops:"Telling the truth even when it's scary shows real courage!"},
+  {q:"Your friend says you cannot play with them today and it makes you feel left out. What do you do?",
+   opts:["😢 Cry all day and refuse to play with anyone","🎨 Find something nice to do by yourself or another friend","😡 Say something mean back to them"],
+   correct:1, praise:"Brilliant! Finding another way to have fun shows you are resilient and creative!", oops:"Feeling left out is hard, but finding another way to enjoy yourself shows real strength!"},
+  {q:"You are VERY excited about something and you want to talk but Mummy is on the phone. What do you do?",
+   opts:["📣 Interrupt loudly — your news is important!","🤫 Wait patiently until Mummy finishes","😤 Tug at Mummy's arm until she listens"],
+   correct:1, praise:"Wonderful patience! Waiting your turn shows you care about others too!", oops:"Waiting is hard when you are excited — but it shows Mummy and everyone around you that you are very grown up!"},
+  {q:"A new child joins your class and looks sad and lonely. What do you do?",
+   opts:["😶 Ignore them — you have your own friends","💬 Walk over and say 'Hi! My name is... what's yours?'","😂 Whisper about them to your friends"],
+   correct:1, praise:"You are such a kind friend! One 'hello' can change someone's whole day!", oops:"Imagine being new and not knowing anyone — a friendly hello would mean the world!"},
+  {q:"You get a toy you really wanted for your birthday but your cousin says it is boring. How do you feel?",
+   opts:["😡 Argue and tell them they are wrong","😔 Feel so upset you don't enjoy it anymore","😊 Say 'That's okay — we all like different things!' and enjoy it anyway"],
+   correct:2, praise:"Excellent! Other people's opinions don't have to change how you feel about the things you love!", oops:"What other people think doesn't have to affect your happiness. You love what you love!"},
+  {q:"You feel really worried about something. The best thing to do is:",
+   opts:["😶 Keep it inside and say nothing","🤗 Talk to Mummy, Daddy or a trusted grown-up about it","😴 Go to bed and hope the worry disappears"],
+   correct:1, praise:"Sharing a worry makes it so much smaller! Grown-ups are there to help you with exactly this.", oops:"Worries grow bigger when we keep them inside. Telling someone you trust always helps!"},
+  {q:"Your little sibling accidentally draws on your drawing. What is the kind thing to do?",
+   opts:["😭 Scream and shout at them","🌟 Take a deep breath and remember they didn't mean it","🤬 Grab something of theirs and draw on it too"],
+   correct:1, praise:"Taking a breath before reacting is a superpower! You are so emotionally wise!", oops:"Little siblings don't always understand — a deep breath before reacting is what a kind big sibling does!"},
+  {q:"You are scared of the dark at bedtime. The best thing is to:",
+   opts:["🙈 Hide under the duvet and stay scared","💬 Tell Mummy or Daddy so they can help you feel safe","😤 Shout loudly until someone comes"],
+   correct:1, praise:"Asking for help when you are scared shows real bravery — it is never silly to ask!", oops:"Everyone feels scared sometimes. Telling a grown-up is always the right thing — they will help you feel safe!"},
+  {q:"You win a board game and your friend is upset. The kind thing to say is:",
+   opts:["🏆 'Ha ha! I won and you lost!'","🤝 'Good game! You played really well!'","😶 Nothing — just celebrate without caring about their feelings"],
+   correct:1, praise:"Being a gracious winner is just as important as being a good sport when you lose — brilliant!", oops:"Winning is exciting but thinking about how our friend feels makes us a truly wonderful player!"},
+  {q:"You see someone drop their lunchbox and everything falls out. You:",
+   opts:["😂 Laugh and walk past","🤗 Stop and help them pick everything up","🏃 Walk away quickly so you're not late"],
+   correct:1, praise:"What a kind heart you have! Helping someone in a tricky moment is one of the best things a person can do.", oops:"Stopping to help someone who needs it — even when it's not convenient — is what truly kind people do!"},
 ];
 
 const HH_DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
@@ -10857,6 +10905,37 @@ function burst(){
 function setupHeader(){
   const {week:w,day:d}=getWeek();
   document.getElementById('dbadge').textContent=`Day ${Math.min(d,60)} of 60 · Week ${w} of 8`;
+  // Show child name in header if set
+  const h1=document.querySelector('header h1');
+  if(h1&&childName)h1.textContent=childName+' ⭐';
+}
+
+function promptChildName(){
+  if(childName)return;
+  const overlay=document.getElementById('surpriseOverlay');
+  if(!overlay)return;
+  overlay.style.display='flex';
+  overlay.innerHTML=`<div style="background:#fff;border-radius:24px;padding:28px 24px;max-width:320px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+    <div style="font-size:3rem;margin-bottom:8px">⭐</div>
+    <div style="font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:#1b4332;margin-bottom:6px">What is your name, little star?</div>
+    <div style="font-size:.82rem;color:#6b9e85;margin-bottom:16px">So I can say hello to YOU every day!</div>
+    <input id="nameInput" type="text" placeholder="Type your name here..." style="width:100%;padding:12px 14px;border:2px solid #d4ede0;border-radius:14px;font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;color:#1b4332;text-align:center;outline:none;margin-bottom:14px">
+    <button onclick="saveChildName()" style="width:100%;padding:13px;background:linear-gradient(135deg,#1b4332,#52b788);color:#fff;border:none;border-radius:14px;font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;cursor:pointer">Let's go! 🌟</button>
+  </div>`;
+  setTimeout(()=>{const i=document.getElementById('nameInput');if(i)i.focus();},200);
+}
+
+function saveChildName(){
+  const input=document.getElementById('nameInput');
+  const name=(input&&input.value.trim())||'';
+  if(!name){if(input)input.style.borderColor='#ff6b9d';return;}
+  childName=name;
+  localStorage.setItem('c_child_name',name);
+  const overlay=document.getElementById('surpriseOverlay');
+  if(overlay)overlay.style.display='none';
+  setupHeader();
+  if(typeof mascotSay==='function')mascotSay('Hello '+name+'! I am so happy you are here! 🌟',3000);
+  if(typeof speakText==='function')speakText('Hello '+name+'! Welcome to your learning adventure!');
 }
 
 // ══════════════════════════════════════
@@ -12860,16 +12939,16 @@ function loadImageIntoCanvas(dataUrl){
 //  #1 — DAILY 3 GOALS
 // ══════════════════════════════════════
 const GOAL_POOL=[
-  {id:'learn_letter',text:'📚 Learn a new letter',check:()=>done.some(d=>d.tab==='learning')},
-  {id:'play_game',text:'🎮 Play 1 game',check:()=>done.some(d=>d.tab==='games')},
-  {id:'do_morning',text:'🌅 Complete a morning task',check:()=>done.some(d=>d.tab==='morning')},
-  {id:'draw_art',text:'🎨 Draw something creative',check:()=>gallery.length>0&&gallery[gallery.length-1].date===todayKey()},
-  {id:'read_story',text:'📖 Listen to a bedtime story',check:()=>storiesHeard.length>0},
-  {id:'brain_spark',text:'🧠 Complete Brain Spark',check:()=>sparkDoneToday},
-  {id:'beat_timer',text:'⏱️ Beat the Timer challenge',check:()=>bttDoneToday},
-  {id:'breathing',text:'🧘 Do a breathing exercise',check:()=>done.some(d=>d.title&&d.title.toLowerCase().includes('breath'))},
-  {id:'evening',text:'🌙 Complete an evening task',check:()=>done.some(d=>d.tab==='evening')},
-  {id:'help_real',text:'🤗 Do a real-life kind act',check:()=>done.some(d=>d.title&&(d.title.includes('Hug')||d.title.includes('Help')||d.title.includes('Nice')||d.title.includes('Clean')))},
+  {id:'learn_letter',text:'📚 Practise my ABC today!',check:()=>done.some(d=>d.tab==='learning')},
+  {id:'play_game',text:'🎮 Play one fun game!',check:()=>done.some(d=>d.tab==='games')},
+  {id:'do_morning',text:'🌅 Do my morning routine!',check:()=>done.some(d=>d.tab==='morning')},
+  {id:'draw_art',text:'🎨 Draw something beautiful!',check:()=>gallery.length>0&&gallery[gallery.length-1].date===todayKey()},
+  {id:'read_story',text:'📖 Listen to a bedtime story!',check:()=>storiesHeard.length>0},
+  {id:'brain_spark',text:'🧠 Do my thinking game!',check:()=>sparkDoneToday},
+  {id:'beat_timer',text:'⏱️ Try something new today!',check:()=>bttDoneToday},
+  {id:'breathing',text:'🧘 Do my calm breathing!',check:()=>done.some(d=>d.title&&d.title.toLowerCase().includes('breath'))},
+  {id:'evening',text:'🌙 Do my evening wind-down!',check:()=>done.some(d=>d.tab==='evening')},
+  {id:'help_real',text:'🤗 Do a kind act for someone!',check:()=>done.some(d=>d.title&&(d.title.includes('Hug')||d.title.includes('Help')||d.title.includes('Nice')||d.title.includes('Clean')))},
 ];
 
 let todayGoals=JSON.parse(localStorage.getItem('c_goals_'+todayKey())||'null');
@@ -13286,6 +13365,8 @@ function _bootApp(){
   renderStarPath();renderSpark();renderWeather();renderPhysBanner();renderTodayBar();renderBtt();renderGoals();
   // Dashboard widgets now live in homeView — ensure todayBar always visible on home
   const _tdBar=document.getElementById('todayBar');if(_tdBar)_tdBar.style.display='flex';
+  // Prompt for child name on first visit
+  setTimeout(promptChildName,1200);
 // Check bedtime lock (delayed so other UI loads first)
   setTimeout(checkBedtimeLock,1500);
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===tab));
@@ -15713,6 +15794,42 @@ function dtaRestart(){
 }
 
 // ── Main render entry (called from renderParentDash) ──
+function printCertificate(weekStarCount){
+  const name=childName||'My Little Star';
+  const d=new Date();
+  const dateStr=d.toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head><title>Star Certificate</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:'Nunito',sans-serif;background:#fff;margin:0;padding:0;display:flex;justify-content:center;align-items:center;min-height:100vh;}
+    .cert{width:700px;border:12px solid #ffb830;border-radius:24px;padding:48px 40px;text-align:center;background:linear-gradient(135deg,#fffdf0,#fff8e1);position:relative;box-shadow:0 10px 40px rgba(0,0,0,.1);}
+    .cert::before{content:'⭐ ⭐ ⭐ ⭐ ⭐';font-size:1.6rem;display:block;margin-bottom:16px;letter-spacing:8px;}
+    h1{font-family:'Baloo 2',cursive;font-size:2.4rem;color:#1b4332;margin:0 0 8px;}
+    .subtitle{font-size:1rem;color:#5a6e60;margin-bottom:24px;}
+    .name{font-family:'Baloo 2',cursive;font-size:3rem;color:#ff8c00;margin:16px 0;}
+    .stars-count{font-family:'Baloo 2',cursive;font-size:2rem;color:#1b4332;margin:12px 0;}
+    .date{font-size:.9rem;color:#9aaf9e;margin-top:24px;}
+    .emoji-row{font-size:2.5rem;margin:16px 0;letter-spacing:8px;}
+    .signature{margin-top:32px;border-top:2px solid #d4ede0;padding-top:16px;font-size:.85rem;color:#6b9e85;}
+    @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+  </style></head><body>
+  <div class="cert">
+    <h1>🌟 Certificate of Achievement 🌟</h1>
+    <div class="subtitle">This is to celebrate the amazing achievement of</div>
+    <div class="name">${name}</div>
+    <div class="subtitle">who earned</div>
+    <div class="stars-count">⭐ ${weekStarCount} Stars ⭐</div>
+    <div class="subtitle">through fantastic learning, kind behaviour and hard work this week!</div>
+    <div class="emoji-row">🏆 🎓 💪 🧠 ❤️</div>
+    <div class="date">Awarded on ${dateStr}</div>
+    <div class="signature">Keep shining, superstar — we are SO proud of you! 🌟</div>
+  </div>
+  <script>setTimeout(()=>{window.print();},600);<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
 function srRender(){
   srInit();
   setTimeout(()=>srSwitch(srPanel||'stars'),30);
@@ -15791,7 +15908,21 @@ const BODY_CARDS=[
    learn:'When you eat food, it travels down your throat into your stomach. Your stomach squeezes and mixes the food with special juices that break it into tiny pieces. Then it goes into your intestines — long tubes that soak up all the goodness to give your body energy to run, play and grow!',
    steps:['Put your hand on your tummy and press gently — you might feel or hear a gurgle! That is your tummy working!','Think of your favourite meal — do you feel your tummy reacting? That is real!','Drink a glass of water slowly and trace where it goes with your hand from mouth to tummy!','Say: My tummy breaks down my food so every part of my body gets the energy it needs to grow!'],
    say:'"Every fruit and vegetable you eat is like putting the best fuel into your body engine — it makes you strong and full of energy!"',
-   anim:'tummy',stars:4}
+   anim:'tummy',stars:4},
+  {id:'body_safety',part:'Body Safety',emoji:'🛡️',shortName:'My Safety',
+   color:'linear-gradient(135deg,#ff6b9d,#a78bfa)',
+   fun:'YOUR body belongs to YOU and only you — you are always in charge of your body!',
+   learn:'Your body belongs to YOU — nobody should touch your private parts (the parts covered by your swimsuit) without a good reason like a doctor with Mummy or Daddy there. If anyone touches you in a way that feels wrong, scary or uncomfortable — it is NEVER your fault. Always tell Mummy, Daddy or a trusted grown-up straight away. You will NEVER be in trouble for telling!',
+   steps:['Say out loud: My body belongs to ME!','Name 3 grown-ups you trust and would tell if something felt wrong (Mummy, Daddy, teacher...)','Remember: Secrets about touching are NOT okay. Tell a grown-up straight away!','Practice saying NO loudly and clearly — even to grown-ups. Say it now: NO! STOP! I\'LL TELL!'],
+   say:'"I am safe. I am strong. My body is mine. If anything feels wrong, I will always tell Mummy or Daddy."',
+   anim:'heart',stars:5},
+  {id:'body_address',part:'My Address',emoji:'🏠',shortName:'My Address',
+   color:'linear-gradient(135deg,#4fa3e0,#52b788)',
+   fun:'Knowing your address and Mummy\'s phone number is a superpower that could keep you safe!',
+   learn:'Your home address is like your body\'s home in the world. If you ever got separated from Mummy or Daddy in a shop or park, being able to tell a kind adult your address or your parent\'s phone number means they can help you get home safely. This is one of the most important things to learn!',
+   steps:['Ask Mummy to say your full address out loud slowly — listen carefully!','Repeat it back: house number, street name, and town!','Ask Mummy for her mobile phone number — practise saying all the digits!','Practice saying both things 3 times today — with Mummy\'s help until you know them!'],
+   say:'"I know where I live and how to reach Mummy — I am a safe and clever little star!"',
+   anim:'bones',stars:5}
 ];
 
 function bodyAnimSVG(type){
