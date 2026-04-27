@@ -3447,7 +3447,23 @@ function mascotPraise(){
   else if(done.length===0) mascotSay('First one done! Great start! 🎉');
   else if(done.length===4) mascotSay('5 activities! You\'re amazing!');
   else{
-    const praise=['Great job!','You\'re so smart!','Amazing work!','Fantastic!','Superstar!','Wonderful!','Keep going!','Brilliant!','Nailed it!','Perfect!'];
+    const praise=[
+      'Great job!',
+      'You\'re so smart!',
+      'Amazing work!',
+      'Fantastic!',
+      'Superstar!',
+      'Wonderful!',
+      'Keep going!',
+      'Brilliant!',
+      'Nailed it!',
+      'Perfect!',
+      'WOW! You are absolutely BRILLIANT!',
+      'You are a shining superstar and I am SO proud of you!',
+      'You are ON FIRE today! Keep going, champion!',
+      'You make me SO happy! Well done, superstar!',
+      'You are a true champion!'
+    ];
     mascotSay(praise[Math.floor(Math.random()*praise.length)]);
   }
 }
