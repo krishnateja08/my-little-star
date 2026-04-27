@@ -3344,20 +3344,56 @@ function isBlockedVoice(name){
   return BLOCKED_VOICES.some(b=>n.includes(b));
 }
 
+/* ── TEACHER VOICE: splits text into sentences and speaks each with
+      a small pause in between, making it sound warm and unhurried ── */
 function speakText(text){
   if(!soundOn||!('speechSynthesis' in window))return;
   speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(text);
-  u.rate=.85;u.pitch=1.3;u.volume=.9;
+
+  // Split into natural sentences so pauses feel real
+  const sentences=text.match(/[^.!?]+[.!?]+|[^.!?]+$/g)||[text];
+
+  // Pick the best available teacher-like voice
   const voices=speechSynthesis.getVoices();
-  // Use saved voice preference, or fallback to Karen
+  const PREFERRED=[
+    'Google UK English Female',
+    'Google US English',
+    'Karen',          // macOS / iOS – warm & clear
+    'Moira',          // macOS – Irish, very friendly
+    'Samantha',       // macOS fallback – at least consistent
+    'Microsoft Zira', // Windows – clear female
+    'Microsoft Clara',
+  ];
   let pick=null;
   if(selectedVoiceName) pick=voices.find(v=>v.name===selectedVoiceName);
-  if(!pick) pick=voices.find(v=>v.name.includes('Google US English'));
-  if(!pick) pick=voices.find(v=>v.name.includes('Google UK English Female'));
-  if(!pick) pick=voices.find(v=>(v.name.includes('Female')||v.lang.startsWith('en'))&&!isBlockedVoice(v.name));
-  if(pick)u.voice=pick;
-  speechSynthesis.speak(u);
+  if(!pick){
+    for(const name of PREFERRED){
+      pick=voices.find(v=>v.name.includes(name));
+      if(pick)break;
+    }
+  }
+  if(!pick) pick=voices.find(v=>v.lang.startsWith('en-')&&!isBlockedVoice(v.name));
+  if(!pick) pick=voices.find(v=>v.lang.startsWith('en')&&!isBlockedVoice(v.name));
+
+  // Speak each sentence with a tiny gap — sounds like a real teacher pausing
+  let delay=0;
+  sentences.forEach((sentence,i)=>{
+    const s=sentence.trim();
+    if(!s)return;
+    setTimeout(()=>{
+      const u=new SpeechSynthesisUtterance(s);
+      // Teacher settings: slightly slow, gentle pitch, clear volume
+      u.rate=0.82;      // patient & clear — not too slow, not rushed
+      u.pitch=1.15;     // warm and friendly, not robotic flat
+      u.volume=1.0;     // full volume so every child can hear
+      if(pick)u.voice=pick;
+      // Add a breath-pause after each sentence
+      u.onend=()=>{};
+      speechSynthesis.speak(u);
+    },delay);
+    // ~300 ms gap between sentences — feels like natural teacher pausing
+    delay+=300;
+  });
 }
 
 function getEnglishVoices(){
@@ -3387,10 +3423,14 @@ function buildVoiceListHTML(){
   }).join('');
 }
 
-// Pre-load voices
+// Pre-load voices — retry a few times so they're ready on first tap
 if(typeof speechSynthesis!=='undefined'){
-  speechSynthesis.onvoiceschanged=()=>{};
-  setTimeout(()=>speechSynthesis.getVoices(),50);
+  const _loadVoices=()=>speechSynthesis.getVoices();
+  speechSynthesis.onvoiceschanged=_loadVoices;
+  _loadVoices();
+  setTimeout(_loadVoices,100);
+  setTimeout(_loadVoices,500);
+  setTimeout(_loadVoices,1500);
 }
 
 function toggleSound(){
