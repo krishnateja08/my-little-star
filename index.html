@@ -15818,8 +15818,12 @@ function bodyLoad(){
 function bodySave(st){localStorage.setItem('c_body_v1',JSON.stringify(st));}
 
 function renderBodyTab(){
-  const el=document.getElementById('hist');
+  const el=document.getElementById('area');
   if(!el)return;
+  // Clear leftover content from other tabs
+  el.innerHTML='';
+  const histEl=document.getElementById('hist');
+  if(histEl)histEl.innerHTML='';
   const state=bodyLoad();
   const total=BODY_CARDS.length;
   const completed=state.completedIds.length;
