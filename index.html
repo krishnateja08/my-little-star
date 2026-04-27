@@ -227,15 +227,15 @@ body.bedtime .dta-all-done .ad-title{color:var(--text);}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:500;
   background:#fff;border-top:2px solid var(--border);
   display:flex;justify-content:space-around;align-items:center;
-  padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+  padding:6px 2px calc(6px + env(safe-area-inset-bottom));
   box-shadow:0 -4px 20px rgba(27,67,50,.1);}
 body.bedtime .bottom-nav{background:#0f2a18;border-top-color:#1b5e20;}
-.bn-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;
-  border-radius:14px;cursor:pointer;transition:all .18s;min-width:52px;border:none;
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 4px;
+  border-radius:12px;cursor:pointer;transition:all .18s;min-width:0;flex:1;border:none;
   background:transparent;color:var(--text4);font-family:'Baloo 2',cursive;}
 .bn-item.active{background:linear-gradient(135deg,#1b4332,#52b788);color:#fff;}
-.bn-item .bn-icon{font-size:1.4rem;line-height:1;}
-.bn-item .bn-label{font-size:.55rem;font-weight:800;letter-spacing:.3px;text-transform:uppercase;line-height:1;}
+.bn-item .bn-icon{font-size:1.25rem;line-height:1;}
+.bn-item .bn-label{font-size:.5rem;font-weight:800;letter-spacing:.2px;text-transform:uppercase;line-height:1;}
 .bn-item .bn-dot{width:5px;height:5px;border-radius:50%;background:var(--pink);margin-top:1px;display:none;}
 .bn-item.has-new .bn-dot{display:block;}
 
@@ -382,7 +382,7 @@ body.bedtime .hw-day{background:#0d2218;border-color:#1b5e20;}
   .adv-tile .tile-icon{font-size:3.2rem;}
   .adv-tile .tile-name{font-size:1.15rem;}
   .bottom-nav{left:0;right:0;}
-  .bn-item{min-width:70px;padding:8px 14px;}
+  .bn-item{min-width:70px;padding:8px 10px;}
   .bn-item .bn-icon{font-size:1.5rem;}
   .bn-item .bn-label{font-size:.6rem;}
   .quest-strip .qs-title{font-size:1rem;}
@@ -2397,6 +2397,15 @@ body.bedtime .sr-stat,.body.bedtime .sr-log-entry,.body.bedtime .sr-cat-card,.bo
   .sr-modal-card{padding:18px 14px 30px;}
   .sr-star-btns{gap:4px;}
   .sr-star-btn{min-width:36px;height:36px;font-size:.76rem;padding:0 6px;}
+  /* Body Explorer small screen */
+  .dta-card{padding:14px 12px 10px;}
+  .dta-activity-box{padding:12px 12px 10px;}
+  .dta-act-name{font-size:.95rem;}
+  .dta-act-desc{font-size:.74rem;}
+  .dta-step{padding:8px 10px;gap:7px;}
+  .dta-step-text{font-size:.74rem;}
+  .dta-done-btn{padding:12px;font-size:.9rem;}
+  .listen-btn{font-size:.68rem;padding:4px 10px;}
 }
 
 /* ── SR Responsive: small phones ≤380px ── */
@@ -10915,6 +10924,13 @@ function promptChildName(){
   const overlay=document.getElementById('surpriseOverlay');
   if(!overlay)return;
   overlay.style.display='flex';
+  overlay.style.position='fixed';
+  overlay.style.inset='0';
+  overlay.style.background='rgba(0,0,0,.6)';
+  overlay.style.zIndex='9999';
+  overlay.style.alignItems='center';
+  overlay.style.justifyContent='center';
+  overlay.style.padding='20px';
   overlay.innerHTML=`<div style="background:#fff;border-radius:24px;padding:28px 24px;max-width:320px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2)">
     <div style="font-size:3rem;margin-bottom:8px">⭐</div>
     <div style="font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:#1b4332;margin-bottom:6px">What is your name, little star?</div>
