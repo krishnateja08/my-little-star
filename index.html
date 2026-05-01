@@ -159,7 +159,7 @@ header h1{font-family:'Baloo 2',cursive;font-size:1.7rem;color:#fff;text-shadow:
 .adv-tile.wide .tile-icon{font-size:3.4rem;}
 
 /* Small 3-col tiles */
-.mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.mini-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;}
 .mini-tile{border-radius:20px;padding:16px 10px;text-align:center;cursor:pointer;
   transition:transform .2s;position:relative;overflow:hidden;}
 .mini-tile:hover{transform:translateY(-3px);}
@@ -376,7 +376,7 @@ body.bedtime .hw-day{background:#0d2218;border-color:#1b5e20;}
   #homeView{padding:18px 28px 110px;}
   #activityView{padding:12px 28px 110px;}
   .adventure-grid{grid-template-columns:repeat(3,1fr);gap:16px;}
-  .mini-grid{grid-template-columns:repeat(4,1fr);gap:12px;}
+  .mini-grid{grid-template-columns:repeat(3,1fr);gap:12px;}
   .adv-tile{min-height:170px;}
   .adv-tile.wide{grid-column:1/-1;}
   .adv-tile .tile-icon{font-size:3.2rem;}
@@ -399,7 +399,7 @@ body.bedtime .hw-day{background:#0d2218;border-color:#1b5e20;}
   #homeView{padding:22px 40px 110px;}
   #activityView{padding:16px 40px 110px;}
   .adventure-grid{grid-template-columns:repeat(4,1fr);gap:18px;}
-  .mini-grid{grid-template-columns:repeat(4,1fr);gap:14px;}
+  .mini-grid{grid-template-columns:repeat(3,1fr);gap:14px;}
   .adv-tile{min-height:190px;padding:26px 22px;}
   .adv-tile .tile-icon{font-size:3.6rem;}
   .adv-tile .tile-name{font-size:1.25rem;}
@@ -3937,7 +3937,7 @@ const CUR = {
   ],
   think:[
     // ── SEQUENCING ──
-    {w:1,subj:'sequencing',emoji:'🌅',title:'Morning Story Order',desc:'What happens first in the morning? Put the pictures in the right order!',learn:'Sequencing means putting things in the right order — first, then, last. Stories always have a beginning, middle and end!',why:'Sequencing builds logical thinking, narrative skills and early coding concepts.',steps:['Look at all the pictures','Which comes FIRST? (waking up!)','Which comes NEXT? (eating breakfast!)','Which is LAST? (going to school!)'],stars:3,tag:'🔗 Sequencing',cat:'sequencing'},
+    {w:1,subj:'sequencing',emoji:'🌅',title:'Morning Story Order',desc:'What happens first in the morning? Put the pictures in the right order!',learn:'Sequencing means putting things in the right order — first, then, last. Stories always have a beginning, middle and end!',why:'Sequencing builds logical thinking, narrative skills and early coding concepts.',steps:['Look at all the pictures','Which comes FIRST? (waking up!)','Which comes NEXT? (brush teeth, then bath!)','Then what? (eating breakfast!)','Which is LAST? (going to school!)'],stars:3,tag:'🔗 Sequencing',cat:'sequencing'},
     {w:2,subj:'sequencing',emoji:'🍳',title:'Making Toast — In Order!',desc:'Help put the steps for making toast in the right order!',learn:'Algorithms are just instructions in the right order — like a recipe! Computers follow instructions one step at a time.',why:'Following recipe order introduces algorithmic thinking in a delicious way!',steps:['Step 1: Put bread in the toaster','Step 2: Wait for it to pop!','Step 3: Spread butter on top','Step 4: Take a yummy bite!'],stars:3,tag:'🔗 Sequencing',cat:'sequencing'},
     {w:3,subj:'sequencing',emoji:'🌱',title:'Growing a Flower — In Order!',desc:'Arrange the life of a flower from seed to bloom!',learn:'Sequencing in nature: Seed → Water → Sprout → Leaves → Flower! Every step must come in the right order.',why:'Applying sequence to real-world events builds cause-and-effect understanding.',steps:['First: plant the seed in soil','Then: water it every day','Next: watch the sprout appear','Finally: see the flower bloom!'],stars:3,tag:'🔗 Sequencing',cat:'sequencing'},
     {w:4,subj:'sequencing',emoji:'🛁',title:'Bedtime Routine Order',desc:'Can you put the bedtime steps in the correct order?',learn:'A routine is a sequence you do every day in the same order. Computers use routines too — called loops!',why:'Recognising daily routines as sequences builds logical order awareness.',steps:['First: have a bath','Then: put on pyjamas','Next: brush teeth','Finally: read a story and sleep!'],stars:3,tag:'🔗 Sequencing',cat:'sequencing'},
@@ -5410,9 +5410,10 @@ function buildThinkPanel(a){
     const SEQUENCES={
       'Morning Story Order':[
         {e:'😴',label:'Wake up',order:1},
-        {e:'🪥',label:'Brush teeth',order:3},
-        {e:'🍳',label:'Eat breakfast',order:2},
-        {e:'🎒',label:'Go to school',order:4},
+        {e:'🪥',label:'Brush teeth',order:2},
+        {e:'🛁',label:'Have a bath',order:3},
+        {e:'🍳',label:'Eat breakfast',order:4},
+        {e:'🎒',label:'Go to school',order:5},
       ],
       'Making Toast — In Order!':[
         {e:'🧈',label:'Spread butter',order:3},
@@ -5482,9 +5483,9 @@ function buildThinkPanel(a){
     },100);
     return `<div style="margin:12px 0" id="${id}">
       <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;color:#7c3aed;margin-bottom:6px;text-align:center">
-        🔢 Tap the pictures in the RIGHT order — 1st, 2nd, 3rd, 4th!
+        🔢 Tap the pictures in the RIGHT order — 1st, 2nd, 3rd, 4th, 5th!
       </div>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:10px">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px">
         ${shuffled.map((c,i)=>`
           <div class="think-seq-card" data-idx="${i}" data-order="${c.order}" data-label="${c.label}">
             <span style="font-size:2.6rem">${c.e}</span>
