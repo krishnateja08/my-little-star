@@ -922,11 +922,14 @@ body.bedtime .showme-btn{background:linear-gradient(135deg,#1a2e2a,#1a2a3e);bord
 .game-title{font-family:'Baloo 2',cursive;font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:2px;}
 .game-inst{font-size:.82rem;color:var(--text3);margin-bottom:8px;line-height:1.3;}
 /* Number Match */
-.num-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:8px;}
-.num-card{height:clamp(54px,12vw,78px);border-radius:12px;border:3px solid var(--border);background:var(--inputbg);
+.num-grid{display:flex;gap:0;align-items:flex-start;margin-bottom:8px;}
+.num-col{display:flex;flex-direction:column;gap:8px;flex:1;}
+.num-col-label{text-align:center;font-size:.62rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:2px;}
+.num-divider{width:2px;background:var(--border);border-radius:2px;align-self:stretch;margin:0 14px;flex-shrink:0;}
+.num-card{min-height:clamp(54px,12vw,72px);border-radius:12px;border:3px solid var(--border);background:var(--inputbg);
   display:flex;align-items:center;justify-content:center;font-size:clamp(.8rem,3vw,1.3rem);cursor:pointer;
   transition:all .2s;font-family:'Baloo 2',cursive;font-weight:800;color:var(--text);
-  overflow:hidden;line-height:1.1;padding:2px;word-break:break-all;}
+  overflow:hidden;line-height:1.1;padding:4px;word-break:break-all;text-align:center;}
 .num-card:active{transform:scale(.93);}
 .num-card.selected{border-color:var(--purple);background:#f0e8ff;}
 .num-card.matched{border-color:var(--green);background:#e8fff0;animation:matched .4s ease;}
@@ -6659,25 +6662,33 @@ function nextNmRound(){
   const pick=nums.sort(()=>Math.random()-.5).slice(0,pairCount);
   const emojis=['⭐','🌸','🎈','🍎','🐱','🦋','🍌','🐸','🚀','🍇','🐙','🦄'];
   const em=emojis[Math.floor(Math.random()*emojis.length)];
-  const pairs=[...pick.map(n=>({val:n,type:'num'})),...pick.map(n=>({val:n,type:'obj'}))].sort(()=>Math.random()-.5);
+  const numPairs=[...pick].sort(()=>Math.random()-.5);
+  const objPairs=[...pick].sort(()=>Math.random()-.5);
   nmFirst=null;
+  const numCards=numPairs.map((n,i)=>`<div class="num-card" id="ncn${i}" onclick="pickNm('ncn${i}',${n},'num')">${n}</div>`).join('');
+  const objCards=objPairs.map((n,i)=>`<div class="num-card" id="nco${i}" onclick="pickNm('nco${i}',${n},'obj')" style="font-size:${n>8?'.65rem':'.9rem'}">${em.repeat(n)}</div>`).join('');
   document.getElementById('area').innerHTML=`
     <div class="game-panel">
       <div class="game-title">🔢 Number Match!</div>
       <div class="game-inst">Match each number to the right group of ${em}!</div>
       <div class="game-score">Round ${nmRound}/${totalRounds} · Score: ${nmScore*2} ⭐</div>
-      <div class="num-grid">${pairs.map((p,i)=>`<div class="num-card" id="nc${i}" onclick="pickNm(${i},${p.val},'${p.type}')">${p.type==='num'?p.val:em.repeat(p.val)}</div>`).join('')}</div>
+      <div class="num-grid">
+        <div class="num-col"><div class="num-col-label">Numbers</div>${numCards}</div>
+        <div class="num-divider"></div>
+        <div class="num-col"><div class="num-col-label">Groups</div>${objCards}</div>
+      </div>
       <div class="game-feedback" id="gfb"></div>
     </div>`;
 }
 let nmFirst=null;
-function pickNm(i,val,type){
-  const el=document.getElementById('nc'+i);if(el.classList.contains('matched'))return;playClick();
-  if(!nmFirst){nmFirst={i,val,type};el.classList.add('selected');}
+function pickNm(id,val,type){
+  const el=document.getElementById(id);if(el.classList.contains('matched'))return;playClick();
+  if(!nmFirst){nmFirst={id,val,type};el.classList.add('selected');}
   else{
-    const prev=document.getElementById('nc'+nmFirst.i);
+    const prev=document.getElementById(nmFirst.id);
     if(nmFirst.val===val&&nmFirst.type!==type){
       el.classList.add('matched');prev.classList.remove('selected');prev.classList.add('matched');
+      el.style.pointerEvents='none';prev.style.pointerEvents='none';
       nmScore++;playCorrect();adaptDifficulty(true);document.getElementById('gfb').textContent='✅ Matched!';
       nmFirst=null;if(document.querySelectorAll('.num-card.matched').length===document.querySelectorAll('.num-card').length)setTimeout(nextNmRound,800);
     } else {
