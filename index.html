@@ -4170,6 +4170,14 @@ const GAMES = [
   {id:'fillGap',     week:1,emoji:'🔢',title:'Fill the Gap!',           desc:'1, 2, __, 4 — what number is missing? Find it!',              cat:'maths'},
   {id:'simpleSums',  week:1,emoji:'➕',title:'Simple Sums!',            desc:'Count the objects and find the answer — easy adding!',         cat:'maths'},
   {id:'sortNums',    week:1,emoji:'📊',title:'Sort the Numbers!',       desc:'Put the numbers in order from smallest to biggest!',           cat:'maths'},
+  {id:'shareFair',   week:1,emoji:'🍕',title:'Share it Fairly!',         desc:'Split the objects equally between two friends!',               cat:'maths'},
+  {id:'moreOrLess',  week:1,emoji:'⚖️',title:'More or Less?',            desc:'Which group has more objects? Look carefully and tap!',         cat:'maths'},
+  {id:'make10',      week:1,emoji:'🔟',title:'Make 10!',                  desc:'Find the two numbers that add up to 10!',                      cat:'maths'},
+  {id:'takeAway',    week:1,emoji:'➖',title:'Take Away!',                desc:'Some get eaten — how many are left?',                          cat:'maths'},
+  {id:'longShort',   week:1,emoji:'📏',title:'Long or Short?',            desc:'Which one is longer? Compare and tap the right answer!',       cat:'maths'},
+  {id:'halfWhole',   week:2,emoji:'🧩',title:'Half or Whole?',            desc:'Is this shape cut in half? Learn about fractions!',            cat:'maths'},
+  {id:'oddEven',     week:1,emoji:'🔄',title:'Odd or Even?',              desc:'Is the number odd or even? Tap the right answer!',             cat:'maths'},
+  {id:'numBonds',    week:2,emoji:'🎯',title:'Number Bonds!',             desc:'What number do I need to complete the bond?',                  cat:'maths'},
   // ── NEW SHAPES GAMES ──
   {id:'shapeSides',  week:1,emoji:'📐',title:'How Many Sides?',         desc:'Look at the shape — how many sides does it have?',             cat:'shapes'},
   {id:'shapeReal',   week:1,emoji:'🔵',title:'Shapes in Real Life!',    desc:'Which object is the same shape as this one?',                  cat:'shapes'},
@@ -6609,7 +6617,7 @@ function renderGame(g){
     whatsMissing:buildWhatsMissing,colourPattern:buildColourPattern,numberMemory:buildNumberMemory,
     coinCount:buildCoinCount,fairTrade:buildFairTrade,myShop:buildMyShop,lemonadeStand:buildLemonadeStand,changeMaker:buildChangeMaker,
     shadowMatch:buildShadowMatch,dotCard:buildDotCard,oppSnap:buildOppSnap,colourWordMatch:buildColourWordMatch,
-    puzzleJigsaw:buildPuzzleJigsaw,oddOneOut:buildOddOneOut,spotDiff:buildSpotDiff,bigSmall:buildBigSmall,fillGap:buildFillGap,simpleSums:buildSimpleSums,sortNums:buildSortNums,shapeSides:buildShapeSides,shapeReal:buildShapeReal,shapeColour:buildShapeColour,finishPatt:buildFinishPatt,listenTap:buildListenTap,pairMatch:buildPairMatch,tapOrder:buildTapOrder,sameOrDiff:buildSameOrDiff,quickCount:buildQuickCount,copyColours:buildCopyColours};
+    puzzleJigsaw:buildPuzzleJigsaw,oddOneOut:buildOddOneOut,spotDiff:buildSpotDiff,bigSmall:buildBigSmall,fillGap:buildFillGap,simpleSums:buildSimpleSums,sortNums:buildSortNums,shareFair:buildShareFair,moreOrLess:buildMoreOrLess,make10:buildMake10,takeAway:buildTakeAway,longShort:buildLongShort,halfWhole:buildHalfWhole,oddEven:buildOddEven,numBonds:buildNumBonds,shapeSides:buildShapeSides,shapeReal:buildShapeReal,shapeColour:buildShapeColour,finishPatt:buildFinishPatt,listenTap:buildListenTap,pairMatch:buildPairMatch,tapOrder:buildTapOrder,sameOrDiff:buildSameOrDiff,quickCount:buildQuickCount,copyColours:buildCopyColours};
   (fns[g.id]||buildCountGame)();
   // Append skip button after game panel
   const area=document.getElementById('area');
@@ -14419,6 +14427,345 @@ function checkSn(el,n){
     el.style.animation='shake .3s';setTimeout(()=>el.style.animation='',350);
     playWrong();adaptDifficulty(false);speakText('Not yet! Find the smallest one first!');
   }
+}
+
+// ════════════════════════════════════════════════
+//  NEW MATHS GAMES
+// ════════════════════════════════════════════════
+
+// ── Share it Fairly! ──
+const SHARE_ITEMS=['🍕','🍎','🍬','⭐','🎈','🍪','🏀','🌸'];
+let sfScore=0,sfRound=0;
+function buildShareFair(){sfScore=0;sfRound=0;nextShareRound();}
+function nextShareRound(){
+  const total=5;sfRound++;
+  if(sfRound>total){endGame(sfScore,total,'shareFair');return;}
+  const em=SHARE_ITEMS[Math.floor(Math.random()*SHARE_ITEMS.length)];
+  const perPerson=(diffLevel===1?Math.floor(Math.random()*4)+1:Math.floor(Math.random()*5)+2);
+  const total2=perPerson*2;
+  const answer=String(perPerson);
+  const wrongs=[];while(wrongs.length<3){const w=String(Math.floor(Math.random()*8)+1);if(w!==answer&&!wrongs.includes(w))wrongs.push(w);}
+  const opts=[answer,...wrongs].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🍕 Share it Fairly!</div>
+      <div class="game-inst">Round ${sfRound}/${total} · Score: ${sfScore} ⭐</div>
+      <div style="text-align:center;font-size:1.6rem;margin:10px 0;letter-spacing:4px">${em.repeat(total2)}</div>
+      <div style="display:flex;justify-content:center;gap:20px;margin:12px 0">
+        <div style="background:var(--inputbg);border-radius:16px;padding:14px 20px;text-align:center;border:3px solid var(--border)">
+          <div style="font-size:2rem">👧</div>
+          <div style="font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:800;color:var(--text3)">Friend 1</div>
+        </div>
+        <div style="background:var(--inputbg);border-radius:16px;padding:14px 20px;text-align:center;border:3px solid var(--border)">
+          <div style="font-size:2rem">👦</div>
+          <div style="font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:800;color:var(--text3)">Friend 2</div>
+        </div>
+      </div>
+      <div class="count-q">Share ${total2} ${em} equally. How many does each friend get?</div>
+      <div class="count-opts" style="grid-template-columns:1fr 1fr;margin-top:10px">${opts.map(o=>`<div class="copt" onclick="checkSf(this,'${o}','${answer}')">${o} ${em}</div>`).join('')}</div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('Share '+total2+' '+' equally between two friends. How many does each friend get?');
+}
+function checkSf(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');sfScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Yes! Each friend gets '+answer+'!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent.startsWith(answer))c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ Each friend gets '+answer+'!';mascotHint();}
+  setTimeout(nextShareRound,1600);
+}
+
+// ── More or Less? ──
+const ML_ITEMS=['🍎','🐱','⭐','🌸','🎈','🍬','🐸','🦋'];
+let mlScore=0,mlRound=0;
+function buildMoreOrLess(){mlScore=0;mlRound=0;nextMlRound();}
+function nextMlRound(){
+  const total=5;mlRound++;
+  if(mlRound>total){endGame(mlScore,total,'moreOrLess');return;}
+  const em=ML_ITEMS[Math.floor(Math.random()*ML_ITEMS.length)];
+  const max=diffLevel===1?8:diffLevel===2?12:15;
+  let a=Math.floor(Math.random()*max)+1,b=Math.floor(Math.random()*max)+1;
+  while(a===b)b=Math.floor(Math.random()*max)+1;
+  const answer=a>b?'Left':'Right';
+  const qTypes=['more','fewer'];
+  const qType=qTypes[Math.floor(Math.random()*2)];
+  const question=qType==='more'?'Which group has MORE?':'Which group has FEWER?';
+  const correctSide=qType==='more'?answer:(answer==='Left'?'Right':'Left');
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">⚖️ More or Less?</div>
+      <div class="game-inst">Round ${mlRound}/${total} · Score: ${mlScore} ⭐</div>
+      <div class="count-q" style="margin:12px 0">${question}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div onclick="checkMl(this,'Left','${correctSide}')" style="background:var(--inputbg);border-radius:16px;padding:14px;text-align:center;cursor:pointer;border:3px solid var(--border);transition:all .2s;font-size:${a>6?'1rem':'1.4rem'};line-height:1.4">
+          ${em.repeat(a)}<div style="font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:800;color:var(--text3);margin-top:6px">Group A</div>
+        </div>
+        <div onclick="checkMl(this,'Right','${correctSide}')" style="background:var(--inputbg);border-radius:16px;padding:14px;text-align:center;cursor:pointer;border:3px solid var(--border);transition:all .2s;font-size:${b>6?'1rem':'1.4rem'};line-height:1.4">
+          ${em.repeat(b)}<div style="font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:800;color:var(--text3);margin-top:6px">Group B</div>
+        </div>
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText(question);
+}
+function checkMl(el,side,answer){
+  document.querySelectorAll('[onclick^="checkMl"]').forEach(c=>c.onclick=null);
+  if(side===answer){el.style.border='3px solid var(--green)';el.style.background='#e8fff0';mlScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Correct! Well spotted!';mascotPraise();}
+  else{el.style.border='3px solid var(--pink)';el.style.background='#ffe8f0';playWrong();adaptDifficulty(false);
+    document.getElementById('gfb').textContent='❌ Look again — count carefully!';mascotHint();}
+  setTimeout(nextMlRound,1500);
+}
+
+// ── Make 10! ──
+let m10Score=0,m10Round=0;
+function buildMake10(){m10Score=0;m10Round=0;nextM10Round();}
+function nextM10Round(){
+  const total=6;m10Round++;
+  if(m10Round>total){endGame(m10Score,total,'make10');return;}
+  const target=diffLevel===1?10:diffLevel===2?[5,8,10][Math.floor(Math.random()*3)]:[10,12,15][Math.floor(Math.random()*3)];
+  const a=Math.floor(Math.random()*(target-1))+1;
+  const answer=target-a;
+  const wrongs=[];while(wrongs.length<3){const w=Math.floor(Math.random()*target)+1;if(w!==answer&&!wrongs.includes(w))wrongs.push(w);}
+  const opts=[answer,...wrongs].sort(()=>Math.random()-.5);
+  const filled='🟡'.repeat(a)+'⬜'.repeat(target-a);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔟 Make ${target}!</div>
+      <div class="game-inst">Round ${m10Round}/${total} · Score: ${m10Score} ⭐</div>
+      <div style="text-align:center;font-size:1.6rem;margin:14px 0;letter-spacing:2px;line-height:1.6">${filled}</div>
+      <div style="text-align:center;background:linear-gradient(135deg,#fff8e0,#ffe8a0);border-radius:14px;padding:12px;margin-bottom:12px;font-family:'Baloo 2',cursive;font-weight:800;color:var(--text)">
+        ${a} + <span style="font-size:2rem;color:var(--purple)">?</span> = ${target}
+      </div>
+      <div class="count-opts" style="grid-template-columns:1fr 1fr">${opts.map(o=>`<div class="copt" style="font-size:1.4rem" onclick="checkM10(this,${o},${answer})">${o}</div>`).join('')}</div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText(a+' plus what equals '+target+'?');
+}
+function checkM10(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');m10Score++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Yes! '+answer+' makes it!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(parseInt(c.textContent)===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ The answer is '+answer+'!';mascotHint();}
+  setTimeout(nextM10Round,1500);
+}
+
+// ── Take Away! ──
+const TA_ITEMS=['🍎','🍬','🐱','⭐','🎈','🍪','🌸','🦋'];
+let taScore=0,taRound=0;
+function buildTakeAway(){taScore=0;taRound=0;nextTaRound();}
+function nextTaRound(){
+  const total=5;taRound++;
+  if(taRound>total){endGame(taScore,total,'takeAway');return;}
+  const em=TA_ITEMS[Math.floor(Math.random()*TA_ITEMS.length)];
+  const max=diffLevel===1?8:diffLevel===2?12:15;
+  const start=Math.floor(Math.random()*(max-2))+3;
+  const takeNum=Math.floor(Math.random()*(start-1))+1;
+  const answer=start-takeNum;
+  const wrongs=[];while(wrongs.length<3){const w=Math.floor(Math.random()*start)+1;if(w!==answer&&!wrongs.includes(w))wrongs.push(w);}
+  const opts=[answer,...wrongs].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">➖ Take Away!</div>
+      <div class="game-inst">Round ${taRound}/${total} · Score: ${taScore} ⭐</div>
+      <div style="text-align:center;margin:12px 0">
+        <div style="font-size:1.5rem;letter-spacing:3px;margin-bottom:8px">${em.repeat(start)}</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--pink);background:#ffe8f0;border-radius:10px;padding:6px 14px;display:inline-block">
+          ✂️ Take away ${takeNum}
+        </div>
+        <div style="font-size:1.5rem;letter-spacing:3px;margin-top:8px">${'❌'.repeat(takeNum)}${'　'.repeat(Math.max(0,start-takeNum))}</div>
+      </div>
+      <div class="count-q">${start} − ${takeNum} = ?</div>
+      <div class="count-opts" style="grid-template-columns:1fr 1fr;margin-top:10px">${opts.map(o=>`<div class="copt" style="font-size:1.4rem" onclick="checkTa(this,${o},${answer})">${o}</div>`).join('')}</div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText(start+' take away '+takeNum+' equals how many?');
+}
+function checkTa(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');taScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Correct! '+answer+' are left!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(parseInt(c.textContent)===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ The answer is '+answer+'!';mascotHint();}
+  setTimeout(nextTaRound,1500);
+}
+
+// ── Long or Short? ──
+const LS_THINGS=[
+  {name:'worm',emoji:'🐛',unit:'cm'},
+  {name:'pencil',emoji:'✏️',unit:'cm'},
+  {name:'snake',emoji:'🐍',unit:'cm'},
+  {name:'ribbon',emoji:'🎀',unit:'cm'},
+  {name:'road',emoji:'🛣️',unit:'km'},
+];
+let lonScore=0,lonRound=0;
+function buildLongShort(){lonScore=0;lonRound=0;nextLsRound();}
+function nextLsRound(){
+  const total=5;lonRound++;
+  if(lonRound>total){endGame(lonScore,total,'longShort');return;}
+  const thing=LS_THINGS[Math.floor(Math.random()*LS_THINGS.length)];
+  const lenA=Math.floor(Math.random()*10)+2;
+  let lenB=Math.floor(Math.random()*10)+2;
+  while(lenB===lenA)lenB=Math.floor(Math.random()*10)+2;
+  const qType=Math.random()>.5?'longer':'shorter';
+  const answer=qType==='longer'?(lenA>lenB?'A':'B'):(lenA<lenB?'A':'B');
+  const barA=Math.round((lenA/Math.max(lenA,lenB))*100);
+  const barB=Math.round((lenB/Math.max(lenA,lenB))*100);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">📏 Long or Short?</div>
+      <div class="game-inst">Round ${lonRound}/${total} · Score: ${lonScore} ⭐</div>
+      <div class="count-q" style="margin:12px 0">Which ${thing.name} ${thing.emoji} is ${qType==='longer'?'LONGER':'SHORTER'}?</div>
+      <div style="display:flex;flex-direction:column;gap:14px;margin:10px 0">
+        <div onclick="checkLs(this,'A','${answer}')" style="cursor:pointer;padding:12px;border-radius:14px;background:var(--inputbg);border:3px solid var(--border);transition:all .2s">
+          <div style="font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:800;color:var(--text3);margin-bottom:6px">A — ${lenA} ${thing.unit}</div>
+          <div style="height:22px;border-radius:50px;background:linear-gradient(90deg,#ff6b9d,#ffb830);width:${barA}%"></div>
+        </div>
+        <div onclick="checkLs(this,'B','${answer}')" style="cursor:pointer;padding:12px;border-radius:14px;background:var(--inputbg);border:3px solid var(--border);transition:all .2s">
+          <div style="font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:800;color:var(--text3);margin-bottom:6px">B — ${lenB} ${thing.unit}</div>
+          <div style="height:22px;border-radius:50px;background:linear-gradient(90deg,#4fa3e0,#a78bfa);width:${barB}%"></div>
+        </div>
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('Which '+thing.name+' is '+qType+'?');
+}
+function checkLs(el,side,answer){
+  document.querySelectorAll('[onclick^="checkLs"]').forEach(c=>c.onclick=null);
+  if(side===answer){el.style.border='3px solid var(--green)';el.style.background='#e8fff0';lonScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ That\'s right! Great measuring!';mascotPraise();}
+  else{el.style.border='3px solid var(--pink)';el.style.background='#ffe8f0';playWrong();adaptDifficulty(false);
+    document.getElementById('gfb').textContent='❌ Look at the bars — which is bigger?';mascotHint();}
+  setTimeout(nextLsRound,1500);
+}
+
+// ── Half or Whole? ──
+const HW_SHAPES=[
+  {name:'Circle',whole:'<circle cx="100" cy="100" r="70" fill="var(--purple)" opacity=".8"/>',half:'<path d="M100,30 A70,70 0 0,1 100,170 Z" fill="var(--purple)" opacity=".8"/><line x1="100" y1="30" x2="100" y2="170" stroke="white" stroke-width="3" stroke-dasharray="6,4"/>'},
+  {name:'Square',whole:'<rect x="30" y="30" width="140" height="140" rx="10" fill="var(--green)" opacity=".8"/>',half:'<rect x="30" y="30" width="70" height="140" rx="10" fill="var(--green)" opacity=".8"/><line x1="100" y1="30" x2="100" y2="170" stroke="white" stroke-width="3" stroke-dasharray="6,4"/>'},
+  {name:'Triangle',whole:'<polygon points="100,20 180,170 20,170" fill="var(--coral)" opacity=".8"/>',half:'<polygon points="100,20 140,170 100,170" fill="var(--coral)" opacity=".8"/><line x1="100" y1="20" x2="100" y2="170" stroke="white" stroke-width="3" stroke-dasharray="6,4"/>'},
+  {name:'Rectangle',whole:'<rect x="20" y="60" width="160" height="80" rx="10" fill="var(--blue)" opacity=".8"/>',half:'<rect x="20" y="60" width="80" height="80" rx="10" fill="var(--blue)" opacity=".8"/><line x1="100" y1="60" x2="100" y2="140" stroke="white" stroke-width="3" stroke-dasharray="6,4"/>'},
+];
+let hwScore=0,hwRound=0;
+function buildHalfWhole(){hwScore=0;hwRound=0;nextHwRound();}
+function nextHwRound(){
+  const total=6;hwRound++;
+  if(hwRound>total){endGame(hwScore,total,'halfWhole');return;}
+  const shape=HW_SHAPES[Math.floor(Math.random()*HW_SHAPES.length)];
+  const isHalf=Math.random()>.5;
+  const answer=isHalf?'Half':'Whole';
+  const svg=`<svg viewBox="0 0 200 200" style="width:140px;height:140px;display:block;margin:10px auto">${isHalf?shape.half:shape.whole}</svg>`;
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🧩 Half or Whole?</div>
+      <div class="game-inst">Round ${hwRound}/${total} · Score: ${hwScore} ⭐</div>
+      <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--text2);margin:8px 0">Look at the ${shape.name}. Is it a half or the whole shape?</div>
+      ${svg}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0">
+        <div class="copt" style="font-size:1rem;padding:14px" onclick="checkHw(this,'Half','${answer}')">🔪 Half<div style="font-size:.7rem;color:var(--text3);font-weight:600;margin-top:2px">One piece of two</div></div>
+        <div class="copt" style="font-size:1rem;padding:14px" onclick="checkHw(this,'Whole','${answer}')">⭕ Whole<div style="font-size:.7rem;color:var(--text3);font-weight:600;margin-top:2px">The complete shape</div></div>
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('Is this '+shape.name+' showing a half or the whole shape?');
+}
+function checkHw(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');hwScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Yes! It is a '+answer+'!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent.startsWith(answer))c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ It is '+answer+'!';mascotHint();}
+  setTimeout(nextHwRound,1500);
+}
+
+// ── Odd or Even? ──
+let oeScore=0,oeRound=0;
+function buildOddEven(){oeScore=0;oeRound=0;nextOeRound();}
+function nextOeRound(){
+  const total=6;oeRound++;
+  if(oeRound>total){endGame(oeScore,total,'oddEven');return;}
+  const max=diffLevel===1?10:diffLevel===2?20:30;
+  const num=Math.floor(Math.random()*max)+1;
+  const isEven=num%2===0;
+  const answer=isEven?'Even':'Odd';
+  const dots='⭕'.repeat(Math.min(num,10))+(num>10?` +${num-10} more`:'');
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔄 Odd or Even?</div>
+      <div class="game-inst">Round ${oeRound}/${total} · Score: ${oeScore} ⭐</div>
+      <div style="text-align:center;font-size:3.5rem;font-family:'Baloo 2',cursive;font-weight:800;color:var(--purple);margin:14px 0">${num}</div>
+      <div style="text-align:center;font-size:1rem;margin-bottom:12px;line-height:1.6">${dots}</div>
+      <div style="background:var(--inputbg);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:.8rem;color:var(--text3);font-family:'Baloo 2',cursive;font-weight:700;text-align:center">
+        💡 Even = can be split into pairs &nbsp;|&nbsp; Odd = one is left over
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="copt" style="font-size:1.1rem" onclick="checkOe(this,'Odd','${answer}')">1️⃣ Odd<div style="font-size:.7rem;color:var(--text3);font-weight:600;margin-top:2px">1, 3, 5, 7, 9...</div></div>
+        <div class="copt" style="font-size:1.1rem" onclick="checkOe(this,'Even','${answer}')">2️⃣ Even<div style="font-size:.7rem;color:var(--text3);font-weight:600;margin-top:2px">2, 4, 6, 8, 10...</div></div>
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('Is '+num+' odd or even?');
+}
+function checkOe(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');oeScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Correct! '+answer+'!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent.startsWith(answer))c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ It is '+answer+'!';mascotHint();}
+  setTimeout(nextOeRound,1500);
+}
+
+// ── Number Bonds! ──
+let nbScore=0,nbRound=0;
+function buildNumBonds(){nbScore=0;nbRound=0;nextNbRound();}
+function nextNbRound(){
+  const total=6;nbRound++;
+  if(nbRound>total){endGame(nbScore,total,'numBonds');return;}
+  const target=diffLevel===1?[5,6,7,8][Math.floor(Math.random()*4)]:diffLevel===2?[8,9,10][Math.floor(Math.random()*3)]:[10,12,15][Math.floor(Math.random()*3)];
+  const a=Math.floor(Math.random()*(target-1))+1;
+  const answer=target-a;
+  const wrongs=[];while(wrongs.length<3){const w=Math.floor(Math.random()*target)+1;if(w!==answer&&!wrongs.includes(w))wrongs.push(w);}
+  const opts=[answer,...wrongs].sort(()=>Math.random()-.5);
+  const pctA=Math.round((a/target)*100);
+  const pctB=Math.round((answer/target)*100);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🎯 Number Bonds!</div>
+      <div class="game-inst">Round ${nbRound}/${total} · Score: ${nbScore} ⭐</div>
+      <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--text2);margin:10px 0">
+        Complete the bond to make <span style="font-size:1.6rem;color:var(--green)">${target}</span>
+      </div>
+      <div style="display:flex;justify-content:center;align-items:center;gap:12px;margin:14px 0">
+        <div style="width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#56cf81,#4ecdc4);display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',cursive;font-size:1.8rem;font-weight:800;color:#fff">${a}</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;color:var(--text3)">+</div>
+        <div style="width:70px;height:70px;border-radius:50%;border:4px dashed var(--purple);display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;color:var(--purple);animation:pulse 1s infinite">?</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;color:var(--text3)">=</div>
+        <div style="width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#ffb830,#ff8c69);display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',cursive;font-size:1.8rem;font-weight:800;color:#fff">${target}</div>
+      </div>
+      <div style="display:flex;gap:4px;margin-bottom:12px;height:14px;border-radius:50px;overflow:hidden">
+        <div style="width:${pctA}%;background:linear-gradient(90deg,#56cf81,#4ecdc4);transition:width .5s"></div>
+        <div style="width:${pctB}%;background:linear-gradient(90deg,#a78bfa,#4fa3e0);opacity:.4"></div>
+      </div>
+      <div class="count-opts" style="grid-template-columns:1fr 1fr">${opts.map(o=>`<div class="copt" style="font-size:1.5rem" onclick="checkNb(this,${o},${answer})">${o}</div>`).join('')}</div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText(a+' plus what equals '+target+'? Find the missing number bond!');
+}
+function checkNb(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');nbScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Brilliant! '+answer+' completes the bond!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(parseInt(c.textContent)===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ The missing bond is '+answer+'!';mascotHint();}
+  setTimeout(nextNbRound,1500);
 }
 
 // ════════════════════════════════════════════════
