@@ -4171,6 +4171,18 @@ const GAMES = [
   {id:'oppSnap',      week:1,emoji:'🔄',title:'Opposite Snap!',           desc:'Tap the card that is the opposite of the word shown!',cat:'puzzle'},
   {id:'colourWordMatch',week:1,emoji:'🌈',title:'Colour Word Match!',     desc:'Match the colour word to the right colour card!',    cat:'puzzle'},
   {id:'puzzleJigsaw',   week:1,emoji:'🧩',title:'TV Show Jigsaw Puzzle!', desc:'Drag the 4 pieces together to build your favourite TV show character! 5 new shows every day!',    cat:'puzzle'},
+  {id:'animalFamily',  week:1,emoji:'🐾',title:'Animal Families!',        desc:'Match the baby animal to its mummy!',                           cat:'puzzle'},
+  {id:'whatDoINeed',   week:1,emoji:'🌦️',title:'What Do I Need?',         desc:'Look at the weather — pick the right item to use!',             cat:'puzzle'},
+  {id:'sortFood',      week:1,emoji:'🍽️',title:'Sort the Food!',          desc:'Put each food into the right group — fruit, veg or treat!',     cat:'puzzle'},
+  {id:'doesntBelong',  week:1,emoji:'🔢',title:"Which Doesn't Belong?",   desc:'Three go together — which one does not fit?',                   cat:'puzzle'},
+  {id:'finishPicture', week:1,emoji:'🧸',title:'Finish the Picture!',     desc:'Half a picture is shown — tap the piece that completes it!',    cat:'puzzle'},
+  {id:'completeSet',   week:1,emoji:'🗺️',title:'Complete the Set!',       desc:'Knife, fork... what is missing? Complete the set!',            cat:'puzzle'},
+  {id:'memoryTorch',   week:1,emoji:'🔦',title:'Memory Torch!',           desc:'Objects flash on screen — remember and tap what you saw!',      cat:'focus'},
+  {id:'whatChanged',   week:1,emoji:'🎨',title:'What Changed?',           desc:'Look carefully — something changed colour! Can you spot it?',   cat:'focus'},
+  {id:'bigToSmall',    week:1,emoji:'⬆️',title:'Big to Small!',           desc:'Tap the items from biggest to smallest!',                       cat:'focus'},
+  {id:'mirrorMe',      week:1,emoji:'🔁',title:'Mirror Me!',              desc:'Copy the left side pattern on the right side!',                 cat:'focus'},
+  {id:'behindDoor',    week:1,emoji:'🎪',title:"What's Behind the Door?", desc:'The door opens for a moment — remember what you saw!',          cat:'focus'},
+  {id:'rememberTap',   week:1,emoji:'🧠',title:'Remember & Tap!',         desc:'Watch the order, then tap the items back in the same order!',   cat:'focus'},
   {id:'oddOneOut',   week:1,emoji:'🔍',title:'Odd One Out!',          desc:'Three belong together — which one is different? Spot it fast!', cat:'focus'},
   {id:'spotDiff',    week:1,emoji:'👀',title:'Spot the Difference!',   desc:'Two rows of pictures — one changed! Can you find it?',          cat:'focus'},
   // ── NEW MATHS GAMES ──
@@ -6625,7 +6637,7 @@ function renderGame(g){
     whatsMissing:buildWhatsMissing,colourPattern:buildColourPattern,numberMemory:buildNumberMemory,
     coinCount:buildCoinCount,fairTrade:buildFairTrade,myShop:buildMyShop,lemonadeStand:buildLemonadeStand,changeMaker:buildChangeMaker,
     shadowMatch:buildShadowMatch,dotCard:buildDotCard,oppSnap:buildOppSnap,colourWordMatch:buildColourWordMatch,
-    puzzleJigsaw:buildPuzzleJigsaw,oddOneOut:buildOddOneOut,spotDiff:buildSpotDiff,bigSmall:buildBigSmall,fillGap:buildFillGap,simpleSums:buildSimpleSums,sortNums:buildSortNums,shareFair:buildShareFair,moreOrLess:buildMoreOrLess,make10:buildMake10,takeAway:buildTakeAway,longShort:buildLongShort,halfWhole:buildHalfWhole,oddEven:buildOddEven,numBonds:buildNumBonds,shapeSides:buildShapeSides,shapeReal:buildShapeReal,shapeColour:buildShapeColour,finishPatt:buildFinishPatt,listenTap:buildListenTap,pairMatch:buildPairMatch,tapOrder:buildTapOrder,sameOrDiff:buildSameOrDiff,quickCount:buildQuickCount,copyColours:buildCopyColours};
+    puzzleJigsaw:buildPuzzleJigsaw,animalFamily:buildAnimalFamily,whatDoINeed:buildWhatDoINeed,sortFood:buildSortFood,doesntBelong:buildDoesntBelong,finishPicture:buildFinishPicture,completeSet:buildCompleteSet,oddOneOut:buildOddOneOut,spotDiff:buildSpotDiff,bigSmall:buildBigSmall,fillGap:buildFillGap,simpleSums:buildSimpleSums,sortNums:buildSortNums,shareFair:buildShareFair,moreOrLess:buildMoreOrLess,make10:buildMake10,takeAway:buildTakeAway,longShort:buildLongShort,halfWhole:buildHalfWhole,oddEven:buildOddEven,numBonds:buildNumBonds,shapeSides:buildShapeSides,shapeReal:buildShapeReal,shapeColour:buildShapeColour,finishPatt:buildFinishPatt,listenTap:buildListenTap,pairMatch:buildPairMatch,tapOrder:buildTapOrder,sameOrDiff:buildSameOrDiff,quickCount:buildQuickCount,copyColours:buildCopyColours,memoryTorch:buildMemoryTorch,whatChanged:buildWhatChanged,bigToSmall:buildBigToSmall,mirrorMe:buildMirrorMe,behindDoor:buildBehindDoor,rememberTap:buildRememberTap};
   (fns[g.id]||buildCountGame)();
   // Append skip button after game panel
   const area=document.getElementById('area');
@@ -14584,6 +14596,579 @@ function tapCc(padId){
     playWrong();adaptDifficulty(false);
     speakText('Oops! Watch again!');
     setTimeout(()=>{clrStep=0;renderCcBoard('Try again — watch!');playCcSequence();},800);
+  }
+}
+
+    setTimeout(()=>{clrStep=0;renderCcBoard('Try again — watch!');playCcSequence();},800);
+  }
+}
+
+// ════════════════════════════════════════════════
+//  NEW PUZZLE GAMES
+// ════════════════════════════════════════════════
+
+// ── Animal Families ──
+const ANIMAL_FAMS=[
+  {baby:'🐱',babyName:'Kitten',mum:'🐈',mumName:'Cat'},
+  {baby:'🐶',babyName:'Puppy',mum:'🐕',mumName:'Dog'},
+  {baby:'🐣',babyName:'Chick',mum:'🐔',mumName:'Hen'},
+  {baby:'🦆',babyName:'Duckling',mum:'🦢',mumName:'Duck'},
+  {baby:'🐰',babyName:'Bunny',mum:'🐇',mumName:'Rabbit'},
+  {baby:'🐮',babyName:'Calf',mum:'🐄',mumName:'Cow'},
+  {baby:'🐴',babyName:'Foal',mum:'🐎',mumName:'Horse'},
+];
+let afScore=0,afRound=0;
+function buildAnimalFamily(){afScore=0;afRound=0;nextAfRound();}
+function nextAfRound(){
+  const total=6;afRound++;
+  if(afRound>total){endGame(afScore,total,'animalFamily');return;}
+  const pick=ANIMAL_FAMS[Math.floor(Math.random()*ANIMAL_FAMS.length)];
+  const wrongs=[...ANIMAL_FAMS.filter(a=>a.mumName!==pick.mumName)].sort(()=>Math.random()-.5).slice(0,3);
+  const opts=[pick,...wrongs].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🐾 Animal Families!</div>
+      <div class="game-inst">Round ${afRound}/${total} · Score: ${afScore} ⭐</div>
+      <div style="text-align:center;margin:14px 0">
+        <div style="font-size:4.5rem">${pick.baby}</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:var(--text2);margin-top:6px">This is a <strong>${pick.babyName}</strong>!</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:.85rem;color:var(--text3);margin-top:4px">Which is its mummy? 🤱</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+        ${opts.map(o=>`<div class="copt" style="font-size:2.2rem;padding:14px" onclick="checkAf(this,'${o.mumName}','${pick.mumName}')">${o.mum}<div style="font-size:.7rem;font-weight:800;color:var(--text3);margin-top:4px">${o.mumName}</div></div>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('A '+pick.babyName+' is the baby. Which one is its mummy?');
+}
+function checkAf(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');afScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Yes! The '+answer+' is the mummy!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent.includes(answer))c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ The mummy is the '+answer+'!';mascotHint();}
+  setTimeout(nextAfRound,1600);
+}
+
+// ── What Do I Need? ──
+const WDIN_Q=[
+  {scene:'☔ It is raining outside!',answer:'☂️ Umbrella',wrong:['😎 Sunglasses','🩴 Flip flops','🏖️ Beach bag'],hint:'An umbrella keeps you dry in the rain!'},
+  {scene:'☀️ It is very hot and sunny!',answer:'😎 Sunglasses',wrong:['🧤 Gloves','☂️ Umbrella','🧣 Scarf'],hint:'Sunglasses protect your eyes from the bright sun!'},
+  {scene:'❄️ It is freezing cold outside!',answer:'🧤 Gloves',wrong:['🩴 Flip flops','😎 Sunglasses','🏖️ Beach towel'],hint:'Gloves keep your hands warm in the cold!'},
+  {scene:'🌊 You are going to the beach!',answer:'🩴 Flip flops',wrong:['🥾 Boots','🧤 Gloves','☂️ Umbrella'],hint:'Flip flops are perfect for sandy beaches!'},
+  {scene:'🌨️ It is snowing!',answer:'🥾 Boots',wrong:['🩴 Flip flops','😎 Sunglasses','🏖️ Beach bag'],hint:'Boots keep your feet warm and dry in snow!'},
+  {scene:'🍂 It is a windy autumn day!',answer:'🧣 Scarf',wrong:['😎 Sunglasses','🩴 Flip flops','🏊 Swimming hat'],hint:'A scarf keeps your neck warm on a windy day!'},
+];
+let wdScore=0,wdRound=0;
+function buildWhatDoINeed(){wdScore=0;wdRound=0;nextWdRound();}
+function nextWdRound(){
+  const total=6;wdRound++;
+  if(wdRound>total){endGame(wdScore,total,'whatDoINeed');return;}
+  const q=WDIN_Q[Math.floor(Math.random()*WDIN_Q.length)];
+  const opts=[q.answer,...q.wrong.slice(0,3)].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🌦️ What Do I Need?</div>
+      <div class="game-inst">Round ${wdRound}/${total} · Score: ${wdScore} ⭐</div>
+      <div style="background:linear-gradient(135deg,#e8f5ee,#fff8e0);border-radius:16px;padding:18px;text-align:center;margin:12px 0;font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;color:var(--text)">${q.scene}</div>
+      <div class="count-q" style="margin-bottom:12px">What do you need?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        ${opts.map(o=>`<div class="copt" style="font-size:.9rem;padding:12px" onclick="checkWd(this,'${o.replace(/'/g,"\\'")}','${q.answer.replace(/'/g,"\\'")}','${q.hint.replace(/'/g,"\\'")}')">${o}</div>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText(q.scene+' What do you need?');
+}
+function checkWd(el,chosen,answer,hint){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');wdScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ '+hint;mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent.trim()===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ '+hint;mascotHint();}
+  setTimeout(nextWdRound,1800);
+}
+
+// ── Sort the Food! ──
+const FOOD_GROUPS={Fruit:['🍎','🍌','🍇','🍓','🍊','🍋','🍑','🍒'],Vegetable:['🥕','🥦','🌽','🥔','🧅','🍆','🥒','🍅'],Treat:['🍰','🍪','🍬','🍭','🎂','🍩','🍫','🧁']};
+let sfoodScore=0,sfoodRound=0;
+function buildSortFood(){sfoodScore=0;sfoodRound=0;nextSfoodRound();}
+function nextSfoodRound(){
+  const total=6;sfoodRound++;
+  if(sfoodRound>total){endGame(sfoodScore,total,'sortFood');return;}
+  const groups=Object.keys(FOOD_GROUPS);
+  const group=groups[Math.floor(Math.random()*groups.length)];
+  const item=FOOD_GROUPS[group][Math.floor(Math.random()*FOOD_GROUPS[group].length)];
+  const opts=[...groups].sort(()=>Math.random()-.5);
+  const icons={Fruit:'🍎',Vegetable:'🥕',Treat:'🍬'};
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🍽️ Sort the Food!</div>
+      <div class="game-inst">Round ${sfoodRound}/${total} · Score: ${sfoodScore} ⭐</div>
+      <div style="text-align:center;font-size:5rem;margin:14px 0">${item}</div>
+      <div class="count-q" style="margin-bottom:14px">Which group does this belong to?</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${opts.map(g=>`<div class="copt" style="font-size:1rem;padding:14px;display:flex;align-items:center;gap:10px" onclick="checkSfood(this,'${g}','${group}')"><span style="font-size:1.8rem">${icons[g]}</span> ${g}</div>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('Is this a fruit, vegetable, or a treat?');
+}
+function checkSfood(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');sfoodScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Correct! It is a '+answer+'!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent.trim().includes(answer))c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ It is a '+answer+'!';mascotHint();}
+  setTimeout(nextSfoodRound,1500);
+}
+
+// ── Which Doesn't Belong? ──
+const DNB_SETS=[
+  {items:['🐶','🐱','🐟','🌹'],odd:'🌹',reason:'A rose is a flower, not an animal!'},
+  {items:['🍎','🍌','🥕','🍇'],odd:'🥕',reason:'A carrot is a vegetable, not a fruit!'},
+  {items:['🔴','🔵','🟡','🐸'],odd:'🐸',reason:'A frog is not a colour!'},
+  {items:['✏️','📏','📚','🍕'],odd:'🍕',reason:'Pizza is food, not a school supply!'},
+  {items:['🚗','🚌','🍦','🚂'],odd:'🍦',reason:'Ice cream is not a vehicle!'},
+  {items:['⭐','🌙','☀️','🐠'],odd:'🐠',reason:'A fish is not something in the sky!'},
+  {items:['👟','👒','🧤','🐘'],odd:'🐘',reason:'An elephant is not something you wear!'},
+  {items:['🎸','🎹','🥁','🏀'],odd:'🏀',reason:'A basketball is sport, not an instrument!'},
+  {items:['2','4','6','7'],odd:'7',reason:'7 is odd — all others are even numbers!'},
+  {items:['🐄','🐔','🐷','🦁'],odd:'🦁',reason:'A lion is wild — the others are farm animals!'},
+];
+let dbScore=0,dbRound=0;
+function buildDoesntBelong(){dbScore=0;dbRound=0;nextDbRound();}
+function nextDbRound(){
+  const total=6;dbRound++;
+  if(dbRound>total){endGame(dbScore,total,'doesntBelong');return;}
+  const set=DNB_SETS[Math.floor(Math.random()*DNB_SETS.length)];
+  const shuffled=[...set.items].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔢 Which Doesn\'t Belong?</div>
+      <div class="game-inst">Round ${dbRound}/${total} · Score: ${dbScore} ⭐</div>
+      <div class="count-q" style="margin:12px 0">Three go together — which one does NOT belong?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+        ${shuffled.map(item=>`<div class="copt" style="font-size:2.5rem;padding:16px" onclick="checkDb(this,'${item}','${set.odd}','${set.reason.replace(/'/g,"\\'")}')">${item}</div>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('Which one does not belong with the others?');
+}
+function checkDb(el,chosen,answer,reason){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');dbScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Correct! '+reason;mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ '+reason;mascotHint();}
+  setTimeout(nextDbRound,1800);
+}
+
+// ── Finish the Picture! ──
+const FP_PICS=[
+  {name:'Rainbow',left:'🌈',options:['☁️','⭐','🌟','✨'],answer:'☁️',hint:'Rainbows often have clouds nearby!'},
+  {name:'Sun',left:'🌤️',options:['🌞','🌚','🌝','🌛'],answer:'🌞',hint:'The full sunny sun completes the sky!'},
+  {name:'Tree',left:'🌳',options:['🍎','🏠','🚗','✈️'],answer:'🍎',hint:'Apple trees grow apples!'},
+  {name:'Ocean',left:'🌊',options:['🐠','🐦','🐝','🐿️'],answer:'🐠',hint:'Fish swim in the ocean!'},
+  {name:'Night sky',left:'🌙',options:['⭐','☀️','🌈','🌸'],answer:'⭐',hint:'Stars come out at night!'},
+  {name:'Farm',left:'🌾',options:['🐄','🚗','🎸','✈️'],answer:'🐄',hint:'Cows live on farms!'},
+];
+let fpiScore=0,fpiRound=0;
+function buildFinishPicture(){fpiScore=0;fpiRound=0;nextFpiRound();}
+function nextFpiRound(){
+  const total=6;fpiRound++;
+  if(fpiRound>total){endGame(fpiScore,total,'finishPicture');return;}
+  const pic=FP_PICS[Math.floor(Math.random()*FP_PICS.length)];
+  const opts=[...pic.options].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🧸 Finish the Picture!</div>
+      <div class="game-inst">Round ${fpiRound}/${total} · Score: ${fpiScore} ⭐</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin:16px 0">
+        <div style="font-size:4.5rem">${pic.left}</div>
+        <div style="font-size:2rem;color:var(--text4)">+</div>
+        <div style="width:72px;height:72px;border-radius:16px;border:3px dashed var(--purple);display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--purple);animation:pulse 1s infinite">?</div>
+      </div>
+      <div class="count-q" style="margin-bottom:12px">Which piece completes the picture?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        ${opts.map(o=>`<div class="copt" style="font-size:2.5rem;padding:14px" onclick="checkFpi(this,'${o}','${pic.answer}','${pic.hint.replace(/'/g,"\\'")}')">${o}</div>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('Which piece finishes the picture?');
+}
+function checkFpi(el,chosen,answer,hint){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');fpiScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ '+hint;mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ '+hint;mascotHint();}
+  setTimeout(nextFpiRound,1800);
+}
+
+// ── Complete the Set! ──
+const SETS_DATA=[
+  {shown:['🍴','🔪'],answer:'🥄',hint:'Knife, fork and spoon make a cutlery set!'},
+  {shown:['1️⃣','2️⃣'],answer:'3️⃣',hint:'1, 2, 3 — counting in order!'},
+  {shown:['☀️','🌙'],answer:'⭐',hint:'The sun, moon and stars are all in the sky!'},
+  {shown:['🌱','🌿'],answer:'🌳',hint:'A seed grows into a sprout, then a tree!'},
+  {shown:['🐣','🐥'],answer:'🐔',hint:'Egg hatches to chick and grows into a chicken!'},
+  {shown:['📕','📗'],answer:'📘',hint:'Red, green and blue — a set of coloured books!'},
+  {shown:['🔴','🟡'],answer:'🔵',hint:'Red, yellow and blue are the three primary colours!'},
+];
+let csScore=0,csRound=0;
+function buildCompleteSet(){csScore=0;csRound=0;nextCsRound();}
+function nextCsRound(){
+  const total=6;csRound++;
+  if(csRound>total){endGame(csScore,total,'completeSet');return;}
+  const set=SETS_DATA[Math.floor(Math.random()*SETS_DATA.length)];
+  const allEmojis=['🎀','🌺','🏆','🎭','🦋','🌮','🎸','🚂','🌍','💎'];
+  const wrongs=allEmojis.sort(()=>Math.random()-.5).slice(0,3);
+  const opts=[set.answer,...wrongs].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🗺️ Complete the Set!</div>
+      <div class="game-inst">Round ${csRound}/${total} · Score: ${csScore} ⭐</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:16px 0">
+        ${set.shown.map(e=>`<div style="width:60px;height:60px;border-radius:14px;background:var(--inputbg);border:3px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:2rem">${e}</div>`).join('')}
+        <div style="width:60px;height:60px;border-radius:14px;border:3px dashed var(--purple);display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--purple);animation:pulse 1s infinite">?</div>
+      </div>
+      <div class="count-q" style="margin-bottom:12px">What completes this set?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        ${opts.map(o=>`<div class="copt" style="font-size:2rem;padding:14px" onclick="checkCs(this,'${o}','${set.answer}','${set.hint.replace(/'/g,"\\'")}')">${o}</div>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('What is missing to complete the set?');
+}
+function checkCs(el,chosen,answer,hint){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');csScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ '+hint;mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ '+hint;mascotHint();}
+  setTimeout(nextCsRound,1800);
+}
+
+// ════════════════════════════════════════════════
+//  NEW FOCUS GAMES
+// ════════════════════════════════════════════════
+
+// ── Memory Torch ──
+const MT_ITEMS=['🐱','🌟','🍎','🚗','🌸','🎈','🐶','🍪','⭐','🦋','🌈','🏀','🎸','🐸','🍕'];
+let mtScore=0,mtRound=0;
+function buildMemoryTorch(){mtScore=0;mtRound=0;nextMtRound();}
+function nextMtRound(){
+  const total=5;mtRound++;
+  if(mtRound>total){endGame(mtScore,total,'memoryTorch');return;}
+  const count=diffLevel===1?2:diffLevel===2?3:4;
+  const shown=[...MT_ITEMS].sort(()=>Math.random()-.5).slice(0,count);
+  const decoys=[...MT_ITEMS.filter(i=>!shown.includes(i))].sort(()=>Math.random()-.5).slice(0,count);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔦 Memory Torch!</div>
+      <div class="game-inst">Round ${mtRound}/${total} · Score: ${mtScore} ⭐</div>
+      <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:var(--purple);margin:10px 0">👀 Remember these!</div>
+      <div style="display:flex;justify-content:center;gap:12px;margin:14px 0" id="mtShow">
+        ${shown.map(e=>`<div style="width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,#ffb830,#ff8c69);display:flex;align-items:center;justify-content:center;font-size:2.2rem">${e}</div>`).join('')}
+      </div>
+      <div id="mtCover" style="display:none;text-align:center;font-size:4rem;margin:14px 0">🔦</div>
+      <div id="mtQuestion" style="display:none">
+        <div class="count-q" style="margin-bottom:12px">Which ones did you see? Tap all of them!</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px" id="mtGrid"></div>
+        <div id="mtFoundCount" style="font-family:'Baloo 2',cursive;font-size:.8rem;color:var(--text3);text-align:center;margin-top:8px">Found: 0 / ${count}</div>
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  window._mtShown=shown;window._mtCount=count;window._mtFound=0;
+  setTimeout(()=>{
+    document.getElementById('mtShow').style.display='none';
+    document.getElementById('mtCover').style.display='block';
+    setTimeout(()=>{
+      document.getElementById('mtCover').style.display='none';
+      document.getElementById('mtQuestion').style.display='block';
+      const all=[...shown,...decoys].sort(()=>Math.random()-.5);
+      document.getElementById('mtGrid').innerHTML=all.map(e=>`<div onclick="tapMt(this,'${e}')"
+        style="height:56px;border-radius:12px;background:var(--inputbg);border:2.5px solid var(--border);
+        display:flex;align-items:center;justify-content:center;font-size:1.8rem;cursor:pointer;transition:all .15s">${e}</div>`).join('');
+    },600);
+  },2000);
+}
+function tapMt(el,item){
+  if(el.style.pointerEvents==='none')return;
+  if(window._mtShown.includes(item)){
+    el.style.background='linear-gradient(135deg,#56cf81,#4ecdc4)';el.style.pointerEvents='none';
+    playCorrect();window._mtFound++;
+    document.getElementById('mtFoundCount').textContent='Found: '+window._mtFound+' / '+window._mtCount;
+    if(window._mtFound>=window._mtCount){mtScore++;adaptDifficulty(true);burst();mascotPraise();
+      document.getElementById('gfb').textContent='🎉 Amazing memory!';setTimeout(nextMtRound,1200);}
+  } else {
+    el.style.background='#ffe8f0';el.style.animation='shake .3s';
+    setTimeout(()=>{el.style.background='var(--inputbg)';el.style.animation='';},350);
+    playWrong();adaptDifficulty(false);
+    document.getElementById('gfb').textContent='❌ That one was not there!';
+  }
+}
+
+// ── What Changed? ──
+const WC_SCENES=[
+  {items:['🌞','🌳','🏠','🐶'],changeIdx:0,options:['🌙','🌧️','🌈','⭐'],answer:'🌙',hint:'The sun changed to a moon!'},
+  {items:['🔴','🟡','🟢','🔵'],changeIdx:2,options:['🟠','⚪','🟤','🟣'],answer:'🟠',hint:'The green changed to orange!'},
+  {items:['🐱','🐶','🐸','🐰'],changeIdx:1,options:['🦁','🐯','🐻','🐼'],answer:'🐯',hint:'The dog changed to a tiger!'},
+  {items:['⭐','🌸','🎈','🍎'],changeIdx:3,options:['🍊','🍇','🍋','🍓'],answer:'🍓',hint:'The apple changed to a strawberry!'},
+  {items:['🚗','✈️','🚢','🚂'],changeIdx:0,options:['🚀','🚁','🛸','🚲'],answer:'🚀',hint:'The car changed to a rocket!'},
+];
+let wcgScore=0,wcgRound=0;
+function buildWhatChanged(){wcgScore=0;wcgRound=0;nextWcgRound();}
+function nextWcgRound(){
+  const total=5;wcgRound++;
+  if(wcgRound>total){endGame(wcgScore,total,'whatChanged');return;}
+  const scene=WC_SCENES[Math.floor(Math.random()*WC_SCENES.length)];
+  const changed=[...scene.items];changed[scene.changeIdx]=scene.answer;
+  const opts=[scene.answer,...scene.options.filter(o=>o!==scene.answer).slice(0,3)].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🎨 What Changed?</div>
+      <div class="game-inst">Round ${wcgRound}/${total} · Score: ${wcgScore} ⭐</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0">
+        <div style="background:var(--inputbg);border-radius:14px;padding:12px;border:3px solid var(--border)">
+          <div style="font-family:'Baloo 2',cursive;font-size:.65rem;font-weight:800;color:var(--text4);text-align:center;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Before</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">${scene.items.map(e=>`<span style="font-size:1.8rem">${e}</span>`).join('')}</div>
+        </div>
+        <div style="background:var(--inputbg);border-radius:14px;padding:12px;border:3px solid var(--purple)">
+          <div style="font-family:'Baloo 2',cursive;font-size:.65rem;font-weight:800;color:var(--purple);text-align:center;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">After</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">${changed.map(e=>`<span style="font-size:1.8rem">${e}</span>`).join('')}</div>
+        </div>
+      </div>
+      <div class="count-q" style="margin-bottom:12px">What changed?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        ${opts.map(o=>`<div class="copt" style="font-size:2rem;padding:12px" onclick="checkWcg(this,'${o}','${scene.answer}','${scene.hint.replace(/'/g,"\\'")}')">${o}</div>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('Look carefully at before and after. What changed?');
+}
+function checkWcg(el,chosen,answer,hint){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');wcgScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ '+hint;mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ '+hint;mascotHint();}
+  setTimeout(nextWcgRound,1800);
+}
+
+// ── Big to Small ──
+const BTS_SETS=[
+  {items:['🐘','🐕','🐭'],names:['Elephant','Dog','Mouse']},
+  {items:['🌳','🌿','🌱'],names:['Tree','Plant','Seedling']},
+  {items:['🐋','🐬','🐟'],names:['Whale','Dolphin','Fish']},
+  {items:['🌍','🌕','⭐'],names:['Earth','Moon','Star']},
+];
+let btsScore=0,btsRound=0;
+function buildBigToSmall(){btsScore=0;btsRound=0;nextBtsRound();}
+function nextBtsRound(){
+  const total=5;btsRound++;
+  if(btsRound>total){endGame(btsScore,total,'bigToSmall');return;}
+  const set=BTS_SETS[Math.floor(Math.random()*BTS_SETS.length)];
+  const correctOrder=set.items;
+  const shuffled=[...correctOrder].sort(()=>Math.random()-.5);
+  window._btsNext=0;window._btsCorrect=correctOrder;
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">⬆️ Big to Small!</div>
+      <div class="game-inst">Round ${btsRound}/${total} · Score: ${btsScore} ⭐</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--blue);text-align:center;margin:8px 0">Tap from <span style="color:#ff6b9d">BIGGEST</span> → to <span style="color:#4fa3e0">smallest</span>!</div>
+      <div style="display:flex;gap:8px;justify-content:center;margin:10px 0" id="btsSlots">
+        ${correctOrder.map((_,i)=>`<div id="btsSlot${i}" style="width:58px;height:58px;border-radius:14px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem">?</div>`).join('')}
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center;margin:14px 0">
+        ${shuffled.map((e,i)=>`<div id="btsBtn${i}" onclick="tapBts(${i},'${e}',${correctOrder.indexOf(e)})"
+          style="width:70px;height:70px;border-radius:16px;background:var(--inputbg);border:3px solid var(--border);
+          display:flex;align-items:center;justify-content:center;font-size:2.2rem;cursor:pointer;transition:all .2s">${e}</div>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+}
+function tapBts(btnIdx,emoji,correctPos){
+  const el=document.getElementById('btsBtn'+btnIdx);
+  if(!el||el.style.opacity==='0.3')return;
+  if(correctPos===window._btsNext){
+    el.style.opacity='0.3';el.style.pointerEvents='none';
+    const slot=document.getElementById('btsSlot'+window._btsNext);
+    if(slot){slot.textContent=emoji;slot.style.background='linear-gradient(135deg,#ff6b9d,#ffb830)';}
+    playCorrect();window._btsNext++;
+    if(window._btsNext>=window._btsCorrect.length){btsScore++;adaptDifficulty(true);burst();mascotPraise();
+      document.getElementById('gfb').textContent='🎉 Perfect order!';setTimeout(nextBtsRound,1200);}
+  } else {
+    el.style.animation='shake .3s';setTimeout(()=>el.style.animation='',350);
+    playWrong();adaptDifficulty(false);
+    document.getElementById('gfb').textContent='❌ Find the biggest one first!';
+  }
+}
+
+// ── Mirror Me! ──
+const MIRROR_PATS=[
+  {left:['🔴','🔵','🔴'],right:['🔴','🔵','🔴']},
+  {left:['⭐','🌸','⭐'],right:['⭐','🌸','⭐']},
+  {left:['🟡','🟢','🔵'],right:['🔵','🟢','🟡']},
+  {left:['🐱','🐶','🐸'],right:['🐸','🐶','🐱']},
+  {left:['1️⃣','2️⃣','3️⃣'],right:['3️⃣','2️⃣','1️⃣']},
+];
+let mmScore=0,mmRound=0;
+function buildMirrorMe(){mmScore=0;mmRound=0;nextMmRound();}
+function nextMmRound(){
+  const total=5;mmRound++;
+  if(mmRound>total){endGame(mmScore,total,'mirrorMe');return;}
+  const pat=MIRROR_PATS[Math.floor(Math.random()*MIRROR_PATS.length)];
+  const questionIdx=Math.floor(Math.random()*pat.right.length);
+  const correctAnswer=pat.right[questionIdx];
+  const allItems=[...new Set([...pat.left,...pat.right])];
+  const wrongOptions=allItems.filter(i=>i!==correctAnswer).sort(()=>Math.random()-.5).slice(0,3);
+  const opts=[correctAnswer,...wrongOptions].sort(()=>Math.random()-.5);
+  const rightDisplay=pat.right.map((e,i)=>i===questionIdx?'❓':e);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔁 Mirror Me!</div>
+      <div class="game-inst">Round ${mmRound}/${total} · Score: ${mmScore} ⭐</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--text2);text-align:center;margin:10px 0">Mirror the left pattern on the right!</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin:14px 0">
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
+          <div style="font-size:.65rem;font-weight:800;color:var(--text4);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Left</div>
+          ${pat.left.map(e=>`<div style="width:52px;height:52px;border-radius:12px;background:var(--inputbg);border:2.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.8rem">${e}</div>`).join('')}
+        </div>
+        <div style="font-size:2rem;color:var(--text4)">↔️</div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
+          <div style="font-size:.65rem;font-weight:800;color:var(--purple);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Right</div>
+          ${rightDisplay.map(e=>`<div style="width:52px;height:52px;border-radius:12px;background:${e==='❓'?'transparent':'var(--inputbg)'};border:${e==='❓'?'3px dashed var(--purple)':'2.5px solid var(--border)'};display:flex;align-items:center;justify-content:center;font-size:${e==='❓'?'1.4rem':'1.8rem'};color:var(--purple)">${e}</div>`).join('')}
+        </div>
+      </div>
+      <div class="count-q" style="margin-bottom:10px">What goes in the ❓ spot?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        ${opts.map(o=>`<div class="copt" style="font-size:2rem;padding:12px" onclick="checkMm(this,'${o}','${correctAnswer}')">${o}</div>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('What goes in the mirror spot?');
+}
+function checkMm(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');mmScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Perfect mirror!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ The mirror shows '+answer+'!';mascotHint();}
+  setTimeout(nextMmRound,1500);
+}
+
+// ── What's Behind the Door? ──
+const BD_ITEMS=['🌟','🍎','🐱','🚗','🎈','🍕','⭐','🌸','🎸','🐸','🦋','🏀','🌈','🎁','🐶'];
+let bdScore=0,bdRound=0;
+function buildBehindDoor(){bdScore=0;bdRound=0;nextBdRound();}
+function nextBdRound(){
+  const total=5;bdRound++;
+  if(bdRound>total){endGame(bdScore,total,'behindDoor');return;}
+  const answer=BD_ITEMS[Math.floor(Math.random()*BD_ITEMS.length)];
+  const wrongs=[...BD_ITEMS.filter(i=>i!==answer)].sort(()=>Math.random()-.5).slice(0,3);
+  const opts=[answer,...wrongs].sort(()=>Math.random()-.5);
+  const showTime=diffLevel===1?2000:diffLevel===2?1500:1000;
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🎪 What\'s Behind the Door?</div>
+      <div class="game-inst">Round ${bdRound}/${total} · Score: ${bdScore} ⭐</div>
+      <div style="text-align:center;margin:16px 0" id="bdDoor">
+        <div style="width:110px;height:130px;border-radius:16px;background:linear-gradient(135deg,#8B4513,#A0522D);border:4px solid #5c2d0a;margin:0 auto;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.3);font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:#fff" onclick="openBdDoor('${answer}',${showTime})">
+          🚪<br><span style="font-size:.7rem">Tap to open!</span>
+        </div>
+      </div>
+      <div id="bdQuestion" style="display:none">
+        <div class="count-q" style="margin-bottom:12px">What did you see behind the door?</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          ${opts.map(o=>`<div class="copt" style="font-size:2.5rem;padding:14px" onclick="checkBd(this,'${o}','${answer}')">${o}</div>`).join('')}
+        </div>
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+}
+function openBdDoor(answer,showTime){
+  const door=document.getElementById('bdDoor');
+  door.innerHTML=`<div style="font-size:5rem;animation:popIn .3s">${answer}</div>`;
+  speakText('Look carefully!');
+  setTimeout(()=>{
+    door.innerHTML=`<div style="width:110px;height:130px;border-radius:16px;background:linear-gradient(135deg,#2d6a4f,#1b4332);margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:3rem">🔒</div>`;
+    document.getElementById('bdQuestion').style.display='block';
+    speakText('What did you see?');
+  },showTime);
+}
+function checkBd(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');bdScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Great memory!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ It was '+answer+'!';mascotHint();}
+  setTimeout(nextBdRound,1600);
+}
+
+// ── Remember & Tap ──
+const RT_ITEMS=['🐱','🌟','🍎','🚗','🎈','🍕','⭐','🌸','🐸','🦋'];
+let rtScore=0,rtRound=0;
+function buildRememberTap(){rtScore=0;rtRound=0;nextRtRound();}
+function nextRtRound(){
+  const total=5;rtRound++;
+  if(rtRound>total){endGame(rtScore,total,'rememberTap');return;}
+  const count=diffLevel===1?3:diffLevel===2?4:5;
+  const seq=[...RT_ITEMS].sort(()=>Math.random()-.5).slice(0,count);
+  window._rtSeq=seq;window._rtStep=0;
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🧠 Remember & Tap!</div>
+      <div class="game-inst">Round ${rtRound}/${total} · Score: ${rtScore} ⭐</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--purple);text-align:center;margin:8px 0" id="rtMsg">👀 Watch the order carefully!</div>
+      <div style="display:flex;justify-content:center;gap:8px;margin:10px 0;flex-wrap:wrap" id="rtSequence">
+        ${seq.map((e,i)=>`<div id="rtSeq${i}" style="width:56px;height:56px;border-radius:14px;background:var(--inputbg);border:2.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.8rem;transition:all .2s">${e}</div>`).join('')}
+      </div>
+      <div style="display:flex;gap:8px;justify-content:center;margin:8px 0">
+        ${seq.map((_,i)=>`<div id="rtProg${i}" style="width:22px;height:8px;border-radius:4px;background:var(--border)"></div>`).join('')}
+      </div>
+      <div id="rtButtons" style="display:none;margin-top:10px">
+        <div class="count-q" style="margin-bottom:10px">Now tap them in the same order!</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
+          ${[...seq].sort(()=>Math.random()-.5).map(e=>`<div onclick="tapRt(this,'${e}')"
+            style="width:64px;height:64px;border-radius:14px;background:var(--inputbg);border:2.5px solid var(--border);
+            display:flex;align-items:center;justify-content:center;font-size:2rem;cursor:pointer;transition:all .15s">${e}</div>`).join('')}
+        </div>
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  let showIdx=0;
+  const flashInterval=setInterval(()=>{
+    if(showIdx>0){const prev=document.getElementById('rtSeq'+(showIdx-1));if(prev){prev.style.background='var(--inputbg)';prev.style.transform='';}}
+    if(showIdx>=seq.length){clearInterval(flashInterval);
+      document.getElementById('rtButtons').style.display='block';
+      document.getElementById('rtMsg').textContent='🎯 Your turn — tap in order!';return;}
+    const el=document.getElementById('rtSeq'+showIdx);
+    if(el){el.style.background='linear-gradient(135deg,#ffb830,#ff8c69)';el.style.transform='scale(1.15)';}
+    speakText(seq[showIdx]);showIdx++;
+  },900);
+}
+function tapRt(el,item){
+  const seq=window._rtSeq;const step=window._rtStep;
+  if(item===seq[step]){
+    el.style.background='linear-gradient(135deg,#56cf81,#4ecdc4)';el.style.pointerEvents='none';
+    const prog=document.getElementById('rtProg'+step);if(prog)prog.style.background='var(--green)';
+    playCorrect();window._rtStep++;
+    if(window._rtStep>=seq.length){rtScore++;adaptDifficulty(true);burst();mascotPraise();
+      document.getElementById('gfb').textContent='🎉 Perfect order!';setTimeout(nextRtRound,1200);}
+  } else {
+    el.style.animation='shake .3s';setTimeout(()=>el.style.animation='',350);
+    playWrong();adaptDifficulty(false);
+    document.getElementById('gfb').textContent='❌ Not quite — keep going!';
   }
 }
 
