@@ -4143,6 +4143,14 @@ const GAMES = [
   {id:'findLetter',week:2, emoji:'🔤', title:'Find the Letter!',        desc:'Find all the target letters hidden in the grid!',    cat:'letters'},
   {id:'animalSound',week:1,emoji:'🐶', title:'Animal Sounds Match!',    desc:'Listen to the sound and tap the right animal!',      cat:'brain'},
   {id:'phonicsMatch',week:1,emoji:'🗣️',title:'Phonics Sound Match!',    desc:'Hear the letter sound and tap the right letter!',    cat:'letters'},
+  {id:'abcOrder',    week:1,emoji:'🔤',title:'ABC Order!',               desc:'Tap the letters in the right A→B→C order!',          cat:'letters'},
+  {id:'letterPic',   week:1,emoji:'🖼️',title:'Letter & Picture Match!', desc:'Match the letter to the picture that starts with it!',cat:'letters'},
+  {id:'upperLower',  week:1,emoji:'🔡',title:'Uppercase & Lowercase!',   desc:'Match the big letter to its small letter twin!',      cat:'letters'},
+  {id:'firstLetter', week:1,emoji:'✍️',title:'What Letter Starts This?',desc:'Look at the picture — tap the first letter of the word!',cat:'letters'},
+  {id:'singAbc',     week:1,emoji:'🎵',title:'Sing the Alphabet!',       desc:'Tap each letter as it lights up — sing along!',      cat:'letters'},
+  {id:'spotLetter',  week:1,emoji:'👀',title:'Spot the Letter!',         desc:'Find and tap all the matching letters in the crowd!', cat:'letters'},
+  {id:'whichNext',   week:1,emoji:'🧩',title:'Which Comes Next?',        desc:'A, B, C... what letter comes after?',                cat:'letters'},
+  {id:'vowelCon',    week:2,emoji:'🌟',title:'Vowel or Consonant?',      desc:'Is this letter a vowel or a consonant?',             cat:'letters'},
   {id:'daysOrder',   week:1,emoji:'📅',title:'Days of the Week!',       desc:'Put the days in the right order!',                   cat:'time'},
   {id:'clockGame',   week:2,emoji:'🕐',title:'What Time Is It?',        desc:'Look at the clock and pick the right time!',         cat:'time'},
   {id:'monthsOrder', week:2,emoji:'📆',title:'Months of the Year!',     desc:'Learn all 12 months and what order they go in!',     cat:'time'},
@@ -6612,7 +6620,7 @@ function renderGame(g){
   renderHist();updateProg();renderWbar();renderChallenge();
   const fns={numMatch:buildNumMatch,wordBuild:buildWordBuild,countGame:buildCountGame,
     colourMix:buildColourMix,drawEmoji:buildDrawEmoji,buildScene:buildBuildScene,makeMusic:buildMakeMusic,storyStarter:buildStoryStarter,emotionFaces:buildEmotionFaces,rainbowOrder:buildRainbowOrder,makePattern:buildMakePattern,colourByNum:buildColourByNum,miniStory:buildMiniStory,shapeTap:buildShapeTap,memoryFlip:buildMemoryFlip,
-    findLetter:buildFindLetter,animalSound:buildAnimalSound,phonicsMatch:buildPhonicsMatch,
+    findLetter:buildFindLetter,animalSound:buildAnimalSound,phonicsMatch:buildPhonicsMatch,abcOrder:buildAbcOrder,letterPic:buildLetterPic,upperLower:buildUpperLower,firstLetter:buildFirstLetter,singAbc:buildSingAbc,spotLetter:buildSpotLetter,whichNext:buildWhichNext,vowelCon:buildVowelCon,
     daysOrder:buildDaysOrder,clockGame:buildClockGame,monthsOrder:buildMonthsOrder,amPmGame:buildAmPmGame,seasonsGame:buildSeasonsGame,yttGame:buildYttGame,simonSays:buildSimonSays,
     whatsMissing:buildWhatsMissing,colourPattern:buildColourPattern,numberMemory:buildNumberMemory,
     coinCount:buildCoinCount,fairTrade:buildFairTrade,myShop:buildMyShop,lemonadeStand:buildLemonadeStand,changeMaker:buildChangeMaker,
@@ -12130,6 +12138,361 @@ function checkPhonics(el,chosen,target){
     mascotHint();
   }
   setTimeout(nextPhonicsRound,1500);
+}
+
+// ══════════════════════════════════════
+//  ABC ORDER GAME
+// ══════════════════════════════════════
+const ALPHABET='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+let aoScore=0,aoRound=0;
+function buildAbcOrder(){aoScore=0;aoRound=0;nextAoRound();}
+function nextAoRound(){
+  const total=6;aoRound++;
+  if(aoRound>total){endGame(aoScore,total,'abcOrder');return;}
+  const startIdx=Math.floor(Math.random()*20);
+  const count=diffLevel===1?4:diffLevel===2?5:6;
+  const seq=ALPHABET.slice(startIdx,startIdx+count);
+  const shuffled=[...seq].sort(()=>Math.random()-.5);
+  let aoNext=0;
+  const colors=['#ff6b9d','#ffb830','#56cf81','#4fa3e0','#a78bfa','#ff8c69'];
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔤 ABC Order!</div>
+      <div class="game-inst">Round ${aoRound}/${total} · Score: ${aoScore} ⭐</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--blue);text-align:center;margin:8px 0">Tap from <span style="color:#56cf81">A → Z</span> in order!</div>
+      <div style="display:flex;gap:6px;justify-content:center;margin:8px 0" id="aoSlots">
+        ${seq.map((_,i)=>`<div id="aoSlot${i}" style="width:38px;height:38px;border-radius:10px;background:var(--border);display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--text4)">?</div>`).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0" id="aoButtons">
+        ${shuffled.map((l,i)=>`<div id="aoBtn${i}" onclick="checkAo(this,'${l}',${seq.indexOf(l)},getAoNext())"
+          style="height:64px;border-radius:14px;background:${colors[i%colors.length]};color:#fff;
+          font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;cursor:pointer;
+          display:flex;align-items:center;justify-content:center;transition:all .2s">${l}</div>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  window._aoNext=0;window._aoSeq=seq;window._aoScore_ref=()=>{aoScore++;};
+  window.getAoNext=()=>window._aoNext;
+  window.checkAo=(el,letter,correctPos,next)=>{
+    if(parseInt(correctPos)===parseInt(next)){
+      el.style.opacity='.4';el.style.pointerEvents='none';el.innerHTML='✓';
+      const slot=document.getElementById('aoSlot'+next);
+      if(slot){slot.style.background='linear-gradient(135deg,#56cf81,#4ecdc4)';slot.style.color='#fff';slot.textContent=letter;}
+      playCorrect();window._aoNext++;
+      if(window._aoNext>=window._aoSeq.length){aoScore++;adaptDifficulty(true);mascotPraise();
+        document.getElementById('gfb').textContent='🎉 Perfect ABC order!';setTimeout(nextAoRound,1200);}
+    } else {
+      el.style.animation='shake .3s';setTimeout(()=>el.style.animation='',350);
+      playWrong();adaptDifficulty(false);
+      document.getElementById('gfb').textContent='❌ Not yet! Find the next letter after '+(window._aoNext>0?window._aoSeq[window._aoNext-1]:'the start')+'!';
+    }
+  };
+  speakText('Tap the letters in ABC order from '+seq[0]+' to '+seq[seq.length-1]+'!');
+}
+
+// ══════════════════════════════════════
+//  LETTER & PICTURE MATCH
+// ══════════════════════════════════════
+const LETTER_PICS={
+  A:{pic:'🍎',word:'Apple'},B:{pic:'🐝',word:'Bee'},C:{pic:'🐱',word:'Cat'},
+  D:{pic:'🐶',word:'Dog'},E:{pic:'🥚',word:'Egg'},F:{pic:'🐟',word:'Fish'},
+  G:{pic:'🍇',word:'Grapes'},H:{pic:'🏠',word:'House'},I:{pic:'🍦',word:'Ice cream'},
+  J:{pic:'🃏',word:'Joker'},K:{pic:'🪁',word:'Kite'},L:{pic:'🦁',word:'Lion'},
+  M:{pic:'🌙',word:'Moon'},N:{pic:'🪺',word:'Nest'},O:{pic:'🐙',word:'Octopus'},
+  P:{pic:'🐧',word:'Penguin'},Q:{pic:'👑',word:'Queen'},R:{pic:'🌹',word:'Rose'},
+  S:{pic:'⭐',word:'Star'},T:{pic:'🐯',word:'Tiger'},U:{pic:'☂️',word:'Umbrella'},
+  V:{pic:'🎻',word:'Violin'},W:{pic:'🐋',word:'Whale'},X:{pic:'🎸',word:'Xylophone'},
+  Y:{pic:'🪀',word:'Yo-yo'},Z:{pic:'🦓',word:'Zebra'}
+};
+let lpScore=0,lpRound=0;
+function buildLetterPic(){lpScore=0;lpRound=0;nextLpRound();}
+function nextLpRound(){
+  const total=6;lpRound++;
+  if(lpRound>total){endGame(lpScore,total,'letterPic');return;}
+  const letters=Object.keys(LETTER_PICS);
+  const pick=letters[Math.floor(Math.random()*letters.length)];
+  const answer=pick;
+  const wrongs=[...letters.filter(l=>l!==pick)].sort(()=>Math.random()-.5).slice(0,3);
+  const opts=[answer,...wrongs].sort(()=>Math.random()-.5);
+  const data=LETTER_PICS[pick];
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🖼️ Letter & Picture Match!</div>
+      <div class="game-inst">Round ${lpRound}/${total} · Score: ${lpScore} ⭐</div>
+      <div style="text-align:center;font-size:4.5rem;margin:12px 0">${data.pic}</div>
+      <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--text2);margin-bottom:12px">${data.word}</div>
+      <div class="count-q">Which letter does <strong>${data.word}</strong> start with?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px">
+        ${opts.map(o=>`<div class="copt" style="font-size:2rem;font-weight:800" onclick="checkLp(this,'${o}','${answer}')">${o}</div>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText(data.word+' starts with which letter?');
+}
+function checkLp(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');lpScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Yes! '+LETTER_PICS[answer].word+' starts with '+answer+'!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ It starts with '+answer+'!';mascotHint();}
+  setTimeout(nextLpRound,1500);
+}
+
+// ══════════════════════════════════════
+//  UPPERCASE & LOWERCASE MATCH
+// ══════════════════════════════════════
+let ulScore=0,ulRound=0;
+function buildUpperLower(){ulScore=0;ulRound=0;nextUlRound();}
+function nextUlRound(){
+  const total=6;ulRound++;
+  if(ulRound>total){endGame(ulScore,total,'upperLower');return;}
+  const idx=Math.floor(Math.random()*26);
+  const upper=ALPHABET[idx];
+  const lower=upper.toLowerCase();
+  const wrongUppers=[...ALPHABET.filter(l=>l!==upper)].sort(()=>Math.random()-.5).slice(0,3);
+  const opts=[lower,...wrongUppers.map(l=>l.toLowerCase())].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🔡 Uppercase & Lowercase!</div>
+      <div class="game-inst">Round ${ulRound}/${total} · Score: ${ulScore} ⭐</div>
+      <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:6rem;font-weight:800;color:var(--purple);line-height:1;margin:14px 0;text-shadow:3px 4px 0 rgba(0,0,0,.1)">${upper}</div>
+      <div class="count-q" style="margin-bottom:12px">Find the small (lowercase) version of <strong>${upper}</strong></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        ${opts.map(o=>`<div class="copt" style="font-size:2.5rem;font-weight:800" onclick="checkUl(this,'${o}','${lower}')">${o}</div>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('Find the lowercase version of the letter '+upper);
+}
+function checkUl(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');ulScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Yes! '+answer.toUpperCase()+' and '+answer+' are the same letter!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ The lowercase is '+answer+'!';mascotHint();}
+  setTimeout(nextUlRound,1500);
+}
+
+// ══════════════════════════════════════
+//  WHAT LETTER STARTS THIS WORD?
+// ══════════════════════════════════════
+const FL_WORDS=[
+  {pic:'🐶',word:'Dog',first:'D'},{pic:'🐱',word:'Cat',first:'C'},{pic:'🍎',word:'Apple',first:'A'},
+  {pic:'🐝',word:'Bee',first:'B'},{pic:'🐟',word:'Fish',first:'F'},{pic:'🌸',word:'Flower',first:'F'},
+  {pic:'🦁',word:'Lion',first:'L'},{pic:'🐘',word:'Elephant',first:'E'},{pic:'🐧',word:'Penguin',first:'P'},
+  {pic:'🌙',word:'Moon',first:'M'},{pic:'⭐',word:'Star',first:'S'},{pic:'🌈',word:'Rainbow',first:'R'},
+  {pic:'🎈',word:'Balloon',first:'B'},{pic:'🏠',word:'House',first:'H'},{pic:'🐢',word:'Turtle',first:'T'},
+  {pic:'🦋',word:'Butterfly',first:'B'},{pic:'🍌',word:'Banana',first:'B'},{pic:'🚗',word:'Car',first:'C'},
+  {pic:'🎁',word:'Gift',first:'G'},{pic:'🦊',word:'Fox',first:'F'},{pic:'🍕',word:'Pizza',first:'P'},
+  {pic:'🐸',word:'Frog',first:'F'},{pic:'🦄',word:'Unicorn',first:'U'},{pic:'🐍',word:'Snake',first:'S'},
+];
+let flScore=0,flRound=0;
+function buildFirstLetter(){flScore=0;flRound=0;nextFlRound();}
+function nextFlRound(){
+  const total=6;flRound++;
+  if(flRound>total){endGame(flScore,total,'firstLetter');return;}
+  const pick=FL_WORDS[Math.floor(Math.random()*FL_WORDS.length)];
+  const answer=pick.first;
+  const wrongs=[...ALPHABET.filter(l=>l!==answer)].sort(()=>Math.random()-.5).slice(0,3);
+  const opts=[answer,...wrongs].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">✍️ What Letter Starts This?</div>
+      <div class="game-inst">Round ${flRound}/${total} · Score: ${flScore} ⭐</div>
+      <div style="text-align:center;font-size:4.5rem;margin:14px 0">${pick.pic}</div>
+      <div class="count-q" style="margin-bottom:12px">What letter does <strong>${pick.word}</strong> start with?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        ${opts.map(o=>`<div class="copt" style="font-size:2rem;font-weight:800" onclick="checkFl(this,'${o}','${answer}')">${o}</div>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText(pick.word+'. What letter does '+pick.word+' start with?');
+}
+function checkFl(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');flScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Yes! '+answer+' for '+answer.toLowerCase()+'...!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ It starts with '+answer+'!';mascotHint();}
+  setTimeout(nextFlRound,1500);
+}
+
+// ══════════════════════════════════════
+//  SING THE ALPHABET
+// ══════════════════════════════════════
+let saIdx=0,saActive=false,saInterval=null;
+function buildSingAbc(){saIdx=0;saActive=false;if(saInterval)clearInterval(saInterval);
+  const colors=['#ff6b9d','#ffb830','#56cf81','#4fa3e0','#a78bfa','#ff8c69'];
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🎵 Sing the Alphabet!</div>
+      <div class="game-inst">Tap each letter as it lights up — sing along!</div>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin:12px 0" id="abcGrid">
+        ${ALPHABET.map((l,i)=>`<div id="saL${i}" onclick="tapSaLetter(${i})"
+          style="height:44px;border-radius:10px;background:var(--inputbg);border:2.5px solid var(--border);
+          display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',cursive;
+          font-size:1.1rem;font-weight:800;color:var(--text4);cursor:pointer;transition:all .15s">${l}</div>`).join('')}
+      </div>
+      <div style="text-align:center;margin:10px 0">
+        <button id="saSpeakBtn" onclick="startSingAbc()" style="background:linear-gradient(135deg,#1b4332,#52b788);border:none;border-radius:50px;padding:12px 28px;font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:#fff;cursor:pointer">🎵 Start Singing!</button>
+      </div>
+      <div id="saCurrentLetter" style="text-align:center;font-family:'Baloo 2',cursive;font-size:2.5rem;font-weight:800;color:var(--purple);min-height:50px"></div>
+      <div class="game-feedback" id="gfb"></div>
+      <button class="game-done-btn" onclick="markGameDone(3)" style="margin-top:8px">✅ Done! Give me stars! →</button>
+    </div>`;
+}
+function startSingAbc(){
+  saIdx=0;saActive=true;
+  document.getElementById('saSpeakBtn').style.display='none';
+  ALPHABET.forEach((_,i)=>{const el=document.getElementById('saL'+i);if(el){el.style.background='var(--inputbg)';el.style.borderColor='var(--border)';el.style.color='var(--text4)';}});
+  highlightSaLetter();
+  speakText('A B C D E F G H I J K L M N O P Q R S T U V W X Y Z');
+}
+function highlightSaLetter(){
+  if(saIdx>=26){saActive=false;document.getElementById('gfb').textContent='🎉 You sang the whole alphabet!';mascotPraise();burst();return;}
+  ALPHABET.forEach((_,i)=>{const el=document.getElementById('saL'+i);if(el&&i<saIdx){el.style.background='linear-gradient(135deg,#56cf81,#4ecdc4)';el.style.color='#fff';el.style.borderColor='#56cf81';}});
+  const curr=document.getElementById('saL'+saIdx);
+  if(curr){curr.style.background='linear-gradient(135deg,#ffb830,#ff8c69)';curr.style.color='#fff';curr.style.borderColor='#ffb830';curr.style.transform='scale(1.2)';}
+  const lbl=document.getElementById('saCurrentLetter');
+  if(lbl)lbl.textContent=ALPHABET[saIdx];
+}
+function tapSaLetter(i){
+  if(!saActive)return;
+  if(i===saIdx){playCorrect();saIdx++;const el=document.getElementById('saL'+(i));if(el)el.style.transform='scale(1)';highlightSaLetter();}
+  else{playWrong();const el=document.getElementById('saL'+i);if(el){el.style.animation='shake .3s';setTimeout(()=>el.style.animation='',350);}}
+}
+
+// ══════════════════════════════════════
+//  SPOT THE LETTER
+// ══════════════════════════════════════
+let slScore=0,slRound=0;
+function buildSpotLetter(){slScore=0;slRound=0;nextSlRound();}
+function nextSlRound(){
+  const total=5;slRound++;
+  if(slRound>total){endGame(slScore,total,'spotLetter');return;}
+  const target=ALPHABET[Math.floor(Math.random()*26)];
+  const gridSize=diffLevel===1?16:diffLevel===2?20:25;
+  const targetCount=diffLevel===1?3:diffLevel===2?4:5;
+  const decoys=[...ALPHABET.filter(l=>l!==target)].sort(()=>Math.random()-.5).slice(0,gridSize-targetCount);
+  const grid=[...Array(targetCount).fill(target),...decoys].sort(()=>Math.random()-.5);
+  let found=0;
+  const colors=['#ff6b9d','#ffb830','#56cf81','#4fa3e0','#a78bfa','#ff8c69','#4ecdc4'];
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">👀 Spot the Letter!</div>
+      <div class="game-inst">Round ${slRound}/${total} · Score: ${slScore} ⭐</div>
+      <div style="text-align:center;margin:10px 0">
+        <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--text2)">Find all the <span style="font-size:2rem;color:var(--purple);font-weight:800">${target}</span> letters!</div>
+        <div id="slCount" style="font-family:'Baloo 2',cursive;font-size:.75rem;color:var(--text3);margin-top:4px">Found: 0 / ${targetCount}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:8px 0">
+        ${grid.map((l,i)=>`<div id="slCell${i}" onclick="tapSlCell(${i},'${l}','${target}',${targetCount})"
+          style="height:42px;border-radius:8px;background:var(--inputbg);border:2px solid var(--border);
+          display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',cursive;
+          font-size:.95rem;font-weight:800;color:${colors[Math.floor(Math.random()*colors.length)]};cursor:pointer;transition:all .15s">${l}</div>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  window._slFound=0;window._slTarget=target;window._slTargetCount=targetCount;
+  speakText('Find all the letter '+target+' hiding in the grid!');
+}
+function tapSlCell(i,letter,target,targetCount){
+  const el=document.getElementById('slCell'+i);
+  if(!el||el.style.pointerEvents==='none')return;
+  if(letter===target){
+    el.style.background='linear-gradient(135deg,#56cf81,#4ecdc4)';el.style.color='#fff';el.style.pointerEvents='none';
+    playCorrect();window._slFound++;
+    document.getElementById('slCount').textContent='Found: '+window._slFound+' / '+targetCount;
+    if(window._slFound>=targetCount){slScore++;adaptDifficulty(true);burst();mascotPraise();
+      document.getElementById('gfb').textContent='🎉 You found all the '+target+'s!';setTimeout(nextSlRound,1200);}
+  } else {
+    el.style.background='#ffe8f0';el.style.animation='shake .3s';setTimeout(()=>{el.style.background='var(--inputbg)';el.style.animation='';},350);
+    playWrong();adaptDifficulty(false);
+    document.getElementById('gfb').textContent='❌ That is '+letter+', not '+target+'!';
+  }
+}
+
+// ══════════════════════════════════════
+//  WHICH COMES NEXT?
+// ══════════════════════════════════════
+let wcScore=0,wcRound=0;
+function buildWhichNext(){wcScore=0;wcRound=0;nextWcRound();}
+function nextWcRound(){
+  const total=6;wcRound++;
+  if(wcRound>total){endGame(wcScore,total,'whichNext');return;}
+  const maxStart=diffLevel===1?20:24;
+  const startIdx=Math.floor(Math.random()*maxStart);
+  const showCount=diffLevel===1?2:diffLevel===2?3:4;
+  const shown=ALPHABET.slice(startIdx,startIdx+showCount);
+  const answer=ALPHABET[startIdx+showCount];
+  const wrongs=[...ALPHABET.filter(l=>l!==answer)].sort(()=>Math.random()-.5).slice(0,3);
+  const opts=[answer,...wrongs].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🧩 Which Comes Next?</div>
+      <div class="game-inst">Round ${wcRound}/${total} · Score: ${wcScore} ⭐</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:16px 0;flex-wrap:wrap">
+        ${shown.map(l=>`<div style="width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,#a78bfa,#4fa3e0);display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',cursive;font-size:1.6rem;font-weight:800;color:#fff">${l}</div>`).join('')}
+        <div style="font-family:'Baloo 2',cursive;font-size:1.4rem;color:var(--text3)">→</div>
+        <div style="width:54px;height:54px;border-radius:12px;border:3px dashed var(--purple);display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;color:var(--purple);animation:pulse 1s infinite">?</div>
+      </div>
+      <div class="count-q" style="margin-bottom:12px">What letter comes next?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        ${opts.map(o=>`<div class="copt" style="font-size:2rem;font-weight:800" onclick="checkWc(this,'${o}','${answer}')">${o}</div>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText(shown.join(', ')+', ... what comes next?');
+}
+function checkWc(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');wcScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Yes! '+answer+' comes next!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ The next letter is '+answer+'!';mascotHint();}
+  setTimeout(nextWcRound,1500);
+}
+
+// ══════════════════════════════════════
+//  VOWEL OR CONSONANT?
+// ══════════════════════════════════════
+const VOWELS=['A','E','I','O','U'];
+let vcScore=0,vcRound=0;
+function buildVowelCon(){vcScore=0;vcRound=0;nextVcRound();}
+function nextVcRound(){
+  const total=6;vcRound++;
+  if(vcRound>total){endGame(vcScore,total,'vowelCon');return;}
+  const letter=ALPHABET[Math.floor(Math.random()*26)];
+  const isVowel=VOWELS.includes(letter);
+  const answer=isVowel?'Vowel':'Consonant';
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🌟 Vowel or Consonant?</div>
+      <div class="game-inst">Round ${vcRound}/${total} · Score: ${vcScore} ⭐</div>
+      <div style="text-align:center;font-family:'Baloo 2',cursive;font-size:7rem;font-weight:800;color:var(--purple);line-height:1;margin:14px 0;text-shadow:3px 4px 0 rgba(0,0,0,.1)">${letter}</div>
+      <div style="background:var(--inputbg);border-radius:12px;padding:10px 14px;margin-bottom:14px;text-align:center;font-size:.8rem;color:var(--text3);font-family:'Baloo 2',cursive;font-weight:700">
+        💡 Vowels: <span style="color:var(--purple);font-size:1rem">A E I O U</span><br>All other letters are Consonants
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="copt" style="font-size:1rem;padding:14px" onclick="checkVc(this,'Vowel','${answer}')">🔵 Vowel<div style="font-size:.7rem;color:var(--text3);font-weight:600;margin-top:3px">A, E, I, O, U</div></div>
+        <div class="copt" style="font-size:1rem;padding:14px" onclick="checkVc(this,'Consonant','${answer}')">🟢 Consonant<div style="font-size:.7rem;color:var(--text3);font-weight:600;margin-top:3px">All other letters</div></div>
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('Is the letter '+letter+' a vowel or a consonant?');
+}
+function checkVc(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');vcScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Correct! '+answer+'!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent.startsWith(answer))c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ It is a '+answer+'!';mascotHint();}
+  setTimeout(nextVcRound,1500);
 }
 
 // ══════════════════════════════════════
