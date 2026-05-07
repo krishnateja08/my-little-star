@@ -12452,22 +12452,22 @@ const SEASONS_DATA=[
   {season:'Autumn 🍂',clues:['Leaves turn orange and fall 🍁','It gets cooler and windy 🌬️','We wear coats outside 🧥','Conkers fall from trees 🌰'],months:'September, October, November',emoji:'🍂'},
   {season:'Winter ❄️',clues:['Cold and sometimes snowy ❄️','We wear hats and scarves 🧣','Nights are very long 🌙','Christmas is in this season 🎄'],months:'December, January, February',emoji:'❄️'},
 ];
-let ssScore=0,ssRound=0;
-function buildSeasonsGame(){ssScore=0;ssRound=0;nextSeasonsRound();}
+let seScore=0,seRound=0;
+function buildSeasonsGame(){seScore=0;seRound=0;nextSeasonsRound();}
 function nextSeasonsRound(){
-  const total=6;ssRound++;
-  if(ssRound>total){endGame(ssScore,total,'seasonsGame');return;}
+  const total=6;seRound++;
+  if(seRound>total){endGame(seScore,total,'seasonsGame');return;}
   const all=['Spring 🌸','Summer ☀️','Autumn 🍂','Winter ❄️'];
   const pick=SEASONS_DATA[Math.floor(Math.random()*4)];
   const clue=pick.clues[Math.floor(Math.random()*pick.clues.length)];
-  const isMonthQ=ssRound%3===0;
+  const isMonthQ=seRound%3===0;
   const question=isMonthQ?`Which season has the months: ${pick.months}?`:`Which season is it? "${clue}"`;
   const answer=pick.season;
   const opts=[answer,...all.filter(s=>s!==answer).sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
   document.getElementById('area').innerHTML=`
     <div class="game-panel">
       <div class="game-title">🌸 Seasons Match!</div>
-      <div class="game-inst">Round ${ssRound}/${total} · Score: ${ssScore} ⭐</div>
+      <div class="game-inst">Round ${seRound}/${total} · Score: ${seScore} ⭐</div>
       <div style="background:var(--inputbg);border-radius:16px;padding:16px;text-align:center;margin:12px 0;font-size:.95rem;font-weight:700;color:var(--text);line-height:1.6">${question}</div>
       <div class="count-opts" style="grid-template-columns:1fr 1fr">${opts.map(o=>`<div class="copt" style="font-size:1rem" onclick="checkSeasons(this,'${o.replace(/['"]/g,'')}','${answer.replace(/['"]/g,'')}')">${o}</div>`).join('')}</div>
       <div class="game-feedback" id="gfb"></div>
@@ -12477,7 +12477,7 @@ function nextSeasonsRound(){
 function checkSeasons(el,chosen,answer){
   document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
   const match=chosen.replace(/[^a-zA-Z]/g,'').toLowerCase()===answer.replace(/[^a-zA-Z]/g,'').toLowerCase();
-  if(match){el.classList.add('correct');ssScore++;playCorrect();adaptDifficulty(true);
+  if(match){el.classList.add('correct');seScore++;playCorrect();adaptDifficulty(true);
     document.getElementById('gfb').textContent='✅ Correct! '+el.textContent+'!';mascotPraise();}
   else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
     document.querySelectorAll('.copt').forEach(c=>{if(c.textContent.replace(/[^a-zA-Z]/g,'').toLowerCase()===answer.replace(/[^a-zA-Z]/g,'').toLowerCase())c.classList.add('correct');});
