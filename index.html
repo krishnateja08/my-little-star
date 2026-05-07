@@ -4140,6 +4140,10 @@ const GAMES = [
   {id:'phonicsMatch',week:1,emoji:'🗣️',title:'Phonics Sound Match!',    desc:'Hear the letter sound and tap the right letter!',    cat:'letters'},
   {id:'daysOrder',   week:1,emoji:'📅',title:'Days of the Week!',       desc:'Put the days in the right order!',                   cat:'time'},
   {id:'clockGame',   week:2,emoji:'🕐',title:'What Time Is It?',        desc:'Look at the clock and pick the right time!',         cat:'time'},
+  {id:'monthsOrder', week:2,emoji:'📆',title:'Months of the Year!',     desc:'Learn all 12 months and what order they go in!',     cat:'time'},
+  {id:'amPmGame',    week:1,emoji:'🌅',title:'AM or PM?',               desc:'Is this activity in the morning or afternoon?',      cat:'time'},
+  {id:'seasonsGame', week:2,emoji:'🌸',title:'Seasons Match!',          desc:'Match the clues to the right season!',               cat:'time'},
+  {id:'yttGame',     week:1,emoji:'⏳',title:'Yesterday, Today & Tomorrow!', desc:'Learn about time that has passed and time to come!', cat:'time'},
   {id:'simonSays',   week:1,emoji:'🎯',title:'Simon Says!',             desc:'Watch, remember, and repeat the pattern!',           cat:'brain'},
   {id:'whatsMissing',week:1,emoji:'🔍',title:"What's Missing?",           desc:'Look carefully, then find what disappeared!',        cat:'brain'},
   {id:'colourPattern',week:1,emoji:'🌈',title:'Colour Pattern Memory!',   desc:'Remember the colour order and tap it back!',         cat:'brain'},
@@ -6596,7 +6600,7 @@ function renderGame(g){
   const fns={numMatch:buildNumMatch,wordBuild:buildWordBuild,countGame:buildCountGame,
     colourMix:buildColourMix,drawEmoji:buildDrawEmoji,buildScene:buildBuildScene,makeMusic:buildMakeMusic,storyStarter:buildStoryStarter,shapeTap:buildShapeTap,memoryFlip:buildMemoryFlip,
     findLetter:buildFindLetter,animalSound:buildAnimalSound,phonicsMatch:buildPhonicsMatch,
-    daysOrder:buildDaysOrder,clockGame:buildClockGame,simonSays:buildSimonSays,
+    daysOrder:buildDaysOrder,clockGame:buildClockGame,monthsOrder:buildMonthsOrder,amPmGame:buildAmPmGame,seasonsGame:buildSeasonsGame,yttGame:buildYttGame,simonSays:buildSimonSays,
     whatsMissing:buildWhatsMissing,colourPattern:buildColourPattern,numberMemory:buildNumberMemory,
     coinCount:buildCoinCount,fairTrade:buildFairTrade,myShop:buildMyShop,lemonadeStand:buildLemonadeStand,changeMaker:buildChangeMaker,
     shadowMatch:buildShadowMatch,dotCard:buildDotCard,oppSnap:buildOppSnap,colourWordMatch:buildColourWordMatch,
@@ -12325,6 +12329,230 @@ function checkClockAnswer(el,chosen,answer){
     document.querySelectorAll('.copt').forEach(c=>{if(c.textContent===answer)c.classList.add('correct');});
     document.getElementById('gfb').textContent='❌ The answer is '+answer+'!';mascotHint();}
   setTimeout(nextClockRound,1500);
+}
+
+// ══════════════════════════════════════
+//  MONTHS OF THE YEAR GAME
+// ══════════════════════════════════════
+let moScore=0,moRound=0;
+function buildMonthsOrder(){moScore=0;moRound=0;nextMonthsRound();}
+function nextMonthsRound(){
+  const total=6;moRound++;
+  if(moRound>total){endGame(moScore,total,'monthsOrder');return;}
+  const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const SEASON_MONTHS={Spring:['March','April','May'],Summer:['June','July','August'],Autumn:['September','October','November'],Winter:['December','January','February']};
+  const types=['whatMonth','nextMonth','prevMonth','seasonOf','monthNum','howManyMonths'];
+  const type=types[(moRound-1)%types.length];
+  let question,answer,opts;
+  if(type==='whatMonth'){
+    const i=Math.floor(Math.random()*12);
+    question=`Month number ${i+1} of the year is...?`;
+    answer=MONTHS[i];
+    opts=[answer,...MONTHS.filter(m=>m!==answer).sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
+  } else if(type==='nextMonth'){
+    const i=Math.floor(Math.random()*12);
+    question=`Which month comes AFTER ${MONTHS[i]}?`;
+    answer=MONTHS[(i+1)%12];
+    opts=[answer,...MONTHS.filter(m=>m!==answer).sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
+  } else if(type==='prevMonth'){
+    const i=Math.floor(Math.random()*12);
+    question=`Which month comes BEFORE ${MONTHS[i]}?`;
+    answer=MONTHS[(i+11)%12];
+    opts=[answer,...MONTHS.filter(m=>m!==answer).sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
+  } else if(type==='seasonOf'){
+    const seasons=Object.keys(SEASON_MONTHS);
+    const season=seasons[Math.floor(Math.random()*seasons.length)];
+    const month=SEASON_MONTHS[season][Math.floor(Math.random()*3)];
+    question=`${month} is in which season?`;
+    answer=season;
+    opts=[answer,...seasons.filter(s=>s!==season)].sort(()=>Math.random()-.5);
+  } else if(type==='monthNum'){
+    const i=Math.floor(Math.random()*12);
+    question=`What number month is ${MONTHS[i]}?`;
+    answer=String(i+1);
+    const wrongs=[];while(wrongs.length<3){const w=String(Math.floor(Math.random()*12)+1);if(w!==answer&&!wrongs.includes(w))wrongs.push(w);}
+    opts=[answer,...wrongs].sort(()=>Math.random()-.5);
+  } else {
+    question='How many months are in a year?';
+    answer='12';opts=['12','10','7','8'].sort(()=>Math.random()-.5);
+  }
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">📆 Months of the Year!</div>
+      <div class="game-inst">Round ${moRound}/${total} · Score: ${moScore} ⭐</div>
+      <div class="count-q" style="margin:14px 0">${question}</div>
+      <div class="count-opts" style="grid-template-columns:1fr 1fr">${opts.map(o=>`<div class="copt" onclick="checkMonthsAnswer(this,'${o}','${answer}')">${o}</div>`).join('')}</div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText(question);
+}
+function checkMonthsAnswer(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');moScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Correct! '+answer+'!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ The answer is '+answer+'!';mascotHint();}
+  setTimeout(nextMonthsRound,1500);
+}
+
+// ══════════════════════════════════════
+//  AM OR PM? GAME
+// ══════════════════════════════════════
+const AM_PM_Q=[
+  {activity:'🌅 Wake up and have breakfast',answer:'AM',hint:'Morning activities happen in the AM!'},
+  {activity:'🏫 Go to school',answer:'AM',hint:'School starts in the morning — AM!'},
+  {activity:'🌙 Brush teeth and go to bed',answer:'PM',hint:'Bedtime is at night — PM!'},
+  {activity:'🍽️ Eat dinner with family',answer:'PM',hint:'Dinner is in the evening — PM!'},
+  {activity:'☀️ Play outside after lunch',answer:'PM',hint:'After lunch is the afternoon — PM!'},
+  {activity:'🥣 Eat your porridge for breakfast',answer:'AM',hint:'Breakfast is in the morning — AM!'},
+  {activity:'🌞 The sun is just rising',answer:'AM',hint:'Sunrise is early morning — AM!'},
+  {activity:'⭐ Look at the stars at night',answer:'PM',hint:'Night-time is PM!'},
+  {activity:'🏃 Morning jog before school',answer:'AM',hint:'Before school is morning — AM!'},
+  {activity:'🎬 Watch a film after tea',answer:'PM',hint:'After tea is evening — PM!'},
+  {activity:'🧸 Afternoon nap after lunch',answer:'PM',hint:'After lunch is PM!'},
+  {activity:'🐓 Hear the cockerel crow at dawn',answer:'AM',hint:'Dawn is early morning — AM!'},
+];
+let apScore=0,apRound=0;
+function buildAmPmGame(){apScore=0;apRound=0;nextAmPmRound();}
+function nextAmPmRound(){
+  const total=6;apRound++;
+  if(apRound>total){endGame(apScore,total,'amPmGame');return;}
+  const q=AM_PM_Q[Math.floor(Math.random()*AM_PM_Q.length)];
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🌅 AM or PM?</div>
+      <div class="game-inst">Round ${apRound}/${total} · Score: ${apScore} ⭐</div>
+      <div style="background:var(--inputbg);border-radius:16px;padding:18px;text-align:center;margin:12px 0;font-size:1.1rem;font-weight:700;color:var(--text)">${q.activity}</div>
+      <div class="count-q">Is this AM (morning) or PM (afternoon/night)?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0">
+        <div class="copt" style="background:linear-gradient(135deg,#fff8e1,#ffe0a0);border-color:#ffb830;font-size:1.3rem" onclick="checkAmPm(this,'AM','${q.answer}','${q.hint.replace(/'/g,"\\'")}')" >🌅 AM<div style="font-size:.7rem;color:var(--text3);font-weight:600">Morning</div></div>
+        <div class="copt" style="background:linear-gradient(135deg,#e8f0ff,#c9d8ff);border-color:#4fa3e0;font-size:1.3rem" onclick="checkAmPm(this,'PM','${q.answer}','${q.hint.replace(/'/g,"\\'")}')" >🌙 PM<div style="font-size:.7rem;color:var(--text3);font-weight:600">Afternoon/Night</div></div>
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('Is this activity in the AM or PM? '+q.activity);
+}
+function checkAmPm(el,chosen,answer,hint){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');apScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Correct! '+hint;mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent.startsWith(answer))c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ '+hint;mascotHint();}
+  setTimeout(nextAmPmRound,1800);
+}
+
+// ══════════════════════════════════════
+//  SEASONS MATCH GAME
+// ══════════════════════════════════════
+const SEASONS_DATA=[
+  {season:'Spring 🌸',clues:['Flowers start to bloom 🌷','Baby animals are born 🐣','It can be rainy and mild 🌦️','Leaves grow back on trees 🌿'],months:'March, April, May',emoji:'🌸'},
+  {season:'Summer ☀️',clues:['Hot and sunny days ☀️','School is on holiday 🎒','We go to the beach 🏖️','Ice cream tastes amazing! 🍦'],months:'June, July, August',emoji:'☀️'},
+  {season:'Autumn 🍂',clues:['Leaves turn orange and fall 🍁','It gets cooler and windy 🌬️','We wear coats outside 🧥','Conkers fall from trees 🌰'],months:'September, October, November',emoji:'🍂'},
+  {season:'Winter ❄️',clues:['Cold and sometimes snowy ❄️','We wear hats and scarves 🧣','Nights are very long 🌙','Christmas is in this season 🎄'],months:'December, January, February',emoji:'❄️'},
+];
+let ssScore=0,ssRound=0;
+function buildSeasonsGame(){ssScore=0;ssRound=0;nextSeasonsRound();}
+function nextSeasonsRound(){
+  const total=6;ssRound++;
+  if(ssRound>total){endGame(ssScore,total,'seasonsGame');return;}
+  const all=['Spring 🌸','Summer ☀️','Autumn 🍂','Winter ❄️'];
+  const pick=SEASONS_DATA[Math.floor(Math.random()*4)];
+  const clue=pick.clues[Math.floor(Math.random()*pick.clues.length)];
+  const isMonthQ=ssRound%3===0;
+  const question=isMonthQ?`Which season has the months: ${pick.months}?`:`Which season is it? "${clue}"`;
+  const answer=pick.season;
+  const opts=[answer,...all.filter(s=>s!==answer).sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🌸 Seasons Match!</div>
+      <div class="game-inst">Round ${ssRound}/${total} · Score: ${ssScore} ⭐</div>
+      <div style="background:var(--inputbg);border-radius:16px;padding:16px;text-align:center;margin:12px 0;font-size:.95rem;font-weight:700;color:var(--text);line-height:1.6">${question}</div>
+      <div class="count-opts" style="grid-template-columns:1fr 1fr">${opts.map(o=>`<div class="copt" style="font-size:1rem" onclick="checkSeasons(this,'${o.replace(/['"]/g,'')}','${answer.replace(/['"]/g,'')}')">${o}</div>`).join('')}</div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText(question);
+}
+function checkSeasons(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  const match=chosen.replace(/[^a-zA-Z]/g,'').toLowerCase()===answer.replace(/[^a-zA-Z]/g,'').toLowerCase();
+  if(match){el.classList.add('correct');ssScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Correct! '+el.textContent+'!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent.replace(/[^a-zA-Z]/g,'').toLowerCase()===answer.replace(/[^a-zA-Z]/g,'').toLowerCase())c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ It is '+answer+'!';mascotHint();}
+  setTimeout(nextSeasonsRound,1800);
+}
+
+// ══════════════════════════════════════
+//  YESTERDAY TODAY TOMORROW GAME
+// ══════════════════════════════════════
+const DAYS_FULL_YTT=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+let yttScore=0,yttRound=0;
+function buildYttGame(){yttScore=0;yttRound=0;nextYttRound();}
+function nextYttRound(){
+  const total=6;yttRound++;
+  if(yttRound>total){endGame(yttScore,total,'yttGame');return;}
+  const types=['yesterday','tomorrow','twoDays','concept','relTime'];
+  const type=types[Math.floor(Math.random()*types.length)];
+  let question,answer,opts;
+  const i=Math.floor(Math.random()*7);
+  if(type==='yesterday'){
+    question=`If today is ${DAYS_FULL_YTT[i]}, what was YESTERDAY?`;
+    answer=DAYS_FULL_YTT[(i+6)%7];
+    opts=[answer,...DAYS_FULL_YTT.filter(d=>d!==answer).sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
+  } else if(type==='tomorrow'){
+    question=`If today is ${DAYS_FULL_YTT[i]}, what is TOMORROW?`;
+    answer=DAYS_FULL_YTT[(i+1)%7];
+    opts=[answer,...DAYS_FULL_YTT.filter(d=>d!==answer).sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
+  } else if(type==='twoDays'){
+    question=`If today is ${DAYS_FULL_YTT[i]}, what day is it in 2 days?`;
+    answer=DAYS_FULL_YTT[(i+2)%7];
+    opts=[answer,...DAYS_FULL_YTT.filter(d=>d!==answer).sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
+  } else if(type==='concept'){
+    const qs=[
+      {q:'Yesterday has already... ?',a:'Happened',w:['Not started','Just begun','Coming soon']},
+      {q:'Tomorrow has not... ?',a:'Happened yet',w:['Happened','Finished','Started ever']},
+      {q:'Today is happening... ?',a:'Right now',w:['Yesterday','Tomorrow','Next week']},
+      {q:'Which one means the day before today?',a:'Yesterday',w:['Tomorrow','Next week','Later']},
+    ];
+    const pick=qs[Math.floor(Math.random()*qs.length)];
+    question=pick.q;answer=pick.a;
+    opts=[answer,...pick.w].sort(()=>Math.random()-.5);
+  } else {
+    const qs=[
+      {q:'A week ago means how many days ago?',a:'7 days ago',w:['3 days ago','14 days ago','1 day ago']},
+      {q:'The day after tomorrow is how many days away?',a:'2 days away',w:['1 day away','3 days away','7 days away']},
+      {q:'Which word means "the day after today"?',a:'Tomorrow',w:['Yesterday','Last week','Earlier']},
+    ];
+    const pick=qs[Math.floor(Math.random()*qs.length)];
+    question=pick.q;answer=pick.a;
+    opts=[answer,...pick.w].sort(()=>Math.random()-.5);
+  }
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">⏳ Yesterday, Today & Tomorrow!</div>
+      <div class="game-inst">Round ${yttRound}/${total} · Score: ${yttScore} ⭐</div>
+      <div style="display:flex;justify-content:center;gap:8px;margin:12px 0">
+        <div style="background:#ffe0a0;border-radius:12px;padding:8px 14px;text-align:center;font-size:.75rem;font-weight:800;color:#7a4500">⬅️ Yesterday<br><span style="font-size:.65rem;font-weight:600">Has happened</span></div>
+        <div style="background:linear-gradient(135deg,#1b4332,#52b788);border-radius:12px;padding:8px 14px;text-align:center;font-size:.75rem;font-weight:800;color:#fff">📍 Today<br><span style="font-size:.65rem;font-weight:600">Right now!</span></div>
+        <div style="background:#c9e8ff;border-radius:12px;padding:8px 14px;text-align:center;font-size:.75rem;font-weight:800;color:#0a3d6b">➡️ Tomorrow<br><span style="font-size:.65rem;font-weight:600">Will happen</span></div>
+      </div>
+      <div class="count-q" style="margin:10px 0">${question}</div>
+      <div class="count-opts" style="grid-template-columns:1fr 1fr">${opts.map(o=>`<div class="copt" onclick="checkYtt(this,'${o.replace(/'/g,"\\'")}','${answer.replace(/'/g,"\\'")}')">${o}</div>`).join('')}</div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText(question);
+}
+function checkYtt(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');yttScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Correct! '+answer+'!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ The answer is '+answer+'!';mascotHint();}
+  setTimeout(nextYttRound,1800);
 }
 
 // ══════════════════════════════════════
