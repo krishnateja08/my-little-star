@@ -4133,6 +4133,11 @@ const GAMES = [
   {id:'buildScene',  week:1, emoji:'🖼️', title:'Build a Scene!',           desc:'Pick a background and add stickers to make your own picture!',    cat:'creative'},
   {id:'makeMusic',   week:1, emoji:'🎵', title:'Make Music!',               desc:'Tap the coloured keys to play a melody — make up your own song!', cat:'creative'},
   {id:'storyStarter',week:1, emoji:'📖', title:'Story Starter!',            desc:'Finish the story — what happens next? Tap your choice!',          cat:'creative'},
+  {id:'emotionFaces', week:1,emoji:'🎭',title:'Emotion Faces!',             desc:'Tap a feeling and learn how to draw that face!',                   cat:'creative'},
+  {id:'rainbowOrder', week:1,emoji:'🌈',title:'Design a Rainbow!',          desc:'Put the rainbow colours in the right order!',                      cat:'creative'},
+  {id:'makePattern',  week:1,emoji:'🎪',title:'Make a Pattern!',            desc:'Stamp shapes to build a repeating pattern!',                       cat:'creative'},
+  {id:'colourByNum',  week:2,emoji:'🖍️',title:'Colour by Number!',          desc:'Tap each zone to fill in the hidden picture!',                     cat:'creative'},
+  {id:'miniStory',    week:2,emoji:'🎬',title:'My Mini Story!',             desc:'Choose a character, place and plot to build your own comic strip!', cat:'creative'},
   {id:'shapeTap',  week:1, emoji:'🔺', title:'Tap the Right Shape!',    desc:'Listen to the shape name and tap the correct one!',  cat:'shapes'},
   {id:'memoryFlip',week:1, emoji:'🧠', title:'Memory Flip Cards!',      desc:'Flip cards to find matching pairs!',                 cat:'brain'},
   {id:'findLetter',week:2, emoji:'🔤', title:'Find the Letter!',        desc:'Find all the target letters hidden in the grid!',    cat:'letters'},
@@ -6598,7 +6603,7 @@ function renderGame(g){
   document.getElementById('hsub').textContent=`${g.emoji} ${g.title}`;
   renderHist();updateProg();renderWbar();renderChallenge();
   const fns={numMatch:buildNumMatch,wordBuild:buildWordBuild,countGame:buildCountGame,
-    colourMix:buildColourMix,drawEmoji:buildDrawEmoji,buildScene:buildBuildScene,makeMusic:buildMakeMusic,storyStarter:buildStoryStarter,shapeTap:buildShapeTap,memoryFlip:buildMemoryFlip,
+    colourMix:buildColourMix,drawEmoji:buildDrawEmoji,buildScene:buildBuildScene,makeMusic:buildMakeMusic,storyStarter:buildStoryStarter,emotionFaces:buildEmotionFaces,rainbowOrder:buildRainbowOrder,makePattern:buildMakePattern,colourByNum:buildColourByNum,miniStory:buildMiniStory,shapeTap:buildShapeTap,memoryFlip:buildMemoryFlip,
     findLetter:buildFindLetter,animalSound:buildAnimalSound,phonicsMatch:buildPhonicsMatch,
     daysOrder:buildDaysOrder,clockGame:buildClockGame,monthsOrder:buildMonthsOrder,amPmGame:buildAmPmGame,seasonsGame:buildSeasonsGame,yttGame:buildYttGame,simonSays:buildSimonSays,
     whatsMissing:buildWhatsMissing,colourPattern:buildColourPattern,numberMemory:buildNumberMemory,
@@ -15012,6 +15017,312 @@ function pickSsChoice(i){
       <button class="game-done-btn" onclick="markGameDone(5)">✅ Done! Give me stars! →</button>
     </div>`;
   speakText(choice.reaction);
+}
+
+// ══════════════════════════════════════
+//  EMOTION FACES GAME
+// ══════════════════════════════════════
+const EMOTIONS=[
+  {name:'Happy 😄',color:'#ffb830',steps:['Draw a circle for the head','Add two dot eyes','Draw a big U-shaped smile','Add rosy cheeks on each side'],tip:'Happiness makes the corners of your mouth go UP! 😄'},
+  {name:'Sad 😢',color:'#4fa3e0',steps:['Draw a circle for the head','Add two dot eyes','Draw a curved line going DOWN for the mouth','Add a teardrop under one eye'],tip:'When we are sad, our mouth turns DOWN like a frown! 😢'},
+  {name:'Surprised 😲',color:'#a78bfa',steps:['Draw a circle for the head','Draw BIG wide eyes — make them large!','Draw a round open O shape for the mouth','Add raised eyebrows above the eyes'],tip:'Surprise makes our eyes go BIG and our mouth opens wide! 😲'},
+  {name:'Angry 😠',color:'#ff6b9d',steps:['Draw a circle for the head','Add eyes with a slanted line above each (eyebrows pointing down)','Draw a straight or downward mouth','Add a red colour to the cheeks'],tip:'Anger makes eyebrows point DOWN in the middle! 😠'},
+  {name:'Scared 😨',color:'#52b788',steps:['Draw a circle for the head','Make the eyes very wide open','Draw a wavy or open mouth','Add small sweat drops on the side'],tip:'Fear makes us open our eyes really WIDE! 😨'},
+  {name:'Excited 🤩',color:'#ff8c69',steps:['Draw a circle for the head','Draw star shapes for the eyes','Make the biggest smile possible!','Add sparkle lines all around the face'],tip:'Excitement makes us sparkle and smile SO wide! 🤩'},
+];
+let efIdx=0;
+function buildEmotionFaces(){efIdx=0;nextEmotionRound();}
+function nextEmotionRound(){
+  if(efIdx>=EMOTIONS.length){
+    document.getElementById('area').innerHTML=`<div class="game-panel" style="text-align:center">
+      <div style="font-size:3rem;margin:12px 0">🎭🌟</div>
+      <div class="game-title">Amazing! You drew all ${EMOTIONS.length} emotions!</div>
+      <div style="font-size:.85rem;color:var(--text3);margin:10px 0">You are an emotion expert now!</div>
+      <button class="game-next-btn" onclick="buildEmotionFaces()" style="margin-bottom:8px">🔄 Play Again!</button>
+      <button class="game-done-btn" onclick="markGameDone(5)">✅ Done! Give me stars! →</button>
+    </div>`;return;
+  }
+  const em=EMOTIONS[efIdx];
+  const stepsHTML=em.steps.map((s,i)=>`<div class="dta-step" style="cursor:default"><div class="dta-step-num">${i+1}</div><div class="dta-step-text">${s}</div></div>`).join('');
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🎭 Emotion Faces!</div>
+      <div class="game-inst">Learn to draw: <strong>${em.name}</strong></div>
+      <div style="text-align:center;font-size:4.5rem;margin:10px 0;animation:popIn .4s">${em.name.split(' ')[1]}</div>
+      <div style="background:linear-gradient(135deg,#fff8e0,#f0f8ff);border-radius:14px;padding:12px 14px;margin:8px 0;border-left:4px solid ${em.color}">
+        <div style="font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:800;color:${em.color};text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">✏️ How to draw it:</div>
+        <div class="dta-steps">${stepsHTML}</div>
+      </div>
+      <div style="background:${em.color}22;border-radius:12px;padding:10px 13px;margin-bottom:12px;border-left:4px solid ${em.color};font-size:.82rem;font-weight:700;color:var(--text)">💡 ${em.tip}</div>
+      <button class="game-next-btn" onclick="efIdx++;nextEmotionRound()" style="margin-bottom:8px">Next Emotion ➡️</button>
+      <button class="game-done-btn" onclick="markGameDone(5)">✅ Done! Give me stars! →</button>
+    </div>`;
+  speakText('Learn to draw '+em.name.replace(/[^\w\s]/g,'')+'. '+em.tip);
+}
+
+// ══════════════════════════════════════
+//  RAINBOW ORDER GAME
+// ══════════════════════════════════════
+const RAINBOW=['Red','Orange','Yellow','Green','Blue','Indigo','Violet'];
+const RAINBOW_HEX=['#FF4444','#FF8C00','#FFD700','#4CAF50','#2196F3','#3F51B5','#9C27B0'];
+let rbScore=0,rbRound=0;
+function buildRainbowOrder(){rbScore=0;rbRound=0;nextRainbowRound();}
+function nextRainbowRound(){
+  const total=5;rbRound++;
+  if(rbRound>total){endGame(rbScore,total,'rainbowOrder');return;}
+  const types=['whichColour','whatPosition','whatComes','howMany'];
+  const type=types[Math.floor(Math.random()*types.length)];
+  let question,answer,opts;
+  if(type==='whichColour'){
+    const i=Math.floor(Math.random()*7);
+    question=`Which colour is number ${i+1} in the rainbow?`;
+    answer=RAINBOW[i];
+    opts=[answer,...RAINBOW.filter(c=>c!==answer).sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
+  } else if(type==='whatPosition'){
+    const i=Math.floor(Math.random()*7);
+    question=`What position is ${RAINBOW[i]} in the rainbow?`;
+    answer=String(i+1);
+    const ws=[];while(ws.length<3){const w=String(Math.floor(Math.random()*7)+1);if(w!==answer&&!ws.includes(w))ws.push(w);}
+    opts=[answer,...ws].sort(()=>Math.random()-.5);
+  } else if(type==='whatComes'){
+    const i=Math.floor(Math.random()*6);
+    question=`What colour comes after ${RAINBOW[i]} in the rainbow?`;
+    answer=RAINBOW[i+1];
+    opts=[answer,...RAINBOW.filter(c=>c!==answer).sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
+  } else {
+    question='How many colours are in a rainbow?';
+    answer='7';opts=['7','5','6','8'].sort(()=>Math.random()-.5);
+  }
+  const arcHTML=RAINBOW_HEX.map((h,i)=>`<div style="flex:1;height:${26+i*4}px;border-radius:${20+i*4}px ${20+i*4}px 0 0;background:${h};opacity:.85"></div>`).reverse().join('');
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🌈 Design a Rainbow!</div>
+      <div class="game-inst">Round ${rbRound}/${total} · Score: ${rbScore} ⭐</div>
+      <div style="display:flex;align-items:flex-end;gap:3px;height:80px;margin:10px 0;padding:0 8px">${arcHTML}</div>
+      <div style="display:flex;justify-content:space-between;padding:0 8px;margin-bottom:12px">
+        ${RAINBOW.map((c,i)=>`<div style="font-size:.5rem;font-weight:800;color:${RAINBOW_HEX[i]};text-align:center;flex:1">${c.slice(0,3)}</div>`).join('')}
+      </div>
+      <div class="count-q" style="margin-bottom:10px">${question}</div>
+      <div class="count-opts" style="grid-template-columns:1fr 1fr">${opts.map(o=>`<div class="copt" onclick="checkRainbow(this,'${o}','${answer}')">${o}</div>`).join('')}</div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText(question);
+}
+function checkRainbow(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');rbScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Correct! '+answer+'!';mascotPraise();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ The answer is '+answer+'!';mascotHint();}
+  setTimeout(nextRainbowRound,1500);
+}
+
+// ══════════════════════════════════════
+//  MAKE A PATTERN GAME
+// ══════════════════════════════════════
+const PATTERN_SHAPES=['🔴','🔵','🟡','🟢','🟠','🟣'];
+const PATTERN_TYPES=[
+  {name:'AB',seq:(s)=>[s[0],s[1],s[0],s[1],s[0],s[1]]},
+  {name:'AAB',seq:(s)=>[s[0],s[0],s[1],s[0],s[0],s[1]]},
+  {name:'ABC',seq:(s)=>[s[0],s[1],s[2],s[0],s[1],s[2]]},
+  {name:'ABB',seq:(s)=>[s[0],s[1],s[1],s[0],s[1],s[1]]},
+];
+let mpScore=0,mpRound=0;
+function buildMakePattern(){mpScore=0;mpRound=0;nextPatternRound();}
+function nextPatternRound(){
+  const total=5;mpRound++;
+  if(mpRound>total){endGame(mpScore,total,'makePattern');return;}
+  const pt=PATTERN_TYPES[Math.floor(Math.random()*PATTERN_TYPES.length)];
+  const shapes=[...PATTERN_SHAPES].sort(()=>Math.random()-.5).slice(0,3);
+  const seq=pt.seq(shapes);
+  const showCount=4;
+  const shown=seq.slice(0,showCount);
+  const answer=seq[showCount];
+  const wrong=[...shapes.filter(s=>s!==answer),...PATTERN_SHAPES.filter(s=>!shapes.includes(s))].slice(0,3);
+  const opts=[answer,...wrong].sort(()=>Math.random()-.5);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🎪 Make a Pattern!</div>
+      <div class="game-inst">Round ${mpRound}/${total} · Score: ${mpScore} ⭐</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:800;color:var(--purple);text-align:center;margin:8px 0">Pattern type: <span style="color:var(--green)">${pt.name}</span></div>
+      <div style="display:flex;align-items:center;gap:6px;justify-content:center;margin:14px 0;flex-wrap:wrap">
+        ${shown.map(s=>`<div style="width:52px;height:52px;border-radius:12px;background:var(--inputbg);border:3px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.8rem">${s}</div>`).join('')}
+        <div style="width:52px;height:52px;border-radius:12px;border:3px dashed var(--purple);display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--purple);font-weight:800;animation:pulse 1s infinite">?</div>
+      </div>
+      <div class="count-q" style="margin-bottom:10px">What comes next in the pattern?</div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-bottom:12px">
+        ${opts.map(o=>`<div class="copt" style="width:70px;height:70px;font-size:2rem;padding:0" onclick="checkPattern(this,'${o}','${answer}')">${o}</div>`).join('')}
+      </div>
+      <div class="game-feedback" id="gfb"></div>
+    </div>`;
+  speakText('What shape comes next in the pattern?');
+}
+function checkPattern(el,chosen,answer){
+  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
+  if(chosen===answer){el.classList.add('correct');mpScore++;playCorrect();adaptDifficulty(true);
+    document.getElementById('gfb').textContent='✅ Perfect pattern!';mascotPraise();burst();}
+  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
+    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent===answer)c.classList.add('correct');});
+    document.getElementById('gfb').textContent='❌ The next one is '+answer+'!';}
+  setTimeout(nextPatternRound,1500);
+}
+
+// ══════════════════════════════════════
+//  COLOUR BY NUMBER GAME
+// ══════════════════════════════════════
+const CBN_PICTURES=[
+  {name:'🌻 Sunflower',zones:[
+    {id:'z1',label:'Petals',num:1,color:'#FFD700',path:'M150,80 Q170,50 190,80 Q210,50 230,80 Q250,50 270,80 Q290,110 270,130 Q290,160 270,170 Q250,200 230,170 Q210,200 190,170 Q170,200 150,170 Q130,160 110,170 Q90,160 110,130 Q90,110 110,80 Q130,50 150,80Z'},
+    {id:'z2',label:'Centre',num:2,color:'#8B4513',path:'M190,110 A40,40 0 1,1 190,111Z'},
+    {id:'z3',label:'Stem',num:3,color:'#228B22',path:'M180,200 Q185,230 180,260 L200,260 Q195,230 200,200Z'},
+    {id:'z4',label:'Leaves',num:4,color:'#32CD32',path:'M185,230 Q160,210 140,225 Q160,245 185,235Z M195,240 Q220,220 240,235 Q220,255 195,245Z'},
+  ]},
+  {name:'🏠 House',zones:[
+    {id:'z1',label:'Roof',num:1,color:'#DC143C',path:'M100,160 L200,80 L300,160Z'},
+    {id:'z2',label:'Walls',num:2,color:'#F5DEB3',path:'M120,160 L120,270 L280,270 L280,160Z'},
+    {id:'z3',label:'Door',num:3,color:'#8B4513',path:'M175,200 L175,270 L225,270 L225,200 Q200,185 175,200Z'},
+    {id:'z4',label:'Windows',num:4,color:'#87CEEB',path:'M135,175 L165,175 L165,205 L135,205Z M235,175 L265,175 L265,205 L235,205Z'},
+  ]},
+  {name:'🌈 Rainbow Scene',zones:[
+    {id:'z1',label:'Sky',num:1,color:'#87CEEB',path:'M50,50 L350,50 L350,200 L50,200Z'},
+    {id:'z2',label:'Ground',num:2,color:'#90EE90',path:'M50,200 L350,200 L350,290 L50,290Z'},
+    {id:'z3',label:'Sun',num:3,color:'#FFD700',path:'M290,90 A35,35 0 1,1 290,91Z'},
+    {id:'z4',label:'Rainbow',num:4,color:'#FF69B4',path:'M80,180 Q200,80 320,180 Q320,160 200,65 Q80,160 80,180Z'},
+  ]},
+];
+let cbnPicIdx=0,cbnFilled={};
+function buildColourByNum(){
+  cbnPicIdx=Math.floor(Math.random()*CBN_PICTURES.length);
+  cbnFilled={};renderCbn();
+}
+function renderCbn(){
+  const pic=CBN_PICTURES[cbnPicIdx];
+  const palette=pic.zones.map(z=>`
+    <div style="display:flex;align-items:center;gap:6px;background:var(--inputbg);border-radius:10px;padding:6px 10px;border:2px solid ${cbnFilled[z.id]?z.color:'var(--border)'}">
+      <div style="width:22px;height:22px;border-radius:6px;background:${z.color};flex-shrink:0;border:2px solid rgba(0,0,0,.15)"></div>
+      <span style="font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:800;color:var(--text)">${z.num} = ${z.label}</span>
+      ${cbnFilled[z.id]?'<span style="color:var(--green);font-size:.9rem">✓</span>':''}
+    </div>`).join('');
+  const paths=pic.zones.map(z=>`
+    <path id="${z.id}" d="${z.path}" fill="${cbnFilled[z.id]?z.color:'var(--inputbg)'}"
+      stroke="var(--border)" stroke-width="2" cursor="pointer"
+      onclick="cbnFill('${z.id}')"
+      style="transition:fill .3s">
+      <title>${z.num} - ${z.label}</title>
+    </path>`).join('');
+  const allDone=pic.zones.every(z=>cbnFilled[z.id]);
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel">
+      <div class="game-title">🖍️ Colour by Number!</div>
+      <div class="game-inst">Tap each zone to colour it in! ${pic.name}</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">${palette}</div>
+      <svg viewBox="50 50 300 250" style="width:100%;border-radius:14px;background:var(--inputbg);border:3px solid var(--border)">${paths}
+        ${pic.zones.map(z=>{
+          const m=z.path.match(/[ML]\s*(\d+)[,\s](\d+)/i);
+          if(!m)return'';
+          return`<text x="${parseInt(m[1])+10}" y="${parseInt(m[2])+16}" font-size="14" font-weight="800" fill="${cbnFilled[z.id]?'white':'var(--text3)'}" pointer-events="none">${z.num}</text>`;
+        }).join('')}
+      </svg>
+      ${allDone?`<div style="text-align:center;margin-top:10px;font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--green)">🎉 Amazing colouring! You did it!</div>
+        <button class="game-next-btn" onclick="cbnPicIdx=(cbnPicIdx+1)%${CBN_PICTURES.length};cbnFilled={};renderCbn()" style="margin-top:8px">🖍️ Next Picture!</button>
+        <button class="game-done-btn" onclick="markGameDone(5)">✅ Done! Give me stars! →</button>`:''}
+    </div>`;
+}
+function cbnFill(id){
+  const pic=CBN_PICTURES[cbnPicIdx];
+  if(cbnFilled[id])return;
+  cbnFilled[id]=true;playCorrect();
+  const zone=pic.zones.find(z=>z.id===id);
+  if(zone)if(typeof mascotSay==='function')mascotSay('Great! You coloured the '+zone.label+'! 🎨',1500);
+  renderCbn();
+  if(pic.zones.every(z=>cbnFilled[z.id])){burst();if(typeof mascotPraise==='function')mascotPraise();}
+}
+
+// ══════════════════════════════════════
+//  MY MINI STORY GAME
+// ══════════════════════════════════════
+const MS_CHARS=[
+  {name:'A brave knight',emoji:'🧑‍🦯'},
+  {name:'A friendly dragon',emoji:'🐲'},
+  {name:'A clever fox',emoji:'🦊'},
+  {name:'A tiny fairy',emoji:'🧚'},
+  {name:'A curious astronaut',emoji:'👩‍🚀'},
+  {name:'A magical unicorn',emoji:'🦄'},
+];
+const MS_PLACES=[
+  {name:'a dark forest',emoji:'🌲'},
+  {name:'a rainbow castle',emoji:'🏰'},
+  {name:'outer space',emoji:'🚀'},
+  {name:'a sunny beach',emoji:'🏖️'},
+  {name:'a snowy mountain',emoji:'🏔️'},
+  {name:'an enchanted garden',emoji:'🌸'},
+];
+const MS_PLOTS=[
+  {start:'found a mysterious glowing chest',mid:'Inside was a magical map!',end:'They followed it and discovered a hidden treasure! 🏆'},
+  {start:'heard a strange noise in the night',mid:'It was a lost baby animal!',end:'They helped it find its family and everyone celebrated! 🎉'},
+  {start:'discovered they had a special power',mid:'But it was hard to control!',end:'With practice they mastered it and saved the day! ⭐'},
+  {start:'made a new best friend',mid:'Together they solved a tricky puzzle!',end:'They became the best team in the whole land! 🤝'},
+];
+let msStep=0,msChar=null,msPlace=null,msPlot=null;
+function buildMiniStory(){msStep=0;msChar=null;msPlace=null;msPlot=null;renderMsStep();}
+function renderMsStep(){
+  if(msStep===0){
+    document.getElementById('area').innerHTML=`
+      <div class="game-panel">
+        <div class="game-title">🎬 My Mini Story!</div>
+        <div class="game-inst">Step 1 of 3 — Pick your hero!</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0">
+          ${MS_CHARS.map((c,i)=>`<div class="copt" style="font-size:.9rem;padding:12px 8px" onclick="msChar=${i};msStep=1;renderMsStep()">
+            <div style="font-size:1.8rem">${c.emoji}</div>${c.name}</div>`).join('')}
+        </div>
+      </div>`;
+  } else if(msStep===1){
+    document.getElementById('area').innerHTML=`
+      <div class="game-panel">
+        <div class="game-title">🎬 My Mini Story!</div>
+        <div class="game-inst">Step 2 of 3 — Pick the place!</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0">
+          ${MS_PLACES.map((p,i)=>`<div class="copt" style="font-size:.9rem;padding:12px 8px" onclick="msPlace=${i};msStep=2;renderMsStep()">
+            <div style="font-size:1.8rem">${p.emoji}</div>${p.name}</div>`).join('')}
+        </div>
+      </div>`;
+  } else if(msStep===2){
+    document.getElementById('area').innerHTML=`
+      <div class="game-panel">
+        <div class="game-title">🎬 My Mini Story!</div>
+        <div class="game-inst">Step 3 of 3 — What happened?</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin:12px 0">
+          ${MS_PLOTS.map((p,i)=>`<div class="copt" style="font-size:.85rem;text-align:left;padding:12px" onclick="msPlot=${i};msStep=3;renderMsStep()">
+            🌟 They ${p.start}...</div>`).join('')}
+        </div>
+      </div>`;
+  } else {
+    const c=MS_CHARS[msChar],pl=MS_PLACES[msPlace],p=MS_PLOTS[msPlot];
+    playCorrect();burst();
+    document.getElementById('area').innerHTML=`
+      <div class="game-panel">
+        <div class="game-title">🎬 Your Mini Story!</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin:12px 0">
+          <div style="background:linear-gradient(135deg,#fff8e0,#ffe8f0);border-radius:14px;padding:14px;border-left:4px solid var(--sun)">
+            <div style="font-size:1.3rem;margin-bottom:6px">${c.emoji} Panel 1</div>
+            <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;color:var(--text);line-height:1.5">
+              Once upon a time, <strong>${c.name}</strong> was in <strong>${pl.name}</strong> ${pl.emoji}.<br>One day they ${p.start}...</div>
+          </div>
+          <div style="background:linear-gradient(135deg,#e8f0ff,#f0ffe8);border-radius:14px;padding:14px;border-left:4px solid var(--purple)">
+            <div style="font-size:1.3rem;margin-bottom:6px">🌟 Panel 2</div>
+            <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;color:var(--text);line-height:1.5">${p.mid}</div>
+          </div>
+          <div style="background:linear-gradient(135deg,#e8ffe8,#f0fff8);border-radius:14px;padding:14px;border-left:4px solid var(--green)">
+            <div style="font-size:1.3rem;margin-bottom:6px">🏆 Panel 3 — The End!</div>
+            <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;color:var(--text);line-height:1.5">${p.end}</div>
+          </div>
+        </div>
+        <button class="game-next-btn" onclick="buildMiniStory()" style="margin-bottom:8px">🎬 Make Another Story!</button>
+        <button class="game-done-btn" onclick="markGameDone(5)">✅ Done! Give me stars! →</button>
+      </div>`;
+    speakText('Your story: '+c.name+' was in '+pl.name+'. They '+p.start+'. '+p.mid+' '+p.end);
+  }
 }
 
 // ══════════════════════════════════════
