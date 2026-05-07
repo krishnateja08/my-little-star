@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="My Little Star">
+<meta name="theme-color" content="#1b4332">
 <title>🌟 My Little Star — Smart Learning Coach</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -2493,6 +2498,96 @@ body.bedtime .sr-stat,.body.bedtime .sr-log-entry,.body.bedtime .sr-cat-card,.bo
   .sr-emoji-picker{max-height:80px;overflow-y:auto;}
   .sr-cat-pills{max-height:60px;overflow-y:auto;}
 }
+
+/* ══════════════════════════════════════
+   NEW IMPROVEMENTS CSS
+══════════════════════════════════════ */
+
+/* Bigger tap targets for 5-year-old */
+.copt{min-height:60px;padding:14px 12px;font-size:1rem;touch-action:manipulation;}
+.game-next-btn,.game-done-btn{min-height:50px;font-size:.95rem;touch-action:manipulation;}
+.num-card{min-height:62px;}
+
+/* Streak bar */
+.streak-bar{display:flex;align-items:center;justify-content:center;gap:8px;
+  margin:0 0 10px;padding:7px 14px;background:linear-gradient(135deg,#fff8e0,#ffe8f0);
+  border-radius:50px;border:2px solid #ffb830;font-family:'Baloo 2',cursive;
+  font-size:.82rem;font-weight:800;color:#7a4500;width:fit-content;margin:0 auto 10px;}
+.streak-bar .sf{font-size:1.1rem;}
+.streak-bar.hot{background:linear-gradient(135deg,#ffe0a0,#ffb830);border-color:#ff8c00;color:#5a2d00;}
+body.bedtime .streak-bar{background:linear-gradient(135deg,#1b2a00,#2a1800);color:#ffb830;border-color:#ffb830;}
+
+/* Hint button */
+.hint-btn{display:none;margin:8px auto 0;background:linear-gradient(135deg,#a78bfa,#4fa3e0);
+  border:none;border-radius:50px;padding:10px 22px;font-family:'Baloo 2',cursive;
+  font-size:.85rem;font-weight:800;color:#fff;cursor:pointer;animation:pulse 1.5s infinite;
+  touch-action:manipulation;}
+.hint-btn.visible{display:block;}
+.hint-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:900;
+  display:flex;align-items:center;justify-content:center;padding:20px;}
+.hint-card{background:var(--cardbg);border-radius:20px;padding:22px 20px;max-width:320px;
+  width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);border:3px solid var(--purple);}
+.hint-card .hc-emoji{font-size:3rem;margin-bottom:10px;}
+.hint-card .hc-title{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--text);margin-bottom:8px;}
+.hint-card .hc-text{font-size:.85rem;color:var(--text2);line-height:1.6;margin-bottom:14px;}
+.hint-card .hc-close{background:linear-gradient(135deg,#52b788,#4ecdc4);border:none;border-radius:50px;
+  padding:10px 24px;font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:#fff;cursor:pointer;}
+
+/* PWA install banner */
+.pwa-banner{display:none;position:fixed;bottom:72px;left:12px;right:12px;z-index:800;
+  background:linear-gradient(135deg,#1b4332,#2d6a4f);border-radius:16px;padding:12px 16px;
+  box-shadow:0 8px 28px rgba(27,67,50,.4);display:flex;align-items:center;gap:12px;}
+.pwa-banner.show{display:flex;}
+.pwa-banner .pb-icon{font-size:2rem;flex-shrink:0;}
+.pwa-banner .pb-body{flex:1;}
+.pwa-banner .pb-title{font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:#fff;}
+.pwa-banner .pb-sub{font-size:.72rem;color:rgba(255,255,255,.75);margin-top:2px;}
+.pwa-banner .pb-btn{background:#fff;border:none;border-radius:50px;padding:8px 16px;
+  font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:800;color:#1b4332;cursor:pointer;flex-shrink:0;}
+.pwa-banner .pb-x{background:transparent;border:none;color:rgba(255,255,255,.6);
+  font-size:1.2rem;cursor:pointer;flex-shrink:0;padding:4px;}
+
+/* PIN overlay */
+.pin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;
+  display:flex;align-items:center;justify-content:center;padding:20px;}
+.pin-card{background:var(--cardbg);border-radius:24px;padding:28px 24px;max-width:300px;
+  width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4);}
+.pin-card .pc-title{font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:6px;}
+.pin-card .pc-sub{font-size:.78rem;color:var(--text3);margin-bottom:18px;}
+.pin-dots{display:flex;gap:12px;justify-content:center;margin-bottom:18px;}
+.pin-dot{width:16px;height:16px;border-radius:50%;background:var(--border);transition:all .2s;}
+.pin-dot.filled{background:var(--purple);}
+.pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.pin-key{height:54px;border-radius:14px;border:2.5px solid var(--border);background:var(--inputbg);
+  font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;color:var(--text);
+  cursor:pointer;transition:all .15s;touch-action:manipulation;}
+.pin-key:active{transform:scale(.93);background:var(--purple);color:#fff;border-color:var(--purple);}
+.pin-error{font-size:.78rem;color:var(--pink);font-weight:700;min-height:20px;margin-top:6px;}
+.pin-setup-hint{font-size:.72rem;color:var(--text4);margin-top:8px;line-height:1.5;}
+
+/* Mission strip in games */
+.mission-strip{background:linear-gradient(135deg,#e8f5ee,#fff8e0);border-radius:14px;
+  padding:10px 14px;margin-bottom:10px;border:2px solid #52b788;display:flex;align-items:center;gap:10px;}
+.mission-strip .ms-title{font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:800;
+  color:#1b4332;text-transform:uppercase;letter-spacing:.5px;}
+.mission-strip .ms-games{display:flex;gap:6px;flex-wrap:wrap;flex:1;}
+.mission-strip .ms-game{background:#fff;border-radius:8px;padding:4px 10px;font-family:'Baloo 2',cursive;
+  font-size:.72rem;font-weight:800;color:var(--j2);border:1.5px solid var(--border);}
+.mission-strip .ms-game.done{background:linear-gradient(135deg,#56cf81,#4ecdc4);color:#fff;border-color:transparent;}
+
+/* Error screen */
+.game-error{text-align:center;padding:30px 20px;background:var(--cardbg);border-radius:20px;
+  border:3px solid var(--pink);margin:10px 0;}
+.game-error .ge-emoji{font-size:3.5rem;margin-bottom:10px;}
+.game-error .ge-title{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--text);margin-bottom:8px;}
+.game-error .ge-btn{background:linear-gradient(135deg,#52b788,#4ecdc4);border:none;border-radius:50px;
+  padding:12px 24px;font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:#fff;cursor:pointer;margin-top:8px;}
+
+/* Landscape improvements */
+@media(orientation:landscape) and (max-height:500px){
+  .game-panel{padding:8px 10px;}
+  .copt{min-height:44px;padding:8px 10px;}
+}
 </style>
 </head>
 <body>
@@ -2774,6 +2869,47 @@ body.bedtime .sr-stat,.body.bedtime .sr-log-entry,.body.bedtime .sr-cat-card,.bo
 <div id="feelingsOverlay"></div>
 <div id="surpriseOverlay"></div>
 <div id="gateOverlay"></div>
+
+<!-- PWA Install Banner -->
+<div class="pwa-banner" id="pwaBanner">
+  <div class="pb-icon">⭐</div>
+  <div class="pb-body">
+    <div class="pb-title">Add to Home Screen!</div>
+    <div class="pb-sub">Play anytime — works like a real app!</div>
+  </div>
+  <button class="pb-btn" onclick="installPwa()">Install</button>
+  <button class="pb-x" onclick="dismissPwa()">✕</button>
+</div>
+
+<!-- PIN overlay -->
+<div class="pin-overlay" id="pinOverlay" style="display:none">
+  <div class="pin-card">
+    <div class="pc-title" id="pinTitle">👩‍👧 Parent Area</div>
+    <div class="pc-sub" id="pinSubtitle">Enter your 4-digit PIN</div>
+    <div class="pin-dots" id="pinDots">
+      <div class="pin-dot" id="pd0"></div>
+      <div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div>
+      <div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-grid">
+      ${[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k=>`<button class="pin-key" onclick="pinTap('${k}')">${k}</button>`).join('')}
+    </div>
+    <div class="pin-error" id="pinError"></div>
+    <div class="pin-setup-hint" id="pinSetupHint"></div>
+    <button onclick="closePinOverlay()" style="margin-top:12px;background:transparent;border:none;color:var(--text3);font-family:'Baloo 2',cursive;font-size:.8rem;cursor:pointer">✕ Cancel</button>
+  </div>
+</div>
+
+<!-- Hint overlay -->
+<div class="hint-overlay" id="hintOverlay" style="display:none" onclick="closeHintOverlay()">
+  <div class="hint-card" onclick="event.stopPropagation()">
+    <div class="hc-emoji">💡</div>
+    <div class="hc-title" id="hintTitle">Need a hint?</div>
+    <div class="hc-text" id="hintText">Take your time and look carefully at all the options!</div>
+    <button class="hc-close" onclick="closeHintOverlay()">Got it! Let me try! 💪</button>
+  </div>
+</div>
 
 <!-- BOTTOM NAVIGATION -->
 <nav class="bottom-nav">
@@ -4124,7 +4260,7 @@ function showPhysicalAct(pa){
 // ══════════════════════════════════════
 //  INTERACTIVE GAMES BANK (expanded #12)
 // ══════════════════════════════════════
-const GAMES = [
+const GAMES = window.GAMES = [
   {id:'numMatch',  week:1, emoji:'🔢', title:'Number Match Game',      desc:'Match the number to the right group of objects!',    cat:'maths'},
   {id:'wordBuild', week:2, emoji:'🔤', title:'Build a Word!',           desc:'Tap the letters in the right order to spell the word!',cat:'letters'},
   {id:'countGame', week:1, emoji:'🍎', title:'How Many? Count it!',     desc:'Count the objects and pick the right number!',       cat:'maths'},
@@ -6630,6 +6766,9 @@ function undoSkip(title){
 function renderGame(g){
   document.getElementById('hsub').textContent=`${g.emoji} ${g.title}`;
   renderHist();updateProg();renderWbar();renderChallenge();
+  // Clear any previous hint timer
+  if(window._hintTimer)clearTimeout(window._hintTimer);
+  window._currentHint=null;
   const fns={numMatch:buildNumMatch,wordBuild:buildWordBuild,countGame:buildCountGame,
     colourMix:buildColourMix,drawEmoji:buildDrawEmoji,buildScene:buildBuildScene,makeMusic:buildMakeMusic,storyStarter:buildStoryStarter,emotionFaces:buildEmotionFaces,rainbowOrder:buildRainbowOrder,makePattern:buildMakePattern,colourByNum:buildColourByNum,miniStory:buildMiniStory,shapeTap:buildShapeTap,memoryFlip:buildMemoryFlip,
     findLetter:buildFindLetter,animalSound:buildAnimalSound,phonicsMatch:buildPhonicsMatch,abcOrder:buildAbcOrder,letterPic:buildLetterPic,upperLower:buildUpperLower,firstLetter:buildFirstLetter,singAbc:buildSingAbc,spotLetter:buildSpotLetter,whichNext:buildWhichNext,vowelCon:buildVowelCon,
@@ -6638,14 +6777,52 @@ function renderGame(g){
     coinCount:buildCoinCount,fairTrade:buildFairTrade,myShop:buildMyShop,lemonadeStand:buildLemonadeStand,changeMaker:buildChangeMaker,
     shadowMatch:buildShadowMatch,dotCard:buildDotCard,oppSnap:buildOppSnap,colourWordMatch:buildColourWordMatch,
     puzzleJigsaw:buildPuzzleJigsaw,animalFamily:buildAnimalFamily,whatDoINeed:buildWhatDoINeed,sortFood:buildSortFood,doesntBelong:buildDoesntBelong,finishPicture:buildFinishPicture,completeSet:buildCompleteSet,oddOneOut:buildOddOneOut,spotDiff:buildSpotDiff,bigSmall:buildBigSmall,fillGap:buildFillGap,simpleSums:buildSimpleSums,sortNums:buildSortNums,shareFair:buildShareFair,moreOrLess:buildMoreOrLess,make10:buildMake10,takeAway:buildTakeAway,longShort:buildLongShort,halfWhole:buildHalfWhole,oddEven:buildOddEven,numBonds:buildNumBonds,shapeSides:buildShapeSides,shapeReal:buildShapeReal,shapeColour:buildShapeColour,finishPatt:buildFinishPatt,listenTap:buildListenTap,pairMatch:buildPairMatch,tapOrder:buildTapOrder,sameOrDiff:buildSameOrDiff,quickCount:buildQuickCount,copyColours:buildCopyColours,memoryTorch:buildMemoryTorch,whatChanged:buildWhatChanged,bigToSmall:buildBigToSmall,mirrorMe:buildMirrorMe,behindDoor:buildBehindDoor,rememberTap:buildRememberTap};
-  (fns[g.id]||buildCountGame)();
-  // Append skip button after game panel
+  // Error boundary
+  try{
+    (fns[g.id]||buildCountGame)();
+  } catch(err){
+    console.error('Game error:',err);
+    const area=document.getElementById('area');
+    if(area) area.innerHTML=`<div class="game-error">
+      <div class="ge-emoji">🙈</div>
+      <div class="ge-title">Oops! Something went wrong!</div>
+      <div style="font-size:.8rem;color:var(--text3);margin-bottom:10px">Don't worry — let's try a different game!</div>
+      <button class="ge-btn" onclick="fetchNext()">▶ Next Game</button>
+    </div>`;
+    return;
+  }
+  // Append streak bar
   const area=document.getElementById('area');
-  if(area&&!area.querySelector('.skip-btn')){
-    const btn=document.createElement('button');
-    btn.className='skip-btn';btn.textContent='⏭ Skip';
-    btn.onclick=()=>skipActivity();
-    area.appendChild(btn);
+  if(area){
+    if(gameStreak>=2&&!area.querySelector('.streak-bar')){
+      const sb=document.createElement('div');
+      sb.className='streak-bar'+(gameStreak>=5?' hot':'');
+      sb.innerHTML=`<span class="sf">${gameStreak>=5?'🔥':'⭐'}</span> ${gameStreak} in a row!`;
+      area.insertBefore(sb,area.firstChild);
+    }
+    // Mission strip
+    const missions=getMissionGames();
+    if(missions.length>0&&!area.querySelector('.mission-strip')){
+      const completedMissions=JSON.parse(localStorage.getItem('c_mission_done_'+todayKey())||'[]');
+      const ms=document.createElement('div');ms.className='mission-strip';
+      ms.innerHTML=`<div class="ms-title">🎯 Today</div><div class="ms-games">${missions.map(m=>`<div class="ms-game${completedMissions.includes(m.id)?' done':''}">${m.emoji} ${m.title}</div>`).join('')}</div>`;
+      area.insertBefore(ms,area.firstChild);
+    }
+    // Skip button
+    if(!area.querySelector('.skip-btn')){
+      const btn=document.createElement('button');
+      btn.className='skip-btn';btn.textContent='⏭ Skip';
+      btn.onclick=()=>skipActivity();
+      area.appendChild(btn);
+    }
+    // Hint button — appears after 12 seconds
+    if(!area.querySelector('.hint-btn')){
+      const hb=document.createElement('button');
+      hb.className='hint-btn';hb.textContent='💡 Need a hint?';
+      hb.onclick=()=>showHint(g);
+      area.appendChild(hb);
+      window._hintTimer=setTimeout(()=>hb.classList.add('visible'),12000);
+    }
   }
 }
 
@@ -9786,6 +9963,37 @@ function renderParentDash(){
     ══════════════════════════════ -->
     <div class="pd-panel" id="pdtab-settings">
 
+      <!-- Difficulty Override -->
+      <div class="pc">
+        <div class="pc-title">🎮 Difficulty Level</div>
+        <div style="font-size:.75rem;color:var(--text3);margin-bottom:10px">${localStorage.getItem('c_diff_manual')?'<strong style="color:var(--pink)">Manually set</strong> — auto-adjust is OFF':'Auto-adjusting based on her performance'}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
+          <button onclick="setDifficultyManual(1)" style="padding:10px 6px;border-radius:12px;border:3px solid ${diffLevel===1?'#56cf81':'var(--border)'};background:${diffLevel===1?'linear-gradient(135deg,#e8fff0,#d4f5ea)':'var(--inputbg)'};font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:800;color:var(--text);cursor:pointer">🌱 Easy</button>
+          <button onclick="setDifficultyManual(2)" style="padding:10px 6px;border-radius:12px;border:3px solid ${diffLevel===2?'#ffb830':'var(--border)'};background:${diffLevel===2?'linear-gradient(135deg,#fff8e0,#ffe8a0)':'var(--inputbg)'};font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:800;color:var(--text);cursor:pointer">⭐ Medium</button>
+          <button onclick="setDifficultyManual(3)" style="padding:10px 6px;border-radius:12px;border:3px solid ${diffLevel===3?'#ff6b9d':'var(--border)'};background:${diffLevel===3?'linear-gradient(135deg,#ffe8f0,#ffd4e8)':'var(--inputbg)'};font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:800;color:var(--text);cursor:pointer">🏆 Hard</button>
+        </div>
+        ${localStorage.getItem('c_diff_manual')?`<button onclick="clearManualDiff()" style="background:transparent;border:2px solid var(--purple);border-radius:50px;padding:7px 16px;font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:800;color:var(--purple);cursor:pointer;width:100%">🔄 Switch back to Auto</button>`:''}
+      </div>
+
+      <!-- Today's Mission -->
+      <div class="pc">
+        <div class="pc-title">🎯 Today's Mission</div>
+        <div style="font-size:.75rem;color:var(--text3);margin-bottom:10px">Pick up to 3 games to focus on today — they'll show as a reminder strip while she plays</div>
+        ${getMissionGames().length>0?`<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">${getMissionGames().map(m=>`<div style="background:linear-gradient(135deg,#52b788,#4ecdc4);border-radius:8px;padding:5px 10px;font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:800;color:#fff">${m.emoji} ${m.title}</div>`).join('')}</div>`:'<div style="font-size:.75rem;color:var(--text4);margin-bottom:10px">No missions set yet</div>'}
+        <button onclick="goToSection('games');renderMissionPicker()" style="background:linear-gradient(135deg,#1b4332,#52b788);border:none;border-radius:50px;padding:10px 20px;font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:800;color:#fff;cursor:pointer;width:100%">🎯 Set Today's Missions</button>
+      </div>
+
+      <!-- Export Progress -->
+      <div class="pc">
+        <div class="pc-title">📤 Export Progress</div>
+        <div style="font-size:.75rem;color:var(--text3);margin-bottom:10px">Download her progress to share with teachers or keep a record</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <button onclick="exportReadableReport()" style="padding:10px 8px;border-radius:12px;background:linear-gradient(135deg,#4fa3e0,#a78bfa);border:none;font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:800;color:#fff;cursor:pointer">📄 Text Report</button>
+          <button onclick="exportProgress()" style="padding:10px 8px;border-radius:12px;background:linear-gradient(135deg,#52b788,#4ecdc4);border:none;font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:800;color:#fff;cursor:pointer">📊 Full Data</button>
+        </div>
+      </div>
+
+      <!-- Quick settings -->
       <div class="pc">
         <div class="pc-title">⚙️ Quick settings</div>
         <div class="pd-set-grid">
@@ -9798,6 +10006,14 @@ function renderParentDash(){
             <span class="psi-icon">🔊</span>
             <div class="psi-body"><div class="psi-lbl">Sound Effects</div><div class="psi-val" id="pdSoundLabel">${soundOn?'Enabled':'Muted'}</div></div>
             <span class="psi-tog ${soundOn?'on':'off'}">${soundOn?'ON':'OFF'}</span>
+          </div>
+          <div class="pd-set-item" onclick="changePinCode()">
+            <span class="psi-icon">🔐</span>
+            <div class="psi-body"><div class="psi-lbl">Change PIN</div><div class="psi-val">${localStorage.getItem('c_parent_pin')?'PIN is set':'No PIN yet'}</div></div>
+          </div>
+          <div class="pd-set-item" onclick="installPwa()">
+            <span class="psi-icon">📱</span>
+            <div class="psi-body"><div class="psi-lbl">Add to Home Screen</div><div class="psi-val">Install as app</div></div>
           </div>
           <div class="pd-set-item" onclick="changeFamilyCode()">
             <span class="psi-icon">👤</span>
@@ -18065,6 +18281,225 @@ function bodyRestart(){
   renderBodyTab();
   if(typeof showToast==='function')showToast('🔄 Body Explorer restarted — Day 1 begins!');
 }
+
+// ══════════════════════════════════════
+//  💡 HINT SYSTEM
+// ══════════════════════════════════════
+const GAME_HINTS={
+  numMatch:'Look at the number on the left. Count the emojis on the right — find the group with the same amount!',
+  countGame:'Count each object one by one by pointing at them. Touch and count!',
+  clockGame:'The SHORT pink hand points to the hour. The LONG blue hand points to the minutes!',
+  daysOrder:'Remember: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday!',
+  monthsOrder:'The months go: Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec!',
+  abcOrder:'Sing the ABC song in your head — A, B, C, D, E, F, G...',
+  letterPic:'Say the word out loud — what sound does it start with? That sound is the letter!',
+  upperLower:'Big letters and small letters are the same letter — just different sizes!',
+  firstLetter:'Say the word slowly. Listen to the very first sound you make!',
+  oddEven:'Even numbers end in 0, 2, 4, 6 or 8. Odd numbers end in 1, 3, 5, 7 or 9!',
+  make10:'Think of it like fingers — how many more fingers do you need to make 10?',
+  numBonds:'What number do you need to add to the green circle to reach the orange number?',
+  seasonsGame:'Spring=flowers, Summer=sunshine, Autumn=falling leaves, Winter=snow!',
+  yttGame:'Yesterday = the day before today. Tomorrow = the day after today!',
+  shareFair:'Divide by sharing one at a time — one for this friend, one for that friend...',
+  doesntBelong:'Think about what the three things have in common — the odd one does not fit that group!',
+  colourByNum:'Find the number on the picture, then find that colour in the key above!',
+  mirrorMe:'A mirror flips things — what is on the left goes to the right side!',
+  memoryTorch:'Picture the items in your mind — close your eyes and try to see them!',
+  default:'Take a deep breath! Look at all the options carefully before you tap. You can do it! 💪'
+};
+function showHint(g){
+  const hintText=GAME_HINTS[g?.id]||GAME_HINTS.default;
+  document.getElementById('hintTitle').textContent='💡 Hint for '+( g?.title||'this game')+'!';
+  document.getElementById('hintText').textContent=hintText;
+  document.getElementById('hintOverlay').style.display='flex';
+  speakText(hintText);
+}
+function closeHintOverlay(){
+  document.getElementById('hintOverlay').style.display='none';
+}
+
+// ══════════════════════════════════════
+//  🔐 PARENT PIN SYSTEM
+// ══════════════════════════════════════
+let _pinEntry='',_pinMode='check',_pinCallback=null;
+const PARENT_PIN_KEY='c_parent_pin';
+
+function requirePin(callback){
+  const saved=localStorage.getItem(PARENT_PIN_KEY);
+  if(!saved){_pinMode='setup';_pinEntry='';_pinCallback=callback;showPinOverlay('🔐 Create a PIN','Set a 4-digit PIN to protect the Parent area');}
+  else{_pinMode='check';_pinEntry='';_pinCallback=callback;showPinOverlay('👩‍👧 Parent Area','Enter your 4-digit PIN');}
+}
+function showPinOverlay(title,sub){
+  document.getElementById('pinTitle').textContent=title;
+  document.getElementById('pinSubtitle').textContent=sub;
+  document.getElementById('pinError').textContent='';
+  document.getElementById('pinSetupHint').textContent=_pinMode==='setup'?'Choose any 4 numbers you will remember — e.g. your birthday!':'';
+  updatePinDots();
+  document.getElementById('pinOverlay').style.display='flex';
+}
+function closePinOverlay(){document.getElementById('pinOverlay').style.display='none';_pinEntry='';}
+function updatePinDots(){
+  for(let i=0;i<4;i++){
+    const d=document.getElementById('pd'+i);
+    if(d)d.classList.toggle('filled',i<_pinEntry.length);
+  }
+}
+function pinTap(k){
+  if(k==='')return;
+  if(k==='⌫'){_pinEntry=_pinEntry.slice(0,-1);updatePinDots();return;}
+  if(_pinEntry.length>=4)return;
+  _pinEntry+=String(k);updatePinDots();
+  if(_pinEntry.length===4){
+    setTimeout(()=>{
+      if(_pinMode==='setup'){
+        localStorage.setItem(PARENT_PIN_KEY,_pinEntry);
+        closePinOverlay();
+        if(_pinCallback)_pinCallback();
+      } else {
+        const saved=localStorage.getItem(PARENT_PIN_KEY);
+        if(_pinEntry===saved){closePinOverlay();if(_pinCallback)_pinCallback();}
+        else{_pinEntry='';updatePinDots();document.getElementById('pinError').textContent='❌ Wrong PIN — try again!';}
+      }
+    },200);
+  }
+}
+function changePinCode(){
+  localStorage.removeItem(PARENT_PIN_KEY);
+  requirePin(()=>showToast('🔐 New PIN saved!'));
+}
+// Override the parent tab to require PIN
+const _origSwitchTab=typeof switchTab!=='undefined'?switchTab:null;
+document.addEventListener('DOMContentLoaded',()=>{
+  const parentBtn=document.getElementById('bn_parent');
+  if(parentBtn){
+    parentBtn.onclick=()=>{
+      requirePin(()=>{if(typeof switchTab==='function')switchTab('parent');});
+    };
+  }
+});
+
+// ══════════════════════════════════════
+//  🎯 TODAY'S MISSION SYSTEM
+// ══════════════════════════════════════
+function getMissionGames(){
+  const saved=localStorage.getItem('c_missions');
+  if(!saved)return[];
+  try{return JSON.parse(saved);}catch(e){return[];}
+}
+function saveMissions(games){localStorage.setItem('c_missions',JSON.stringify(games));}
+function clearMissions(){localStorage.removeItem('c_missions');showToast('🎯 Missions cleared!');}
+
+function renderMissionPicker(){
+  const GAMES_LIST=window.GAMES||[];
+  const missions=getMissionGames();
+  const area=document.getElementById('area');
+  if(!area)return;
+  area.innerHTML=`<div class="game-panel">
+    <div class="game-title">🎯 Today's Mission</div>
+    <div style="font-size:.8rem;color:var(--text3);margin-bottom:14px">Pick up to 3 games for today's focus. They'll show as a reminder during play!</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px" id="missionSelected">
+      ${missions.map(m=>`<div style="background:linear-gradient(135deg,#52b788,#4ecdc4);border-radius:10px;padding:6px 12px;font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:800;color:#fff;display:flex;align-items:center;gap:6px">${m.emoji} ${m.title} <span onclick="removeMission('${m.id}')" style="cursor:pointer;opacity:.7">✕</span></div>`).join('') || '<div style="font-size:.78rem;color:var(--text4)">No missions set yet</div>'}
+    </div>
+    <div style="font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:800;color:var(--j2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">All Games</div>
+    <div style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto">
+      ${GAMES_LIST.map(g=>`<div onclick="toggleMission('${g.id}','${g.emoji}','${g.title.replace(/'/g,"\\'")}')"
+        style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;
+        background:${missions.find(m=>m.id===g.id)?'linear-gradient(135deg,#e8fff0,#d4f5ea)':'var(--inputbg)'};
+        border:2px solid ${missions.find(m=>m.id===g.id)?'#52b788':'var(--border)'};cursor:pointer;transition:all .2s">
+        <span style="font-size:1.4rem">${g.emoji}</span>
+        <div style="flex:1"><div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:800;color:var(--text)">${g.title}</div>
+        <div style="font-size:.68rem;color:var(--text3)">${g.cat||''}</div></div>
+        ${missions.find(m=>m.id===g.id)?'<span style="color:#52b788;font-size:1.2rem">✓</span>':''}
+      </div>`).join('')}
+    </div>
+    <button onclick="clearMissions();renderMissionPicker()" style="margin-top:14px;background:transparent;border:2px solid var(--pink);border-radius:50px;padding:8px 20px;font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:800;color:var(--pink);cursor:pointer;width:100%">🗑️ Clear All Missions</button>
+  </div>`;
+}
+function toggleMission(id,emoji,title){
+  let missions=getMissionGames();
+  const idx=missions.findIndex(m=>m.id===id);
+  if(idx>=0){missions.splice(idx,1);}
+  else{if(missions.length>=3){showToast('⚠️ Max 3 missions! Remove one first.');return;}missions.push({id,emoji,title});}
+  saveMissions(missions);renderMissionPicker();
+}
+function removeMission(id){toggleMission(id,'','');}
+
+// ══════════════════════════════════════
+//  ⚙️ DIFFICULTY OVERRIDE
+// ══════════════════════════════════════
+function setDifficultyManual(level){
+  diffLevel=parseInt(level);
+  localStorage.setItem('c_diff',diffLevel);
+  localStorage.setItem('c_diff_manual','1');
+  showToast(['','✅ Easy mode set!','✅ Medium mode set!','✅ Hard mode set!'][level]||'');
+  if(typeof renderParentDash==='function')renderParentDash();
+  if(typeof pdTab==='function')pdTab('settings');
+}
+function clearManualDiff(){
+  localStorage.removeItem('c_diff_manual');
+  showToast('🔄 Difficulty is now auto-adjusting again!');
+  if(typeof renderParentDash==='function')renderParentDash();
+  if(typeof pdTab==='function')pdTab('settings');
+}
+
+// ══════════════════════════════════════
+//  📤 EXPORT PROGRESS
+// ══════════════════════════════════════
+function exportProgress(){
+  const allKeys=Object.keys(localStorage).filter(k=>k.startsWith('c'));
+  const data={exported:new Date().toISOString(),totalStars:localStorage.getItem('c_total_stars')||0,allUsed:JSON.parse(localStorage.getItem('c_allused')||'[]'),weekStars:{}};
+  const ws=JSON.parse(localStorage.getItem('cws')||'{}');
+  data.weekStars=ws;
+  const DAYS_KEYS=[...Array(14)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-i);return d.toISOString().slice(0,10).replace(/-/g,'');});
+  data.recentActivity=DAYS_KEYS.map(k=>({date:k,done:JSON.parse(localStorage.getItem('cd_'+k)||'[]'),stars:parseInt(localStorage.getItem('cs_'+k)||'0')})).filter(d=>d.done.length>0);
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='my-little-star-progress-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  showToast('📥 Progress exported!');
+}
+function exportReadableReport(){
+  const totalStars=localStorage.getItem('c_total_stars')||'0';
+  const allUsed=JSON.parse(localStorage.getItem('c_allused')||'[]');
+  const ws=JSON.parse(localStorage.getItem('cws')||'{}');
+  let report='🌟 MY LITTLE STAR — PROGRESS REPORT\n';
+  report+='Generated: '+new Date().toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+'\n\n';
+  report+='⭐ TOTAL STARS EARNED: '+totalStars+'\n';
+  report+='📚 TOTAL ACTIVITIES COMPLETED: '+allUsed.length+'\n\n';
+  report+='📅 WEEKLY BREAKDOWN:\n';
+  Object.entries(ws).sort().reverse().slice(0,7).forEach(([k,v])=>{
+    const d=k.slice(0,4)+'-'+k.slice(4,6)+'-'+k.slice(6,8);
+    report+='  '+d+': '+v+' ⭐\n';
+  });
+  report+='\n📖 RECENT ACTIVITIES:\n';
+  allUsed.slice(-20).forEach(a=>report+='  ✅ '+a+'\n');
+  const blob=new Blob([report],{type:'text/plain'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='progress-report-'+new Date().toISOString().slice(0,10)+'.txt';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  showToast('📄 Report downloaded!');
+}
+
+// ══════════════════════════════════════
+//  📱 PWA INSTALL PROMPT
+// ══════════════════════════════════════
+let _pwaPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();_pwaPrompt=e;
+  const banner=document.getElementById('pwaBanner');
+  if(banner&&!localStorage.getItem('pwa_dismissed'))banner.classList.add('show');
+});
+function installPwa(){
+  if(_pwaPrompt){_pwaPrompt.prompt();_pwaPrompt.userChoice.then(()=>{_pwaPrompt=null;dismissPwa();});}
+  else{alert('To install:\n📱 iPhone: tap Share → "Add to Home Screen"\n🤖 Android: tap menu (⋮) → "Add to Home Screen"');}
+}
+function dismissPwa(){
+  localStorage.setItem('pwa_dismissed','1');
+  const banner=document.getElementById('pwaBanner');
+  if(banner)banner.classList.remove('show');
+}
+window.addEventListener('appinstalled',()=>{dismissPwa();showToast('🎉 App installed! Find it on your home screen!');});
+
 </script>
 </body>
 </html>
