@@ -18076,130 +18076,262 @@ const DTA_ACTIVITIES = [
   },
 ];
 
+// ═══════════════════════════════════════════
+//  📂 TEACHING CATEGORIES
+// ═══════════════════════════════════════════
+const DTA_CATEGORIES = [
+  {
+    id:'lifeskills',
+    name:'Life Skills & Values',
+    icon:'🧠',
+    color:'linear-gradient(135deg,#ff6b9d,#ff8c42)',
+    desc:'Emotions, manners, family, hygiene & sharing',
+    ids:['dta_emotions_feelings','dta_manners_kindness','dta_family_members','dta_community_helpers','dta_hygiene_habits','dta_sharing_turns']
+  },
+  {
+    id:'science',
+    name:'World & Science',
+    icon:'🌍',
+    color:'linear-gradient(135deg,#4ecdc4,#2d9e96)',
+    desc:'Animals, senses, weather, maths, colours & reading',
+    ids:['dta_animals_sounds','dta_animals_homes','dta_body_parts','dta_five_senses','dta_weather_seasons','dta_day_night','dta_plants_flowers','dta_big_small_compare','dta_simple_addition','dta_colours_mixing','dta_patterns','dta_phonics_3letter','dta_sight_words','dta_rhyming_words','dta_storytelling']
+  },
+  {
+    id:'devotional',
+    name:'Devotional & Hindu',
+    icon:'🕉️',
+    color:'linear-gradient(135deg,#ffb830,#e07b00)',
+    desc:'Gods, shlokas, Ramayana, Krishna, festivals & puja',
+    ids:['dta_hindu_gods','dta_vakratunda_shloka','dta_saraswati_vandana','dta_gayatri_mantra','dta_ramayana_story','dta_mahabharata_story','dta_krishna_stories','dta_hindu_festivals','dta_puja_basics','dta_sacred_animals','dta_temple_visit','dta_rangoli']
+  },
+  {
+    id:'moral',
+    name:'Moral Stories',
+    icon:'🌸',
+    color:'linear-gradient(135deg,#a78bfa,#7c3aed)',
+    desc:'Honesty, courage, kindness, truth & friendship',
+    ids:['dta_moral_honesty','dta_moral_respect_elders','dta_moral_hard_work','dta_moral_helping_others','dta_moral_eklavya','dta_moral_golden_goose','dta_moral_kindness_animals','dta_moral_truth_wins','dta_moral_friendship']
+  },
+  {
+    id:'indian',
+    name:'Indian Traditions',
+    icon:'🇮🇳',
+    color:'linear-gradient(135deg,#52b788,#1b4332)',
+    desc:'Namaste, national symbols, food, clothing & dance',
+    ids:['dta_namaste_meaning','dta_national_symbols','dta_indian_foods','dta_traditional_clothing','dta_classical_dance']
+  }
+];
+
 // ── DTA Storage ──
 function dtaKey(){ return 'c_dta_v2'; }
 function dtaLoad(){
   const raw=localStorage.getItem(dtaKey());
-  if(raw) try { return JSON.parse(raw); } catch(e){}
-  return { currentIndex:0, completedIds:[], completedDates:{} };
+  if(raw) try {
+    const s=JSON.parse(raw);
+    if(!s.view) s.view='categories';
+    if(!s.completedIds) s.completedIds=[];
+    if(!s.completedDates) s.completedDates={};
+    return s;
+  } catch(e){}
+  return {view:'categories',selectedCategory:null,selectedTopicId:null,completedIds:[],completedDates:{}};
 }
 function dtaSave(state){
-  localStorage.setItem(dtaKey(), JSON.stringify(state));
+  localStorage.setItem(dtaKey(),JSON.stringify(state));
   if(typeof fbWrite==='function'&&typeof _syncReady!=='undefined'&&_syncReady&&_currentUser)
-    fbWrite(dtaKey(), JSON.stringify(state));
+    fbWrite(dtaKey(),JSON.stringify(state));
 }
 
-// ── Render the Daily Teaching Activity card ──
-function renderDtaCard(){
-  const state = dtaLoad();
-  const totalActs = DTA_ACTIVITIES.length;
-  const completed = state.completedIds.length;
-  const pct = Math.round((completed/totalActs)*100);
+// ── Navigation ──
+function dtaNavTo(view,cat,topicId){
+  const state=dtaLoad();
+  state.view=view||'categories';
+  if(cat!==undefined&&cat!==null) state.selectedCategory=cat;
+  if(topicId!==undefined&&topicId!==null) state.selectedTopicId=topicId;
+  dtaSave(state);
+  renderParentDash();
+}
 
-  // If all done, show celebration
-  if(completed >= totalActs){
+// ── SCREEN 1: Category Grid ──
+function renderDtaCategories(state){
+  const total=DTA_ACTIVITIES.length;
+  const done=state.completedIds.length;
+  const pct=Math.round((done/total)*100);
+  const allDone=done>=total;
+
+  const catCards=DTA_CATEGORIES.map(cat=>{
+    const catDone=cat.ids.filter(id=>state.completedIds.includes(id)).length;
+    const catTotal=cat.ids.length;
+    const catPct=Math.round((catDone/catTotal)*100);
     return `
-    <div class="dta-card">
-      <div class="dta-title">📚 Daily Teaching Activity <span class="dta-badge">ALL DONE!</span></div>
-      <div class="dta-all-done">
-        <span class="ad-icon">🏆</span>
-        <div class="ad-title">You completed all ${totalActs} activities! 🎉</div>
-        <div class="ad-sub">What an incredible parent–child journey! Your daughter has learned so much. Ready to start over?</div>
-        <button class="dta-restart-btn" onclick="dtaRestart()">🔄 Start Over (Repeat Programme)</button>
+    <div onclick="dtaNavTo('topics','${cat.id}')"
+      style="background:${cat.color};border-radius:20px;padding:16px 14px;cursor:pointer;
+      color:#fff;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s;
+      box-shadow:0 4px 16px rgba(0,0,0,.18);"
+      onmouseover="this.style.transform='scale(1.03)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.28)'"
+      onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 16px rgba(0,0,0,.18)'">
+      <div style="font-size:2rem;margin-bottom:4px">${cat.icon}</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;line-height:1.3;margin-bottom:4px">${cat.name}</div>
+      <div style="font-size:.63rem;opacity:.85;margin-bottom:8px;line-height:1.3">${cat.desc}</div>
+      <div style="font-size:.68rem;font-weight:700;margin-bottom:5px;opacity:.9">${catDone}/${catTotal} done</div>
+      <div style="height:5px;background:rgba(255,255,255,.3);border-radius:50px;overflow:hidden">
+        <div style="height:100%;width:${catPct}%;background:#fff;border-radius:50px;transition:width .6s"></div>
+      </div>
+      ${catDone===catTotal?'<div style="position:absolute;top:10px;right:10px;font-size:1.3rem">✅</div>':'<div style="position:absolute;top:10px;right:10px;font-size:.85rem;opacity:.7;font-weight:700">›</div>'}
+    </div>`;
+  }).join('');
+
+  const celebrationBanner = allDone ? `
+    <div style="background:linear-gradient(135deg,#ffb830,#ff8c00);border-radius:16px;padding:14px 16px;margin-bottom:16px;text-align:center;color:#fff">
+      <div style="font-size:2rem">🏆</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800">All 47 Topics Complete!</div>
+      <div style="font-size:.75rem;opacity:.9;margin-top:4px">What an incredible journey! Ready to revisit?</div>
+    </div>` : '';
+
+  return `
+  <div class="dta-card">
+    <div class="dta-title" style="margin-bottom:4px">📚 Teaching Activities</div>
+    <div style="font-size:.74rem;color:var(--text3);margin-bottom:12px">Pick a category based on her mood today 👇</div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="font-size:.74rem;color:var(--text3);font-weight:600">Overall progress</div>
+      <div style="font-size:.74rem;color:var(--green);font-weight:700">${done}/${total} topics · ${pct}% 🌟</div>
+    </div>
+    <div class="dta-prog-bar" style="margin-bottom:18px"><div class="dta-prog-fill" style="width:${pct}%"></div></div>
+
+    ${celebrationBanner}
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      ${catCards}
+    </div>
+
+    <button onclick="dtaRestart()" style="width:100%;background:transparent;border:1.5px solid var(--border);border-radius:50px;padding:8px 18px;font-family:'Baloo 2',cursive;font-size:.72rem;color:var(--text3);cursor:pointer;margin-top:4px">🔄 Reset All Progress</button>
+  </div>`;
+}
+
+// ── SCREEN 2: Topic List inside a Category ──
+function renderDtaCategoryTopics(state){
+  const cat=DTA_CATEGORIES.find(c=>c.id===state.selectedCategory);
+  if(!cat) return renderDtaCategories(state);
+
+  const topics=cat.ids.map(id=>DTA_ACTIVITIES.find(a=>a.id===id)).filter(Boolean);
+  const catDone=cat.ids.filter(id=>state.completedIds.includes(id)).length;
+
+  const topicItems=topics.map(act=>{
+    const isDone=state.completedIds.includes(act.id);
+    return `
+    <div onclick="dtaNavTo('detail','${cat.id}','${act.id}')"
+      style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;
+      background:${isDone?'linear-gradient(135deg,#e8fff0,#d4f5ea)':'var(--inputbg)'};
+      border:2px solid ${isDone?'#52b788':'var(--border)'};
+      cursor:pointer;margin-bottom:8px;transition:all .18s;"
+      onmouseover="this.style.transform='translateX(4px)'"
+      onmouseout="this.style.transform='translateX(0)'">
+      <span style="font-size:1.5rem;flex-shrink:0">${act.icon}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Baloo 2',cursive;font-size:.84rem;font-weight:800;color:var(--text)">${act.name}</div>
+        <div style="font-size:.68rem;color:var(--text3);margin-top:2px;line-height:1.3">${act.desc}</div>
+      </div>
+      <div style="flex-shrink:0;text-align:right">
+        ${isDone
+          ? '<span style="font-size:1.2rem">✅</span>'
+          : '<span style="font-size:.78rem;font-weight:700;color:var(--green);background:linear-gradient(135deg,#e8fff0,#d4f5ea);padding:4px 10px;border-radius:50px">Teach →</span>'
+        }
       </div>
     </div>`;
-  }
+  }).join('');
 
-  const act = DTA_ACTIVITIES[state.currentIndex];
-  if(!act) return '';
-  const isDoneToday = state.completedIds.includes(act.id);
-  const nextAct = DTA_ACTIVITIES[state.currentIndex+1];
+  return `
+  <div class="dta-card">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+      <button onclick="dtaNavTo('categories')"
+        style="background:var(--inputbg);border:1.5px solid var(--border);border-radius:50%;width:34px;height:34px;
+        cursor:pointer;font-size:1.1rem;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)">←</button>
+      <div>
+        <div style="font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800;color:var(--text)">${cat.icon} ${cat.name}</div>
+        <div style="font-size:.68rem;color:var(--text3)">${catDone} of ${cat.ids.length} topics done</div>
+      </div>
+    </div>
+    <div style="height:4px;background:var(--border);border-radius:50px;overflow:hidden;margin-bottom:16px">
+      <div style="height:100%;width:${Math.round((catDone/cat.ids.length)*100)}%;background:${cat.color.includes('ff6b9d')?'#ff6b9d':cat.color.includes('4ecdc4')?'#4ecdc4':cat.color.includes('ffb830')?'#ffb830':cat.color.includes('a78bfa')?'#a78bfa':'#52b788'};border-radius:50px;transition:width .5s"></div>
+    </div>
+    <div style="font-size:.72rem;color:var(--text3);margin-bottom:12px;font-style:italic">Tap a topic to start teaching 👇</div>
+    ${topicItems}
+  </div>`;
+}
 
-  const stepsHTML = act.steps.map((s,i)=>`
+// ── SCREEN 3: Full Topic Detail ──
+function renderDtaDetail(state){
+  const act=DTA_ACTIVITIES.find(a=>a.id===state.selectedTopicId);
+  if(!act) return renderDtaCategories(state);
+  const cat=DTA_CATEGORIES.find(c=>c.ids.includes(act.id));
+  const isDone=state.completedIds.includes(act.id);
+
+  const stepsHTML=act.steps.map((s,i)=>`
     <div class="dta-step">
       <div class="dta-step-num">${i+1}</div>
       <div class="dta-step-text">${s}</div>
     </div>`).join('');
 
-  const doneBanner = isDoneToday ? `
+  const doneBanner=isDone?`
     <div class="dta-completed-banner">
       <span class="cb-icon">✅</span>
-      <div class="cb-title">Activity done! Great teaching today!</div>
-      <div class="cb-sub">Come back tomorrow for the next activity. You're building something amazing! 🌟</div>
-    </div>` : '';
+      <div class="cb-title">Topic done! Great teaching! 🌟</div>
+      <div class="cb-sub">You can always come back and revisit this topic anytime.</div>
+    </div>`:'';
 
-  const nextPreview = nextAct && !isDoneToday ? `
-    <div class="dta-next-preview">
-      <span style="font-size:1.4rem">${nextAct.icon}</span>
-      <div>
-        <div class="dta-next-label">Up Next</div>
-        <div class="dta-next-name">${nextAct.name}</div>
-      </div>
-    </div>` : '';
-
-  const doneBtn = isDoneToday ?
-    `<button class="dta-done-btn completed" disabled>✅ Done for today! See you tomorrow 👋</button>` :
-    `<button class="dta-done-btn" onclick="dtaMarkDone()">✅ We Did It! Mark as Done 🌟</button>`;
+  const doneBtn=isDone
+    ?`<button class="dta-done-btn completed" disabled>✅ Already Completed! 🌟</button>`
+    :`<button class="dta-done-btn" onclick="dtaMarkDone()">✅ We Did It! Mark as Done 🌟</button>`;
 
   return `
   <div class="dta-card">
-    <div class="dta-title">
-      📚 Daily Teaching Activity
-      <span class="dta-badge">Activity ${state.currentIndex+1} of ${totalActs}</span>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <button onclick="dtaNavTo('topics','${cat?cat.id:''}')"
+        style="background:var(--inputbg);border:1.5px solid var(--border);border-radius:50%;width:34px;height:34px;
+        cursor:pointer;font-size:1.1rem;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)">←</button>
+      <div style="font-size:.7rem;color:var(--text3);font-weight:700">${cat?cat.icon+' '+cat.name:''}</div>
     </div>
-
-    <!-- Progress bar -->
-    <div class="dta-progress-row">
-      <div class="dta-prog-bar"><div class="dta-prog-fill" style="width:${pct}%"></div></div>
-      <div class="dta-prog-label">${completed}/${totalActs} done</div>
-    </div>
-
-    <!-- Activity box -->
     <div class="dta-activity-box">
       <span class="dta-act-icon">${act.icon}</span>
       <div class="dta-act-name">${act.name}</div>
       <div class="dta-act-desc">${act.desc}</div>
-
-      <div style="font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:800;color:var(--j2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">
-        📋 How to teach it:
-      </div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:800;color:var(--j2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">📋 How to teach it:</div>
       <div class="dta-steps">${stepsHTML}</div>
-
       <div class="dta-say-box">
         <div class="dta-say-label">💬 Say:</div>
         <div class="dta-say-text">${act.say}</div>
       </div>
-
       <div style="background:linear-gradient(135deg,#f0e8ff,#e8f0ff);border-radius:10px;padding:9px 12px;margin-bottom:12px;display:flex;gap:8px;align-items:flex-start;">
         <span style="font-size:1rem;flex-shrink:0">💡</span>
         <div style="font-size:.76rem;color:#4a4080;font-weight:600;line-height:1.5">${act.tip}</div>
       </div>
-
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;font-size:.74rem;color:var(--text3);font-family:'Baloo 2',cursive;font-weight:700;">
-        <span style="font-size:1rem">⭐</span> +${act.stars} stars when you mark done
+        <span>⭐</span> +${act.stars} stars when you mark done
       </div>
-
       ${doneBanner}
       ${doneBtn}
-      ${nextPreview}
     </div>
   </div>`;
 }
 
-function dtaMarkDone(){
-  const state = dtaLoad();
-  const act = DTA_ACTIVITIES[state.currentIndex];
-  if(!act || state.completedIds.includes(act.id)) return;
+// ── Main render entry ──
+function renderDtaCard(){
+  const state=dtaLoad();
+  if(state.view==='topics'&&state.selectedCategory) return renderDtaCategoryTopics(state);
+  if(state.view==='detail'&&state.selectedTopicId) return renderDtaDetail(state);
+  return renderDtaCategories(state);
+}
 
-  // Mark done
+function dtaMarkDone(){
+  const state=dtaLoad();
+  const act=DTA_ACTIVITIES.find(a=>a.id===state.selectedTopicId);
+  if(!act||state.completedIds.includes(act.id)) return;
+
   state.completedIds.push(act.id);
-  state.completedDates[act.id] = new Date().toISOString();
-  // Advance to next
-  if(state.currentIndex < DTA_ACTIVITIES.length-1) state.currentIndex++;
+  state.completedDates[act.id]=new Date().toISOString();
   dtaSave(state);
 
-  // Award stars
-  const s = act.stars||3;
+  const s=act.stars||3;
   stars+=s; totalStarsEver+=s;
   localStorage.setItem('cs_'+todayKey(),stars);
   localStorage.setItem('c_total_stars',totalStarsEver);
@@ -18214,19 +18346,18 @@ function dtaMarkDone(){
 
   if(typeof playStar==='function')playStar();
   if(typeof burst==='function')burst();
-  if(typeof showToast==='function')showToast('🌟 Activity done! +'+s+' stars!');
+  if(typeof showToast==='function')showToast('🌟 '+act.name+' done! +'+s+' stars!');
   if(typeof mascotSay==='function')mascotSay('Amazing teaching! +'+s+' stars! 🌟',3000);
   if(typeof showSpill==='function')showSpill();
 
-  // Refresh dashboard
   renderParentDash();
 }
 
 function dtaRestart(){
-  if(!confirm('This will reset all activity progress and start from Activity 1. Continue?')) return;
-  dtaSave({currentIndex:0, completedIds:[], completedDates:{}});
+  if(!confirm('Reset all teaching progress? This cannot be undone.')) return;
+  dtaSave({view:'categories',selectedCategory:null,selectedTopicId:null,completedIds:[],completedDates:{}});
   renderParentDash();
-  if(typeof showToast==='function') showToast('🔄 Programme restarted — let\'s go!');
+  if(typeof showToast==='function') showToast('🔄 Teaching progress reset!');
 }
 
 // ── Main render entry (called from renderParentDash) ──
