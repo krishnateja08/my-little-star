@@ -2887,6 +2887,7 @@ body.bedtime .streak-bar{background:linear-gradient(135deg,#1b2a00,#2a1800);colo
     <div class="pin-error" id="pinError"></div>
     <div class="pin-setup-hint" id="pinSetupHint"></div>
     <button onclick="closePinOverlay()" style="margin-top:12px;background:transparent;border:none;color:var(--text3);font-family:'Baloo 2',cursive;font-size:.8rem;cursor:pointer">✕ Cancel</button>
+    <button id="forgotPinBtn" onclick="resetPinCode()" style="margin-top:6px;background:transparent;border:none;color:var(--text4);font-family:'Nunito',sans-serif;font-size:.72rem;cursor:pointer;text-decoration:underline">Forgot PIN?</button>
   </div>
 </div>
 
@@ -18320,8 +18321,17 @@ function showPinOverlay(title,sub){
   document.getElementById('pinSubtitle').textContent=sub;
   document.getElementById('pinError').textContent='';
   document.getElementById('pinSetupHint').textContent=_pinMode==='setup'?'Choose any 4 numbers you will remember — e.g. your birthday!':'';
+  const forgotBtn=document.getElementById('forgotPinBtn');
+  if(forgotBtn)forgotBtn.style.display=_pinMode==='check'?'block':'none';
   updatePinDots();
   document.getElementById('pinOverlay').style.display='flex';
+}
+function resetPinCode(){
+  if(confirm('This will clear your PIN and let you set a new one. Continue?')){
+    localStorage.removeItem(PARENT_PIN_KEY);
+    _pinMode='setup';_pinEntry='';
+    showPinOverlay('🔐 Create a new PIN','Set a 4-digit PIN to protect the Parent area');
+  }
 }
 function closePinOverlay(){document.getElementById('pinOverlay').style.display='none';_pinEntry='';}
 function updatePinDots(){
