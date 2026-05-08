@@ -2533,19 +2533,6 @@ body.bedtime .streak-bar{background:linear-gradient(135deg,#1b2a00,#2a1800);colo
 .hint-card .hc-close{background:linear-gradient(135deg,#52b788,#4ecdc4);border:none;border-radius:50px;
   padding:10px 24px;font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:#fff;cursor:pointer;}
 
-/* PWA install banner */
-.pwa-banner{display:none;position:fixed;bottom:72px;left:12px;right:12px;z-index:800;
-  background:linear-gradient(135deg,#1b4332,#2d6a4f);border-radius:16px;padding:12px 16px;
-  box-shadow:0 8px 28px rgba(27,67,50,.4);display:flex;align-items:center;gap:12px;}
-.pwa-banner.show{display:flex;}
-.pwa-banner .pb-icon{font-size:2rem;flex-shrink:0;}
-.pwa-banner .pb-body{flex:1;}
-.pwa-banner .pb-title{font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:#fff;}
-.pwa-banner .pb-sub{font-size:.72rem;color:rgba(255,255,255,.75);margin-top:2px;}
-.pwa-banner .pb-btn{background:#fff;border:none;border-radius:50px;padding:8px 16px;
-  font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:800;color:#1b4332;cursor:pointer;flex-shrink:0;}
-.pwa-banner .pb-x{background:transparent;border:none;color:rgba(255,255,255,.6);
-  font-size:1.2rem;cursor:pointer;flex-shrink:0;padding:4px;}
 
 /* PIN overlay */
 .pin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;
@@ -2871,15 +2858,6 @@ body.bedtime .streak-bar{background:linear-gradient(135deg,#1b2a00,#2a1800);colo
 <div id="gateOverlay"></div>
 
 <!-- PWA Install Banner -->
-<div class="pwa-banner" id="pwaBanner">
-  <div class="pb-icon">⭐</div>
-  <div class="pb-body">
-    <div class="pb-title">Add to Home Screen!</div>
-    <div class="pb-sub">Play anytime — works like a real app!</div>
-  </div>
-  <button class="pb-btn" onclick="installPwa()">Install</button>
-  <button class="pb-x" onclick="dismissPwa()">✕</button>
-</div>
 
 <!-- PIN overlay -->
 <div class="pin-overlay" id="pinOverlay" style="display:none">
@@ -2893,7 +2871,18 @@ body.bedtime .streak-bar{background:linear-gradient(135deg,#1b2a00,#2a1800);colo
       <div class="pin-dot" id="pd3"></div>
     </div>
     <div class="pin-grid">
-      ${[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k=>`<button class="pin-key" onclick="pinTap('${k}')">${k}</button>`).join('')}
+      <button class="pin-key" onclick="pinTap(1)">1</button>
+      <button class="pin-key" onclick="pinTap(2)">2</button>
+      <button class="pin-key" onclick="pinTap(3)">3</button>
+      <button class="pin-key" onclick="pinTap(4)">4</button>
+      <button class="pin-key" onclick="pinTap(5)">5</button>
+      <button class="pin-key" onclick="pinTap(6)">6</button>
+      <button class="pin-key" onclick="pinTap(7)">7</button>
+      <button class="pin-key" onclick="pinTap(8)">8</button>
+      <button class="pin-key" onclick="pinTap(9)">9</button>
+      <button class="pin-key" onclick="pinTap('')" style="visibility:hidden"></button>
+      <button class="pin-key" onclick="pinTap(0)">0</button>
+      <button class="pin-key" onclick="pinTap('⌫')">⌫</button>
     </div>
     <div class="pin-error" id="pinError"></div>
     <div class="pin-setup-hint" id="pinSetupHint"></div>
@@ -10011,10 +10000,7 @@ function renderParentDash(){
             <span class="psi-icon">🔐</span>
             <div class="psi-body"><div class="psi-lbl">Change PIN</div><div class="psi-val">${localStorage.getItem('c_parent_pin')?'PIN is set':'No PIN yet'}</div></div>
           </div>
-          <div class="pd-set-item" onclick="installPwa()">
-            <span class="psi-icon">📱</span>
-            <div class="psi-body"><div class="psi-lbl">Add to Home Screen</div><div class="psi-val">Install as app</div></div>
-          </div>
+
           <div class="pd-set-item" onclick="changeFamilyCode()">
             <span class="psi-icon">👤</span>
             <div class="psi-body"><div class="psi-lbl">Account</div><div class="psi-val">${_currentUser?(_currentUser.email||'Signed in'):'Not signed in'}</div></div>
@@ -18479,26 +18465,6 @@ function exportReadableReport(){
   document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
   showToast('📄 Report downloaded!');
 }
-
-// ══════════════════════════════════════
-//  📱 PWA INSTALL PROMPT
-// ══════════════════════════════════════
-let _pwaPrompt=null;
-window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault();_pwaPrompt=e;
-  const banner=document.getElementById('pwaBanner');
-  if(banner&&!localStorage.getItem('pwa_dismissed'))banner.classList.add('show');
-});
-function installPwa(){
-  if(_pwaPrompt){_pwaPrompt.prompt();_pwaPrompt.userChoice.then(()=>{_pwaPrompt=null;dismissPwa();});}
-  else{alert('To install:\n📱 iPhone: tap Share → "Add to Home Screen"\n🤖 Android: tap menu (⋮) → "Add to Home Screen"');}
-}
-function dismissPwa(){
-  localStorage.setItem('pwa_dismissed','1');
-  const banner=document.getElementById('pwaBanner');
-  if(banner)banner.classList.remove('show');
-}
-window.addEventListener('appinstalled',()=>{dismissPwa();showToast('🎉 App installed! Find it on your home screen!');});
 
 </script>
 </body>
