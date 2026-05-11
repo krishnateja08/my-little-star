@@ -18884,7 +18884,7 @@ function removeMission(id){toggleMission(id,'','');}
   }
 
   function checkAnswer(chosen, btn){
-    // Disable all buttons while animating
+    // Disable ALL buttons immediately — only 1 attempt allowed
     document.querySelectorAll('.mqChoice').forEach(b=>b.style.pointerEvents='none');
     if(chosen===_correctAnswer){
       btn.classList.add('correct');
@@ -18897,16 +18897,15 @@ function removeMission(id){toggleMission(id,'','');}
         _pendingCallback=null;
       },900);
     } else {
+      // WRONG — 1 chance only. Show error, close popup, NO stars.
       btn.classList.add('wrong');
-      _attempts++;
       const fb=document.getElementById('mqFeedback');
-      const msgs=['❌ Not quite — try again!','🤔 Hmm, think again!','💪 You can do it!'];
-      fb.textContent=msgs[Math.min(_attempts-1,msgs.length-1)];
+      fb.textContent='❌ Oops! Go back and learn more first!';
       fb.className='mqFeedback no';
+      _pendingCallback=null; // discard the callback — no stars awarded
       setTimeout(()=>{
-        btn.classList.remove('wrong');
-        document.querySelectorAll('.mqChoice').forEach(b=>b.style.pointerEvents='');
-      },600);
+        closeQuiz();
+      },1200);
     }
   }
 
