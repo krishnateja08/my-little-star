@@ -74,6 +74,41 @@ header h1{font-family:'Baloo 2',cursive;font-size:1.7rem;color:#fff;text-shadow:
   display:flex;align-items:center;justify-content:center;z-index:10;transition:all .2s;color:#fff;}
 .bedtime-toggle:active{transform:scale(.9);}
 
+/* ══════════════════════════════════════════════
+   MATH QUIZ GATE — prevents skipping learning
+══════════════════════════════════════════════ */
+#mathQuizOverlay{
+  position:fixed;inset:0;background:rgba(10,30,20,.82);z-index:99999;
+  display:none;align-items:center;justify-content:center;padding:20px;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+#mathQuizOverlay.open{display:flex;}
+.mqBox{
+  background:#fff;border-radius:28px;padding:30px 24px 26px;max-width:360px;width:100%;
+  text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35);
+  animation:mqPop .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes mqPop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.mqTitle{font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;color:#1b4332;margin-bottom:4px;}
+.mqSub{font-size:.78rem;color:#6b9e85;margin-bottom:22px;}
+.mqQuestion{
+  background:linear-gradient(135deg,#1b4332,#52b788);
+  border-radius:20px;padding:20px;margin-bottom:20px;}
+.mqQText{font-family:'Baloo 2',cursive;font-size:2.2rem;font-weight:800;color:#fff;line-height:1.2;}
+.mqChoices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.mqChoice{
+  background:#f0faf4;border:2.5px solid #d4ede0;border-radius:16px;
+  padding:14px 10px;font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;
+  color:#1b4332;cursor:pointer;transition:all .15s;user-select:none;}
+.mqChoice:active{transform:scale(.94);}
+.mqChoice.correct{background:linear-gradient(135deg,#52b788,#4ecdc4);border-color:#52b788;color:#fff;animation:mqCorrect .4s ease;}
+.mqChoice.wrong{background:linear-gradient(135deg,#ff6b9d,#ff8c69);border-color:#ff6b9d;color:#fff;animation:mqShake .4s ease;}
+@keyframes mqCorrect{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes mqShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.mqFeedback{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;min-height:28px;margin-bottom:4px;}
+.mqFeedback.ok{color:#52b788;}
+.mqFeedback.no{color:#ff6b9d;}
+body.bedtime .mqBox{background:#222244;}.body.bedtime .mqQText{color:#fff;}
+body.bedtime .mqChoice{background:#333366;border-color:#554477;color:#e0d4ff;}
+
 /* HIDE the old top tabs — replaced by bottom nav */
 .tabs{display:none !important;}
 
@@ -18793,6 +18828,109 @@ function toggleMission(id,emoji,title){
   saveMissions(missions);renderMissionPicker();
 }
 function removeMission(id){toggleMission(id,'','');}
+
+// ══════════════════════════════════════
+//  🧮 MATH QUIZ GATE
+//  Intercepts markDone & markGameDone so
+//  your daughter must answer a simple
+//  addition before earning stars.
+// ══════════════════════════════════════
+(function(){
+  /* ── Inject overlay HTML ── */
+  const overlay=document.createElement('div');
+  overlay.id='mathQuizOverlay';
+  overlay.innerHTML=`
+    <div class="mqBox">
+      <div class="mqTitle">🧮 Quick Maths Check!</div>
+      <div class="mqSub">Answer to get your stars! ⭐</div>
+      <div class="mqQuestion">
+        <div class="mqQText" id="mqQText">? + ? = ?</div>
+      </div>
+      <div class="mqChoices" id="mqChoices"></div>
+      <div class="mqFeedback" id="mqFeedback"></div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  let _pendingCallback=null;
+  let _correctAnswer=0;
+  let _attempts=0;
+
+  /* ── Generate a random single-digit addition ── */
+  function newQuestion(){
+    const a=Math.floor(Math.random()*9)+1;   // 1-9
+    const b=Math.floor(Math.random()*9)+1;   // 1-9
+    _correctAnswer=a+b;
+    document.getElementById('mqQText').textContent=a+' + '+b+' = ?';
+    // Build 4 choices: correct + 3 wrong (unique, reasonable)
+    const choices=new Set([_correctAnswer]);
+    while(choices.size<4){
+      const wrong=_correctAnswer+Math.floor(Math.random()*7)-3;
+      if(wrong>0&&wrong!==_correctAnswer)choices.add(wrong);
+    }
+    // Shuffle
+    const arr=[...choices].sort(()=>Math.random()-.5);
+    const box=document.getElementById('mqChoices');
+    box.innerHTML='';
+    arr.forEach(n=>{
+      const btn=document.createElement('button');
+      btn.className='mqChoice';
+      btn.textContent=n;
+      btn.onclick=()=>checkAnswer(n,btn);
+      box.appendChild(btn);
+    });
+    document.getElementById('mqFeedback').textContent='';
+    document.getElementById('mqFeedback').className='mqFeedback';
+    _attempts=0;
+  }
+
+  function checkAnswer(chosen, btn){
+    // Disable all buttons while animating
+    document.querySelectorAll('.mqChoice').forEach(b=>b.style.pointerEvents='none');
+    if(chosen===_correctAnswer){
+      btn.classList.add('correct');
+      const fb=document.getElementById('mqFeedback');
+      fb.textContent='🎉 Brilliant! Here are your stars!';
+      fb.className='mqFeedback ok';
+      setTimeout(()=>{
+        closeQuiz();
+        if(_pendingCallback)_pendingCallback();
+        _pendingCallback=null;
+      },900);
+    } else {
+      btn.classList.add('wrong');
+      _attempts++;
+      const fb=document.getElementById('mqFeedback');
+      const msgs=['❌ Not quite — try again!','🤔 Hmm, think again!','💪 You can do it!'];
+      fb.textContent=msgs[Math.min(_attempts-1,msgs.length-1)];
+      fb.className='mqFeedback no';
+      setTimeout(()=>{
+        btn.classList.remove('wrong');
+        document.querySelectorAll('.mqChoice').forEach(b=>b.style.pointerEvents='');
+      },600);
+    }
+  }
+
+  function openQuiz(callback){
+    _pendingCallback=callback;
+    newQuestion();
+    document.getElementById('mathQuizOverlay').classList.add('open');
+  }
+  function closeQuiz(){
+    document.getElementById('mathQuizOverlay').classList.remove('open');
+  }
+
+  /* ── Wrap markDone ── */
+  const _origMarkDone=window.markDone;
+  window.markDone=function(){
+    openQuiz(()=>_origMarkDone.call(window));
+  };
+
+  /* ── Wrap markGameDone ── */
+  const _origMarkGameDone=window.markGameDone;
+  window.markGameDone=function(sc){
+    openQuiz(()=>_origMarkGameDone.call(window,sc));
+  };
+})();
 
 // ══════════════════════════════════════
 //  ⚙️ DIFFICULTY OVERRIDE
