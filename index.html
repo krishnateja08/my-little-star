@@ -15120,7 +15120,27 @@ function nextMtRound(){
       <div class="game-feedback" id="gfb"></div>
     </div>`;
   window._mtShown=shown;window._mtCount=count;window._mtFound=0;
+  // Show countdown under the items so the child knows how long she has
+  const mtShowMs=5000;
+  let mtSecsLeft=Math.round(mtShowMs/1000);
+  const mtCountEl=document.createElement('div');
+  mtCountEl.id='mtCountdown';
+  mtCountEl.style.cssText='text-align:center;font-family:\'Baloo 2\',cursive;font-size:.85rem;font-weight:800;color:#52b788;margin-top:4px;letter-spacing:.3px;';
+  mtCountEl.textContent='⏳ Memorise! '+mtSecsLeft+'s';
+  const mtShowEl=document.getElementById('mtShow');
+  if(mtShowEl)mtShowEl.after(mtCountEl);
+  const mtTick=setInterval(()=>{
+    mtSecsLeft--;
+    const el=document.getElementById('mtCountdown');
+    if(el){
+      if(mtSecsLeft>0){el.textContent='⏳ Memorise! '+mtSecsLeft+'s';}
+      else{el.textContent='🔦 Now remember!';}
+    }
+    if(mtSecsLeft<=0)clearInterval(mtTick);
+  },1000);
   setTimeout(()=>{
+    clearInterval(mtTick);
+    const cd=document.getElementById('mtCountdown');if(cd)cd.remove();
     document.getElementById('mtShow').style.display='none';
     document.getElementById('mtCover').style.display='block';
     setTimeout(()=>{
@@ -15131,7 +15151,7 @@ function nextMtRound(){
         style="height:56px;border-radius:12px;background:var(--inputbg);border:2.5px solid var(--border);
         display:flex;align-items:center;justify-content:center;font-size:1.8rem;cursor:pointer;transition:all .15s">${e}</div>`).join('');
     },600);
-  },2000);
+  },mtShowMs);
 }
 function tapMt(el,item){
   if(el.style.pointerEvents==='none')return;
