@@ -4378,6 +4378,17 @@ const GAMES = window.GAMES = [
 // ══════════════════════════════════════
 function todayKey(){const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;}
 function autoTime(){const h=new Date().getHours();return h<12?'morning':h<17?'learning':'evening';}
+function getJourneyTotals(){
+  // Journey always ends Dec 31 of the current year
+  let s=localStorage.getItem('cs');
+  if(!s) s=todayKey();
+  const [sy,sm,sd]=s.split('-').map(Number);
+  const startDate=new Date(sy,sm-1,sd);
+  const endDate=new Date(2025,11,31); // Dec 31, 2025
+  const totalDays=Math.max(60,Math.floor((endDate-startDate)/(864e5))+1);
+  const totalWeeks=Math.ceil(totalDays/7);
+  return {totalDays,totalWeeks};
+}
 function getWeek(){
   let s=localStorage.getItem('cs');
   // If 'cs' is missing (new device), use today as a TEMPORARY fallback only.
@@ -4386,7 +4397,8 @@ function getWeek(){
   if(!s) s=todayKey();
   const [y,m,d]=s.split('-').map(Number);
   const diff=Math.floor((new Date()-new Date(y,m-1,d))/(864e5));
-  return {week:Math.min(Math.floor(diff/7)+1,8),day:diff+1};
+  const {totalWeeks}=getJourneyTotals();
+  return {week:Math.min(Math.floor(diff/7)+1,totalWeeks),day:diff+1};
 }
 
 let {week,day}=getWeek();
@@ -10388,7 +10400,7 @@ function switchToNext(){
   switchTab(o[(o.indexOf(tab)+1)%o.length]);
 }
 function parentReset(){
-  if(!confirm('Reset the full 60-day journey? All progress will be cleared.'))return;
+  if(!confirm('Reset the full journey? All progress will be cleared.'))return;
   localStorage.removeItem('c_allused');localStorage.removeItem('cd_'+todayKey());
   localStorage.removeItem('cs_'+todayKey());localStorage.removeItem('cws');
   localStorage.removeItem('cs');localStorage.removeItem('cld');
@@ -11332,7 +11344,8 @@ function burst(){
 }
 function setupHeader(){
   const {week:w,day:d}=getWeek();
-  document.getElementById('dbadge').textContent=`Day ${Math.min(d,60)} of 60 · Week ${w} of 8`;
+  const {totalDays,totalWeeks}=getJourneyTotals();
+  document.getElementById('dbadge').textContent=`Day ${Math.min(d,totalDays)} of ${totalDays} · Week ${w} of ${totalWeeks}`;
   // Show child name in header if set
   const h1=document.querySelector('header h1');
   if(h1&&childName)h1.textContent=childName+' ⭐';
@@ -12087,7 +12100,7 @@ function closeFeelings(){
 // ══════════════════════════════════════
 function renderStarPath(){
   const {day:d}=getWeek();
-  const totalDays=60;
+  const {totalDays}=getJourneyTotals();
   const ws=JSON.parse(localStorage.getItem('cws')||'{}');
   let html='<div class="star-path-inner">';
   for(let i=1;i<=Math.min(d+3,totalDays);i++){
