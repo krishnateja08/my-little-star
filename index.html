@@ -141,10 +141,21 @@ body.bedtime .mqChoice{background:#333366;border-color:#554477;color:#e0d4ff;}
 .wrStreak{display:inline-block;background:linear-gradient(135deg,#ffb830,#ff8c69);
   border-radius:50px;padding:4px 16px;font-family:'Baloo 2',cursive;font-size:.78rem;
   font-weight:800;color:#fff;margin-bottom:14px;}
+/* Interval picker */
+.wrIntervalRow{margin-top:16px;border-top:1.5px solid #e0f0e8;padding-top:14px;}
+.wrIntervalLabel{font-size:.72rem;font-weight:700;color:#95c4aa;margin-bottom:8px;letter-spacing:.3px;text-transform:uppercase;}
+.wrIntervalBtns{display:flex;gap:8px;justify-content:center;}
+.wrIBtn{flex:1;padding:9px 4px;border:2px solid #d4ede0;border-radius:12px;
+  background:#f0faf4;font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:800;
+  color:#3d6b56;cursor:pointer;transition:all .15s;}
+.wrIBtn.active{background:linear-gradient(135deg,#1b4332,#52b788);border-color:transparent;color:#fff;}
+.wrIBtn:active{transform:scale(.94);}
 body.bedtime .wrBox{background:#222244;}
 body.bedtime .wrTitle{color:#e0d4ff;}
 body.bedtime .wrMsg{color:#b8a9d4;}
 body.bedtime .wrLaterBtn{background:#333366;color:#b8a9d4;}
+body.bedtime .wrIntervalRow{border-color:#333355;}
+body.bedtime .wrIBtn{background:#333366;border-color:#554477;color:#b8a9d4;}
 
 /* HIDE the old top tabs — replaced by bottom nav */
 .tabs{display:none !important;}
@@ -895,7 +906,47 @@ body.bedtime .btt-bar{background:#333355;}
 .sp[data-s="body"].active     {background:linear-gradient(135deg,#ff8c69,#ffb830);}
 .sp[data-s="read"].active     {background:linear-gradient(135deg,#a78bfa,#ff6b9d);}
 .sp[data-s="gita"].active     {background:linear-gradient(135deg,#ff8c00,#ffb830);}
+.sp[data-s="quiz"].active     {background:linear-gradient(135deg,#a78bfa,#4ecdc4);}
 
+
+/* u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550
+   U0001F9E0 QUIZ ZONE OVERLAY
+u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550u2550 */
+#quizOverlay{position:fixed;inset:0;background:rgba(10,20,50,.82);z-index:99997;display:none;align-items:flex-start;justify-content:center;padding:14px;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);overflow-y:auto;}
+#quizOverlay.open{display:flex;}
+.qzBox{background:#fff;border-radius:28px;padding:22px 18px 20px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35);animation:qzPop .35s cubic-bezier(.34,1.56,.64,1);margin:auto;}
+@keyframes qzPop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.qzCatTitle{font-family:'Baloo 2',cursive;font-size:1.15rem;font-weight:800;color:#1b4332;margin-bottom:4px;}
+.qzCatSub{font-size:.78rem;color:#6b9e85;margin-bottom:16px;}
+.qzCatGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.qzCatBtn{border:none;border-radius:18px;padding:14px 10px;cursor:pointer;font-family:'Baloo 2',cursive;font-size:.92rem;font-weight:800;color:#fff;display:flex;flex-direction:column;align-items:center;gap:4px;transition:transform .15s;box-shadow:0 4px 12px rgba(0,0,0,.18);}
+.qzCatBtn span.qzIcon{font-size:1.8rem;line-height:1;}
+.qzCatBtn:active{transform:scale(.94);}
+.qzProgress{font-size:.72rem;color:#95c4aa;font-weight:700;margin-bottom:8px;letter-spacing:.3px;}
+.qzQuestion{background:linear-gradient(135deg,#1b4332,#52b788);border-radius:20px;padding:18px 14px;margin-bottom:16px;}
+.qzQText{font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:#fff;line-height:1.3;}
+.qzChoices{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;}
+.qzChoice{background:#f0faf4;border:2.5px solid #d4ede0;border-radius:14px;padding:12px 8px;font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:800;color:#1b4332;cursor:pointer;transition:all .15s;user-select:none;}
+.qzChoice:active{transform:scale(.94);}
+.qzChoice.correct{background:linear-gradient(135deg,#52b788,#4ecdc4);border-color:#52b788;color:#fff;animation:qzCorrect .4s ease;}
+.qzChoice.wrong{background:linear-gradient(135deg,#ff6b9d,#ff8c69);border-color:#ff6b9d;color:#fff;animation:qzShake .4s ease;}
+@keyframes qzCorrect{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes qzShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.qzFact{font-size:.78rem;color:#3d6b56;background:#e8f5ee;border-radius:10px;padding:8px 10px;margin-bottom:10px;line-height:1.4;min-height:32px;text-align:left;}
+.qzNextBtn{display:block;width:100%;padding:13px;border:none;border-radius:16px;cursor:pointer;background:linear-gradient(135deg,#1b4332,#52b788);font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:#fff;margin-bottom:10px;}
+.qzNextBtn:active{transform:scale(.96);}
+.qzCloseBtn{display:block;width:100%;padding:10px;border:none;border-radius:14px;cursor:pointer;background:#f0faf4;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:700;color:#6b9e85;}
+.qzScoreEmoji{font-size:3.5rem;margin-bottom:6px;}
+.qzScoreTitle{font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:#1b4332;margin-bottom:6px;}
+.qzScoreStars{font-family:'Baloo 2',cursive;font-size:1.6rem;font-weight:800;color:#ffb830;margin-bottom:10px;}
+.qzScoreSub{font-size:.82rem;color:#6b9e85;margin-bottom:18px;}
+.qzPlayAgain{display:block;width:100%;padding:14px;border:none;border-radius:18px;cursor:pointer;background:linear-gradient(135deg,#a78bfa,#4ecdc4);font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:800;color:#fff;margin-bottom:10px;}
+body.bedtime .qzBox{background:#222244;}
+body.bedtime .qzCatTitle{color:#e0d4ff;}
+body.bedtime .qzCatSub{color:#b8a9d4;}
+body.bedtime .qzChoice{background:#333366;border-color:#554477;color:#e0d4ff;}
+body.bedtime .qzFact{background:#1e1e3a;color:#b8a9d4;}
+body.bedtime .qzCloseBtn{background:#333366;color:#b8a9d4;}
 /* PROGRESS */
 .prog{background:var(--cardbg);border-radius:var(--r);padding:11px 15px;
   margin:10px 12px 0;box-shadow:0 4px 14px var(--shadow2);display:flex;align-items:center;gap:10px;}
@@ -2862,6 +2913,7 @@ body.bedtime .streak-bar{background:linear-gradient(135deg,#1b2a00,#2a1800);colo
       <button class="sp" data-s="think" onclick="switchSubj('think')">&#x1F9E9; Think</button>
       <button class="sp" data-s="read" onclick="switchSubj('read')">&#x1F4D6; Read</button>
       <button class="sp" data-s="gita" onclick="switchSubj('gita')">&#x1FA94; Gita</button>
+      <button class="sp" data-s="quiz" onclick="openQuizZone()">🧠 Quiz</button>
     </div>
     <div class="think-row" id="thinkRow">
       <button class="tp active" data-k="all" onclick="switchThinkCat('all')">&#x1F308; All</button>
@@ -19030,6 +19082,15 @@ function removeMission(id){toggleMission(id,'','');}
       <div class="wrMsg"   id="wrMsg">Stay hydrated, superstar!</div>
       <button class="wrDrinkBtn" id="wrDrinkBtn">💧 I drank water! +⭐</button>
       <button class="wrLaterBtn" id="wrLaterBtn">⏰ Remind me in 10 min</button>
+      <div class="wrIntervalRow">
+        <div class="wrIntervalLabel">⏱ Reminder every</div>
+        <div class="wrIntervalBtns">
+          <button class="wrIBtn" data-min="15">15 min</button>
+          <button class="wrIBtn active" data-min="30">30 min</button>
+          <button class="wrIBtn" data-min="45">45 min</button>
+          <button class="wrIBtn" data-min="60">1 hour</button>
+        </div>
+      </div>
     </div>`;
   document.body.appendChild(overlay);
 
@@ -19055,7 +19116,7 @@ function removeMission(id){toggleMission(id,'','');}
     document.getElementById('wrDrops').textContent  = m.emoji;
     document.getElementById('wrMsg').textContent    = m.text;
     updateStreak();
-    overlay.classList.add('open');
+    refreshIntervalBtns(); overlay.classList.add('open');
     /* Play a gentle sound if sound is enabled */
     try{
       if(typeof soundOn !== 'undefined' && soundOn){
@@ -19090,7 +19151,7 @@ function removeMission(id){toggleMission(id,'','');}
     /* Show toast if available */
     if(typeof showToast === 'function') showToast('💧 Great job drinking water! +' + REWARD_STARS + '⭐');
     closeReminder();
-    scheduleNext(INTERVAL_MS);
+    scheduleNext(_intervalMs);
   };
 
   /* ── Later button (snooze) ──────────────── */
@@ -19098,6 +19159,22 @@ function removeMission(id){toggleMission(id,'','');}
     closeReminder();
     scheduleNext(SNOOZE_MS);
   };
+
+  /* u2500u2500 Interval picker buttons u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500 */
+  let _intervalMs = parseInt(localStorage.getItem('wr_interval_ms') || INTERVAL_MS);
+  function refreshIntervalBtns(){
+    document.querySelectorAll('.wrIBtn').forEach(b => {
+      b.classList.toggle('active', parseInt(b.dataset.min) * 60000 === _intervalMs);
+    });
+  }
+  overlay.addEventListener('click', function(e){
+    const btn = e.target.closest('.wrIBtn');
+    if(!btn) return;
+    _intervalMs = parseInt(btn.dataset.min) * 60000;
+    localStorage.setItem('wr_interval_ms', _intervalMs);
+    refreshIntervalBtns();
+    if(typeof showToast === 'function') showToast('⏱ Reminder set every '+btn.dataset.min+' min!');
+  });
 
   /* ── Scheduler ──────────────────────────── */
   let _timer = null;
@@ -19107,7 +19184,7 @@ function removeMission(id){toggleMission(id,'','');}
   }
 
   /* ── Start on page load ─────────────────── */
-  scheduleNext(INTERVAL_MS);
+  scheduleNext(_intervalMs);
 
   /* ── Expose for parent/settings control ─── */
   window.waterReminder = {
@@ -19173,6 +19250,213 @@ function exportReadableReport(){
   showToast('📄 Report downloaded!');
 }
 
+
+// ══════════════════════════════════════
+//  🧠 QUIZ ZONE
+// ══════════════════════════════════════
+(function(){
+
+/* ── Quiz data ────────────────────────────────────────────────── */
+const QZ_CATEGORIES = [
+  { id:'animals', label:'Animals', emoji:'🐾', color:'linear-gradient(135deg,#56cf81,#4ecdc4)' },
+  { id:'gk',      label:'General Knowledge', emoji:'🌍', color:'linear-gradient(135deg,#4fa3e0,#a78bfa)' },
+  { id:'riddles', label:'Riddles', emoji:'🤔', color:'linear-gradient(135deg,#ffb830,#ff8c69)' },
+  { id:'history', label:'History', emoji:'📜', color:'linear-gradient(135deg,#ff6b9d,#a78bfa)' },
+  { id:'nature',  label:'Nature & Science', emoji:'🌿', color:'linear-gradient(135deg,#1b4332,#52b788)' },
+  { id:'mix',     label:'Lucky Mix!', emoji:'🎲', color:'linear-gradient(135deg,#a78bfa,#ff6b9d)' },
+];
+
+const QZ_QUESTIONS = {
+  animals:[
+    { q:'How many legs does a spider have?', choices:['6','8','4','10'], ans:1, fact:'🕷️ Spiders have 8 legs — they are arachnids, not insects!' },
+    { q:'What sound does a frog make?', choices:['Moo','Quack','Ribbit','Bark'], ans:2, fact:'🐸 Frogs say "Ribbit"! Different frog species have different calls.' },
+    { q:'Which animal is the tallest in the world?', choices:['Elephant','Giraffe','Horse','Camel'], ans:1, fact:'🦒 Giraffes are the tallest animals — they can grow up to 6 metres tall!' },
+    { q:'What do caterpillars turn into?', choices:['Bees','Moths or Butterflies','Spiders','Beetles'], ans:1, fact:'🦋 Caterpillars go through metamorphosis and become beautiful butterflies or moths!' },
+    { q:'Which bird cannot fly?', choices:['Eagle','Parrot','Penguin','Sparrow'], ans:2, fact:'🐧 Penguins cannot fly, but they are superb swimmers!' },
+    { q:'What is a baby frog called?', choices:['Cub','Tadpole','Kitten','Lamb'], ans:1, fact:'🐸 Baby frogs are called tadpoles — they start with a tail and then grow legs!' },
+    { q:'Which animal sleeps standing up?', choices:['Dog','Cat','Horse','Bear'], ans:2, fact:'🐴 Horses can sleep standing up thanks to special locking joints in their legs!' },
+    { q:'How many eyes does a bee have?', choices:['2','4','5','8'], ans:2, fact:'🐝 Bees have 5 eyes — 2 large compound eyes and 3 small simple eyes on top of their head!' },
+  ],
+  gk:[
+    { q:'What colour is the sky on a clear day?', choices:['Green','Blue','Pink','Yellow'], ans:1, fact:'🌤️ The sky looks blue because sunlight scatters off tiny air molecules!' },
+    { q:'How many days are in a week?', choices:['5','6','7','8'], ans:2, fact:'📅 There are 7 days in a week — Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday.' },
+    { q:'Which is the biggest ocean on Earth?', choices:['Atlantic','Indian','Arctic','Pacific'], ans:3, fact:'🌊 The Pacific Ocean is the largest ocean — it covers more than 165 million km²!' },
+    { q:'What planet do we live on?', choices:['Mars','Venus','Earth','Jupiter'], ans:2, fact:'🌍 We live on Earth — the only known planet with life!' },
+    { q:'How many colours are in a rainbow?', choices:['5','6','7','8'], ans:2, fact:'🌈 A rainbow has 7 colours: Red, Orange, Yellow, Green, Blue, Indigo, Violet.' },
+    { q:'What is the capital of India?', choices:['Mumbai','Chennai','New Delhi','Kolkata'], ans:2, fact:'🇮🇳 New Delhi is the capital of India — it is a wonderful historic city!' },
+    { q:'Which number comes after 9?', choices:['8','10','11','12'], ans:1, fact:'🔢 After 9 comes 10 — well done for knowing your numbers!' },
+    { q:'What do plants need to make food?', choices:['Milk','Sunlight','Sand','Wind'], ans:1, fact:'☀️ Plants use sunlight, water and air to make their own food — a process called photosynthesis!' },
+  ],
+  riddles:[
+    { q:'I have hands but I cannot clap. What am I?', choices:['A glove','A clock','A robot','A scarecrow'], ans:1, fact:'🕐 A clock has hands to show the time — but they can\'t clap!' },
+    { q:'I am full of holes but I can hold water. What am I?', choices:['A bucket','A bottle','A sponge','A cup'], ans:2, fact:'🧽 A sponge is full of tiny holes yet soaks up lots of water!' },
+    { q:'The more you take, the more you leave behind. What am I?', choices:['Water','Footsteps','Sand','Words'], ans:1, fact:'👣 Every step you take leaves a footstep behind!' },
+    { q:'I go up but never come down. What am I?', choices:['A balloon','Your age','A kite','Rain'], ans:1, fact:'🎂 Your age only ever goes up — you can never get younger!' },
+    { q:'I have teeth but I cannot bite. What am I?', choices:['A lion','A comb','A fork','A saw'], ans:1, fact:'💈 A comb has teeth to untangle hair, but it cannot bite anyone!' },
+    { q:'What has a neck but no head?', choices:['A snake','A bottle','A giraffe','A shirt'], ans:1, fact:'🍾 A bottle has a neck at the top but no head!' },
+    { q:'I am always in front of you but cannot be seen. What am I?', choices:['Air','The future','Your nose','A shadow'], ans:1, fact:'⏳ The future is always ahead of you — but you cannot see it yet!' },
+    { q:'What gets wetter the more it dries?', choices:['A rain coat','A towel','A sponge','An umbrella'], ans:1, fact:'🛁 A towel gets wetter and wetter the more it dries things off!' },
+  ],
+  history:[
+    { q:'Who built the Great Pyramids of Egypt?', choices:['Romans','Greeks','Ancient Egyptians','Vikings'], ans:2, fact:'🏺 The Ancient Egyptians built the pyramids as tombs for their pharaohs — over 4,000 years ago!' },
+    { q:'Who was the first person to walk on the Moon?', choices:['Buzz Aldrin','Neil Armstrong','Yuri Gagarin','John Glenn'], ans:1, fact:'🚀 Neil Armstrong was the first human to walk on the Moon on 20 July 1969!' },
+    { q:'What animal did ancient Egyptians consider sacred?', choices:['Dog','Cow','Cat','Elephant'], ans:2, fact:'🐱 Cats were considered sacred in ancient Egypt — they were even worshipped as gods!' },
+    { q:'What was the name of the first artificial satellite in space?', choices:['Apollo','Sputnik','Voyager','Explorer'], ans:1, fact:'🛸 Sputnik, launched by the Soviet Union in 1957, was the first satellite in space!' },
+    { q:'Where did the Olympic Games originally come from?', choices:['Rome','Egypt','Greece','China'], ans:2, fact:'🏅 The Olympic Games started in ancient Greece around 776 BCE — in a place called Olympia!' },
+    { q:'Who painted the Mona Lisa?', choices:['Van Gogh','Michelangelo','Leonardo da Vinci','Picasso'], ans:2, fact:'🎨 Leonardo da Vinci painted the Mona Lisa — he was also an inventor and scientist!' },
+    { q:'What was the name of the ship that sank in 1912?', choices:['Titanic','Britannic','Lusitania','Olympic'], ans:0, fact:'🚢 The Titanic sank on 15 April 1912 after hitting an iceberg — it was on its first voyage!' },
+    { q:'Which Indian leader is known as the Father of the Nation?', choices:['Nehru','Bose','Gandhi','Ambedkar'], ans:2, fact:'🕊️ Mahatma Gandhi led India to independence through non-violent protest — he is loved worldwide!' },
+  ],
+  nature:[
+    { q:'Why is the sky blue?', choices:['It reflects the sea','Sunlight scatters off air','God painted it','Stars are blue'], ans:1, fact:'☀️ Sunlight contains all colours. Air scatters blue light the most, so the sky looks blue!' },
+    { q:'What do plants breathe out that we breathe in?', choices:['Carbon dioxide','Nitrogen','Oxygen','Steam'], ans:2, fact:'🌿 Plants produce oxygen during photosynthesis — that\'s the air we breathe!' },
+    { q:'What is the hottest planet in our solar system?', choices:['Mercury','Venus','Mars','Jupiter'], ans:1, fact:'🔥 Venus is the hottest planet! Its thick clouds trap heat like a greenhouse.' },
+    { q:'What is the hardest natural substance on Earth?', choices:['Gold','Iron','Diamond','Quartz'], ans:2, fact:'💎 Diamond is the hardest natural substance — it is a form of pure carbon!' },
+    { q:'How long does it take the Earth to go around the Sun?', choices:['1 month','1 week','365 days','24 hours'], ans:2, fact:'🌍 Earth takes 365 days (one year) to travel all the way around the Sun!' },
+    { q:'What is the largest planet in our solar system?', choices:['Saturn','Uranus','Neptune','Jupiter'], ans:3, fact:'🪐 Jupiter is by far the largest planet — it is so big that 1,300 Earths could fit inside it!' },
+    { q:'What causes thunder?', choices:['Clouds bumping','Lightning heating air','Wind','Rain'], ans:1, fact:'⚡ Thunder is the sound of lightning super-heating the air so fast that it causes a shockwave!' },
+    { q:'Where do fish get their oxygen from?', choices:['The air above water','Dissolved oxygen in water','Plants','They don\'t need it'], ans:1, fact:'🐟 Fish breathe oxygen that is dissolved in water, using their gills!' },
+  ],
+};
+
+const QZ_TOTAL = 6;   // questions per round
+const QZ_STARS = 5;   // stars for finishing
+
+/* ── State ─────────────────────────────────────────────────────── */
+let _qzCat=null, _qzPool=[], _qzIdx=0, _qzScore=0, _qzLocked=false;
+
+/* ── Build overlay ─────────────────────────────────────────────── */
+const ov = document.createElement('div');
+ov.id='quizOverlay';
+ov.innerHTML=`<div class="qzBox" id="qzBox"></div>`;
+document.body.appendChild(ov);
+
+/* ── Show category picker ──────────────────────────────────────── */
+function showCatPicker(){
+  _qzCat=null;
+  document.getElementById('qzBox').innerHTML=`
+    <div class="qzCatTitle">🧠 Quiz Zone!</div>
+    <div class="qzCatSub">Pick a category and show off your brainpower! ⭐</div>
+    <div class="qzCatGrid">
+      ${QZ_CATEGORIES.map(c=>`
+        <button class="qzCatBtn" style="background:${c.color}" onclick="window._qzStartCat('${c.id}')">
+          <span class="qzIcon">${c.emoji}</span>${c.label}
+        </button>`).join('')}
+    </div>
+    <button class="qzCloseBtn" onclick="window._qzClose()">✖ Close</button>
+  `;
+  ov.classList.add('open');
+}
+
+/* ── Start a category ──────────────────────────────────────────── */
+window._qzStartCat = function(catId){
+  _qzCat = catId;
+  let pool;
+  if(catId==='mix'){
+    // Pick from all categories
+    const all=Object.values(QZ_QUESTIONS).flat();
+    pool=[...all].sort(()=>Math.random()-.5).slice(0,QZ_TOTAL);
+  } else {
+    pool=[...QZ_QUESTIONS[catId]].sort(()=>Math.random()-.5).slice(0,QZ_TOTAL);
+  }
+  _qzPool=pool; _qzIdx=0; _qzScore=0;
+  showQuestion();
+};
+
+/* ── Show a question ───────────────────────────────────────────── */
+function showQuestion(){
+  _qzLocked=false;
+  const q=_qzPool[_qzIdx];
+  const shuffle = q.choices.map((c,i)=>({c,i})).sort(()=>Math.random()-.5);
+  const correctShuffled = shuffle.findIndex(x=>x.i===q.ans);
+  document.getElementById('qzBox').innerHTML=`
+    <div class="qzProgress">Question ${_qzIdx+1} of ${QZ_TOTAL} · Score: ${_qzScore} ⭐</div>
+    <div class="qzQuestion"><div class="qzQText">${q.q}</div></div>
+    <div class="qzChoices">
+      ${shuffle.map((x,j)=>`
+        <button class="qzChoice" onclick="window._qzAnswer(${j},${correctShuffled},this)">${x.c}</button>
+      `).join('')}
+    </div>
+    <div class="qzFact" id="qzFact"></div>
+    <button class="qzNextBtn" id="qzNextBtn" style="display:none" onclick="window._qzNext()">
+      ${_qzIdx+1<QZ_TOTAL ? '➡ Next Question' : '🏆 See My Score!'}
+    </button>
+    <button class="qzCloseBtn" onclick="window._qzClose()">✖ Close</button>
+  `;
+}
+
+/* ── Handle answer ─────────────────────────────────────────────── */
+window._qzAnswer = function(chosen, correct, btn){
+  if(_qzLocked) return;
+  _qzLocked=true;
+  document.querySelectorAll('.qzChoice').forEach(b=>b.style.pointerEvents='none');
+  const isRight = chosen===correct;
+  if(isRight) _qzScore++;
+  btn.classList.add(isRight ? 'correct':'wrong');
+  const q=_qzPool[_qzIdx];
+  document.getElementById('qzFact').textContent = isRight ? '✅ '+q.fact : '❌ '+q.fact;
+  try{
+    if(typeof soundOn!=='undefined'&&soundOn){
+      const ctx=new(window.AudioContext||window.webkitAudioContext)();
+      const freqs=isRight?[523,659,784]:[349,311];
+      freqs.forEach((f,i)=>{
+        const o=ctx.createOscillator(),g=ctx.createGain();
+        o.connect(g);g.connect(ctx.destination);
+        o.frequency.value=f;o.type='sine';
+        g.gain.setValueAtTime(0,ctx.currentTime+i*.15);
+        g.gain.linearRampToValueAtTime(.15,ctx.currentTime+i*.15+.06);
+        g.gain.linearRampToValueAtTime(0,ctx.currentTime+i*.15+.25);
+        o.start(ctx.currentTime+i*.15);
+        o.stop(ctx.currentTime+i*.15+.3);
+      });
+    }
+  }catch(e){}
+  document.getElementById('qzNextBtn').style.display='block';
+};
+
+/* ── Next question or score ────────────────────────────────────── */
+window._qzNext = function(){
+  _qzIdx++;
+  if(_qzIdx<QZ_TOTAL){ showQuestion(); }
+  else { showScore(); }
+};
+
+/* ── Score screen ──────────────────────────────────────────────── */
+function showScore(){
+  const pct=_qzScore/QZ_TOTAL;
+  const emoji = pct===1?'🏆':pct>=.7?'⭐':pct>=.5?'👍':'💪';
+  const msg   = pct===1?'Perfect score! You\'re a superstar!':pct>=.7?'Amazing job! Keep it up!':pct>=.5?'Good effort! Try again to beat your score!':'Keep practising — you\'re getting smarter!';
+  // Award stars
+  const earned=Math.max(1,Math.round(pct*QZ_STARS));
+  const cur=parseInt(localStorage.getItem('c_total_stars')||'0');
+  localStorage.setItem('c_total_stars',cur+earned);
+  const today=new Date().toISOString().slice(0,10).replace(/-/g,'');
+  const ds=parseInt(localStorage.getItem('cs_'+today)||'0');
+  localStorage.setItem('cs_'+today,ds+earned);
+  if(typeof showToast==='function') showToast(`🧠 Quiz done! +${earned}⭐`);
+  document.getElementById('qzBox').innerHTML=`
+    <div class="qzScoreEmoji">${emoji}</div>
+    <div class="qzScoreTitle">${msg}</div>
+    <div class="qzScoreStars">${Array(earned).fill('⭐').join('')}</div>
+    <div class="qzScoreSub">You scored <strong>${_qzScore}</strong> out of <strong>${QZ_TOTAL}</strong> and earned <strong>${earned} ⭐</strong></div>
+    <button class="qzPlayAgain" onclick="showCatPicker()">🔄 Play Again</button>
+    <button class="qzCloseBtn" onclick="window._qzClose()">✖ Close</button>
+  `;
+}
+
+/* ── Open / Close ──────────────────────────────────────────────── */
+window.openQuizZone = function(){
+  document.querySelectorAll('.sp').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.sp[data-s="quiz"]').classList.add('active');
+  showCatPicker();
+};
+window._qzClose = function(){
+  ov.classList.remove('open');
+  // Restore previous active subject button to 'all'
+  document.querySelectorAll('.sp').forEach(b=>b.classList.toggle('active',b.dataset.s==='all'));
+};
+
+})();
 </script>
 </body>
 </html>
