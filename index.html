@@ -3141,9 +3141,37 @@ body.bedtime .streak-bar{background:linear-gradient(135deg,#1b2a00,#2a1800);colo
   </button>
 </nav>
 
-<!-- Firebase SDK (compat CDN — works with simple script tags) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<!-- Firebase Modular SDK v10 — eval-free, CSP-compliant -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
+         getRedirectResult, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const _FIREBASE_CONFIG_MOD = {
+  apiKey:      "AIzaSyCFWkBSHzo4PzwYAQKvgXExMBCtX_HI2Ro",
+  authDomain:  "my-little-star-ef311.firebaseapp.com",
+  projectId:   "my-little-star-ef311",
+  databaseURL: "https://my-little-star-ef311-default-rtdb.firebaseio.com"
+};
+
+const _fbApp  = initializeApp(_FIREBASE_CONFIG_MOD);
+const _fbAuth = getAuth(_fbApp);
+
+// ── Expose to global scope so existing code works unchanged ──
+window._fbAuth        = _fbAuth;
+window._GoogleProvider = GoogleAuthProvider;
+window._signInWithPopup     = (auth, prov) => signInWithPopup(auth, prov);
+window._signInWithRedirect  = (auth, prov) => signInWithRedirect(auth, prov);
+window._getRedirectResult   = (auth)       => getRedirectResult(auth);
+window._signOut             = (auth)       => signOut(auth);
+window._onAuthStateChanged  = (auth, cb)   => onAuthStateChanged(auth, cb);
+window._fbReady = true;
+window.dispatchEvent(new Event('fbReady'));
+</script>
+
+
+
 
 <script>
 // ══════════════════════════════════════
@@ -3155,16 +3183,14 @@ body.bedtime .streak-bar{background:linear-gradient(135deg,#1b2a00,#2a1800);colo
 // │  ⚠️  PASTE YOUR FIREBASE CONFIG VALUES BELOW  ⚠️     │
 // │  Get them from Firebase Console → Project Settings   │
 // └─────────────────────────────────────────────────────┘
+// Firebase config (DB URL kept for REST API calls)
 const _FIREBASE_CONFIG = {
   apiKey:      "AIzaSyCFWkBSHzo4PzwYAQKvgXExMBCtX_HI2Ro",
   authDomain:  "my-little-star-ef311.firebaseapp.com",
   projectId:   "my-little-star-ef311",
   databaseURL: "https://my-little-star-ef311-default-rtdb.firebaseio.com"
 };
-
-firebase.initializeApp(_FIREBASE_CONFIG);
-const _auth = firebase.auth();
-
+// _auth and firebase.initializeApp handled by modular SDK above
 const _DB_URL = _FIREBASE_CONFIG.databaseURL;
 
 // Current authenticated user (set after sign-in)
@@ -3418,13 +3444,13 @@ function _showSignInScreen(){
       btn.innerHTML='<div style="width:20px;height:20px;border:2px solid #ccc;border-top-color:#ff6b9d;border-radius:50%;animation:spin 1s linear infinite"></div> Signing in...';
       errEl.style.display='none';
       try{
-        const provider = new firebase.auth.GoogleAuthProvider();
+        const provider = new window._GoogleProvider();
         let result;
         try{
-          result = await _auth.signInWithPopup(provider);
+          result = await window._signInWithPopup(window._fbAuth, provider);
         }catch(popupErr){
           if(popupErr.code==='auth/popup-blocked'||popupErr.code==='auth/popup-closed-by-user'){
-            await _auth.signInWithRedirect(provider);
+            await window._signInWithRedirect(window._fbAuth, provider);
             return;
           }
           throw popupErr;
@@ -3448,7 +3474,7 @@ function _showSignInScreen(){
 async function signOutUser(){
   if(!confirm('Sign out? You can sign back in anytime to access your progress.')) return;
   try{
-    await _auth.signOut();
+    await window._signOut(window._fbAuth);
     _currentUser = null;
     _authToken = '';
     _syncReady = false;
@@ -3516,7 +3542,7 @@ let _firebaseLoaded = false;   // true ONLY if cloud data was successfully downl
     // ── Step 1: Check for redirect result ──
     try{
       _diag('Step 1: getRedirectResult...');
-      const redirectResult = await _auth.getRedirectResult();
+      const redirectResult = await window._getRedirectResult(window._fbAuth);
       if(redirectResult && redirectResult.user){
         _currentUser = redirectResult.user;
         _authToken = await _currentUser.getIdToken();
@@ -3532,7 +3558,7 @@ let _firebaseLoaded = false;   // true ONLY if cloud data was successfully downl
     if(!_currentUser){
       _diag('Step 2: Checking onAuthStateChanged...');
       await new Promise((resolve)=>{
-        const unsub = _auth.onAuthStateChanged(async (user)=>{
+        const unsub = window._onAuthStateChanged(window._fbAuth, async (user)=>{
           unsub();
           if(user){
             _currentUser = user;
