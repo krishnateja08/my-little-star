@@ -109,6 +109,43 @@ header h1{font-family:'Baloo 2',cursive;font-size:1.7rem;color:#fff;text-shadow:
 body.bedtime .mqBox{background:#222244;}.body.bedtime .mqQText{color:#fff;}
 body.bedtime .mqChoice{background:#333366;border-color:#554477;color:#e0d4ff;}
 
+/* ══════════════════════════════════════════════
+   💧 WATER REMINDER OVERLAY
+══════════════════════════════════════════════ */
+#waterReminderOverlay{
+  position:fixed;inset:0;background:rgba(10,40,80,.78);z-index:99998;
+  display:none;align-items:center;justify-content:center;padding:20px;
+  backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);}
+#waterReminderOverlay.open{display:flex;}
+.wrBox{
+  background:#fff;border-radius:32px;padding:32px 26px 28px;max-width:340px;width:100%;
+  text-align:center;box-shadow:0 24px 64px rgba(0,60,120,.35);
+  animation:wrPop .4s cubic-bezier(.34,1.56,.64,1);}
+@keyframes wrPop{from{transform:scale(.6) translateY(40px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.wrDrops{font-size:3.4rem;margin-bottom:4px;animation:wrBounce 1.8s ease-in-out infinite;}
+@keyframes wrBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.wrTitle{font-family:'Baloo 2',cursive;font-size:1.45rem;font-weight:800;color:#1b4332;margin-bottom:6px;}
+.wrMsg{font-size:.88rem;color:#3d6b56;margin-bottom:22px;line-height:1.5;}
+.wrDrinkBtn{
+  display:block;width:100%;padding:16px;border:none;border-radius:20px;cursor:pointer;
+  background:linear-gradient(135deg,#4fa3e0,#4ecdc4);
+  font-family:'Baloo 2',cursive;font-size:1.15rem;font-weight:800;color:#fff;
+  box-shadow:0 6px 18px rgba(79,163,224,.4);margin-bottom:12px;
+  transition:transform .15s,box-shadow .15s;}
+.wrDrinkBtn:active{transform:scale(.96);box-shadow:0 3px 10px rgba(79,163,224,.3);}
+.wrLaterBtn{
+  display:block;width:100%;padding:11px;border:none;border-radius:16px;cursor:pointer;
+  background:#f0faf4;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;
+  color:#6b9e85;transition:background .15s;}
+.wrLaterBtn:hover{background:#d4ede0;}
+.wrStreak{display:inline-block;background:linear-gradient(135deg,#ffb830,#ff8c69);
+  border-radius:50px;padding:4px 16px;font-family:'Baloo 2',cursive;font-size:.78rem;
+  font-weight:800;color:#fff;margin-bottom:14px;}
+body.bedtime .wrBox{background:#222244;}
+body.bedtime .wrTitle{color:#e0d4ff;}
+body.bedtime .wrMsg{color:#b8a9d4;}
+body.bedtime .wrLaterBtn{background:#333366;color:#b8a9d4;}
+
 /* HIDE the old top tabs — replaced by bottom nav */
 .tabs{display:none !important;}
 
@@ -18961,6 +18998,122 @@ function removeMission(id){toggleMission(id,'','');}
   const _origMarkGameDone=window.markGameDone;
   window.markGameDone=function(sc){
     openQuiz(()=>_origMarkGameDone.call(window,sc));
+  };
+})();
+
+// ══════════════════════════════════════
+//  💧 WATER REMINDER SYSTEM
+// ══════════════════════════════════════
+(function(){
+  /* ── Config ─────────────────────────────── */
+  const INTERVAL_MS   = 30 * 60 * 1000;  // 30 minutes — change as needed
+  const SNOOZE_MS     = 10 * 60 * 1000;  // 10-min snooze when "Later" tapped
+  const REWARD_STARS  = 1;               // bonus stars for drinking water
+
+  /* ── Messages pool ──────────────────────── */
+  const messages = [
+    { emoji:'💧🐟', text:'Hey superstar! Your body is like a fish — it loves water! Take a big sip right now! 🌊' },
+    { emoji:'🚿💦', text:'Time to refuel! Even your brain needs water to think big thoughts. Drink up! 🧠✨' },
+    { emoji:'🌈💧', text:'Water break! Did you know water makes you stronger? Go grab a glass! 💪' },
+    { emoji:'🐸💦', text:'Ribbit! Even frogs know to stay hydrated! Go drink some water now! 🐸' },
+    { emoji:'⭐💧', text:'Star alert! Drinking water helps you learn faster and play longer. Sip sip hooray! 🎉' },
+  ];
+
+  /* ── Build overlay ──────────────────────── */
+  const overlay = document.createElement('div');
+  overlay.id = 'waterReminderOverlay';
+  overlay.innerHTML = `
+    <div class="wrBox">
+      <div class="wrDrops" id="wrDrops">💧</div>
+      <div class="wrStreak" id="wrStreak">💧 0 sips today</div>
+      <div class="wrTitle" id="wrTitle">Time to drink water!</div>
+      <div class="wrMsg"   id="wrMsg">Stay hydrated, superstar!</div>
+      <button class="wrDrinkBtn" id="wrDrinkBtn">💧 I drank water! +⭐</button>
+      <button class="wrLaterBtn" id="wrLaterBtn">⏰ Remind me in 10 min</button>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  /* ── State ──────────────────────────────── */
+  let sipCount = parseInt(localStorage.getItem('wr_sips_today') || '0');
+  const todayKey = new Date().toISOString().slice(0,10);
+  if(localStorage.getItem('wr_sip_date') !== todayKey){
+    sipCount = 0;
+    localStorage.setItem('wr_sip_date', todayKey);
+    localStorage.setItem('wr_sips_today', '0');
+  }
+
+  function updateStreak(){
+    document.getElementById('wrStreak').textContent = '💧 ' + sipCount + ' sip' + (sipCount===1?'':'s') + ' today';
+  }
+
+  function pickMessage(){
+    return messages[Math.floor(Math.random() * messages.length)];
+  }
+
+  function openReminder(){
+    const m = pickMessage();
+    document.getElementById('wrDrops').textContent  = m.emoji;
+    document.getElementById('wrMsg').textContent    = m.text;
+    updateStreak();
+    overlay.classList.add('open');
+    /* Play a gentle sound if sound is enabled */
+    try{
+      if(typeof soundOn !== 'undefined' && soundOn){
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        [523, 659, 784].forEach((f,i) => {
+          const o = ctx.createOscillator();
+          const g = ctx.createGain();
+          o.connect(g); g.connect(ctx.destination);
+          o.frequency.value = f; o.type = 'sine';
+          g.gain.setValueAtTime(0, ctx.currentTime + i*0.18);
+          g.gain.linearRampToValueAtTime(0.18, ctx.currentTime + i*0.18 + 0.06);
+          g.gain.linearRampToValueAtTime(0, ctx.currentTime + i*0.18 + 0.28);
+          o.start(ctx.currentTime + i*0.18);
+          o.stop(ctx.currentTime + i*0.18 + 0.3);
+        });
+      }
+    }catch(e){}
+  }
+
+  function closeReminder(){ overlay.classList.remove('open'); }
+
+  /* ── Drink button ───────────────────────── */
+  document.getElementById('wrDrinkBtn').onclick = function(){
+    sipCount++;
+    localStorage.setItem('wr_sips_today', sipCount);
+    /* Award bonus stars */
+    const cur = parseInt(localStorage.getItem('c_total_stars') || '0');
+    localStorage.setItem('c_total_stars', cur + REWARD_STARS);
+    const today = new Date().toISOString().slice(0,10).replace(/-/g,'');
+    const dayStars = parseInt(localStorage.getItem('cs_'+today) || '0');
+    localStorage.setItem('cs_'+today, dayStars + REWARD_STARS);
+    /* Show toast if available */
+    if(typeof showToast === 'function') showToast('💧 Great job drinking water! +' + REWARD_STARS + '⭐');
+    closeReminder();
+    scheduleNext(INTERVAL_MS);
+  };
+
+  /* ── Later button (snooze) ──────────────── */
+  document.getElementById('wrLaterBtn').onclick = function(){
+    closeReminder();
+    scheduleNext(SNOOZE_MS);
+  };
+
+  /* ── Scheduler ──────────────────────────── */
+  let _timer = null;
+  function scheduleNext(delay){
+    if(_timer) clearTimeout(_timer);
+    _timer = setTimeout(openReminder, delay);
+  }
+
+  /* ── Start on page load ─────────────────── */
+  scheduleNext(INTERVAL_MS);
+
+  /* ── Expose for parent/settings control ─── */
+  window.waterReminder = {
+    open: openReminder,
+    setInterval: function(minutes){ scheduleNext(minutes * 60 * 1000); },
+    getSips: function(){ return sipCount; }
   };
 })();
 
