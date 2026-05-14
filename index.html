@@ -3649,6 +3649,7 @@ function changeFamilyCode(){
 //  VOICE + SOUND SYSTEM (#1)
 // ══════════════════════════════════════
 let soundOn=localStorage.getItem('c_sound')!=='off';
+let _userActivated=false; // track if user has interacted — needed for speechSynthesis
 let childName=localStorage.getItem('c_child_name')||'';
 const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
 
@@ -3691,7 +3692,7 @@ function isBlockedVoice(name){
 /* ── TEACHER VOICE: splits text into sentences and speaks each with
       a small pause in between, making it sound warm and unhurried ── */
 function speakText(text){
-  if(!soundOn||!('speechSynthesis' in window))return;
+  if(!soundOn||!('speechSynthesis' in window)||!_userActivated)return;
   speechSynthesis.cancel();
 
   // Split into natural sentences so pauses feel real
@@ -12204,6 +12205,7 @@ function toggleStoryAudio(){
 }
 
 function readFullStory(){
+  if(!_userActivated)return;
   const s=BEDTIME_STORIES[currentStoryIdx];
   // Build full story text with pauses between pages
   const fullText=s.title+'. . . '+s.pages.join('. . . ')+'. . . The end. . . The lesson of this story is: '+s.moral;
@@ -12358,6 +12360,7 @@ function startQuickCreate(prompt){
 }
 // Close popup when clicking elsewhere
 document.addEventListener('click',e=>{
+  _userActivated=true; // mark user has interacted — unlocks speechSynthesis
   if(qcOpen&&!e.target.closest('.qc-popup')&&!e.target.closest('.qc-fab')){
     qcOpen=false;document.getElementById('qcPopup').classList.remove('show');
   }
@@ -13416,6 +13419,7 @@ function renderTodayBar(){
 }
 
 function speakToday(){
+  _userActivated=true; // speaking today = user clicked
   const now=new Date();
   const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -14258,7 +14262,13 @@ function acceptBedtimeLock(action){
   document.getElementById('bedtimeLockOverlay').innerHTML='';
   bedtimeLockDismissed=true;
   localStorage.setItem('c_bl_dismiss_'+todayKey(),'1');
-  eval(action);
+  // Safe dispatch — no eval needed
+  const safeActions={
+    "switchTab('stories')":()=>switchTab('stories'),
+    "switchTab('evening')":()=>switchTab('evening'),
+    "toggleBedtime()":()=>toggleBedtime()
+  };
+  if(safeActions[action]) safeActions[action]();
 }
 
 function dismissBedtimeLock(){
