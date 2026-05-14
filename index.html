@@ -904,6 +904,7 @@ body.bedtime .btt-bar{background:#333355;}
 .sp[data-s="feelings"].active {background:linear-gradient(135deg,#ff6b9d,#ffb830);}
 .sp[data-s="world"].active    {background:linear-gradient(135deg,#56cf81,#4ecdc4);}
 .sp[data-s="body"].active     {background:linear-gradient(135deg,#ff8c69,#ffb830);}
+.sp[data-s="cooking"].active {background:linear-gradient(135deg,#ff8c69,#52b788);}
 .sp[data-s="read"].active     {background:linear-gradient(135deg,#a78bfa,#ff6b9d);}
 .sp[data-s="gita"].active     {background:linear-gradient(135deg,#ff8c00,#ffb830);}
 .sp[data-s="quiz"].active     {background:linear-gradient(135deg,#a78bfa,#4ecdc4);}
@@ -946,6 +947,95 @@ body.bedtime .qzCatTitle{color:#e0d4ff;}
 body.bedtime .qzCatSub{color:#b8a9d4;}
 body.bedtime .qzChoice{background:#333366;border-color:#554477;color:#e0d4ff;}
 body.bedtime .qzFact{background:#1e1e3a;color:#b8a9d4;}
+
+/* ══════════════════════════════════════════════
+   👩‍🍳 COOKING ZONE OVERLAY
+══════════════════════════════════════════════ */
+#cookingOverlay{position:fixed;inset:0;background:rgba(20,10,5,.85);z-index:99996;
+  display:none;align-items:flex-start;justify-content:center;padding:10px;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);overflow-y:auto;}
+#cookingOverlay.open{display:flex;}
+.ckBox{background:#fff;border-radius:28px;padding:20px 16px 18px;max-width:390px;
+  width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4);
+  animation:ckPop .35s cubic-bezier(.34,1.56,.64,1);margin:auto;}
+@keyframes ckPop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+/* Home screen */
+.ckHomeTitle{font-family:'Baloo 2',cursive;font-size:1.2rem;font-weight:800;color:#1b4332;margin-bottom:3px;}
+.ckHomeSub{font-size:.77rem;color:#6b9e85;margin-bottom:14px;}
+.ckMenuGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;}
+.ckMenuBtn{border:none;border-radius:18px;padding:14px 8px;cursor:pointer;
+  font-family:'Baloo 2',cursive;font-size:.88rem;font-weight:800;color:#fff;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  transition:transform .15s;box-shadow:0 4px 14px rgba(0,0,0,.18);}
+.ckMenuBtn .ckMIcon{font-size:2rem;line-height:1;}
+.ckMenuBtn:active{transform:scale(.94);}
+/* Ingredient card */
+.ckIngCard{background:linear-gradient(135deg,#fff8e1,#e8f5ee);border-radius:22px;
+  padding:18px 14px;margin-bottom:14px;position:relative;}
+.ckIngEmoji{font-size:4rem;margin-bottom:6px;display:block;}
+.ckIngName{font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:#1b4332;margin-bottom:2px;}
+.ckIngTelugu{font-size:.9rem;color:#52b788;font-weight:700;margin-bottom:8px;}
+.ckIngDesc{font-size:.82rem;color:#3d6b56;line-height:1.5;margin-bottom:10px;text-align:left;}
+.ckIngTag{display:inline-block;background:#52b788;color:#fff;border-radius:50px;
+  padding:3px 12px;font-size:.7rem;font-weight:800;font-family:'Baloo 2',cursive;}
+.ckNavRow{display:flex;gap:8px;margin-bottom:10px;}
+.ckNavBtn{flex:1;padding:11px;border:none;border-radius:14px;cursor:pointer;
+  font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:#1b4332;
+  background:#f0faf4;border:2px solid #d4ede0;}
+.ckNavBtn:active{transform:scale(.96);}
+.ckNavBtn.primary{background:linear-gradient(135deg,#1b4332,#52b788);color:#fff;border-color:transparent;}
+/* Dish card */
+.ckDishCard{background:linear-gradient(135deg,#fff3e0,#e8f5ee);border-radius:22px;
+  padding:16px 14px;margin-bottom:14px;}
+.ckDishEmoji{font-size:3.5rem;margin-bottom:4px;display:block;}
+.ckDishName{font-family:'Baloo 2',cursive;font-size:1.2rem;font-weight:800;color:#1b4332;margin-bottom:2px;}
+.ckDishTelugu{font-size:.85rem;color:#52b788;font-weight:700;margin-bottom:6px;}
+.ckDishDesc{font-size:.8rem;color:#3d6b56;line-height:1.5;margin-bottom:10px;text-align:left;}
+.ckIngList{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:8px;}
+.ckIngChip{background:#fff;border:2px solid #d4ede0;border-radius:50px;
+  padding:4px 10px;font-size:.75rem;font-weight:700;color:#3d6b56;}
+.ckStepsBox{background:#fff;border-radius:14px;padding:10px 12px;text-align:left;margin-bottom:8px;}
+.ckStepRow{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f0faf4;font-size:.78rem;color:#3d6b56;}
+.ckStepRow:last-child{border-bottom:none;}
+.ckStepNum{background:linear-gradient(135deg,#1b4332,#52b788);color:#fff;border-radius:50%;
+  width:22px;height:22px;display:flex;align-items:center;justify-content:center;
+  font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800;flex-shrink:0;}
+/* Match game */
+.ckMatchTitle{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:#1b4332;margin-bottom:4px;}
+.ckMatchSub{font-size:.75rem;color:#6b9e85;margin-bottom:10px;}
+.ckMatchQuestion{background:linear-gradient(135deg,#1b4332,#52b788);border-radius:18px;
+  padding:16px 12px;margin-bottom:12px;}
+.ckMatchQText{font-family:'Baloo 2',cursive;font-size:1.15rem;font-weight:800;color:#fff;line-height:1.3;}
+.ckMatchChoices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.ckMatchChoice{background:#f0faf4;border:2.5px solid #d4ede0;border-radius:13px;
+  padding:11px 6px;font-size:1.2rem;cursor:pointer;transition:all .15s;}
+.ckMatchChoice:active{transform:scale(.93);}
+.ckMatchChoice.correct{background:linear-gradient(135deg,#52b788,#4ecdc4);border-color:#52b788;animation:ckCorrect .4s ease;}
+.ckMatchChoice.wrong{background:linear-gradient(135deg,#ff6b9d,#ff8c69);border-color:#ff6b9d;animation:ckShake .4s ease;}
+@keyframes ckCorrect{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+@keyframes ckShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.ckMatchFact{font-size:.76rem;color:#3d6b56;background:#e8f5ee;border-radius:10px;
+  padding:7px 10px;margin-bottom:8px;line-height:1.4;text-align:left;min-height:28px;}
+.ckMatchProgress{font-size:.7rem;color:#95c4aa;font-weight:700;margin-bottom:6px;}
+/* Score */
+.ckScoreBox{padding:10px 0;}
+.ckScoreEmoji{font-size:3.5rem;margin-bottom:6px;}
+.ckScoreTitle{font-family:'Baloo 2',cursive;font-size:1.25rem;font-weight:800;color:#1b4332;margin-bottom:6px;}
+.ckScoreStars{font-family:'Baloo 2',cursive;font-size:1.5rem;color:#ffb830;margin-bottom:8px;}
+.ckScoreSub{font-size:.8rem;color:#6b9e85;margin-bottom:16px;}
+/* Shared */
+.ckCloseBtn{display:block;width:100%;padding:10px;border:none;border-radius:14px;cursor:pointer;
+  background:#f0faf4;font-family:'Nunito',sans-serif;font-size:.83rem;font-weight:700;color:#6b9e85;}
+.ckBackBtn{display:inline-block;padding:8px 16px;border:none;border-radius:12px;cursor:pointer;
+  background:#f0faf4;font-size:.8rem;font-weight:700;color:#6b9e85;margin-bottom:10px;}
+body.bedtime .ckBox{background:#222244;}
+body.bedtime .ckIngCard,.bedtime .ckDishCard{background:linear-gradient(135deg,#1e1e3a,#222244);}
+body.bedtime .ckIngName,.bedtime .ckDishName,.bedtime .ckMatchTitle,.bedtime .ckScoreTitle{color:#e0d4ff;}
+body.bedtime .ckIngTelugu,.bedtime .ckDishTelugu{color:#a78bfa;}
+body.bedtime .ckIngDesc,.bedtime .ckDishDesc{color:#b8a9d4;}
+body.bedtime .ckStepsBox,.bedtime .ckMatchQuestion{background:#1e1e3a;}
+body.bedtime .ckNavBtn,.bedtime .ckMatchChoice,.bedtime .ckCloseBtn,.bedtime .ckBackBtn{background:#333366;color:#e0d4ff;border-color:#554477;}
+body.bedtime .ckMatchFact{background:#1e1e3a;color:#b8a9d4;}
 body.bedtime .qzCloseBtn{background:#333366;color:#b8a9d4;}
 /* PROGRESS */
 .prog{background:var(--cardbg);border-radius:var(--r);padding:11px 15px;
@@ -2910,6 +3000,7 @@ body.bedtime .streak-bar{background:linear-gradient(135deg,#1b2a00,#2a1800);colo
       <button class="sp" data-s="feelings" onclick="switchSubj('feelings')">&#x1F49B; Feelings</button>
       <button class="sp" data-s="world" onclick="switchSubj('world')">&#x1F30D; World</button>
       <button class="sp" data-s="body" onclick="switchSubj('body')">&#x1FAB7; My Body</button>
+      <button class="sp" data-s="cooking" onclick="openCookingZone()">👩‍🍳 Cooking</button>
       <button class="sp" data-s="think" onclick="switchSubj('think')">&#x1F9E9; Think</button>
       <button class="sp" data-s="read" onclick="switchSubj('read')">&#x1F4D6; Read</button>
       <button class="sp" data-s="gita" onclick="switchSubj('gita')">&#x1FA94; Gita</button>
@@ -19453,6 +19544,426 @@ window.openQuizZone = function(){
 window._qzClose = function(){
   ov.classList.remove('open');
   // Restore previous active subject button to 'all'
+  document.querySelectorAll('.sp').forEach(b=>b.classList.toggle('active',b.dataset.s==='all'));
+};
+
+})();
+
+// ══════════════════════════════════════
+//  👩‍🍳 COOKING ZONE — Andhra Pradesh
+// ══════════════════════════════════════
+(function(){
+
+/* ── Ingredient data ──────────────────────────────────────────── */
+const CK_INGREDIENTS = [
+  {
+    emoji:'🌶️', name:'Red Chilli', telugu:'Mirchi (మిర్చి)',
+    desc:'Red chilli makes our food spicy and hot! Amma uses it in almost every dish. It gives food a beautiful red colour.',
+    fun:'🔥 If you eat too much chilli, drink milk — not water — to cool your mouth!',
+    usedIn:'Sambar, Pulusu, Pickle',
+    tag:'Spicy & Hot'
+  },
+  {
+    emoji:'🟡', name:'Turmeric', telugu:'Pasupu (పసుపు)',
+    desc:'Turmeric is a bright yellow powder that makes food golden! Amma puts it in dal and curries. It is also very good for your health.',
+    fun:'✨ Turmeric is called the "golden spice" and is used in puja too!',
+    usedIn:'Dal, Rasam, Curries',
+    tag:'Golden & Healthy'
+  },
+  {
+    emoji:'🌿', name:'Curry Leaves', telugu:'Karivepaku (కరివేపాకు)',
+    desc:'These small dark green leaves smell amazing when they go into hot oil! They make a lovely crackling sound — pop pop pop!',
+    fun:'🍃 Curry leaves grow on trees right in many Andhra gardens!',
+    usedIn:'Tadka, Chutney, Rice',
+    tag:'Fragrant Leaves'
+  },
+  {
+    emoji:'🫙', name:'Mustard Seeds', telugu:'Avalu (ఆవాలు)',
+    desc:'Mustard seeds are tiny and black. When Amma puts them in hot oil they jump and dance — pop pop pop! That is called tadka or popu.',
+    fun:'🎆 The popping sound of mustard seeds means the cooking is starting!',
+    usedIn:'Upma, Dal, Chutneys',
+    tag:'Dancing Seeds'
+  },
+  {
+    emoji:'🧄', name:'Garlic', telugu:'Vellulli (వెల్లుల్లి)',
+    desc:'Garlic smells very strong! It has a papery skin outside and white pods inside. Amma crushes it to add flavour to curries.',
+    fun:'🧄 Garlic keeps you healthy and strong — just like eating dal!',
+    usedIn:'Rasam, Curries, Chicken',
+    tag:'Strong Flavour'
+  },
+  {
+    emoji:'🍋', name:'Tamarind', telugu:'Chintapandu (చింతపండు)',
+    desc:'Tamarind is brown and sour! It comes from a big tree. Amma soaks it in water and uses that sour water to make Pulusu and Rasam.',
+    fun:'😝 Tamarind is so sour it makes your face go funny!',
+    usedIn:'Pulusu, Rasam, Pulihora',
+    tag:'Sour & Tangy'
+  },
+  {
+    emoji:'🧅', name:'Onion', telugu:'Ullipaya (ఉల్లిపాయ)',
+    desc:'Onions have many layers inside like a little book! When you cut them your eyes make tears — but that is okay! They make food taste so good.',
+    fun:'😭 Cutting onions makes you cry because of a special gas they release!',
+    usedIn:'Almost every curry!',
+    tag:'Layers of Flavour'
+  },
+  {
+    emoji:'🍅', name:'Tomato', telugu:'Tomato (టమాటా)',
+    desc:'Tomatoes are red and juicy! They are a bit sour and a bit sweet. Amma uses them to make chutney and adds them to dal to make it tasty.',
+    fun:'🍅 A tomato is actually a fruit — not a vegetable!',
+    usedIn:'Chutney, Dal, Rasam',
+    tag:'Red & Juicy'
+  },
+  {
+    emoji:'🥥', name:'Coconut', telugu:'Kobbari (కొబ్బరి)',
+    desc:'Coconut is round and brown outside with white soft meat inside. It is sweet and used in chutneys! The water inside is delicious to drink.',
+    fun:'🥥 Coconut trees are called the "tree of life" in South India!',
+    usedIn:'Coconut Chutney, Curries',
+    tag:'Sweet & Creamy'
+  },
+  {
+    emoji:'🌿', name:'Coriander', telugu:'Kothimira (కొత్తిమీర)',
+    desc:'Coriander is a bright green herb with a fresh smell. Amma sprinkles it on top of dishes at the end to make food look and smell wonderful!',
+    fun:'🌿 Coriander is used in food AND medicine — it is that special!',
+    usedIn:'Dal, Biryani, Chutneys',
+    tag:'Fresh & Green'
+  },
+  {
+    emoji:'🫘', name:'Urad Dal', telugu:'Minapa Pappu (మినప పప్పు)',
+    desc:'Urad dal are small white lentils. Amma fries them in oil as tadka and they turn golden and nutty. They are also used to make dosa batter!',
+    fun:'🥞 Without urad dal there would be no dosa or idli — our favourite breakfast!',
+    usedIn:'Dosa, Idli, Tadka',
+    tag:'Protein Power'
+  },
+  {
+    emoji:'🟤', name:'Cumin Seeds', telugu:'Jeelakarra (జీలకర్ర)',
+    desc:'Cumin seeds look like tiny brown sticks. They smell earthy and warm. Amma adds them to hot oil and they sizzle! They give food a lovely warm taste.',
+    fun:'🌾 Cumin has been used in cooking for thousands of years in India!',
+    usedIn:'Rasam, Dal, Rice',
+    tag:'Warm & Earthy'
+  },
+];
+
+/* ── Dish data ────────────────────────────────────────────────── */
+const CK_DISHES = [
+  {
+    emoji:'🍚', name:'Annam (Rice)', telugu:'అన్నం',
+    desc:'Rice is our most important food in Andhra! We eat it every day with dal, rasam, sambar or curries. Soft, white and filling!',
+    ingredients:['🌾 Rice','💧 Water','🧂 Salt'],
+    steps:[
+      {n:'1', icon:'🌾', text:'Wash the rice clean with water'},
+      {n:'2', icon:'💧', text:'Add water and rice to the pot'},
+      {n:'3', icon:'🔥', text:'Cook until soft and fluffy'},
+      {n:'4', icon:'😋', text:'Serve hot with dal or rasam!'},
+    ],
+    fun:'🍚 In Andhra, we say "Annam parabrahmam" — rice is like God!'
+  },
+  {
+    emoji:'🥣', name:'Upma', telugu:'ఉప్మా',
+    desc:'Upma is a yummy breakfast made from rava (sooji). Amma adds mustard seeds, curry leaves and vegetables. It is warm and filling in the morning!',
+    ingredients:['🌾 Rava (Sooji)','🫙 Mustard Seeds','🌿 Curry Leaves','🧅 Onion','💧 Water'],
+    steps:[
+      {n:'1', icon:'🫙', text:'Pop mustard seeds in hot oil'},
+      {n:'2', icon:'🧅', text:'Add onions and curry leaves'},
+      {n:'3', icon:'🌾', text:'Add rava and mix well'},
+      {n:'4', icon:'💧', text:'Pour hot water and stir until thick'},
+    ],
+    fun:'⭐ Upma is quick to make and keeps you full all morning!'
+  },
+  {
+    emoji:'🍛', name:'Pappu (Dal)', telugu:'పప్పు',
+    desc:'Pappu is our Andhra dal — cooked yellow lentils that are soft and warm. We eat it with rice and ghee. It is full of protein and so comforting!',
+    ingredients:['🫘 Toor Dal','🟡 Turmeric','🍅 Tomato','🌶️ Chilli','🧂 Salt'],
+    steps:[
+      {n:'1', icon:'🫘', text:'Wash dal and cook until very soft'},
+      {n:'2', icon:'🟡', text:'Add turmeric, tomato and chilli'},
+      {n:'3', icon:'🫙', text:'Make tadka with mustard seeds'},
+      {n:'4', icon:'😋', text:'Mix together and eat with rice!'},
+    ],
+    fun:'💪 Dal makes you strong and healthy — eat it every day!'
+  },
+  {
+    emoji:'🫙', name:'Coconut Chutney', telugu:'కొబ్బరి చట్నీ',
+    desc:'Coconut chutney is white and creamy! We eat it with dosa and idli for breakfast. It is made by grinding coconut with green chilli and coriander.',
+    ingredients:['🥥 Coconut','🌶️ Green Chilli','🌿 Coriander','🧄 Garlic','🫙 Mustard Seeds'],
+    steps:[
+      {n:'1', icon:'🥥', text:'Grate coconut into small pieces'},
+      {n:'2', icon:'🌿', text:'Grind with chilli and coriander'},
+      {n:'3', icon:'🫙', text:'Add salt and mix well'},
+      {n:'4', icon:'✨', text:'Pour hot mustard tadka on top!'},
+    ],
+    fun:'🥥 Coconut chutney with hot dosa is the best breakfast ever!'
+  },
+  {
+    emoji:'🍋', name:'Pulihora', telugu:'పులిహోర',
+    desc:'Pulihora is tamarind rice — sour and delicious! It is yellow because of turmeric and tangy from tamarind. We make it for festivals and puja!',
+    ingredients:['🍚 Cooked Rice','🍋 Tamarind','🟡 Turmeric','🌿 Curry Leaves','🫙 Mustard Seeds'],
+    steps:[
+      {n:'1', icon:'🍋', text:'Soak tamarind and squeeze the juice'},
+      {n:'2', icon:'🫙', text:'Cook tamarind water with spices'},
+      {n:'3', icon:'🍚', text:'Mix with cooked rice and turmeric'},
+      {n:'4', icon:'🎉', text:'Great for festivals and lunch boxes!'},
+    ],
+    fun:'🎉 Pulihora stays fresh for a long time — perfect for picnics!'
+  },
+  {
+    emoji:'🍲', name:'Rasam', telugu:'రసం',
+    desc:'Rasam is a thin spicy soup from Andhra! It is made from tamarind, tomato and spices. It is very good when you have a cold. We pour it over rice.',
+    ingredients:['🍅 Tomato','🍋 Tamarind','🟤 Cumin','🌶️ Pepper','🧄 Garlic'],
+    steps:[
+      {n:'1', icon:'🍅', text:'Boil tomato and tamarind water'},
+      {n:'2', icon:'🧄', text:'Crush garlic and cumin together'},
+      {n:'3', icon:'🫙', text:'Add tadka with mustard seeds'},
+      {n:'4', icon:'😋', text:'Pour over rice or drink as soup!'},
+    ],
+    fun:'🤧 When you have a cold, Amma makes rasam — it makes you feel better!'
+  },
+];
+
+/* ── Match game data ──────────────────────────────────────────── */
+const CK_MATCH = [
+  {q:'Which ingredient makes food YELLOW?', emoji:'🟡', choices:['🌶️','🟡','🥥','🧅'], ans:1, fact:'Turmeric (Pasupu) is the golden spice that gives food its yellow colour!'},
+  {q:'Which ingredient makes food SPICY?', emoji:'🌶️', choices:['🧄','🥥','🌶️','🌾'], ans:2, fact:'Red chilli (Mirchi) makes our Andhra food deliciously spicy and hot!'},
+  {q:'Which ingredient is SOUR and goes in Pulihora?', emoji:'🍋', choices:['🍋','🧅','🌿','🫘'], ans:0, fact:'Tamarind (Chintapandu) is sour! We use it in Pulihora and Rasam.'},
+  {q:'Which ingredient POPS in hot oil?', emoji:'🫙', choices:['🌾','🥥','🍅','🫙'], ans:3, fact:'Mustard seeds (Avalu) pop and dance when you put them in hot oil — it is called tadka!'},
+  {q:'Which ingredient makes you CRY when cut?', emoji:'😭', choices:['🧅','🌿','🥥','🧄'], ans:0, fact:'Onions (Ullipaya) make your eyes water when you cut them — it is okay!'},
+  {q:'Which ingredient is WHITE and used in CHUTNEY?', emoji:'🥥', choices:['🌶️','🟡','🥥','🌿'], ans:2, fact:'Coconut (Kobbari) is white and sweet! We grind it to make yummy coconut chutney!'},
+  {q:'Which ingredient is a FRESH GREEN herb sprinkled on food?', emoji:'🌿', choices:['🌿','🧄','🍅','🫙'], ans:0, fact:'Coriander (Kothimira) is sprinkled on top of dishes to make them look and smell fresh!'},
+  {q:'Which ingredient smells VERY STRONG?', emoji:'🧄', choices:['🌾','🧄','🥥','🟡'], ans:1, fact:'Garlic (Vellulli) has a very strong smell — but it makes food taste amazing!'},
+];
+
+/* ── State ─────────────────────────────────────────────────────── */
+let _ckScreen='home', _ckIngIdx=0, _ckDishIdx=0;
+let _ckMatchPool=[], _ckMatchIdx=0, _ckMatchScore=0, _ckMatchLocked=false;
+
+/* ── Build overlay ─────────────────────────────────────────────── */
+const ov = document.createElement('div');
+ov.id = 'cookingOverlay';
+ov.innerHTML = '<div class="ckBox" id="ckBox"></div>';
+document.body.appendChild(ov);
+
+/* ── Render home ───────────────────────────────────────────────── */
+function ckHome(){
+  _ckScreen='home';
+  document.getElementById('ckBox').innerHTML=`
+    <div class="ckHomeTitle">👩‍🍳 Andhra Kitchen!</div>
+    <div class="ckHomeSub">Learn about our yummy South Indian food! 🌶️🥥🌿</div>
+    <div class="ckMenuGrid">
+      <button class="ckMenuBtn" style="background:linear-gradient(135deg,#ff8c69,#ffb830)" onclick="window._ckShowIngredients()">
+        <span class="ckMIcon">🌶️</span>Ingredients
+      </button>
+      <button class="ckMenuBtn" style="background:linear-gradient(135deg,#56cf81,#4ecdc4)" onclick="window._ckShowDishes()">
+        <span class="ckMIcon">🍛</span>Our Dishes
+      </button>
+      <button class="ckMenuBtn" style="background:linear-gradient(135deg,#a78bfa,#4fa3e0)" onclick="window._ckStartMatch()" style="grid-column:1/-1">
+        <span class="ckMIcon">🎮</span>Match Game
+      </button>
+      <button class="ckMenuBtn" style="background:linear-gradient(135deg,#ffb830,#ff6b9d)" onclick="window._ckFunFacts()">
+        <span class="ckMIcon">🤩</span>Fun Facts
+      </button>
+    </div>
+    <button class="ckCloseBtn" onclick="window._ckClose()">✖ Close</button>
+  `;
+}
+
+/* ── Ingredients explorer ──────────────────────────────────────── */
+window._ckShowIngredients = function(idx){
+  _ckScreen='ing';
+  if(idx===undefined) idx=_ckIngIdx;
+  else _ckIngIdx=idx;
+  const d=CK_INGREDIENTS[idx];
+  const total=CK_INGREDIENTS.length;
+  document.getElementById('ckBox').innerHTML=`
+    <button class="ckBackBtn" onclick="ckHome()">← Back</button>
+    <div style="font-size:.7rem;color:#95c4aa;font-weight:700;margin-bottom:8px">
+      Ingredient ${idx+1} of ${total}
+    </div>
+    <div class="ckIngCard">
+      <span class="ckIngEmoji">${d.emoji}</span>
+      <div class="ckIngName">${d.name}</div>
+      <div class="ckIngTelugu">${d.telugu}</div>
+      <div class="ckIngTag">${d.tag}</div>
+      <div style="margin-top:10px"></div>
+      <div class="ckIngDesc">${d.desc}</div>
+      <div style="font-size:.77rem;background:#fff8e1;border-radius:8px;padding:7px 9px;color:#ff8c00;font-weight:700;text-align:left">${d.fun}</div>
+      <div style="margin-top:8px;font-size:.72rem;color:#6b9e85;text-align:left">🍽️ Used in: <strong>${d.usedIn}</strong></div>
+    </div>
+    <div class="ckNavRow">
+      <button class="ckNavBtn" onclick="window._ckShowIngredients(${idx===0?total-1:idx-1})">← Prev</button>
+      <button class="ckNavBtn primary" onclick="window._ckShowIngredients(${(idx+1)%total})">Next →</button>
+    </div>
+    <button class="ckCloseBtn" onclick="window._ckClose()">✖ Close</button>
+  `;
+};
+
+/* ── Dishes explorer ───────────────────────────────────────────── */
+window._ckShowDishes = function(idx){
+  _ckScreen='dish';
+  if(idx===undefined) idx=_ckDishIdx;
+  else _ckDishIdx=idx;
+  const d=CK_DISHES[idx];
+  const total=CK_DISHES.length;
+  document.getElementById('ckBox').innerHTML=`
+    <button class="ckBackBtn" onclick="ckHome()">← Back</button>
+    <div style="font-size:.7rem;color:#95c4aa;font-weight:700;margin-bottom:8px">
+      Dish ${idx+1} of ${total}
+    </div>
+    <div class="ckDishCard">
+      <span class="ckDishEmoji">${d.emoji}</span>
+      <div class="ckDishName">${d.name}</div>
+      <div class="ckDishTelugu">${d.telugu}</div>
+      <div class="ckDishDesc">${d.desc}</div>
+      <div style="font-size:.75rem;font-weight:800;color:#1b4332;margin-bottom:6px;text-align:left">🛒 What goes in it:</div>
+      <div class="ckIngList">${d.ingredients.map(i=>`<span class="ckIngChip">${i}</span>`).join('')}</div>
+      <div style="font-size:.75rem;font-weight:800;color:#1b4332;margin:8px 0 5px;text-align:left">👩‍🍳 How we make it:</div>
+      <div class="ckStepsBox">
+        ${d.steps.map(s=>`
+          <div class="ckStepRow">
+            <div class="ckStepNum">${s.n}</div>
+            <span style="font-size:1.1rem">${s.icon}</span>
+            <span>${s.text}</span>
+          </div>`).join('')}
+      </div>
+      <div style="font-size:.77rem;background:#fff8e1;border-radius:8px;padding:7px 9px;color:#ff8c00;font-weight:700;text-align:left">${d.fun}</div>
+    </div>
+    <div class="ckNavRow">
+      <button class="ckNavBtn" onclick="window._ckShowDishes(${idx===0?total-1:idx-1})">← Prev</button>
+      <button class="ckNavBtn primary" onclick="window._ckShowDishes(${(idx+1)%total})">Next →</button>
+    </div>
+    <button class="ckCloseBtn" onclick="window._ckClose()">✖ Close</button>
+  `;
+};
+
+/* ── Match game ────────────────────────────────────────────────── */
+window._ckStartMatch = function(){
+  _ckScreen='match';
+  _ckMatchPool=[...CK_MATCH].sort(()=>Math.random()-.5).slice(0,6);
+  _ckMatchIdx=0; _ckMatchScore=0;
+  ckMatchQuestion();
+};
+
+function ckMatchQuestion(){
+  _ckMatchLocked=false;
+  const q=_ckMatchPool[_ckMatchIdx];
+  document.getElementById('ckBox').innerHTML=`
+    <button class="ckBackBtn" onclick="ckHome()">← Back</button>
+    <div class="ckMatchProgress">Question ${_ckMatchIdx+1} of ${_ckMatchPool.length} · Score: ${_ckMatchScore} ⭐</div>
+    <div class="ckMatchQuestion"><div class="ckMatchQText">${q.q}</div></div>
+    <div class="ckMatchChoices">
+      ${q.choices.map((c,i)=>`
+        <button class="ckMatchChoice" onclick="window._ckMatchAnswer(${i},${q.ans},this)">${c}</button>
+      `).join('')}
+    </div>
+    <div class="ckMatchFact" id="ckFact"></div>
+    <button class="ckNavBtn primary" id="ckMatchNext" style="display:none;width:100%;margin-bottom:8px"
+      onclick="window._ckMatchNext()">
+      ${_ckMatchIdx+1<_ckMatchPool.length?'➡ Next':'🏆 My Score!'}
+    </button>
+    <button class="ckCloseBtn" onclick="window._ckClose()">✖ Close</button>
+  `;
+}
+
+window._ckMatchAnswer = function(chosen, correct, btn){
+  if(_ckMatchLocked) return;
+  _ckMatchLocked=true;
+  document.querySelectorAll('.ckMatchChoice').forEach(b=>b.style.pointerEvents='none');
+  const right=chosen===correct;
+  if(right) _ckMatchScore++;
+  btn.classList.add(right?'correct':'wrong');
+  const q=_ckMatchPool[_ckMatchIdx];
+  document.getElementById('ckFact').textContent=(right?'✅ ':'❌ ')+q.fact;
+  try{
+    if(typeof soundOn!=='undefined'&&soundOn){
+      const ctx=new(window.AudioContext||window.webkitAudioContext)();
+      (right?[523,659,784]:[349,300]).forEach((f,i)=>{
+        const o=ctx.createOscillator(),g=ctx.createGain();
+        o.connect(g);g.connect(ctx.destination);
+        o.frequency.value=f;o.type='sine';
+        g.gain.setValueAtTime(0,ctx.currentTime+i*.15);
+        g.gain.linearRampToValueAtTime(.15,ctx.currentTime+i*.15+.06);
+        g.gain.linearRampToValueAtTime(0,ctx.currentTime+i*.15+.25);
+        o.start(ctx.currentTime+i*.15);o.stop(ctx.currentTime+i*.15+.3);
+      });
+    }
+  }catch(e){}
+  document.getElementById('ckMatchNext').style.display='block';
+};
+
+window._ckMatchNext = function(){
+  _ckMatchIdx++;
+  if(_ckMatchIdx<_ckMatchPool.length){ ckMatchQuestion(); }
+  else { ckMatchScore(); }
+};
+
+function ckMatchScore(){
+  const pct=_ckMatchScore/_ckMatchPool.length;
+  const earned=Math.max(1,Math.round(pct*5));
+  const emoji=pct===1?'🏆':pct>=.7?'⭐':'👍';
+  const msg=pct===1?'Perfect! You know your Andhra ingredients!':pct>=.7?'Shabash! Well done!':'Keep learning — you are getting better!';
+  const cur=parseInt(localStorage.getItem('c_total_stars')||'0');
+  localStorage.setItem('c_total_stars',cur+earned);
+  const today=new Date().toISOString().slice(0,10).replace(/-/g,'');
+  const ds=parseInt(localStorage.getItem('cs_'+today)||'0');
+  localStorage.setItem('cs_'+today,ds+earned);
+  if(typeof showToast==='function') showToast(`👩‍🍳 Great cooking knowledge! +${earned}⭐`);
+  document.getElementById('ckBox').innerHTML=`
+    <div class="ckScoreBox">
+      <div class="ckScoreEmoji">${emoji}</div>
+      <div class="ckScoreTitle">${msg}</div>
+      <div class="ckScoreStars">${Array(earned).fill('⭐').join('')}</div>
+      <div class="ckScoreSub">Score: <strong>${_ckMatchScore}</strong> / <strong>${_ckMatchPool.length}</strong> — Earned <strong>${earned}⭐</strong></div>
+      <button class="ckNavBtn primary" style="width:100%;margin-bottom:10px" onclick="window._ckStartMatch()">🔄 Play Again</button>
+      <button class="ckNavBtn" style="width:100%;margin-bottom:8px" onclick="ckHome()">← Back to Kitchen</button>
+      <button class="ckCloseBtn" onclick="window._ckClose()">✖ Close</button>
+    </div>
+  `;
+}
+
+/* ── Fun Facts screen ──────────────────────────────────────────── */
+const CK_FUNFACTS = [
+  {emoji:'🍚', fact:'In Andhra Pradesh, we eat rice every single day — for lunch AND dinner! Rice is our life!'},
+  {emoji:'🌶️', fact:'Andhra food is the SPICIEST in all of India! We love our Mirchi!'},
+  {emoji:'🥥', fact:'Coconut trees grow along the coast of Andhra Pradesh. We use coconut in chutneys, curries and sweets!'},
+  {emoji:'🫙', fact:'Tadka (popu) is the first step in most Andhra cooking — hot oil + mustard seeds + curry leaves = magic!'},
+  {emoji:'🍋', fact:'Tamarind trees are very common in Andhra. The sour fruit is used in Rasam, Pulusu and Pulihora!'},
+  {emoji:'👩‍🍳', fact:'Andhra women are famous for their cooking! Every family has secret recipes passed down from grandmother!'},
+  {emoji:'🎉', fact:'At festivals like Ugadi and Sankranti, we make special sweets and rice dishes for the whole family!'},
+  {emoji:'🌿', fact:'Curry leaves are very good for your hair and health — that is why Amma puts them in everything!'},
+];
+
+window._ckFunFacts = function(){
+  _ckScreen='facts';
+  let fi=0;
+  function show(){
+    const f=CK_FUNFACTS[fi];
+    document.getElementById('ckBox').innerHTML=`
+      <button class="ckBackBtn" onclick="ckHome()">← Back</button>
+      <div class="ckIngCard">
+        <div style="font-size:3.5rem;margin-bottom:8px">${f.emoji}</div>
+        <div style="font-size:.88rem;color:#1b4332;line-height:1.6;font-weight:600">${f.fact}</div>
+        <div style="margin-top:10px;font-size:.7rem;color:#95c4aa">${fi+1} of ${CK_FUNFACTS.length}</div>
+      </div>
+      <div class="ckNavRow">
+        <button class="ckNavBtn" onclick="fi=${fi===0?CK_FUNFACTS.length-1:fi-1};show()">← Prev</button>
+        <button class="ckNavBtn primary" onclick="fi=${(fi+1)%CK_FUNFACTS.length};show()">Next →</button>
+      </div>
+      <button class="ckCloseBtn" onclick="window._ckClose()">✖ Close</button>
+    `;
+  }
+  // Need show to be accessible in onclick
+  window._ckFactShow = show;
+  show();
+};
+
+/* ── Open / Close ──────────────────────────────────────────────── */
+window.openCookingZone = function(){
+  document.querySelectorAll('.sp').forEach(b=>b.classList.remove('active'));
+  const btn=document.querySelector('.sp[data-s="cooking"]');
+  if(btn) btn.classList.add('active');
+  ov.classList.add('open');
+  ckHome();
+};
+
+window._ckClose = function(){
+  ov.classList.remove('open');
   document.querySelectorAll('.sp').forEach(b=>b.classList.toggle('active',b.dataset.s==='all'));
 };
 
