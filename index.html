@@ -4930,6 +4930,20 @@ function buildVisualPanel(a){
   // ── MY NAME IN LETTERS ──
   if(t.includes('My Name in Letters')){
     const defaultName = (typeof childName !== 'undefined' && childName) ? childName : '';
+    // Dynamic font size: bigger for short words, smaller for long ones — max 10 chars
+    const _calcFs = (word) => {
+      const len = Math.max(1, word.length);
+      if(len <= 2) return 130;
+      if(len <= 3) return 110;
+      if(len <= 4) return 92;
+      if(len <= 5) return 78;
+      if(len <= 6) return 66;
+      if(len <= 7) return 58;
+      if(len <= 8) return 52;
+      if(len <= 9) return 47;
+      return 42;
+    };
+    const initFs = defaultName ? _calcFs(defaultName) : 80;
     return `<div style="margin:12px 0" id="ftWrap">
       <div style="font-family:'Baloo 2',cursive;font-size:.88rem;font-weight:700;color:var(--purple);margin-bottom:8px;text-align:center">
         ✍️ Type a name, word or number — then trace it!
@@ -4941,24 +4955,27 @@ function buildVisualPanel(a){
           type="text"
           value="${defaultName}"
           placeholder="Type a name or word…"
-          maxlength="12"
+          maxlength="10"
           autocomplete="off"
           style="flex:1;padding:11px 14px;border:2.5px solid #ff6b9d;border-radius:14px;
                  font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;color:#1b4332;
                  background:#fff5f8;outline:none;text-align:center;letter-spacing:2px"
           oninput="(function(){
-            const v=document.getElementById('ftNameInput').value||'Type here…';
+            const raw=document.getElementById('ftNameInput').value;
+            const v=raw||'';
             const g=document.getElementById('ftGuideText');
-            if(g) g.textContent=v;
             const h=document.getElementById('ftHint');
-            if(h) h.textContent='☝️ Now trace: '+v;
+            const len=Math.max(1,v.length);
+            const fs=len<=2?130:len<=3?110:len<=4?92:len<=5?78:len<=6?66:len<=7?58:len<=8?52:len<=9?47:42;
+            if(g){g.textContent=v||'Type here…';g.style.fontSize=fs+'px';g.style.letterSpacing=len<=4?'10px':len<=6?'8px':'4px';}
+            if(h){h.textContent=v?'☝️ Now trace: '+v:'☝️ Type a word above then trace it!';}
             ftClear();
           })()"
         />
         <button onclick="(function(){
             document.getElementById('ftNameInput').value='';
             const g=document.getElementById('ftGuideText');
-            if(g) g.textContent='Type here…';
+            if(g){g.textContent='Type here…';g.style.fontSize='80px';g.style.letterSpacing='10px';}
             const h=document.getElementById('ftHint');
             if(h) h.textContent='☝️ Type a word above then trace it!';
             ftClear();
@@ -4971,9 +4988,9 @@ function buildVisualPanel(a){
       <div style="position:relative;background:#fff5f8;border-radius:20px;border:3px dashed #ff6b9d;overflow:hidden;touch-action:none" id="ftCanvasWrap">
         <canvas id="ftCanvas" style="display:block;width:100%;border-radius:17px"></canvas>
         <div id="ftGuide" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
-          <span id="ftGuideText" style="font-family:'Baloo 2',cursive;font-size:clamp(36px,10vw,66px);font-weight:800;color:rgba(255,107,157,.18);letter-spacing:6px;user-select:none;text-align:center;padding:0 10px;word-break:break-all">${defaultName || 'Type here…'}</span>
+          <span id="ftGuideText" style="font-family:'Baloo 2',cursive;font-size:${initFs}px;font-weight:800;color:rgba(255,107,157,.28);letter-spacing:${initFs>=92?'10px':initFs>=66?'8px':'4px'};user-select:none;text-align:center;padding:0 12px;line-height:1.1;max-width:100%">${defaultName || 'Type here…'}</span>
         </div>
-        <div id="ftHint" style="position:absolute;bottom:10px;left:0;right:0;text-align:center;font-family:'Baloo 2',cursive;font-size:.75rem;color:rgba(0,0,0,.35);pointer-events:none">
+        <div id="ftHint" style="position:absolute;bottom:10px;left:0;right:0;text-align:center;font-family:'Baloo 2',cursive;font-size:.78rem;color:rgba(0,0,0,.4);pointer-events:none;font-weight:700">
           ${defaultName ? '☝️ Now trace: ' + defaultName : '☝️ Type a word above then trace it!'}
         </div>
       </div>
@@ -14430,7 +14447,7 @@ function ftInit(){
   // Set canvas size to match display size
   const rect=wrap.getBoundingClientRect();
   const w=rect.width||300;
-  const h=Math.max(200,w*0.6);
+  const h=Math.max(280,w*0.75);
   canvas.width=w;
   canvas.height=h;
   canvas.style.height=h+'px';
