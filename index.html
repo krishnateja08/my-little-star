@@ -281,10 +281,10 @@ body.bedtime .dta-activity-box{background:#0d2218;border-color:#1b5e20;}
 body.bedtime .dta-act-name{color:var(--text);}
 .dta-act-desc{font-size:.78rem;color:var(--text3);text-align:center;margin-bottom:12px;line-height:1.5;}
 .dta-steps{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
-.dta-step{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:12px;background:linear-gradient(135deg,#f0faf4,#e8f5ee);border-left:3px solid #52b788;}
-body.bedtime .dta-step{background:linear-gradient(135deg,#081a0f,#0d2218);border-left-color:#2d6a4f;}
-.dta-step-num{font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800;color:#fff;background:#52b788;border-radius:50%;min-width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
-.dta-step-text{font-size:.8rem;color:var(--text2);line-height:1.5;font-weight:600;}
+.dta-step{display:flex;align-items:flex-start;gap:12px;padding:11px 14px;border-radius:16px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(183,228,199,0.18);}
+body.bedtime .dta-step{background:rgba(255,255,255,0.06);border-color:rgba(167,139,250,0.2);}
+.dta-step-num{font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:#fff;border-radius:50%;min-width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.dta-step-text{font-size:.84rem;color:#e4f5ec;line-height:1.5;font-weight:700;}
 .dta-say-box{background:linear-gradient(135deg,#fff5d4,#ffe0a0);border-radius:12px;padding:11px 14px;margin-bottom:12px;border-left:4px solid #ffb830;display:flex;gap:10px;align-items:flex-start;}
 body.bedtime .dta-say-box{background:linear-gradient(135deg,#2a1800,#1a1000);border-left-color:#ffb830;}
 .dta-say-label{font-family:'Baloo 2',cursive;font-size:.62rem;font-weight:800;color:#ff8c00;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;margin-top:2px;}
@@ -1106,9 +1106,10 @@ body.bedtime .awhy{background:linear-gradient(135deg,#2a2a44,#2a1a3e);}
 .awhy strong{color:var(--pink);}
 .asteps{background:var(--inputbg);border-radius:13px;padding:12px;margin-bottom:15px;}
 .asteps h4{font-size:.72rem;color:var(--text5);margin-bottom:7px;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
-.step{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:.86rem;color:var(--text2);background:linear-gradient(135deg,#f4fbf7,#eaf6ef);border-radius:12px;padding:9px 11px;border-left:3px solid #52b788;}
-.snum{background:var(--purple);color:#fff;border-radius:50%;width:19px;height:19px;
-  display:flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:700;flex-shrink:0;margin-top:1px;}
+.step{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:.86rem;color:#e4f5ec;background:rgba(255,255,255,0.08);border:1.5px solid rgba(183,228,199,0.18);border-radius:16px;padding:11px 14px;}
+body.bedtime .step{background:rgba(255,255,255,0.06);border-color:rgba(167,139,250,0.2);color:#d4bcff;}
+.snum{color:#fff;border-radius:50%;width:32px;height:32px;
+  display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;flex-shrink:0;}
 
 /* LISTEN BUTTON */
 .listen-btn{display:inline-flex;align-items:center;gap:5px;border:none;padding:6px 14px;
@@ -2624,8 +2625,8 @@ body.bedtime .sr-stat,.body.bedtime .sr-log-entry,.body.bedtime .sr-cat-card,.bo
   .dta-activity-box{padding:12px 12px 10px;}
   .dta-act-name{font-size:.95rem;}
   .dta-act-desc{font-size:.74rem;}
-  .dta-step{padding:8px 10px;gap:7px;}
-  .dta-step-text{font-size:.74rem;}
+  .dta-step{padding:9px 11px;gap:9px;}
+  .dta-step-text{font-size:.78rem;}
   .dta-done-btn{padding:12px;font-size:.9rem;}
   .listen-btn{font-size:.68rem;padding:4px 10px;}
 }
@@ -4446,7 +4447,8 @@ function showPhysicalAct(pa){
   const paFullSpeech=[pa.title,pa.desc,'Why this helps: '+pa.why,'How to do it:',
     ...pa.steps.map((s,i)=>'Step '+(i+1)+': '+s)].join('. ');
   window._lastSpeech=paFullSpeech;
-  const steps=pa.steps.map((s,i)=>`<div class="step"><div class="snum">${i+1}</div><span>${s}</span></div>`).join('');
+  const _sc=['#a78bfa','#4ecdc4','#ffb830','#ff6b9d'];
+  const steps=pa.steps.map((s,i)=>`<div class="step"><div class="snum" style="background:${_sc[i%4]}">${i+1}</div><span>${s}</span></div>`).join('');
   document.getElementById('area').innerHTML=`
     <div class="phys-card" id="ac">
       <span class="phys-badge">🏃 Physical Activity Day!</span>
@@ -6908,7 +6910,8 @@ function buildThinkPanel(a){
 }
 
 function showAct(a){
-  const steps=a.steps.map((s,i)=>`<div class="step"><div class="snum">${i+1}</div>${a.stepIcons&&a.stepIcons[i]?`<span style="font-size:1.55rem;flex-shrink:0;line-height:1;margin-right:2px">${a.stepIcons[i]}</span>`:''}<span>${s}</span></div>`).join('');
+  const _sca=['#a78bfa','#4ecdc4','#ffb830','#ff6b9d'];
+  const steps=a.steps.map((s,i)=>`<div class="step"><div class="snum" style="background:${_sca[i%4]}">${i+1}</div>${a.stepIcons&&a.stepIcons[i]?`<span style="font-size:1.55rem;flex-shrink:0;line-height:1;margin-right:2px">${a.stepIcons[i]}</span>`:''}<span>${s}</span></div>`).join('');
   const lb=a.learn?`<div class="alearn"><h4>🧠 What You Will Learn</h4><p>${a.learn}</p></div>`:'';
   const sb=a.tag?`<span class="stag" style="background:${SC[a.subj]||'linear-gradient(135deg,#56cf81,#4ecdc4)'}">${a.tag}</span>`:'';
   const heroVisual=a.stepIcons?`<div style="background:linear-gradient(135deg,#e8f5ee,#d8f3dc);border-radius:16px;padding:16px 12px;text-align:center;margin-bottom:14px;letter-spacing:6px;font-size:2.4rem;">${a.stepIcons.join(' ')}</div>`:'';
@@ -16831,7 +16834,7 @@ function nextEmotionRound(){
     </div>`;return;
   }
   const em=EMOTIONS[efIdx];
-  const stepsHTML=em.steps.map((s,i)=>`<div class="dta-step" style="cursor:default"><div class="dta-step-num">${i+1}</div><div class="dta-step-text">${s}</div></div>`).join('');
+  const stepsHTML=em.steps.map((s,i)=>{const _c=['#a78bfa','#4ecdc4','#ffb830','#ff6b9d'];return`<div class="dta-step" style="cursor:default;margin-bottom:8px"><div class="dta-step-num" style="background:${_c[i%4]}">${i+1}</div><div class="dta-step-text">${s}</div></div>`}).join('');
   document.getElementById('area').innerHTML=`
     <div class="game-panel">
       <div class="game-title">🎭 Emotion Faces!</div>
@@ -18560,11 +18563,11 @@ function renderDtaDetail(state){
   const cat=DTA_CATEGORIES.find(c=>c.ids.includes(act.id));
   const isDone=state.completedIds.includes(act.id);
 
-  const stepsHTML=act.steps.map((s,i)=>`
-    <div class="dta-step">
-      <div class="dta-step-num">${i+1}</div>
+  const stepsHTML=act.steps.map((s,i)=>{const _c=['#a78bfa','#4ecdc4','#ffb830','#ff6b9d'];return`
+    <div class="dta-step" style="margin-bottom:8px">
+      <div class="dta-step-num" style="background:${_c[i%4]}">${i+1}</div>
       <div class="dta-step-text">${s}</div>
-    </div>`).join('');
+    </div>`}).join('');
 
   const doneBanner=isDone?`
     <div class="dta-completed-banner">
@@ -18851,11 +18854,11 @@ function renderBodyTab(){
 
   const listenBtn=`<button class="listen-btn" onclick="speakText(window._lastSpeech)" style="margin-bottom:12px;width:100%">🔊 Tap to hear everything read aloud</button>`;
 
-  const stepsHTML=card.steps.map((s,i)=>`
-    <div class="dta-step" onclick="speakText('Step ${i+1}. ${s.replace(/'/g,"\\'")}');this.style.background='linear-gradient(135deg,#d8f3dc,#b7e4c7)';setTimeout(()=>this.style.background='',1800)" style="cursor:pointer">
-      <div class="dta-step-num">${i+1}</div>
-      <div class="dta-step-text">${s} <span style="font-size:.6rem;color:var(--blue)">🔊</span></div>
-    </div>`).join('');
+  const stepsHTML=card.steps.map((s,i)=>{const _c=['#a78bfa','#4ecdc4','#ffb830','#ff6b9d'];return`
+    <div class="dta-step" onclick="speakText('Step ${i+1}. ${s.replace(/'/g,"\\'")}');this.style.background='rgba(255,255,255,0.16)';setTimeout(()=>this.style.background='',1800)" style="cursor:pointer;margin-bottom:8px">
+      <div class="dta-step-num" style="background:${_c[i%4]}">${i+1}</div>
+      <div class="dta-step-text">${s} <span style="font-size:.6rem;color:var(--mint)">🔊</span></div>
+    </div>`}).join('');
 
   const doneBanner=isDone?`<div class="dta-completed-banner">
     <span class="cb-icon">✅</span>
