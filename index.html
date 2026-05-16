@@ -3178,7 +3178,8 @@ const SYNC_KEYS = [
   'c_stories_heard','c_endings','c_gallery','c_mood_hist',
   'c_bedtime','c_sound','c_activeHat','c_activeChar','c_activeTheme',
   'c_voiceName','c_friendName','c_parentNotes','c_parent_notes',
-  'c_current','cs','cld'
+  'c_current','cs','cld',
+  'c_child_name','c_child_age'  // ← synced to Firebase & parent tab
 ];
 const SYNC_PREFIXES = [
   'cd_','cs_','c_mood_','c_goals_','c_spark_','c_btt_',
@@ -3653,6 +3654,23 @@ function changeFamilyCode(){
 let soundOn=localStorage.getItem('c_sound')!=='off';
 let _userActivated=false; // track if user has interacted — needed for speechSynthesis
 let childName=localStorage.getItem('c_child_name')||'';
+let childAge=parseInt(localStorage.getItem('c_child_age')||'0');
+
+// ── Age → starting difficulty ──────────────────────────────
+// age 3-4 → level 1 (easy), 5-6 → level 2 (medium), 7+ → level 3 (hard)
+function getAgeBasedDiff(age){
+  if(age>=7) return 3;
+  if(age>=5) return 2;
+  return 1;
+}
+// ── Notify parent tab whenever age/name are saved ──────────
+function notifyParent(name, age){
+  try{
+    var payload={type:'myLittleStar_childInfo', childName:name, childAge:age, timestamp:Date.now()};
+    if(window.parent && window.parent!==window) window.parent.postMessage(payload,'*');
+    window.postMessage(payload,'*');
+  }catch(e){}
+}
 const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
 
 function playTone(freq,dur,type='sine'){
@@ -3971,12 +3989,16 @@ function renderChallenge(){
 // ══════════════════════════════════════
 //  ADAPTIVE DIFFICULTY (#4)
 // ══════════════════════════════════════
-let diffLevel=parseInt(localStorage.getItem('c_diff')||'1');
+// diffLevel: start from age-based value if age is known, else from saved pref
+let diffLevel = childAge ? getAgeBasedDiff(childAge) : parseInt(localStorage.getItem('c_diff')||'1');
+// If age is set and no previous manual override, lock initial level to age
+if(childAge && !localStorage.getItem('c_diff_manual')) localStorage.setItem('c_diff', diffLevel);
 let correctStreak=0,wrongStreak=0;
 function adaptDifficulty(correct){
   if(correct){correctStreak++;wrongStreak=0;if(correctStreak>=3){diffLevel=Math.min(3,diffLevel+1);correctStreak=0;}}
   else{wrongStreak++;correctStreak=0;if(wrongStreak>=2){diffLevel=Math.max(1,diffLevel-1);wrongStreak=0;}}
   localStorage.setItem('c_diff',diffLevel);
+  localStorage.setItem('c_diff_manual','1'); // user adapted manually
 }
 function getDiffRange(){
   if(diffLevel===1)return{min:1,max:8,wordLen:3};
@@ -11589,7 +11611,8 @@ function setupHeader(){
 }
 
 function promptChildName(){
-  if(childName)return;
+  // Only show if name OR age is missing
+  if(childName && childAge)return;
   const overlay=document.getElementById('surpriseOverlay');
   if(!overlay)return;
   overlay.style.display='flex';
@@ -11600,26 +11623,103 @@ function promptChildName(){
   overlay.style.alignItems='center';
   overlay.style.justifyContent='center';
   overlay.style.padding='20px';
-  overlay.innerHTML=`<div style="background:#fff;border-radius:24px;padding:28px 24px;max-width:320px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2)">
-    <div style="font-size:3rem;margin-bottom:8px">⭐</div>
-    <div style="font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:#1b4332;margin-bottom:6px">What is your name, little star?</div>
-    <div style="font-size:.82rem;color:#6b9e85;margin-bottom:16px">So I can say hello to YOU every day!</div>
-    <input id="nameInput" type="text" placeholder="Type your name here..." style="width:100%;padding:12px 14px;border:2px solid #d4ede0;border-radius:14px;font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;color:#1b4332;text-align:center;outline:none;margin-bottom:14px">
-    <button onclick="saveChildName()" style="width:100%;padding:13px;background:linear-gradient(135deg,#1b4332,#52b788);color:#fff;border:none;border-radius:14px;font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;cursor:pointer">Let's go! 🌟</button>
+
+  // Age buttons: 3 to 12
+  const ageBtns = [3,4,5,6,7,8,9,10,11,12].map(a=>
+    `<button onclick="window._selectAge(${a})" id="ageBtn_${a}" style="
+      padding:10px 14px;border:2.5px solid #d4ede0;border-radius:12px;
+      font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;
+      color:#1b4332;background:#f0faf4;cursor:pointer;transition:all .15s;"
+      onmouseover="this.style.borderColor='#52b788';this.style.background='#d4ede0';"
+      onmouseout="if(!this.classList.contains('sel')){this.style.borderColor='#d4ede0';this.style.background='#f0faf4';}"
+    >${a}</button>`
+  ).join('');
+
+  overlay.innerHTML=`<div style="background:#fff;border-radius:28px;padding:28px 22px 24px;max-width:340px;width:92%;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.25)">
+    <div style="font-size:3rem;margin-bottom:6px">🌟</div>
+    <div style="font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:#1b4332;margin-bottom:4px">Welcome, Little Star!</div>
+    <div style="font-size:.8rem;color:#6b9e85;margin-bottom:18px">Let me set things up just for you!</div>
+
+    <div style="text-align:left;margin-bottom:14px">
+      <div style="font-size:.75rem;font-weight:700;color:#95c4aa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">👤 Your Name</div>
+      <input id="nameInput" type="text" placeholder="Type your name..." value="${childName}"
+        style="width:100%;padding:11px 14px;border:2px solid #d4ede0;border-radius:12px;
+          font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;color:#1b4332;
+          text-align:center;outline:none;">
+    </div>
+
+    <div style="text-align:left;margin-bottom:20px">
+      <div style="font-size:.75rem;font-weight:700;color:#95c4aa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">🎂 How old are you?</div>
+      <div id="ageBtnGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px;">${ageBtns}</div>
+      <div id="ageLabel" style="font-size:.78rem;color:#6b9e85;margin-top:8px;min-height:18px;text-align:center;"></div>
+    </div>
+
+    <button onclick="saveChildName()" style="width:100%;padding:14px;background:linear-gradient(135deg,#1b4332,#52b788);color:#fff;border:none;border-radius:14px;font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;cursor:pointer;box-shadow:0 6px 18px rgba(27,67,50,.3)">Let's go! 🚀</button>
   </div>`;
-  setTimeout(()=>{const i=document.getElementById('nameInput');if(i)i.focus();},200);
+
+  // Pre-select age if already saved
+  if(childAge){
+    window._selectAge(childAge);
+  }
+  window._pendingAge = childAge || 0;
+
+  setTimeout(()=>{const i=document.getElementById('nameInput');if(i&&!childName)i.focus();},200);
 }
+
+window._selectAge = function(a){
+  window._pendingAge = a;
+  document.querySelectorAll('[id^="ageBtn_"]').forEach(b=>{
+    b.classList.remove('sel');
+    b.style.borderColor='#d4ede0';
+    b.style.background='#f0faf4';
+    b.style.color='#1b4332';
+  });
+  const btn = document.getElementById('ageBtn_'+a);
+  if(btn){
+    btn.classList.add('sel');
+    btn.style.borderColor='#52b788';
+    btn.style.background='linear-gradient(135deg,#52b788,#4ecdc4)';
+    btn.style.color='#fff';
+  }
+  // Show difficulty label
+  const diff = getAgeBasedDiff(a);
+  const label = diff===1?'🟢 Easy mode — simple questions':'diff'===2?'🟡 Medium mode — a bit more thinking!':'🔴 Challenge mode — you are a superstar!';
+  const diffLabels = {1:'🟢 Easy mode — simple questions', 2:'🟡 Medium mode — a bit more thinking!', 3:'🔴 Challenge mode — superstar level!'};
+  const lbl = document.getElementById('ageLabel');
+  if(lbl) lbl.textContent = diffLabels[diff] || '';
+};
 
 function saveChildName(){
   const input=document.getElementById('nameInput');
   const name=(input&&input.value.trim())||'';
-  if(!name){if(input)input.style.borderColor='#ff6b9d';return;}
+  if(!name){if(input){input.style.borderColor='#ff6b9d';input.focus();}return;}
+  const age = window._pendingAge || 0;
+  if(!age){
+    const lbl=document.getElementById('ageLabel');
+    if(lbl){lbl.textContent='⚠️ Please tap your age above!';lbl.style.color='#ff6b9d';}
+    return;
+  }
+
+  // Save name
   childName=name;
   localStorage.setItem('c_child_name',name);
+
+  // Save age → drives difficulty
+  childAge=age;
+  localStorage.setItem('c_child_age', age);
+
+  // Set difficulty based on age (won't override manual adjustments later)
+  diffLevel = getAgeBasedDiff(age);
+  localStorage.setItem('c_diff', diffLevel);
+  localStorage.removeItem('c_diff_manual'); // reset manual flag
+
+  // Notify parent tab / iframe host
+  notifyParent(name, age);
+
   const overlay=document.getElementById('surpriseOverlay');
   if(overlay)overlay.style.display='none';
   setupHeader();
-  if(typeof mascotSay==='function')mascotSay('Hello '+name+'! I am so happy you are here! 🌟',3000);
+  if(typeof mascotSay==='function')mascotSay('Hello '+name+'! Ready for Level '+diffLevel+' adventures! 🌟',3000);
   if(typeof speakText==='function')speakText('Hello '+name+'! Welcome to your learning adventure!');
 }
 
@@ -19121,7 +19221,7 @@ function removeMission(id){toggleMission(id,'','');}
   overlay.innerHTML=`
     <div class="mqBox">
       <div class="mqTitle">🧮 Quick Maths Check!</div>
-      <div class="mqSub">Answer to get your stars! ⭐</div>
+      <div class="mqSub" id="mqSubLabel">Answer to get your stars! ⭐</div>
       <div class="mqQuestion">
         <div class="mqQText" id="mqQText">? + ? = ?</div>
       </div>
@@ -19134,19 +19234,73 @@ function removeMission(id){toggleMission(id,'','');}
   let _correctAnswer=0;
   let _attempts=0;
 
-  /* ── Generate a random single-digit addition ── */
+  /* ── Generate question based on child age / difficulty ── */
   function newQuestion(){
-    const a=Math.floor(Math.random()*9)+1;   // 1-9
-    const b=Math.floor(Math.random()*9)+1;   // 1-9
-    _correctAnswer=a+b;
-    document.getElementById('mqQText').textContent=a+' + '+b+' = ?';
-    // Build 4 choices: correct + 3 wrong (unique, reasonable)
-    const choices=new Set([_correctAnswer]);
-    while(choices.size<4){
-      const wrong=_correctAnswer+Math.floor(Math.random()*7)-3;
-      if(wrong>0&&wrong!==_correctAnswer)choices.add(wrong);
+    // Age-based ranges:
+    // age 3-4 (diff 1): add 1-5
+    // age 5-6 (diff 2): add/sub 1-10
+    // age 7+  (diff 3): add/sub/mul 1-12
+    var diff = (typeof diffLevel !== 'undefined') ? diffLevel : 1;
+    var age  = (typeof childAge  !== 'undefined') ? childAge  : 0;
+    if(age && age < 5) diff = 1;
+    else if(age && age < 7) diff = Math.max(diff,1);
+
+    var ops, a, b, questionText;
+
+    if(diff === 1){
+      // Simple addition, small numbers
+      a = Math.floor(Math.random()*5)+1;  // 1-5
+      b = Math.floor(Math.random()*5)+1;  // 1-5
+      _correctAnswer = a + b;
+      questionText = a + ' + ' + b + ' = ?';
+
+    } else if(diff === 2){
+      // Addition or subtraction, up to 10
+      var useAdd = Math.random() > 0.4;
+      if(useAdd){
+        a = Math.floor(Math.random()*9)+1;
+        b = Math.floor(Math.random()*9)+1;
+        _correctAnswer = a + b;
+        questionText = a + ' + ' + b + ' = ?';
+      } else {
+        a = Math.floor(Math.random()*9)+2;  // 2-10
+        b = Math.floor(Math.random()*( a-1 ))+1;  // 1 to a-1
+        _correctAnswer = a - b;
+        questionText = a + ' − ' + b + ' = ?';
+      }
+
+    } else {
+      // Level 3: add / sub / simple multiply
+      var op = Math.floor(Math.random()*3); // 0=+, 1=−, 2=×
+      if(op === 0){
+        a = Math.floor(Math.random()*12)+1;
+        b = Math.floor(Math.random()*12)+1;
+        _correctAnswer = a + b;
+        questionText = a + ' + ' + b + ' = ?';
+      } else if(op === 1){
+        a = Math.floor(Math.random()*15)+5;
+        b = Math.floor(Math.random()*( a-1 ))+1;
+        _correctAnswer = a - b;
+        questionText = a + ' − ' + b + ' = ?';
+      } else {
+        a = Math.floor(Math.random()*5)+2;  // 2-6
+        b = Math.floor(Math.random()*5)+2;  // 2-6
+        _correctAnswer = a * b;
+        questionText = a + ' × ' + b + ' = ?';
+      }
     }
-    // Shuffle
+
+    document.getElementById('mqQText').textContent = questionText;
+
+    // Build choices: correct + 3 wrong (unique, positive)
+    const choices=new Set([_correctAnswer]);
+    var spread = diff===1 ? 4 : diff===2 ? 6 : 10;
+    var attempts2 = 0;
+    while(choices.size<4 && attempts2<50){
+      attempts2++;
+      const wrong=_correctAnswer+Math.floor(Math.random()*spread*2)-spread;
+      if(wrong>0 && wrong!==_correctAnswer) choices.add(wrong);
+    }
     const arr=[...choices].sort(()=>Math.random()-.5);
     const box=document.getElementById('mqChoices');
     box.innerHTML='';
@@ -19191,6 +19345,14 @@ function removeMission(id){toggleMission(id,'','');}
   function openQuiz(callback){
     _pendingCallback=callback;
     newQuestion();
+    // Update subtitle to show level
+    var sub = document.getElementById('mqSubLabel');
+    if(sub){
+      var age = (typeof childAge!=='undefined' && childAge) ? childAge : 0;
+      var diff = (typeof diffLevel!=='undefined') ? diffLevel : 1;
+      var icons = {1:'🟢 Easy', 2:'🟡 Medium', 3:'🔴 Challenge'};
+      sub.textContent = (age ? 'Age '+age+' · ' : '') + (icons[diff]||'Level '+diff) + ' — Answer to earn your stars! ⭐';
+    }
     document.getElementById('mathQuizOverlay').classList.add('open');
   }
   function closeQuiz(){
