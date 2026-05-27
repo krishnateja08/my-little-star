@@ -4599,11 +4599,31 @@ function getJourneyTotals(){
   return {totalDays,totalWeeks};
 }
 function getWeek(){
-  // Use active days count instead of calendar days
-  const activeDays=parseInt(localStorage.getItem('c_active_days')||'0');
-  const {totalWeeks}=getJourneyTotals();
-  const week=Math.min(Math.floor(activeDays/7)+1,totalWeeks);
-  return {week,day:activeDays+1};
+  // Calendar-based days elapsed (original calculation) — used as a floor
+  // so existing users never lose access to already-unlocked weeks/content
+  let s=localStorage.getItem('cs');
+  if(!s) s=todayKey();
+  const [y,m,d]=s.split('-').map(Number);
+  const calendarDays=Math.floor((new Date()-new Date(y,m-1,d))/(864e5));
+
+  // Active days = days she actually completed 5+ activities
+  // Initialise c_active_days to calendarDays on first run so existing
+  // users keep their unlocked content level
+  let storedActive=localStorage.getItem('c_active_days');
+  if(storedActive===null){
+    // First time running new code — seed from calendar days
+    localStorage.setItem('c_active_days',calendarDays);
+    storedActive=calendarDays;
+  }
+  const activeDays=parseInt(storedActive);
+
+  // Use the HIGHER of the two so content already unlocked stays unlocked
+  const effectiveDays=Math.max(activeDays,calendarDays);
+
+  const {totalDays,totalWeeks}=getJourneyTotals();
+  const week=Math.min(Math.floor(effectiveDays/7)+1,totalWeeks);
+  const day=Math.min(effectiveDays+1,totalDays);
+  return {week,day};
 }
 
 // ── Active Day Tracking ──────────────────────────────────────────
