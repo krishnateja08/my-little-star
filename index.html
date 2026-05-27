@@ -3180,11 +3180,13 @@ const SYNC_KEYS = [
   'c_bedtime','c_sound','c_activeHat','c_activeChar','c_activeTheme',
   'c_voiceName','c_friendName','c_parentNotes','c_parent_notes',
   'c_current','cs','cld',
-  'c_child_name','c_child_age'  // ← synced to Firebase & parent tab
+  'c_child_name','c_child_age',  // ← synced to Firebase & parent tab
+  'c_active_days','c_active_dates'  // ← active learning day tracking
 ];
 const SYNC_PREFIXES = [
   'cd_','cs_','c_mood_','c_goals_','c_spark_','c_btt_',
-  'c_tune_','c_bl_dismiss_','c_goals_bonus_','c_weather_','c_skipped_'
+  'c_tune_','c_bl_dismiss_','c_goals_bonus_','c_weather_','c_skipped_',
+  'c_extra_done_'  // ← daily extra completion counter (btt/dta/body)
 ];
 
 function _shouldSync(key){ return SYNC_KEYS.includes(key)||SYNC_PREFIXES.some(p=>key.startsWith(p)); }
@@ -4597,15 +4599,46 @@ function getJourneyTotals(){
   return {totalDays,totalWeeks};
 }
 function getWeek(){
-  let s=localStorage.getItem('cs');
-  // If 'cs' is missing (new device), use today as a TEMPORARY fallback only.
-  // NEVER write this fallback to localStorage — that would corrupt the real
-  // start-date stored in Firebase and cause week mismatches across devices.
-  if(!s) s=todayKey();
-  const [y,m,d]=s.split('-').map(Number);
-  const diff=Math.floor((new Date()-new Date(y,m-1,d))/(864e5));
+  // Use active days count instead of calendar days
+  const activeDays=parseInt(localStorage.getItem('c_active_days')||'0');
   const {totalWeeks}=getJourneyTotals();
-  return {week:Math.min(Math.floor(diff/7)+1,totalWeeks),day:diff+1};
+  const week=Math.min(Math.floor(activeDays/7)+1,totalWeeks);
+  return {week,day:activeDays+1};
+}
+
+// ── Active Day Tracking ──────────────────────────────────────────
+// Called after every activity completion.
+// Increments c_active_days only when:
+//   1. She has completed >= 5 activities TODAY
+//   2. Today's date has not already been counted
+// ────────────────────────────────────────────────────────────────
+function checkActiveDayProgress(){
+  const todayStr=todayKey();
+  // How many activities completed today across all completion types
+  const doneToday=JSON.parse(localStorage.getItem('cd_'+todayStr)||'[]');
+  // Also count completeBtt, dtaMarkDone, bodyMarkDone via separate counters
+  const extraToday=parseInt(localStorage.getItem('c_extra_done_'+todayStr)||'0');
+  const totalToday=doneToday.length+extraToday;
+
+  // Check if today is already counted as an active day
+  const activeDates=JSON.parse(localStorage.getItem('c_active_dates')||'[]');
+  if(activeDates.includes(todayStr)) return; // already counted today
+
+  if(totalToday>=5){
+    // Mark today as an active day
+    activeDates.push(todayStr);
+    localStorage.setItem('c_active_dates',JSON.stringify(activeDates));
+    const newCount=activeDates.length;
+    localStorage.setItem('c_active_days',newCount);
+    // Sync to Firebase if available
+    if(typeof fbWrite==='function'&&typeof _syncReady!=='undefined'&&_syncReady&&_currentUser){
+      fbWrite('c_active_days',newCount);
+      fbWrite('c_active_dates',JSON.stringify(activeDates));
+    }
+    // Update the header badge
+    if(typeof setupHeader==='function') setupHeader();
+    showToast('🌟 Day '+(newCount)+' unlocked! Keep going!');
+  }
 }
 
 let {week,day}=getWeek();
@@ -8987,6 +9020,7 @@ function markGameDone(sc){
   localStorage.setItem('cws',JSON.stringify(ws));
   showSpill();showToast(`⭐ +${earnedStars} stars!`);playStar();burst();
   renderStarPath();renderGoals();renderTabBadges();
+  checkActiveDayProgress();
   current=null;currentlyPlaying=false;setTimeout(fetchNext,500);
 }
 
@@ -9008,6 +9042,7 @@ function markDone(){
   localStorage.setItem('cws',JSON.stringify(ws));
   showSpill();showToast(`⭐ +${current.stars} stars!`);playStar();burst();
   mascotPraise();renderStarPath();renderGoals();renderTabBadges();updateHomepage();
+  checkActiveDayProgress();
   const ac=document.getElementById('ac');if(ac){ac.style.opacity='0';ac.style.transform='scale(.9) translateY(-10px)';}
   current=null;currentlyPlaying=false;setTimeout(fetchNext,500);
 }
@@ -10667,6 +10702,7 @@ function parentReset(){
   localStorage.removeItem('c_owned');localStorage.removeItem('c_total_stars');
   localStorage.removeItem('c_diff');localStorage.removeItem('c_current');
   localStorage.removeItem('c_activeHat');localStorage.removeItem('c_activeChar');localStorage.removeItem('c_activeTheme');
+  localStorage.removeItem('c_active_days');localStorage.removeItem('c_active_dates');
   allUsed=[];done=[];stars=0;totalStarsEver=0;owned=[];diffLevel=1;
   activeHat='';activeChar='';activeTheme='';
   location.reload();
@@ -13735,6 +13771,10 @@ function completeBtt(){
   localStorage.setItem('c_total_stars',totalStarsEver);
   showSpill();playStar();burst();
   mascotPraise();
+  // Count towards active day
+  const ed=parseInt(localStorage.getItem('c_extra_done_'+todayKey())||'0');
+  localStorage.setItem('c_extra_done_'+todayKey(),ed+1);
+  checkActiveDayProgress();
   document.getElementById('bttOverlay').innerHTML='';
   renderBtt();
 }
@@ -18972,7 +19012,10 @@ function dtaMarkDone(){
   if(typeof showToast==='function')showToast('🌟 '+act.name+' done! +'+s+' stars!');
   if(typeof mascotSay==='function')mascotSay('Amazing teaching! +'+s+' stars! 🌟',3000);
   if(typeof showSpill==='function')showSpill();
-
+  // Count towards active day
+  const _edDta=parseInt(localStorage.getItem('c_extra_done_'+todayKey())||'0');
+  localStorage.setItem('c_extra_done_'+todayKey(),_edDta+1);
+  checkActiveDayProgress();
   renderParentDash();
 }
 
@@ -19256,6 +19299,10 @@ function bodyMarkDone(){
   if(typeof burst==='function')burst();
   if(typeof showToast==='function')showToast('🌟 Great job! +'+s+' stars! See you tomorrow for '+( BODY_CARDS[state.currentIndex]?.shortName||'more')+'! 🫀');
   if(typeof mascotSay==='function')mascotSay('Amazing! You learned about your '+card.part+'! +'+s+' stars! 🌟',3000);
+  // Count towards active day
+  const _edBody=parseInt(localStorage.getItem('c_extra_done_'+todayKey())||'0');
+  localStorage.setItem('c_extra_done_'+todayKey(),_edBody+1);
+  checkActiveDayProgress();
   renderBodyTab();
 }
 
