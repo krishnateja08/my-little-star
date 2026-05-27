@@ -16838,14 +16838,18 @@ function _bsRender(){
       filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))"
       onmousedown="_bsDragStart(event,${i})"
       ontouchstart="_bsDragStart(event,${i})"
+      onmouseenter="const x=this.querySelector('.bs-del');if(x)x.style.opacity='1'"
+      onmouseleave="const x=this.querySelector('.bs-del');if(x)x.style.opacity='0'"
+      ontouchend="const x=this.querySelector('.bs-del');if(x){x.style.opacity='1';setTimeout(()=>x.style.opacity='0',2000);}"
     >${p.e}
-    <span onclick="_bsRemove(${i})" style="
+    <span class="bs-del" onclick="_bsRemove(${i})" style="
       position:absolute;top:-8px;right:-8px;
       width:18px;height:18px;border-radius:50%;
       background:#ff4444;color:#fff;font-size:.6rem;
       display:flex;align-items:center;justify-content:center;
       cursor:pointer;font-weight:800;line-height:1;
-      box-shadow:0 1px 4px rgba(0,0,0,.3)"
+      box-shadow:0 1px 4px rgba(0,0,0,.3);
+      opacity:0;transition:opacity .2s;pointer-events:auto"
     >✕</span></span>`).join('');
 
   document.getElementById('area').innerHTML=`
