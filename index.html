@@ -16748,47 +16748,251 @@ function renderDeStep(){
 function deDone(){deStep++;playCorrect();renderDeStep();}
 
 // ════════════════════════════════════════════════
-//  CREATIVE GAME 2: BUILD A SCENE!
+//  CREATIVE GAME 2: BUILD A SCENE! (Enhanced)
 // ════════════════════════════════════════════════
+const BS_BACKGROUNDS = [
+  {name:'☀️ Day City',  bg:'linear-gradient(180deg,#87CEEB 0%,#87CEEB 55%,#808080 55%)'},
+  {name:'🌙 Night City',bg:'linear-gradient(180deg,#0d1b4b 0%,#0d1b4b 60%,#2c2c3a 60%)'},
+  {name:'🌳 Park',      bg:'linear-gradient(180deg,#87CEEB 0%,#87CEEB 50%,#3a9e3a 50%)'},
+  {name:'🏖️ Beach',    bg:'linear-gradient(180deg,#87CEEB 0%,#87CEEB 50%,#F4A460 50%)'},
+  {name:'🚀 Space',     bg:'linear-gradient(180deg,#0a0a2e 0%,#1a1a4e 60%,#0d2b1a 60%)'},
+];
+const BS_CATS = {
+  '🏙️ City':    ['🏠','🏪','🏬','🚦','🌉','🏗️','🏛️','⛪'],
+  '🌿 Nature':  ['🌲','🌳','🌸','🌻','🍄','🌺','🌿','🌾'],
+  '🚗 Vehicles':['🚗','🚌','🚀','✈️','🚂','🚁','⛵','🚲'],
+  '🎉 Fun':     ['⭐','🌈','🎈','🎉','🦄','🍦','🎁','❤️'],
+  '🌙 Sky':     ['☀️','🌙','⭐','🌟','☁️','🌤️','🌈','🛸'],
+};
+const BS_MASCOT_TIPS = [
+  '🐱 Try adding a tree!','🐱 Great job!','🐱 How about a car?',
+  '🐱 Add some stars!','🐱 Make it colourful!','🐱 Want to try a night scene?',
+  '🐱 You are an artist!','🐱 Add more stickers!',
+];
+let _bsState = null;
+
 function buildBuildScene(){
-  const scenes=[
-    {name:'🌳 Forest',bg:'linear-gradient(180deg,#87CEEB 0%,#87CEEB 55%,#228B22 55%)',stickers:['🌲','🌳','🦋','🐿️','🍄','🌸','🐦','🦊','🌻','⭐']},
-    {name:'🌊 Beach',bg:'linear-gradient(180deg,#87CEEB 0%,#87CEEB 55%,#F4A460 55%)',stickers:['🌴','🏖️','🦀','🐚','⛱️','🌊','🦭','🐠','☀️','🌈']},
-    {name:'🏙️ City',bg:'linear-gradient(180deg,#B0C4DE 0%,#B0C4DE 55%,#808080 55%)',stickers:['🏠','🚗','🌳','🚌','⭐','🌙','🏪','🚦','🐦','🌸']},
-    {name:'🌙 Night Sky',bg:'linear-gradient(180deg,#191970 0%,#191970 70%,#2d4a1e 70%)',stickers:['⭐','🌙','🌟','✨','🚀','🛸','🌍','☁️','🦉','🌲']},
-  ];
-  const scene=scenes[Math.floor(Math.random()*scenes.length)];
-  let placed=[];
-  function render(){
-    document.getElementById('area').innerHTML=`
-      <div class="game-panel" style="padding:10px">
-        <div class="game-title">🖼️ Build a Scene!</div>
-        <div style="font-family:'Baloo 2',cursive;font-size:.75rem;color:var(--text3);text-align:center;margin-bottom:8px">Tap stickers to add them to your ${scene.name} scene!</div>
-        <div style="position:relative;width:100%;height:160px;border-radius:16px;background:${scene.bg};overflow:hidden;border:3px solid var(--border);margin-bottom:10px" id="sceneCanvas">
-          ${placed.map(p=>`<span style="position:absolute;left:${p.x}%;top:${p.y}%;font-size:${p.s}rem;transform:translate(-50%,-50%);cursor:default;animation:popIn .3s">${p.e}</span>`).join('')}
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:10px">
-          ${scene.stickers.map(s=>`<div onclick="addSticker('${s}')" style="width:44px;height:44px;border-radius:12px;background:var(--inputbg);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem;cursor:pointer;transition:transform .15s" onmousedown="this.style.transform='scale(.88)'" onmouseup="this.style.transform=''">${s}</div>`).join('')}
-        </div>
-        <div style="display:flex;gap:8px">
-          <button onclick="clearScene()" style="flex:1;padding:10px;border-radius:12px;border:none;background:var(--border);color:var(--text2);font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:700;cursor:pointer">🗑️ Clear</button>
-          <button onclick="markGameDone(5)" style="flex:2;padding:10px;border-radius:12px;border:none;background:linear-gradient(135deg,#56cf81,#4ecdc4);color:#fff;font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;cursor:pointer">✅ Done! Stars! →</button>
-        </div>
-      </div>`;
-    window._sceneData={placed,scene,render};
-  }
-  window._sceneData={placed,scene,render};
-  render();
-  speakText('Build your '+scene.name.replace(/[^a-zA-Z ]/g,'').trim()+' scene! Tap stickers to add them!');
+  _bsState = {
+    bgIdx: 0,
+    catKey: Object.keys(BS_CATS)[0],
+    placed: [],
+    dragIdx: null,
+    history: [],
+    mascotTip: BS_MASCOT_TIPS[0],
+  };
+  _bsRender();
+  speakText('Build a Scene! Tap stickers to add them. Choose a background and make your own picture!');
+  setTimeout(_bsMascotCycle, 4000);
 }
-function addSticker(e){
-  const d=window._sceneData;
-  if(!d)return;
-  playClick();
-  d.placed.push({e,x:10+Math.random()*80,y:10+Math.random()*75,s:1.4+Math.random()*1.2});
-  d.render();
+
+function _bsMascotCycle(){
+  if(!_bsState) return;
+  _bsState.mascotTip = BS_MASCOT_TIPS[Math.floor(Math.random()*BS_MASCOT_TIPS.length)];
+  const el = document.getElementById('bsMascot');
+  if(el){ el.textContent = _bsState.mascotTip; el.style.animation='none'; void el.offsetWidth; el.style.animation='bsMascotPop .4s'; }
+  setTimeout(_bsMascotCycle, 6000);
 }
-function clearScene(){const d=window._sceneData;if(!d)return;d.placed=[];d.render();}
+
+function _bsRender(){
+  const s = _bsState;
+  const bg = BS_BACKGROUNDS[s.bgIdx];
+  const cats = Object.keys(BS_CATS);
+  const stickers = BS_CATS[s.catKey];
+
+  const bgTabs = BS_BACKGROUNDS.map((b,i)=>`
+    <button onclick="_bsSetBg(${i})" style="
+      padding:5px 10px;border-radius:20px;border:2.5px solid ${i===s.bgIdx?'#a78bfa':'rgba(255,255,255,.2)'};
+      background:${i===s.bgIdx?'#a78bfa':'rgba(255,255,255,.08)'};
+      color:${i===s.bgIdx?'#fff':'rgba(255,255,255,.7)'};
+      font-family:'Baloo 2',cursive;font-size:.68rem;font-weight:800;cursor:pointer;white-space:nowrap;
+      transition:all .15s">${b.name}</button>`).join('');
+
+  const catTabs = cats.map(k=>`
+    <button onclick="_bsSetCat('${k}')" style="
+      padding:5px 11px;border-radius:20px;border:2.5px solid ${k===s.catKey?'#4ecdc4':'rgba(255,255,255,.2)'};
+      background:${k===s.catKey?'#4ecdc4':'rgba(255,255,255,.08)'};
+      color:${k===s.catKey?'#fff':'rgba(255,255,255,.7)'};
+      font-family:'Baloo 2',cursive;font-size:.68rem;font-weight:800;cursor:pointer;white-space:nowrap;
+      transition:all .15s">${k}</button>`).join('');
+
+  const stickerBtns = stickers.map(e=>`
+    <div onclick="_bsAdd('${e}')" id="bsBtn_${e}" style="
+      width:56px;height:56px;border-radius:16px;
+      background:rgba(255,255,255,.15);border:2.5px solid rgba(255,255,255,.3);
+      display:flex;align-items:center;justify-content:center;
+      font-size:2rem;cursor:pointer;
+      box-shadow:0 4px 12px rgba(0,0,0,.25);
+      transition:transform .15s,box-shadow .15s;flex-shrink:0"
+      onmousedown="this.style.transform='scale(.85)';this.style.boxShadow='0 1px 4px rgba(0,0,0,.2)'"
+      onmouseup="this.style.transform='scale(1.1)';setTimeout(()=>{const el=document.getElementById('bsBtn_${e}');if(el)el.style.transform='';},200)"
+      ontouchstart="this.style.transform='scale(.85)'"
+      ontouchend="this.style.transform='scale(1.1)';setTimeout(()=>{const el=document.getElementById('bsBtn_${e}');if(el)el.style.transform='';},200)"
+    >${e}</div>`).join('');
+
+  const placedHTML = s.placed.map((p,i)=>`
+    <span id="bsp_${i}" style="
+      position:absolute;left:${p.x}%;top:${p.y}%;
+      font-size:${p.s}rem;transform:translate(-50%,-50%);
+      cursor:grab;user-select:none;
+      animation:bsPopIn .35s cubic-bezier(.34,1.56,.64,1);
+      filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))"
+      onmousedown="_bsDragStart(event,${i})"
+      ontouchstart="_bsDragStart(event,${i})"
+    >${p.e}
+    <span onclick="_bsRemove(${i})" style="
+      position:absolute;top:-8px;right:-8px;
+      width:18px;height:18px;border-radius:50%;
+      background:#ff4444;color:#fff;font-size:.6rem;
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;font-weight:800;line-height:1;
+      box-shadow:0 1px 4px rgba(0,0,0,.3)"
+    >✕</span></span>`).join('');
+
+  document.getElementById('area').innerHTML=`
+    <style>
+      @keyframes bsPopIn{from{transform:translate(-50%,-50%) scale(0);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+      @keyframes bsMascotPop{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+      @keyframes bsGlow{0%,100%{box-shadow:0 0 0 rgba(167,139,250,0)}50%{box-shadow:0 0 16px rgba(167,139,250,.7)}}
+    </style>
+    <div class="game-panel" style="padding:10px">
+      <div class="game-title">🖼️ Build a Scene!</div>
+
+      <!-- Mascot -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;background:rgba(255,255,255,.08);border-radius:12px;padding:7px 10px">
+        <span style="font-size:1.6rem">🐱</span>
+        <span id="bsMascot" style="font-family:'Baloo 2',cursive;font-size:.78rem;font-weight:700;color:#e0f0ff;line-height:1.3">${s.mascotTip}</span>
+      </div>
+
+      <!-- Background picker -->
+      <div style="margin-bottom:8px">
+        <div style="font-family:'Baloo 2',cursive;font-size:.65rem;font-weight:800;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px">🎨 Background</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">${bgTabs}</div>
+      </div>
+
+      <!-- Scene canvas -->
+      <div id="bsCanvas" style="
+        position:relative;width:100%;height:175px;border-radius:16px;
+        background:${bg.bg};overflow:hidden;
+        border:3px solid rgba(255,255,255,.2);margin-bottom:10px;
+        box-shadow:0 4px 20px rgba(0,0,0,.3)"
+        onmousemove="_bsDragMove(event)" ontouchmove="_bsDragMove(event)"
+        onmouseup="_bsDragEnd()" ontouchend="_bsDragEnd()"
+      >${placedHTML}</div>
+
+      <!-- Sticker category tabs -->
+      <div style="margin-bottom:8px">
+        <div style="font-family:'Baloo 2',cursive;font-size:.65rem;font-weight:800;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px">🧩 Stickers</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px">${catTabs}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:4px 0">${stickerBtns}</div>
+      </div>
+
+      <!-- Undo + Clear + Done -->
+      <div style="display:flex;gap:7px;margin-top:6px">
+        <button onclick="_bsUndo()" style="
+          padding:10px 14px;border-radius:12px;border:none;
+          background:rgba(255,255,255,.12);color:#fff;
+          font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:700;cursor:pointer">↩️ Undo</button>
+        <button onclick="_bsClearConfirm()" style="
+          padding:10px 14px;border-radius:12px;border:none;
+          background:rgba(255,80,80,.3);color:#ffaaaa;
+          font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:700;cursor:pointer">🗑️ Clear</button>
+        <button onclick="_bsDone()" style="
+          flex:2;padding:10px;border-radius:12px;border:none;
+          background:linear-gradient(135deg,#56cf81,#4ecdc4);color:#fff;
+          font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;cursor:pointer;
+          box-shadow:0 4px 14px rgba(86,207,129,.4)">✅ Done! Stars! →</button>
+      </div>
+    </div>`;
+}
+
+function _bsSetBg(i){ _bsState.bgIdx=i; _bsRender(); }
+function _bsSetCat(k){ _bsState.catKey=k; _bsRender(); }
+
+function _bsAdd(e){
+  if(!_bsState) return;
+  try{ const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);o.frequency.value=880;o.type='sine';
+    g.gain.setValueAtTime(.2,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.18);
+    o.start();o.stop(ctx.currentTime+.2);
+  }catch(err){}
+  _bsState.history.push(JSON.parse(JSON.stringify(_bsState.placed)));
+  _bsState.placed.push({e, x:15+Math.random()*70, y:10+Math.random()*70, s:1.6+Math.random()*.8});
+  _bsRender();
+}
+
+function _bsRemove(i){
+  if(!_bsState) return;
+  _bsState.history.push(JSON.parse(JSON.stringify(_bsState.placed)));
+  _bsState.placed.splice(i,1);
+  _bsRender();
+}
+
+function _bsUndo(){
+  if(!_bsState||!_bsState.history.length) return;
+  _bsState.placed = _bsState.history.pop();
+  _bsRender();
+}
+
+function _bsClearConfirm(){
+  const overlay = document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.innerHTML=`
+    <div style="background:#1e2a3a;border-radius:24px;padding:28px 24px;max-width:300px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+      <div style="font-size:2.5rem;margin-bottom:8px">🗑️</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:8px">Clear your scene?</div>
+      <div style="font-family:'Nunito',sans-serif;font-size:.85rem;color:rgba(255,255,255,.6);margin-bottom:20px">All your stickers will be removed!</div>
+      <div style="display:flex;gap:10px">
+        <button onclick="this.closest('[style*=fixed]').remove()" style="flex:1;padding:12px;border-radius:14px;border:none;background:rgba(255,255,255,.12);color:#fff;font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;cursor:pointer">No, keep it!</button>
+        <button onclick="_bsState.history.push(JSON.parse(JSON.stringify(_bsState.placed)));_bsState.placed=[];_bsRender();this.closest('[style*=fixed]').remove()" style="flex:1;padding:12px;border-radius:14px;border:none;background:linear-gradient(135deg,#ff6b6b,#ff4444);color:#fff;font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;cursor:pointer">Yes, clear!</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+function _bsDone(){
+  const count = _bsState ? _bsState.placed.length : 0;
+  const stars = Math.min(5, Math.max(2, Math.floor(count/2)+1));
+  document.getElementById('area').innerHTML=`
+    <div class="game-panel" style="text-align:center;padding:16px">
+      <div style="font-size:3.5rem;animation:popIn .4s">🎨</div>
+      <div class="game-title" style="justify-content:center;margin:8px 0">Amazing Scene!</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.9rem;color:#c0e0ff;margin-bottom:12px">You placed <strong style="color:#ffb830">${count}</strong> sticker${count!==1?'s':''}!</div>
+      <div style="font-size:2rem;margin-bottom:12px;animation:popIn .5s .1s both">${'⭐'.repeat(stars)}</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:#56cf81;margin-bottom:16px">+${stars*2} stars earned! 🌟</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button onclick="buildBuildScene()" style="padding:13px;border-radius:14px;border:none;background:linear-gradient(135deg,#a78bfa,#4fa3e0);color:#fff;font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(167,139,250,.4)">🎨 Try a new scene!</button>
+        <button onclick="markGameDone(${stars*2})" style="padding:13px;border-radius:14px;border:none;background:linear-gradient(135deg,#56cf81,#4ecdc4);color:#fff;font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(86,207,129,.4)">✅ Collect my stars!</button>
+      </div>
+    </div>`;
+  if(typeof burst==='function') burst();
+}
+
+// Drag & drop for placed stickers
+let _bsDragI=null,_bsDragOffset={x:0,y:0};
+function _bsDragStart(ev,i){
+  _bsDragI=i;
+  ev.preventDefault();
+}
+function _bsDragMove(ev){
+  if(_bsDragI===null||!_bsState) return;
+  ev.preventDefault();
+  const canvas=document.getElementById('bsCanvas');
+  if(!canvas) return;
+  const rect=canvas.getBoundingClientRect();
+  const clientX=(ev.touches?ev.touches[0].clientX:ev.clientX);
+  const clientY=(ev.touches?ev.touches[0].clientY:ev.clientY);
+  _bsState.placed[_bsDragI].x=Math.min(95,Math.max(5,((clientX-rect.left)/rect.width)*100));
+  _bsState.placed[_bsDragI].y=Math.min(90,Math.max(5,((clientY-rect.top)/rect.height)*100));
+  // Live update position without full re-render
+  const el=document.getElementById('bsp_'+_bsDragI);
+  if(el){ el.style.left=_bsState.placed[_bsDragI].x+'%'; el.style.top=_bsState.placed[_bsDragI].y+'%'; }
+}
+function _bsDragEnd(){ _bsDragI=null; }
+
+// Keep old names working
+function addSticker(e){ _bsAdd(e); }
+function clearScene(){ _bsClearConfirm(); }
 
 // ════════════════════════════════════════════════
 //  CREATIVE GAME 3: MAKE MUSIC!
