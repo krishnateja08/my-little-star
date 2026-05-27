@@ -4591,7 +4591,7 @@ function getJourneyTotals(){
   if(!s) s=todayKey();
   const [sy,sm,sd]=s.split('-').map(Number);
   const startDate=new Date(sy,sm-1,sd);
-  const endDate=new Date(2025,11,31); // Dec 31, 2025
+  const endDate=new Date(2026,11,31); // Dec 31, 2026
   const totalDays=Math.max(60,Math.floor((endDate-startDate)/(864e5))+1);
   const totalWeeks=Math.ceil(totalDays/7);
   return {totalDays,totalWeeks};
