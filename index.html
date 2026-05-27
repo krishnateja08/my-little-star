@@ -16897,13 +16897,13 @@ function renderSsMain(){
     <div class="game-panel">
       <div class="game-title">📖 Story Starter!</div>
       <div style="background:linear-gradient(135deg,#fff8e0,#f0f8ff);border-radius:16px;padding:14px;margin:10px 0;border-left:4px solid var(--sun)">
-        <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;color:var(--text);line-height:1.5">${ssStory.start}</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:#1a2e1a;line-height:1.6">${ssStory.start}</div>
       </div>
-      <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:var(--purple);text-align:center;margin:10px 0">${ssStory.q}</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800;color:#5b21b6;text-align:center;margin:10px 0">${ssStory.q}</div>
       <div style="display:flex;flex-direction:column;gap:8px">
         ${ssStory.choices.map((c,i)=>`<div onclick="pickSsChoice(${i})"
-          style="padding:12px 14px;border-radius:14px;background:var(--inputbg);border:3px solid var(--border);
-                 cursor:pointer;transition:all .2s;font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--text);line-height:1.4"
+          style="padding:12px 14px;border-radius:14px;background:#f0faf4;border:3px solid #52b788;
+                 cursor:pointer;transition:all .2s;font-family:'Baloo 2',cursive;font-size:.92rem;font-weight:800;color:#0d2b1a;line-height:1.4"
           onmousedown="this.style.transform='scale(.98)'" onmouseup="this.style.transform=''">${c.txt}</div>`).join('')}
       </div>
     </div>`;
@@ -16918,9 +16918,9 @@ function pickSsChoice(i){
       <div style="font-size:3rem;margin:10px 0;animation:popIn .4s">🎉</div>
       <div class="game-title">What a story!</div>
       <div style="background:linear-gradient(135deg,#fff8e0,#f0f8ff);border-radius:16px;padding:14px;margin:12px 0;border-left:4px solid var(--sun);text-align:left">
-        <div style="font-family:'Baloo 2',cursive;font-size:.82rem;color:var(--text);line-height:1.5">${ssStory.start}</div>
-        <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple);margin-top:8px;line-height:1.5">${choice.txt}</div>
-        <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:800;color:var(--green);margin-top:8px;line-height:1.5">${choice.reaction}</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800;color:#1a2e1a;line-height:1.6">${ssStory.start}</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800;color:#5b21b6;margin-top:8px;line-height:1.5">${choice.txt}</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800;color:#166534;margin-top:8px;line-height:1.5">${choice.reaction}</div>
       </div>
       <button class="game-next-btn" onclick="buildStoryStarter()" style="margin-bottom:8px">📖 New Story!</button>
       <button class="game-done-btn" onclick="markGameDone(5)">✅ Done! Give me stars! →</button>
