@@ -248,7 +248,7 @@ body.bedtime .wrIBtn{background:#333366;border-color:#554477;color:#b8a9d4;}
 .adv-tile.wide .tile-icon{font-size:3.4rem;}
 
 /* Small 3-col tiles */
-.mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.mini-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px;}
 .mini-tile{border-radius:20px;padding:16px 10px;text-align:center;cursor:pointer;
   transition:transform .2s;position:relative;overflow:hidden;}
 .mini-tile:hover{transform:translateY(-3px);}
@@ -465,7 +465,7 @@ body.bedtime .hw-day{background:#0d2218;border-color:#1b5e20;}
   #homeView{padding:18px 28px 110px;}
   #activityView{padding:12px 28px 110px;}
   .adventure-grid{grid-template-columns:repeat(3,1fr);gap:16px;}
-  .mini-grid{grid-template-columns:repeat(4,1fr);gap:12px;}
+  .mini-grid{grid-template-columns:repeat(5,1fr);gap:12px;}
   .adv-tile{min-height:170px;}
   .adv-tile.wide{grid-column:1/-1;}
   .adv-tile .tile-icon{font-size:3.2rem;}
@@ -488,7 +488,7 @@ body.bedtime .hw-day{background:#0d2218;border-color:#1b5e20;}
   #homeView{padding:22px 40px 110px;}
   #activityView{padding:16px 40px 110px;}
   .adventure-grid{grid-template-columns:repeat(4,1fr);gap:18px;}
-  .mini-grid{grid-template-columns:repeat(4,1fr);gap:14px;}
+  .mini-grid{grid-template-columns:repeat(5,1fr);gap:14px;}
   .adv-tile{min-height:190px;padding:26px 22px;}
   .adv-tile .tile-icon{font-size:3.6rem;}
   .adv-tile .tile-name{font-size:1.25rem;}
@@ -2902,6 +2902,10 @@ body.bedtime .streak-bar{background:linear-gradient(135deg,#1b2a00,#2a1800);colo
     <div class="mini-tile" style="background:linear-gradient(135deg,#ff6b9d,#ffb830);" onclick="goToSection('body')">
       <div class="mt-badge" id="ts_body">&#x1FAC0;</div>
       <span class="mt-icon">&#x1FAC0;</span><div class="mt-name">Body</div>
+    </div>
+    <div class="mini-tile" style="background:linear-gradient(135deg,#06b6d4,#7c3aed);" onclick="openQuizZone()">
+      <div class="mt-badge" id="ts_quiz">&#x2753;</div>
+      <span class="mt-icon">&#x2753;</span><div class="mt-name">Quick Quiz</div>
     </div>
   </div>
 
@@ -19578,7 +19582,14 @@ function exportReadableReport(){
 
 /* ── Quiz data ────────────────────────────────────────────────── */
 const QZ_CATEGORIES = [
-  { id:'animals', label:'Animals', emoji:'🐾', color:'linear-gradient(135deg,#56cf81,#4ecdc4)' },
+  { id:'body',     label:'Body Parts & Health', emoji:'💪', color:'linear-gradient(135deg,#ff6b9d,#ffb830)' },
+  { id:'colorshapes', label:'Colors & Shapes', emoji:'🎨', color:'linear-gradient(135deg,#7c3aed,#06b6d4)' },
+  { id:'numbers',  label:'Numbers & Math', emoji:'🔢', color:'linear-gradient(135deg,#4fa3e0,#56cf81)' },
+  { id:'animalsnature', label:'Animals & Nature', emoji:'🐘', color:'linear-gradient(135deg,#1b4332,#52b788)' },
+  { id:'dailylife', label:'Daily Life & GK', emoji:'☀️', color:'linear-gradient(135deg,#ffb830,#ff8c69)' },
+  { id:'language', label:'Language & Talk', emoji:'🗣️', color:'linear-gradient(135deg,#ff6b9d,#a78bfa)' },
+  { id:'thinking', label:'Thinking & Reasoning', emoji:'💡', color:'linear-gradient(135deg,#a78bfa,#4ecdc4)' },
+  { id:'animals',  label:'Animals', emoji:'🐾', color:'linear-gradient(135deg,#56cf81,#4ecdc4)' },
   { id:'gk',      label:'General Knowledge', emoji:'🌍', color:'linear-gradient(135deg,#4fa3e0,#a78bfa)' },
   { id:'riddles', label:'Riddles', emoji:'🤔', color:'linear-gradient(135deg,#ffb830,#ff8c69)' },
   { id:'history', label:'History', emoji:'📜', color:'linear-gradient(135deg,#ff6b9d,#a78bfa)' },
@@ -19587,6 +19598,72 @@ const QZ_CATEGORIES = [
 ];
 
 const QZ_QUESTIONS = {
+  body:[
+    { q:'Which body part do you use to see?', choices:['Eyes','Ears','Nose','Mouth'], ans:0, fact:'👀 Your eyes help you see all the wonderful colours and shapes around you!' },
+    { q:'Which body part do you use to hear?', choices:['Eyes','Ears','Hands','Feet'], ans:1, fact:'👂 Your ears catch sound waves and send them to your brain to understand!' },
+    { q:'What do we use to brush our teeth?', choices:['Spoon','Toothbrush','Comb','Pencil'], ans:1, fact:'🦷 Brushing twice a day with a toothbrush keeps your teeth strong and healthy!' },
+    { q:'Why is it important to wash our hands?', choices:['To remove germs and stay healthy','To make them wet','Just for fun','To smell nice'], ans:0, fact:'🧼 Washing hands washes away germs that can make us sick!' },
+    { q:'Which body part do you use to smell?', choices:['Nose','Ears','Elbow','Knee'], ans:0, fact:'👃 Your nose can smell thousands of different things!' },
+    { q:'How many fingers do you have on one hand?', choices:['4','5','6','10'], ans:1, fact:'✋ You have 5 fingers on each hand — that\'s 10 in total!' },
+    { q:'What do we use to taste our food?', choices:['Tongue','Ears','Hair','Nails'], ans:0, fact:'👅 Your tongue has thousands of tiny taste buds!' },
+    { q:'What should you do before eating?', choices:['Wash your hands','Jump around','Watch TV','Shout'], ans:0, fact:'🧼 Clean hands keep germs away from your food!' },
+  ],
+  colorshapes:[
+    { q:'What color do you get when you mix red and yellow?', choices:['Purple','Green','Orange','Blue'], ans:2, fact:'🟠 Red + Yellow = Orange! Try mixing paints to see for yourself.' },
+    { q:'How many sides does a triangle have?', choices:['2','3','4','5'], ans:1, fact:'🔺 A triangle always has exactly 3 sides and 3 corners!' },
+    { q:'Which of these is a shape?', choices:['Circle','Banana','Tuesday','Music'], ans:0, fact:'⭕ A circle is round with no corners at all!' },
+    { q:'Which of these is a color?', choices:['Green','Apple','Friday','Soup'], ans:0, fact:'🟢 Green is the color of grass and leaves!' },
+    { q:'How many sides does a square have?', choices:['3','4','5','6'], ans:1, fact:'⬜ A square has 4 equal sides and 4 corners!' },
+    { q:'What color do you get when you mix blue and yellow?', choices:['Green','Pink','Brown','Black'], ans:0, fact:'🟢 Blue + Yellow = Green, just like the color of leaves!' },
+    { q:'Which shape has no corners at all?', choices:['Square','Triangle','Circle','Rectangle'], ans:2, fact:'⭕ A circle is perfectly round with zero corners!' },
+    { q:'Which of these is a shape with 4 sides?', choices:['Circle','Rectangle','Triangle','Star'], ans:1, fact:'▭ A rectangle has 4 sides, just like a square!' },
+  ],
+  numbers:[
+    { q:'What number comes after 19?', choices:['18','20','21','19'], ans:1, fact:'🔢 After 19 comes 20 — you\'re counting like a pro!' },
+    { q:'What number comes after 15?', choices:['14','16','17','20'], ans:1, fact:'🔢 After 15 comes 16!' },
+    { q:'What number comes before 10?', choices:['8','9','11','7'], ans:1, fact:'🔢 9 comes right before 10!' },
+    { q:'Which is bigger: 12 or 8?', choices:['12','8','They are equal','Neither'], ans:0, fact:'🔢 12 is bigger than 8 — great counting!' },
+    { q:'How many fingers do you have on both hands?', choices:['5','8','10','12'], ans:2, fact:'🙌 You have 10 fingers altogether — 5 on each hand!' },
+    { q:'What is 2 + 3?', choices:['4','5','6','7'], ans:1, fact:'➕ 2 + 3 = 5! Great maths work!' },
+    { q:'What is 4 + 1?', choices:['3','4','5','6'], ans:2, fact:'➕ 4 + 1 = 5!' },
+    { q:'Which number is the smallest: 7, 3, 9?', choices:['7','3','9','None'], ans:1, fact:'🔢 3 is the smallest of those three numbers!' },
+  ],
+  animalsnature:[
+    { q:'Where does a fish live?', choices:['In a tree','In water','In the sky','In a cave'], ans:1, fact:'🐟 Fish live in water and breathe using their gills!' },
+    { q:'Which animal gives us milk?', choices:['Cow','Cat','Dog','Lion'], ans:0, fact:'🐄 Cows give us milk, which is healthy and full of calcium!' },
+    { q:'What do plants need to grow?', choices:['Sunlight and water','Chocolate','Toys','Shoes'], ans:0, fact:'🌱 Plants need sunlight, water, air and soil to grow big and strong!' },
+    { q:'Which flower is named after the sun?', choices:['Rose','Sunflower','Tulip','Lily'], ans:1, fact:'🌻 Sunflowers even turn their faces to follow the sun!' },
+    { q:'If you could be any animal for a day, what is a good reason to pick one?', choices:['Because of something special it can do','No reason at all','Because it is scary','Because it is loud'], ans:0, fact:'🦁 There\'s no wrong answer here — tell us why you\'d pick your favourite animal!' },
+    { q:'What do bees make?', choices:['Milk','Honey','Bread','Juice'], ans:1, fact:'🐝 Bees make honey from flower nectar — yum!' },
+    { q:'Which season comes after winter?', choices:['Summer','Spring','Autumn','Monsoon'], ans:1, fact:'🌸 Spring comes after winter, when flowers start to bloom!' },
+    { q:'What do we call a baby dog?', choices:['Kitten','Puppy','Cub','Calf'], ans:1, fact:'🐶 A baby dog is called a puppy!' },
+  ],
+  dailylife:[
+    { q:'What do you wear on your feet?', choices:['Hat','Shoes','Gloves','Scarf'], ans:1, fact:'👟 Shoes protect your feet when you walk and play!' },
+    { q:'What should you do before eating food?', choices:['Wash your hands','Run outside','Take a nap','Sing loudly'], ans:0, fact:'🧼 Clean hands keep your food safe to eat!' },
+    { q:'What do you do when it rains?', choices:['Use an umbrella','Go swimming in the street','Eat ice cream outside','Fly a kite'], ans:0, fact:'☔ An umbrella keeps you dry on a rainy day!' },
+    { q:'What is the name of the place where you learn and play?', choices:['Hospital','School','Market','Garage'], ans:1, fact:'🏫 School is where you learn new things and make friends!' },
+    { q:'What do we use to tell the time?', choices:['Clock','Spoon','Pillow','Umbrella'], ans:0, fact:'🕐 A clock has hands that show us the hours and minutes!' },
+    { q:'What do you wear to keep warm in winter?', choices:['Sweater','Swimsuit','Sandals','Sunglasses'], ans:0, fact:'🧥 A warm sweater keeps the cold away!' },
+    { q:'What do we use to cut paper?', choices:['Scissors','Spoon','Pillow','Umbrella'], ans:0, fact:'✂️ Scissors are a handy tool for cutting paper carefully!' },
+  ],
+  language:[
+    { q:'What is something you should always know about yourself?', choices:['Your full name and address','Your favourite cartoon','Your shoe size','Nothing in particular'], ans:0, fact:'🗣️ Knowing your full name and address helps keep you safe!' },
+    { q:'Which of these is a fruit?', choices:['Mango','Chair','Monday','Pencil'], ans:0, fact:'🥭 Mango is a delicious, juicy fruit!' },
+    { q:'Which of these is a wild animal?', choices:['Lion','Cow','Dog','Goldfish'], ans:0, fact:'🦁 Lions live in the wild, not as pets at home!' },
+    { q:'What is the opposite of "big"?', choices:['Tall','Small','Wide','Long'], ans:1, fact:'🔄 The opposite of "big" is "small"!' },
+    { q:'Which of these is a vegetable?', choices:['Carrot','Spoon','Sunday','Umbrella'], ans:0, fact:'🥕 Carrots are healthy orange vegetables!' },
+    { q:'What is the opposite of "happy"?', choices:['Sad','Tall','Fast','Loud'], ans:0, fact:'🔄 The opposite of "happy" is "sad"!' },
+    { q:'Which of these is a tame (pet) animal?', choices:['Dog','Tiger','Wolf','Crocodile'], ans:0, fact:'🐶 Dogs are friendly pets that live happily with families!' },
+  ],
+  thinking:[
+    { q:'What would you do if you lost your way?', choices:['Stay calm and ask a trusted adult for help','Run as fast as you can','Hide and cry alone','Go with any stranger'], ans:0, fact:'🧭 Staying calm and asking a trusted adult is always the safest choice!' },
+    { q:'Which is heavier: a feather or a brick?', choices:['A feather','A brick','They weigh the same','Neither'], ans:1, fact:'🧱 A brick is much heavier than a light, fluffy feather!' },
+    { q:'Why do we sleep at night?', choices:['To rest our body and brain','Because it is boring','To watch TV','For no reason'], ans:0, fact:'😴 Sleep helps your brain and body rest, grow and recharge!' },
+    { q:'What would you do if a friend was feeling sad?', choices:['Comfort them and ask what\'s wrong','Laugh at them','Walk away','Ignore them'], ans:0, fact:'❤️ Being kind and asking how you can help makes a sad friend feel better!' },
+    { q:'What should you do if you find something that isn\'t yours?', choices:['Give it back or tell an adult','Keep it secretly','Throw it away','Hide it'], ans:0, fact:'🙏 Returning things you find is honest and kind!' },
+    { q:'Which is lighter: a balloon or a stone?', choices:['A balloon','A stone','They weigh the same','Neither'], ans:0, fact:'🎈 A balloon filled with air is much lighter than a heavy stone!' },
+  ],
   animals:[
     { q:'How many legs does a spider have?', choices:['6','8','4','10'], ans:1, fact:'🕷️ Spiders have 8 legs — they are arachnids, not insects!' },
     { q:'What sound does a frog make?', choices:['Moo','Quack','Ribbit','Bark'], ans:2, fact:'🐸 Frogs say "Ribbit"! Different frog species have different calls.' },
@@ -19767,7 +19844,8 @@ function showScore(){
 /* ── Open / Close ──────────────────────────────────────────────── */
 window.openQuizZone = function(){
   document.querySelectorAll('.sp').forEach(b=>b.classList.remove('active'));
-  document.querySelector('.sp[data-s="quiz"]').classList.add('active');
+  const spQuizBtn=document.querySelector('.sp[data-s="quiz"]');
+  if(spQuizBtn)spQuizBtn.classList.add('active');
   showCatPicker();
 };
 window._qzClose = function(){
