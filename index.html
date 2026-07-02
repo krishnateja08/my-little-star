@@ -19969,6 +19969,7 @@ function showQuestion(){
     </button>
     <button class="qzCloseBtn" onclick="window._qzClose()">✖ Close</button>
   `;
+  speakText(q.q);
 }
 
 /* ── Handle answer ─────────────────────────────────────────────── */
@@ -19981,6 +19982,7 @@ window._qzAnswer = function(chosen, correct, btn){
   btn.classList.add(isRight ? 'correct':'wrong');
   const q=_qzPool[_qzIdx];
   document.getElementById('qzFact').textContent = isRight ? '✅ '+q.fact : '❌ '+q.fact;
+  speakText((isRight ? 'Correct! ' : 'Not quite! ') + q.fact.replace(/[^\x00-\x7F]/g,'').trim());
   try{
     if(typeof soundOn!=='undefined'&&soundOn){
       const ctx=new(window.AudioContext||window.webkitAudioContext)();
