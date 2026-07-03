@@ -4210,6 +4210,10 @@ const CUR = {
     {w:6,subj:'maths',emoji:'💰',title:'Learn Coins',desc:'What does ₹1 and ₹2 look like? Count 5 coins!',learn:'₹1 is worth ONE rupee. 5 coins of ₹1 = ₹5!',why:'Financial literacy starts with recognising coins.',steps:['Find coins at home','Pick out all ₹1 coins','Count 5 of them: that\'s ₹5!','Try ₹2 coins!'],stars:4,tag:'🔢 Maths'},
     {w:7,subj:'maths',emoji:'➗',title:'Share Equally',desc:'Share 6 biscuits between 2 people!',learn:'Sharing equally is the beginning of division!',why:'Division through sharing is natural learning.',steps:['Get 6 small objects','Make 2 piles','Keep moving until equal','Count each pile!'],stars:4,tag:'🔢 Maths'},
     {w:8,subj:'maths',emoji:'🔢',title:'Number Patterns',desc:'2, 4, 6, __ ? Count by 2s!',learn:'Skip counting is counting by jumping over numbers.',why:'Pattern recognition is essential for higher maths.',steps:['Say: 2,4,6,8 — what comes next?','Clap every 2 counts to 10','Try 5,10,15 — what comes next?','Jump on every 5th number!'],stars:4,tag:'🔢 Maths'},
+    // SKIP COUNTING GAME — interactive tap-the-answer game
+    {w:8,subj:'maths',emoji:'🐇',title:'Skip Counting by 2s!',desc:'Hop through the numbers — 2, 4, 6... what comes next? Tap to play!',learn:'Skip counting by 2s means counting in jumps of two: 2, 4, 6, 8, 10! It is the very first step toward multiplication.',why:'Interactive skip counting builds number sense and prepares the brain for multiplication tables.',steps:['Look at the number jumps on screen','Say each number out loud','Tap the number that comes next','Play all 5 rounds and see your score!'],stars:4,tag:'🔢 Maths'},
+    {w:8,subj:'maths',emoji:'🐸',title:'Skip Counting by 5s!',desc:'Leap by 5s — 5, 10, 15... what comes next? Tap to play!',learn:'Skip counting by 5s goes: 5, 10, 15, 20, 25! Every jump adds five more — just like counting a hand of fingers each time.',why:'Skip counting by 5s is a foundation for telling time and counting money.',steps:['Look at the number jumps on screen','Say each number out loud','Tap the number that comes next','Play all 5 rounds and see your score!'],stars:4,tag:'🔢 Maths'},
+    {w:8,subj:'maths',emoji:'🦘',title:'Skip Counting by 10s!',desc:'Big jumps of 10 — 10, 20, 30... what comes next? Tap to play!',learn:'Skip counting by 10s goes: 10, 20, 30, 40, 50! Each jump is a big leap of ten.',why:'Skip counting by 10s makes counting large numbers fast and builds place-value sense.',steps:['Look at the number jumps on screen','Say each number out loud','Tap the number that comes next','Play all 5 rounds and see your score!'],stars:4,tag:'🔢 Maths'},
     // DAYS, WEEKS, MONTHS & TIME
     {w:1,subj:'maths',emoji:'📅',title:'Days of the Week',desc:'Monday, Tuesday, Wednesday... learn all 7 days!',learn:'There are 7 days in a week. They always come in the same order! The week starts with Monday and ends with Sunday.',why:'Knowing days helps children understand routines and plan ahead.',steps:['Say all 7 days with Mummy','Clap on each day as you say it','Which day is today?','What day comes after today?'],stars:3,tag:'🔢 Maths'},
     {w:2,subj:'maths',emoji:'📆',title:'Yesterday, Today, Tomorrow',desc:'Today is the day we are in right now!',learn:'Yesterday already happened. Today is NOW. Tomorrow has not come yet! These are the 3 most important time words.',why:'Understanding time sequence builds planning skills.',steps:['What day is TODAY?','What day was YESTERDAY?','What day will TOMORROW be?','What did you do yesterday?'],stars:3,tag:'🔢 Maths'},
@@ -4895,6 +4899,13 @@ function showLoad(){
 function buildVisualPanel(a){
   const t=a.title||'';
 
+
+  // ── SKIP COUNTING GAME ──
+  if(t.includes('Skip Counting by')){
+    return `<div style="margin:12px 0" id="scWrap">
+      <div id="scBody"></div>
+    </div>`;
+  }
 
   // ── FINGER TRACING FUN ──
   if(t.includes('Finger Tracing Fun')){
@@ -7015,6 +7026,11 @@ function showAct(a){
   // Auto-init finger tracing canvas if present
   if(a.title&&(a.title.includes('Finger Tracing')||a.title.includes('Pencil Practice')||a.title.includes('My Name in Letters'))){
     ftAutoInit();
+  }
+
+  // Auto-init skip counting game if present
+  if(a.title&&a.title.includes('Skip Counting by')){
+    scAutoInit(a.title);
   }
 
   // Mascot reacts — show bubble silently, no auto-speech on every open
@@ -14795,6 +14811,105 @@ function ftAutoInit(){
       speakText('Trace the letter with your finger!');
     }
   },150);
+}
+
+// ══════════════════════════════════════
+//  🐇 SKIP COUNTING GAME — Maths
+// ══════════════════════════════════════
+let scState={step:2,round:0,score:0,rounds:5,answer:0,locked:false};
+const SC_COLORS={2:'#4fa3e0',5:'#56cf81',10:'#ffb830'};
+
+function scAutoInit(title){
+  setTimeout(()=>{
+    if(!document.getElementById('scBody'))return;
+    const m=/Skip Counting by (\d+)s/.exec(title||'');
+    const step=m?parseInt(m[1]):2;
+    scState={step,round:0,score:0,rounds:5,answer:0,locked:false};
+    speakText('Skip counting by '+step+'s! What comes next?');
+    scRenderRound();
+  },150);
+}
+
+function scRenderRound(){
+  const body=document.getElementById('scBody');
+  if(!body)return;
+  const step=scState.step;
+  const startN=1+Math.floor(Math.random()*6); // 1..6
+  const seq=[0,1,2,3].map(i=>step*(startN+i));
+  const answer=step*(startN+4);
+  scState.answer=answer;
+  scState.locked=false;
+  const opts=new Set([answer]);
+  while(opts.size<4){
+    const off=(Math.floor(Math.random()*5)-2)*step;
+    const d=answer+off;
+    if(d>0 && d!==answer) opts.add(d);
+  }
+  const optArr=[...opts].sort(()=>Math.random()-.5);
+  const color=SC_COLORS[step]||'#a78bfa';
+  body.innerHTML=`
+    <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:${color};margin-bottom:4px;text-align:center">
+      🐇 Round ${scState.round+1} of ${scState.rounds} · Score: ${scState.score} ⭐
+    </div>
+    <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-bottom:10px">Skip count by ${step}s — what comes next?</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding:14px;background:linear-gradient(135deg,#f5f0ff,#eff8ff);border-radius:16px;border:2px dashed ${color}">
+      ${seq.map(n=>`<div style="min-width:44px;height:44px;padding:0 6px;border-radius:12px;background:rgba(0,0,0,.04);display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;color:${color}">${n}</div>`).join('')}
+      <div style="width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;background:#fff;border:2px solid ${color}">❓</div>
+    </div>
+    <div style="font-family:'Baloo 2',cursive;font-size:.75rem;color:var(--text3);text-align:center;margin-bottom:8px">Tap the correct answer 👇</div>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap" id="scOpts">
+      ${optArr.map(o=>`<button onclick="scAnswer(${o},this)"
+        style="min-width:54px;height:54px;padding:0 8px;border-radius:14px;border:3px solid var(--border);background:var(--inputbg);
+        font-family:'Baloo 2',cursive;font-size:1.15rem;font-weight:800;color:var(--text);cursor:pointer;transition:all .2s">${o}</button>`).join('')}
+    </div>
+    <div id="scFb" style="text-align:center;font-family:'Baloo 2',cursive;font-size:.88rem;min-height:24px;margin-top:10px;color:${color}"></div>
+  `;
+}
+
+function scAnswer(val,btn){
+  if(scState.locked)return;
+  scState.locked=true;
+  const body=document.getElementById('scBody');
+  if(body) body.querySelectorAll('#scOpts button').forEach(b=>b.style.pointerEvents='none');
+  const fb=document.getElementById('scFb');
+  const right=val===scState.answer;
+  if(right){
+    scState.score++;
+    btn.style.borderColor='#56cf81';btn.style.background='#e8fff0';
+    if(fb){fb.textContent='🎉 Correct! '+scState.answer+' comes next!';fb.style.color='#56cf81';}
+    speakText&&speakText('Correct! '+scState.answer+'!');
+    playCorrect&&playCorrect();burst&&burst();
+  } else {
+    btn.style.borderColor='#ff6b9d';btn.style.background='#ffe8f0';
+    btn.style.animation='shake .3s';
+    if(fb){fb.textContent='❌ Not quite — it was '+scState.answer;fb.style.color='#ff6b9d';}
+    speakText&&speakText('Not quite! The answer was '+scState.answer);
+  }
+  scState.round++;
+  setTimeout(()=>{
+    if(scState.round<scState.rounds) scRenderRound();
+    else scShowResult();
+  },1300);
+}
+
+function scShowResult(){
+  const body=document.getElementById('scBody');
+  if(!body)return;
+  const {score,rounds,step}=scState;
+  const color=SC_COLORS[step]||'#a78bfa';
+  const earned=Math.max(1,Math.round((score/rounds)*5));
+  const emoji=score===rounds?'🏆':score>=rounds-1?'⭐':'👍';
+  const msg=score===rounds?'Perfect skip counting!':score>=rounds-1?'Shabash! Well done!':'Keep practising — you are getting better!';
+  body.innerHTML=`
+    <div style="text-align:center;padding:10px 0">
+      <div style="font-size:2.6rem">${emoji}</div>
+      <div style="font-family:'Baloo 2',cursive;font-weight:800;color:${color};margin:6px 0">${msg}</div>
+      <div style="font-size:.8rem;color:var(--text3);margin-bottom:10px">Score: <strong>${score}</strong> / <strong>${rounds}</strong> — Great counting practice! ${'⭐'.repeat(earned)}</div>
+      <button onclick="scAutoInit('Skip Counting by ${step}s!')"
+        style="padding:10px 22px;border:none;border-radius:14px;background:${color};color:#fff;
+        font-family:'Baloo 2',cursive;font-weight:800;font-size:.9rem;cursor:pointer">🔄 Play Again</button>
+    </div>`;
+  speakText&&speakText(msg);
 }
 
 // ══════════════════════════════════════
