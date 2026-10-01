@@ -2520,6 +2520,32 @@ body.bedtime .hh-badge.on{background:#3a3220;}
 body.bedtime .hh-thought{background:#25263a;}
 .hh-input{width:100%;box-sizing:border-box;padding:10px 14px;border-radius:14px;border:2px solid rgba(167,139,250,.3);font-family:'Nunito',sans-serif;font-size:.9rem;margin:8px 0;background:var(--cardbg);color:var(--text);}
 .hh-jar{font-size:3rem;text-align:center;}
+
+/* SCHOOL LIFE */
+.hp[data-h="school"].active{background:linear-gradient(135deg,#4fa3e0,#ffb830);}
+.sl-q{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.25rem;line-height:1.35;text-align:center;color:var(--text);background:linear-gradient(135deg,#e8f5ff,#fff5e0);border-radius:20px;padding:20px 14px;margin-bottom:10px;}
+body.bedtime .sl-q{background:#25283a;}
+.sl-row{background:linear-gradient(135deg,#f5f9ff,#fff9f0);border-radius:18px;padding:12px;margin-bottom:10px;}
+body.bedtime .sl-row{background:#25283a;}
+.sl-rq{font-family:'Baloo 2',cursive;font-weight:800;font-size:.98rem;color:var(--text);margin-bottom:6px;}
+.sl-hlr{border-radius:20px;padding:12px;margin-bottom:10px;}
+.sl-hlr.h0{background:linear-gradient(135deg,#fff3c4,#ffe9a8);} .sl-hlr.h1{background:linear-gradient(135deg,#e6eefc,#d6e4fa);} .sl-hlr.h2{background:linear-gradient(135deg,#ffe0ec,#e8e0ff);}
+body.bedtime .sl-hlr{background:#25283a !important;}
+.sl-hlr .t{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.05rem;color:#3a3a4a;} body.bedtime .sl-hlr .t{color:var(--text);}
+.sl-hlr .q{font-size:.85rem;font-weight:700;color:#555;margin:2px 0 4px;} body.bedtime .sl-hlr .q{color:var(--text2);}
+.sl-yn{border:none;width:100%;min-height:52px;border-radius:50px;font-family:'Baloo 2',cursive;font-weight:800;font-size:1rem;background:#fff;color:var(--text3);box-shadow:0 2px 8px var(--shadow2);cursor:pointer;touch-action:manipulation;transition:all .2s;}
+.sl-yn.on{background:linear-gradient(135deg,#56cf81,#4ecdc4);color:#fff;}
+.sl-goals{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;}
+.sl-goal{border:3px solid transparent;border-radius:20px;min-height:84px;padding:10px 6px;background:linear-gradient(135deg,#f5f9ff,#fff9f0);font-family:'Baloo 2',cursive;font-weight:800;font-size:.92rem;color:var(--text);cursor:pointer;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .2s;}
+.sl-goal .e{font-size:1.9rem;}
+.sl-goal.on{border-color:#ff6b9d;background:linear-gradient(135deg,#ffe0ec,#fff3c4);transform:scale(1.03);}
+body.bedtime .sl-goal{background:#25283a;}
+.sl-msg{text-align:center;font-family:'Baloo 2',cursive;font-weight:700;font-size:.92rem;color:var(--purple);margin:10px 0 2px;line-height:1.4;}
+.sl-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;}
+.sl-tile{background:linear-gradient(135deg,#fff5f8,#fff9e8);border-radius:20px;padding:12px 8px;text-align:center;}
+body.bedtime .sl-tile{background:#2a2430;}
+.sl-tile .e{font-size:1.8rem;} .sl-tile b{display:block;font-family:'Baloo 2',cursive;font-size:1.6rem;color:var(--purple);line-height:1.1;}
+.sl-tile .n{font-size:.74rem;font-weight:800;color:var(--text2);} .sl-tile .st{font-size:.8rem;margin-top:3px;letter-spacing:1px;}
 .hh-card{background:var(--cardbg);border-radius:var(--r);padding:18px 16px;margin-bottom:14px;
   box-shadow:0 12px 36px var(--shadow);position:relative;overflow:hidden;}
 .hh-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;
@@ -11164,6 +11190,7 @@ const HH_CATS=[
   {id:'social',emoji:'🧠',name:'Social Skills',n:4},
   {id:'worry',emoji:'💭',name:'Worry Busters',n:4},
   {id:'growth',emoji:'🏆',name:'Growth',n:4},
+  {id:'school',emoji:'🎒',name:'School Life',n:7},
 ];
 function hhSwitchCat(c){hhCat=c;playClick();renderHeartsTab();}
 function hhIdx(t){return HH_MISSIONS.findIndex(m=>m.title===t);}
@@ -11223,6 +11250,117 @@ function hhKindStreak(){
   }
   return streak;
 }
+
+// ══ SCHOOL LIFE ══
+const HH_SL_STORY=['Who made you smile today?','What made you laugh today?','What was your favorite part of school?','Who did you sit next to today?','What game did you enjoy most?','Did anyone help you today?','Did you help someone today?','What made your teacher smile today?','What made your heart happy today?','What would you like to do again tomorrow?','What surprised you today?','What was the silliest thing today?','What made you feel proud today?','What made you feel excited today?','What made you feel curious today?'];
+const HH_SL_HLR=[{e:'⭐',t:'High',q:'What was the best part of your day?'},{e:'☁️',t:'Low',q:'What was the hardest part of your day?'},{e:'🌈',t:'Rainbow',q:'What are you excited about tomorrow?'}];
+const HH_SL_FRIEND=[{q:'Who was kind today?',w:1},{q:'Did someone help you?'},{q:'Did you help someone?'},{q:'Did you share something?'},{q:'Who would you like to play with tomorrow?',w:1},{q:'Who made you smile today?',w:1}];
+const HH_SL_LEARN=['What new thing did you learn?','Can you teach Daddy something?','What was easy today?','What was tricky today?','What made your brain work hard?','What made you feel smart today?'];
+const HH_SL_BRAVEQ=['Did you try something new?','Did you ask a question?','Did you keep trying when something felt hard?','Did you make a mistake and keep going?','Did you do something brave today?'];
+const HH_SL_GOALS=[{e:'😊',t:'Use Kind Words'},{e:'🙋',t:'Raise My Hand'},{e:'🤝',t:'Help A Friend'},{e:'📚',t:'Listen Carefully'},{e:'🎨',t:'Try My Best'},{e:'💪',t:'Be Brave'},{e:'🌟',t:'Make Someone Smile'}];
+const HH_SL_STARS={story:1,hlr:2,friend:1,learn:1,brave:2,goal:1};
+const HH_SL_PRAISE=['Thank you for sharing! 💛','What a lovely answer! 🌟','Mummy and Daddy will love hearing this! 🥰','You are so thoughtful! 💖','Great sharing! ⭐'];
+function hhEsc(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function hhSchoolDay(key){key=key||hhMissionKey();try{return JSON.parse(localStorage.getItem('c_hh_school_'+key)||'{}')||{};}catch(e){return {};}}
+function hhSchoolSave(d){localStorage.setItem('c_hh_school_'+hhMissionKey(),JSON.stringify(d));}
+function hhSchoolSec(d,sec){d[sec]=d[sec]||{};d[sec].t=d[sec].t||{};d[sec].y=d[sec].y||{};return d[sec];}
+// one question a day, never one of the last 10 asked
+function hhSchoolStoryIdx(){
+  const d=hhSchoolDay();const st=hhSchoolSec(d,'story');
+  if(typeof st.q==='number'&&st.q<HH_SL_STORY.length)return st.q;
+  let hist=[];try{hist=JSON.parse(localStorage.getItem('c_hh_ss_hist')||'[]');}catch(e){}
+  const recent=hist.slice(-10);
+  let pool=HH_SL_STORY.map((_,i)=>i).filter(i=>!recent.includes(i));
+  if(!pool.length)pool=HH_SL_STORY.map((_,i)=>i);
+  const q=pool[Math.floor(Math.random()*pool.length)];
+  st.q=q;hhSchoolSave(d);
+  hist.push(q);localStorage.setItem('c_hh_ss_hist',JSON.stringify(hist.slice(-14)));
+  return q;
+}
+function hhSchoolSpeak(){speakText(HH_SL_STORY[hhSchoolStoryIdx()]);}
+function hhSchoolAward(sec){
+  const n=HH_SL_STARS[sec]||1;
+  const d=hhSchoolDay();d.aw=d.aw||{};
+  if(d.aw[sec])return;
+  d.aw[sec]=1;hhSchoolSave(d);
+  const key=hhMissionKey();
+  stars+=n;totalStarsEver+=n;
+  localStorage.setItem('cs_'+key,stars);
+  localStorage.setItem('c_total_stars',totalStarsEver);
+  const ws=JSON.parse(localStorage.getItem('cws')||'{}');
+  ws[key]=(ws[key]||0)+n;
+  localStorage.setItem('cws',JSON.stringify(ws));
+  if(typeof fbWrite==='function'&&typeof _syncReady!=='undefined'&&_syncReady&&typeof _currentUser!=='undefined'&&_currentUser){
+    fbWrite('c_total_stars',totalStarsEver);fbWrite('cs_'+key,stars);fbWrite('cws',JSON.stringify(ws));
+  }
+  if(typeof showSpill==='function')showSpill();
+  if(typeof renderStarPath==='function')renderStarPath();
+  if(typeof showToast==='function')showToast('⭐ +'+n+' School Life star'+(n>1?'s':'')+'!');
+  playStar();
+}
+function hhSchoolText(sec,i,val){
+  const d=hhSchoolDay();const st=hhSchoolSec(d,sec);
+  st.t[i]=String(val||'').slice(0,200);hhSchoolSave(d);
+  if(st.t[i].trim()){hhSchoolAward(sec);mascotSay(HH_SL_PRAISE[Math.floor(Math.random()*HH_SL_PRAISE.length)],3000);}
+  hhSchoolRefresh();
+}
+function hhSchoolTap(sec,i){
+  const d=hhSchoolDay();const st=hhSchoolSec(d,sec);
+  st.y[i]=st.y[i]?0:1;hhSchoolSave(d);
+  const b=document.getElementById('sl-'+sec+'-'+i);
+  if(b){b.classList.toggle('on',!!st.y[i]);b.textContent=st.y[i]?'✅ Yes!':'👆 Tap for yes';}
+  if(st.y[i]){hhSchoolAward(sec);playCorrect();mascotSay('Wonderful! 💛',2000);}
+  hhSchoolRefresh();
+}
+function hhSchoolGoal(i){
+  const d=hhSchoolDay();d.goal=i;hhSchoolSave(d);
+  document.querySelectorAll('.sl-goal').forEach(b=>b.classList.toggle('on',parseInt(b.dataset.i)===i));
+  const m=document.getElementById('slGoalMsg');
+  if(m)m.textContent='Tomorrow I will: '+HH_SL_GOALS[i].e+' '+HH_SL_GOALS[i].t+'. You can do it! 💪';
+  hhSchoolAward('goal');playCorrect();mascotSay('Great goal! '+HH_SL_GOALS[i].e,2500);
+  hhSchoolRefresh();
+}
+function hhSchoolStats(){
+  const r={helped:0,asked:0,brave:0,kind:0,learn:0,listener:0,days:0};
+  for(let n=0;n<localStorage.length;n++){
+    const k=localStorage.key(n);
+    if(!k||k.indexOf('c_hh_school_')!==0)continue;
+    let d;try{d=JSON.parse(localStorage.getItem(k))||{};}catch(e){continue;}
+    const fr=d.friend||{},br=d.brave||{},ln=d.learn||{};
+    const fy=fr.y||{},ft=fr.t||{},by=br.y||{},lt=ln.t||{};
+    let any=false;
+    if(fy[2]){r.helped++;any=true;}
+    if(by[1]){r.asked++;any=true;}
+    Object.keys(by).forEach(x=>{if(by[x]){r.brave++;any=true;}});
+    if(fy[3]){r.kind++;any=true;}
+    if(ft[0]&&String(ft[0]).trim()){r.kind++;any=true;}
+    Object.keys(lt).forEach(x=>{if(String(lt[x]).trim()){r.learn++;any=true;}});
+    if(d.goal===3){r.listener++;any=true;}
+    if(d.goal!==undefined||(d.story&&d.story.t&&String(d.story.t[0]||'').trim())||(d.hlr&&d.hlr.t&&Object.keys(d.hlr.t).some(x=>String(d.hlr.t[x]).trim())))any=true;
+    if(any)r.days++;
+  }
+  Object.keys(hhStarChart).forEach(k=>{if(hhStarChart[k]>=3)r.listener++;});
+  return r;
+}
+function hhSchoolJourneyHTML(){
+  const st=hhSchoolStats();
+  const tiles=[
+    {e:'🤝',n:'Helped A Friend',v:st.helped},{e:'🙋',n:'Asked Questions',v:st.asked},
+    {e:'💪',n:'Brave Moments',v:st.brave},{e:'😊',n:'Kind Choices',v:st.kind},
+    {e:'📚',n:'Learning Wins',v:st.learn},{e:'🌟',n:'Great Listener',v:st.listener},
+  ];
+  const total=tiles.reduce((a,t)=>a+t.v,0);
+  const msg=total===0?'Your school story is just beginning! Answer one card today. 🌱'
+    :total<6?'Wonderful start! Every answer helps your heart grow. 💛'
+    :total<16?'You are growing so brave and kind! 🌟'
+    :total<31?'Look how much you have shared! Super school star! 🏆'
+    :'You are a School Life Superstar! Mummy and Daddy are so proud! 🎒✨';
+  return `<div class="sl-tiles">${tiles.map(t=>{const lv=[1,3,6,10,15].filter(m=>t.v>=m).length;
+      return `<div class="sl-tile"><div class="e">${t.e}</div><b>${t.v}</b><div class="n">${t.n}</div><div class="st">${'⭐'.repeat(lv)}${'☆'.repeat(5-lv)}</div></div>`;}).join('')}</div>
+    <div class="sl-msg">${msg}</div>
+    <div style="text-align:center;font-size:.74rem;color:var(--text3);font-weight:700">🎒 ${st.days} school day${st.days===1?'':'s'} shared</div>`;
+}
+function hhSchoolRefresh(){const el=document.getElementById('hhSchoolJourney');if(el)el.innerHTML=hhSchoolJourneyHTML();}
 const HH_DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
 function renderHeartsTab(){
@@ -11350,6 +11488,24 @@ function renderHeartsTab(){
         <div class="hh-stat"><b>${scenCount}</b><span>🧠 Kind choices</span></div>
         <div class="hh-stat"><b>${worryTotal}</b><span>🫙 Worries let go</span></div></div>`),
     card('🎖️ Emotional Growth Badges',`<div class="hh-badges">${badges.map(b=>`<div class="hh-badge ${b.ok?'on':''}"><div class="e">${b.ok?b.e:'🔒'}</div><div class="t">${b.t}</div><div class="d">${b.d}</div></div>`).join('')}</div><div style="text-align:center;font-size:.72rem;color:var(--text3);font-weight:700;margin-top:8px">${badges.filter(b=>b.ok).length} / ${badges.length} badges earned</div>`),
+  ];
+
+  // ── SCHOOL LIFE ──
+  const slQ=hhSchoolStoryIdx();
+  const SD=hhSchoolDay();
+  const sSt=hhSchoolSec(SD,'story'),sHl=hhSchoolSec(SD,'hlr'),sFr=hhSchoolSec(SD,'friend'),sLn=hhSchoolSec(SD,'learn'),sBr=hhSchoolSec(SD,'brave');
+  const ynBtn=(sec,i,on)=>`<button id="sl-${sec}-${i}" class="sl-yn ${on?'on':''}" onclick="hhSchoolTap('${sec}',${i})">${on?'✅ Yes!':'👆 Tap for yes'}</button>`;
+  const slInput=(sec,i,val,ph)=>`<input class="hh-input" maxlength="80" placeholder="${ph}" value="${hhEsc(val)}" onchange="hhSchoolText('${sec}',${i},this.value)">`;
+  const yd=new Date();yd.setDate(yd.getDate()-1);
+  const yGoal=hhSchoolDay(`${yd.getFullYear()}-${yd.getMonth()+1}-${yd.getDate()}`).goal;
+  BLK.school=[
+    card('🎒 School Stories',`<div class="sl-q">${HH_SL_STORY[slQ]}</div><div style="text-align:center;margin-bottom:8px"><button class="hm-btn" onclick="hhSchoolSpeak()">🔊 Read to me</button></div><textarea class="hh-input" rows="2" maxlength="200" placeholder="Tell Mummy or Daddy your story, or type it here..." onchange="hhSchoolText('story',0,this.value)">${hhEsc(sSt.t[0])}</textarea>${note('A new question every day! Answer it to earn ⭐.')}`,true),
+    card('⭐ High • Low • Rainbow',HH_SL_HLR.map((h,i)=>`<div class="sl-hlr h${i}"><div class="t">${h.e} ${h.t}</div><div class="q">${h.q}</div>${slInput('hlr',i,sHl.t[i],'Tell us...')}</div>`).join('')+note('Answer any of them to earn ⭐⭐.')),
+    card('🤝 Friend Finder',HH_SL_FRIEND.map((f,i)=>`<div class="sl-row"><div class="sl-rq">${f.q}</div>${f.w?slInput('friend',i,sFr.t[i],'A friend\'s name...'):ynBtn('friend',i,sFr.y[i])}</div>`).join('')),
+    card('🧠 Learning Moments',HH_SL_LEARN.map((q,i)=>`<div class="sl-row"><div class="sl-rq">${q}</div>${slInput('learn',i,sLn.t[i],'I learned...')}</div>`).join('')),
+    card('💪 Brave Moments',HH_SL_BRAVEQ.map((q,i)=>`<div class="sl-row"><div class="sl-rq">${q}</div>${ynBtn('brave',i,sBr.y[i])}</div>`).join('')),
+    card('🎯 Tomorrow Goal',(yGoal!==undefined&&HH_SL_GOALS[yGoal]?`<div class="sl-msg" style="margin-top:0">Yesterday you picked ${HH_SL_GOALS[yGoal].e} ${HH_SL_GOALS[yGoal].t}. How did it go? 💛</div>`:'')+note('Pick ONE goal for tomorrow!')+`<div class="sl-goals">${HH_SL_GOALS.map((g,i)=>`<button class="sl-goal ${SD.goal===i?'on':''}" data-i="${i}" onclick="hhSchoolGoal(${i})"><span class="e">${g.e}</span>${g.t}</button>`).join('')}</div><div class="sl-msg" id="slGoalMsg">${HH_SL_GOALS[SD.goal]?'Tomorrow I will: '+HH_SL_GOALS[SD.goal].e+' '+HH_SL_GOALS[SD.goal].t+'. You can do it! 💪':''}</div>`),
+    card('🏆 My School Journey',`<div id="hhSchoolJourney">${hhSchoolJourneyHTML()}</div>`,true),
   ];
 
   // Category chips (with counts) under the header
