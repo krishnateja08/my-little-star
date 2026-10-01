@@ -2483,6 +2483,43 @@ body.bedtime .hm-card.done{background:linear-gradient(135deg,#1a2e1e,#1a2a28);}
 .hm-btn{border:none;background:linear-gradient(135deg,#ff6b9d,#ffb830);color:#fff;font-family:'Baloo 2',cursive;font-weight:800;font-size:.85rem;padding:9px 16px;border-radius:50px;cursor:pointer;min-height:44px;touch-action:manipulation;}
 .hm-done{font-weight:800;font-size:.8rem;color:var(--green);}
 .hm-count{text-align:center;font-size:.72rem;color:var(--text3);font-weight:700;margin-top:4px;}
+
+/* HEARTS CATEGORY CHIPS + LAYOUT (same language as Fun Games) */
+.hp{flex-shrink:0;border:none;padding:5px 13px;border-radius:50px;cursor:pointer;font-family:'Baloo 2',cursive;font-size:.76rem;font-weight:700;background:#f0f0f0;color:var(--text4);transition:all .2s;min-height:32px;touch-action:manipulation;}
+.hp.active{color:#fff;}
+.hp .hp-n{display:inline-block;min-width:18px;margin-left:5px;padding:0 6px;border-radius:50px;background:rgba(0,0,0,.08);font-size:.68rem;line-height:18px;}
+.hp.active .hp-n{background:rgba(255,255,255,.3);}
+.hp[data-h="all"].active{background:linear-gradient(135deg,#ff6b9d,#ffb830);}
+.hp[data-h="feelings"].active{background:linear-gradient(135deg,#ffb830,#ff8c69);}
+.hp[data-h="calm"].active{background:linear-gradient(135deg,#4ecdc4,#56cf81);}
+.hp[data-h="kindness"].active{background:linear-gradient(135deg,#ff6b9d,#a78bfa);}
+.hp[data-h="social"].active{background:linear-gradient(135deg,#a78bfa,#4fa3e0);}
+.hp[data-h="worry"].active{background:linear-gradient(135deg,#4fa3e0,#56cf81);}
+.hp[data-h="growth"].active{background:linear-gradient(135deg,#ffb830,#a78bfa);}
+body.bedtime .hp{background:#2a2a3a;}
+.hh-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px;align-items:start;margin-bottom:14px;}
+.hh-grid .hh-card{margin-bottom:0;}
+.hh-grid .hh-wide{grid-column:1/-1;}
+.hh-cat-head{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.05rem;color:var(--text);margin:6px 2px 10px;display:flex;align-items:center;gap:8px;}
+.hh-cat-head .n{font-size:.7rem;font-weight:700;color:var(--text3);background:var(--cardbg);padding:2px 10px;border-radius:50px;box-shadow:0 2px 8px var(--shadow2);}
+.hh-grp-title{font-family:'Baloo 2',cursive;font-weight:700;font-size:.82rem;color:var(--text2);margin:8px 0 6px;}
+.hh-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;}
+.hh-stat{background:linear-gradient(135deg,#fff5f8,#fff9e8);border-radius:16px;padding:10px 6px;text-align:center;}
+body.bedtime .hh-stat{background:#2a2430;}
+.hh-stat b{display:block;font-family:'Baloo 2',cursive;font-size:1.3rem;color:var(--purple);}
+.hh-stat span{font-size:.68rem;font-weight:700;color:var(--text3);}
+.hh-badges{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;}
+.hh-badge{border-radius:16px;padding:10px 8px;text-align:center;background:#f0f0f0;opacity:.55;filter:grayscale(.8);}
+.hh-badge.on{background:linear-gradient(135deg,#fff3c4,#ffe0ec);opacity:1;filter:none;}
+body.bedtime .hh-badge{background:#2a2a3a;}
+body.bedtime .hh-badge.on{background:#3a3220;}
+.hh-badge .e{font-size:1.6rem;} .hh-badge .t{font-family:'Baloo 2',cursive;font-weight:800;font-size:.78rem;color:var(--text);} .hh-badge .d{font-size:.66rem;color:var(--text3);font-weight:600;}
+.hh-streak{text-align:center;font-family:'Baloo 2',cursive;}
+.hh-streak .big{font-size:2.4rem;font-weight:800;color:#ff8c69;}
+.hh-thought{background:linear-gradient(135deg,#f0f4ff,#fff0f8);border-radius:18px;padding:16px;text-align:center;font-family:'Baloo 2',cursive;font-weight:700;font-size:1rem;color:var(--text);min-height:70px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+body.bedtime .hh-thought{background:#25263a;}
+.hh-input{width:100%;box-sizing:border-box;padding:10px 14px;border-radius:14px;border:2px solid rgba(167,139,250,.3);font-family:'Nunito',sans-serif;font-size:.9rem;margin:8px 0;background:var(--cardbg);color:var(--text);}
+.hh-jar{font-size:3rem;text-align:center;}
 .hh-card{background:var(--cardbg);border-radius:var(--r);padding:18px 16px;margin-bottom:14px;
   box-shadow:0 12px 36px var(--shadow);position:relative;overflow:hidden;}
 .hh-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;
@@ -3045,6 +3082,7 @@ body.bedtime .streak-bar{background:linear-gradient(135deg,#1b2a00,#2a1800);colo
       <button class="gp" data-g="puzzle" onclick="switchGameCat('puzzle')">&#x1F9E9; Puzzle</button>
       <button class="gp" data-g="focus" onclick="switchGameCat('focus')">&#x1F3AF; Focus</button>
     </div>
+    <div class="game-row" id="heartRow"></div>
     <div class="prog" id="progBar">
       <span class="pl">Progress</span>
       <div class="pb"><div class="pf" id="pf" style="width:0%"></div></div>
@@ -10822,6 +10860,7 @@ function switchTab(t){
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===t));
   document.getElementById('subjRow').classList.toggle('show',t==='learning');
   document.getElementById('gameRow').classList.toggle('show',t==='games');
+  document.getElementById('heartRow').classList.toggle('show',t==='hearts');
   document.getElementById('thinkRow').classList.remove('show');
   if(t!=='learning') subj='all';
 
@@ -10900,11 +10939,11 @@ const HH_FEEL_RESPONSES={
 };
 
 const HH_CALM_TOOLS=[
-  {id:'breathe', icon:'🌬️', name:'Belly Breathing',    tip:'Breathe in slow, out slow'},
-  {id:'hug',     icon:'🤗', name:'Ask for a Hug',       tip:'Hugs release happy chemicals!'},
+  {id:'breathe', icon:'🌬️', name:'Belly Breathing',      tip:'Breathe in slow, out slow'},
+  {id:'count',   icon:'🔢', name:'Count To 10 Slowly',   tip:'Counting slows your heartbeat'},
   {id:'water',   icon:'💧', name:'Drink Water',          tip:'Water calms a busy brain'},
   {id:'walk',    icon:'🚶', name:'Walk & Shake It Out',  tip:'Move your body to feel better'},
-  {id:'count',   icon:'🔢', name:'Count to 10 Slowly',  tip:'Counting slows your heartbeat'},
+  {id:'hug',     icon:'🤗', name:'Ask For A Hug',        tip:'Hugs release happy chemicals!'},
   {id:'draw',    icon:'✏️', name:'Draw Your Feelings',   tip:'Drawing lets feelings out'},
 ];
 
@@ -11112,10 +11151,78 @@ function hhMissionDone(i){
   if(typeof showToast==='function')showToast(`⭐ +${m.stars} for ${m.title}!`);
   playStar();burst();
   mascotSay(m.emoji+' Wonderful heart! +'+m.stars+' star'+(m.stars>1?'s':'')+' 💛',3000);
-  const el=document.getElementById('hhMissions');
-  if(el)el.innerHTML=hhMissionsHTML();
+  renderHeartsTab();
 }
 
+
+// ── Hearts categories (same chip style as Fun Games) ──
+let hhCat='all';
+const HH_CATS=[
+  {id:'feelings',emoji:'😊',name:'Feelings',n:4},
+  {id:'calm',emoji:'🧘',name:'Calm',n:7},
+  {id:'kindness',emoji:'🌟',name:'Kindness',n:5},
+  {id:'social',emoji:'🧠',name:'Social Skills',n:4},
+  {id:'worry',emoji:'💭',name:'Worry Busters',n:4},
+  {id:'growth',emoji:'🏆',name:'Growth',n:4},
+];
+function hhSwitchCat(c){hhCat=c;playClick();renderHeartsTab();}
+function hhIdx(t){return HH_MISSIONS.findIndex(m=>m.title===t);}
+function hhMissionCards(idxArr){
+  const doneList=hhMissionsDoneToday();
+  return idxArr.filter(i=>i>=0).map(i=>{
+    const m=HH_MISSIONS[i];const isDone=doneList.includes(i);
+    return `<div class="hm-card ${isDone?'done':''}">
+      <div class="hm-emoji">${m.emoji}</div>
+      <div class="hm-body"><div class="hm-title">${m.title}</div><div class="hm-desc">${m.description}</div><div class="hm-stars">${'⭐'.repeat(m.stars)}</div></div>
+      ${isDone?'<div class="hm-done">✅ Done!</div>':`<button class="hm-btn" onclick="hhMissionDone(${i})">I did it! 💛</button>`}
+    </div>`;}).join('');
+}
+const HH_FEEL_GROUPS=[
+  {label:'😊 Positive Feelings',list:['happy','excited','loved','proud','calm']},
+  {label:'🌤️ Everyday Feelings',list:['silly','tired','bored']},
+  {label:'🤗 Feelings That Need Support',list:['sad','angry','worried','scared']},
+];
+const HH_POS=['I am kind and I am loved.','Today is going to be a good day.','I am a great friend.','My smile makes people happy.','I can learn new things every day.','I am special just the way I am.','Good things are coming to me.','I am thankful for my family.'];
+const HH_BRAVE=['I can do hard things!','It is okay to feel scared. I am still brave.','I can ask for help. That is brave too!','I can try again, and again, and again!','My brave heart is strong.','I can take a deep breath and be calm.','Mistakes help my brain grow.','I am braver than I think!'];
+let hhPosIdx=0,hhBraveIdx=0;
+function hhNextThought(kind){
+  playClick();
+  const arr=kind==='pos'?HH_POS:HH_BRAVE;
+  if(kind==='pos')hhPosIdx=(hhPosIdx+1)%arr.length;else hhBraveIdx=(hhBraveIdx+1)%arr.length;
+  const t=arr[kind==='pos'?hhPosIdx:hhBraveIdx];
+  const el=document.getElementById(kind==='pos'?'hhPosText':'hhBraveText');
+  if(el)el.textContent=t;
+  speakText(t);
+}
+function hhDropWorry(){
+  const inp=document.getElementById('wjInput');
+  if(inp)inp.value='';
+  const k=hhMissionKey();
+  const n=parseInt(localStorage.getItem('c_hh_worry_'+k)||'0')+1;
+  localStorage.setItem('c_hh_worry_'+k,n);
+  localStorage.setItem('c_hh_worry_total',parseInt(localStorage.getItem('c_hh_worry_total')||'0')+1);
+  playCorrect();
+  const msg=document.getElementById('wjMsg');
+  if(msg)msg.innerHTML='🪁 Your worry is floating away! Well done for letting it out.<br><b>'+n+'</b> worr'+(n===1?'y':'ies')+' let go today.';
+  mascotSay('Worries feel smaller when we let them go! 💛',3000);
+}
+function hhMissionTotal(){
+  let n=0;
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);
+    if(k&&k.indexOf('c_hh_missions_')===0){try{n+=JSON.parse(localStorage.getItem(k)).length;}catch(e){}}}
+  return n;
+}
+function hhKindStreak(){
+  let streak=0;const d=new Date();
+  for(let i=0;i<400;i++){
+    const key=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+    let has=false;
+    try{has=JSON.parse(localStorage.getItem('c_hh_missions_'+key)||'[]').length>0;}catch(e){}
+    if(has)streak++;else if(i>0)break;
+    d.setDate(d.getDate()-1);
+  }
+  return streak;
+}
 const HH_DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
 function renderHeartsTab(){
@@ -11170,130 +11277,95 @@ function renderHeartsTab(){
         `<div class="scenario-opt" id="sc-opt-${i}" onclick="hhPickScenario(${i},${sc.correct},'${sc.praise.replace(/'/g,"\\'")}','${sc.oops.replace(/'/g,"\\'")}',${hhScenarioIdx%HH_SCENARIOS.length})">${o}</div>`
       ).join('')}</div><div class="scenario-result" id="sc-result" style="display:none"></div>`;
 
-  document.getElementById('area').innerHTML=`
-    <div class="hh-card">
-      <!-- Section 1: Mood & Emotions -->
-      <div class="hh-section">
-        <div class="hh-section-title">🌈 How are you feeling right now?</div>
-        <div class="feelings-wheel" id="feelingsWheel">
-          ${HH_FEELINGS.map(f=>`
-            <div class="feel-btn" data-feel="${f.feel}" onclick="hhSelectFeel('${f.feel}','${f.emoji}','${f.label}')">
-              <span class="feel-emoji">${f.emoji}</span>
-              <span class="feel-label">${f.label}</span>
-            </div>`).join('')}
-        </div>
-        <div id="feelResponse" style="display:none" class="feel-response"></div>
-        <div class="mood-entry-list" id="moodHist">${moodHistHTML}</div>
-      </div>
-    </div>
+  const ck=hhMissionKey();
+  const checkin=(()=>{try{return JSON.parse(localStorage.getItem('c_hh_checkin_'+ck)||'null');}catch(e){return null;}})();
+  const missionTotal=hhMissionTotal();
+  const streak=hhKindStreak();
+  const worryTotal=parseInt(localStorage.getItem('c_hh_worry_total')||'0');
+  const worryToday=parseInt(localStorage.getItem('c_hh_worry_'+ck)||'0');
+  const feelCount=Math.max(hhMoodHistory.length,parseInt(localStorage.getItem('c_hh_feel_total')||'0'));
+  const scenCount=new Set(hhScenarioDone).size;
+  const badges=[
+    {e:'🌱',t:'First Heart Mission',d:'Do 1 heart mission',ok:missionTotal>=1},
+    {e:'💖',t:'Kind Heart',d:'Do 10 missions',ok:missionTotal>=10},
+    {e:'🌟',t:'Kindness Star',d:'Do 25 missions',ok:missionTotal>=25},
+    {e:'😊',t:'Feelings Friend',d:'Share 5 feelings',ok:feelCount>=5},
+    {e:'🧘',t:'Calm Master',d:'Try all 6 calm tools',ok:hhCalmDone.length>=6},
+    {e:'🧠',t:'Wise Chooser',d:'Pick 5 kind answers',ok:scenCount>=5},
+    {e:'👂',t:'Super Listener',d:'Listen 5 times in a day',ok:hhListenCount>=5},
+    {e:'🔥',t:'3-Day Kindness',d:'3 kind days in a row',ok:streak>=3},
+    {e:'🫙',t:'Worry Buster',d:'Let go of 3 worries',ok:worryTotal>=3},
+  ];
+  const card=(title,inner,wide)=>`<div class="hh-card${wide?' hh-wide':''}"><div class="hh-section"><div class="hh-section-title">${title}</div>${inner}</div></div>`;
+  const note=t=>`<div style="font-size:.76rem;color:var(--text3);margin-bottom:10px;line-height:1.5">${t}</div>`;
+  const sub=t=>`<div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;color:var(--text);margin:12px 0 8px">${t}</div>`;
 
-    <div class="hh-card">
-      <!-- Section 1b: Heart Missions -->
-      <div class="hh-section">
-        <div class="hh-section-title">💖 Today's Heart Missions</div>
-        <div style="font-size:.76rem;color:var(--text3);margin-bottom:10px;line-height:1.5">
-          Three fun missions for your heart every day. Do one, then tap the button to earn stars! 🌟
-        </div>
-        <div id="hhMissions">${hhMissionsHTML()}</div>
-      </div>
-    </div>
+  const BLK={};
+  // ── FEELINGS ──
+  BLK.feelings=[
+    card('🌈 Emotion Picker — How are you feeling?',
+      HH_FEEL_GROUPS.map(g=>`<div class="hh-grp-title">${g.label}</div><div class="feelings-wheel">${g.list.map(k=>{const f=HH_FEELINGS.find(x=>x.feel===k);return `<div class="feel-btn" data-feel="${f.feel}" onclick="hhSelectFeel('${f.feel}','${f.emoji}','${f.label}')"><span class="feel-emoji">${f.emoji}</span><span class="feel-label">${f.label}</span></div>`;}).join('')}</div>`).join('')
+      +`<div id="feelResponse" style="display:none" class="feel-response"></div>`,true),
+    card('🌡️ Mood Meter',`<div style="background:linear-gradient(135deg,#fff0f8,#f0f0ff);border-radius:18px;padding:16px;border:2px solid rgba(167,139,250,.15);">
+        <div class="thermo-wrap"><div class="thermo-face" id="hhThermoFace">😐</div><div class="thermo-desc" id="hhThermoDesc">Slide to show how you feel inside</div>
+        <div class="thermo-labels"><span class="thermo-label-hot">🔥 Boiling Angry</span><span class="thermo-label-cold">🧊 Super Calm</span></div>
+        <input type="range" class="thermo-slider" id="hhThermoSlider" min="0" max="100" value="50" oninput="hhUpdateThermo(this.value)" style="background:linear-gradient(to right,#ff6b9d 0%,#ffb830 30%,#4ecdc4 70%,#4fa3e0 100%)">
+        <div class="thermo-tip" id="hhThermoTip">Move the slider and see what helps!</div></div></div>`),
+    card('📒 Feeling History',`<div class="mood-entry-list" id="moodHist">${moodHistHTML}</div>`),
+    card('✅ Daily Check-In',`<div id="hhCheckin" style="text-align:center;font-family:'Baloo 2',cursive;font-weight:700;color:var(--text)">${checkin?`<div style="font-size:2.4rem">${checkin.emoji}</div>You checked in today: <b>${checkin.label}</b><br><span style="font-size:.78rem;color:var(--text3)">Great job sharing your feelings! 💛</span>`:`<div style="font-size:2.4rem">💛</div>Pick a feeling in the Emotion Picker to check in today!`}</div>`),
+  ];
+  // ── CALM ──
+  BLK.calm=[
+    card('🧘 Calm Down Corner',`<div class="hh-breathe-wrap"><div class="hh-breathe-ring" id="hhBreathRing">Breathe<br>with me</div><div class="hh-breathe-label" id="hhBreathLabel">Press Start to begin</div><button class="hh-breathe-btn" id="hhBreathBtn" onclick="hhToggleBreathe()">🌬️ Start Breathing</button></div>`),
+    card('🛠️ Calm-Down Tools',note('Pick a tool that helps your body and heart feel calm. 💚')+`<div class="calm-grid">${calmHTML}</div>`),
+  ];
+  // ── KINDNESS ──
+  BLK.kindness=[
+    card("💖 Today's Heart Missions",note('Three fun missions for your heart every day. Do one, then tap the button to earn stars! 🌟')+hhMissionCards(hhTodayMissionIdx())+`<div class="hm-count">${hhMissionsDoneToday().length} / 3 today · ${HH_MISSIONS.length} heart missions to discover!</div>`),
+    card('🤝 Teamwork & Helping',hhMissionCards([hhIdx('Teamwork Time'),hhIdx('Door Helper'),hhIdx('Kindness Song')])),
+    card('🌟 Daily Kindness Challenges',hhMissionCards([hhIdx('Kindness Mission'),hhIdx('Compliment Challenge'),hhIdx('Thank You Hero'),hhIdx('Helping Heart')])),
+  ];
+  // ── SOCIAL SKILLS ──
+  BLK.social=[
+    card('💬 What Would You Do?',note('Read the situation and pick the kindest, wisest answer! 🧠')+`<div class="scenario-card"><div class="scenario-q">${sc.q}</div>${scHTML}</div><div style="font-size:.68rem;color:var(--text4);text-align:center;margin-top:4px">Question ${(hhScenarioIdx%HH_SCENARIOS.length)+1} of ${HH_SCENARIOS.length}</div>`),
+    card('🫂 Friendship Choices',hhMissionCards([hhIdx('Friendly Hello'),hhIdx('Include Someone'),hhIdx('Friendship Recipe'),hhIdx('Peace Maker')])),
+    card('🍪 Sharing Activities',hhMissionCards([hhIdx('Open Hands Sharing'),hhIdx('Snack Sharing'),hhIdx('Share The Joy')])),
+    card('👂 Listening Practice',`<div class="listen-prog-wrap"><div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple)">Today's Listening Goal 🎯</div><div class="listen-prog-bar"><div class="listen-prog-fill" style="width:${listenPct}%"></div></div><div style="font-size:.75rem;color:var(--text3);margin-bottom:4px">${hhListenCount} / ${listenGoal} listening moments ✅</div>${listenBadge}<button class="listen-tap-btn" onclick="hhListenTap()">👂 I listened just now! +1</button></div>`+hhMissionCards([hhIdx('Super Listener')])),
+  ];
+  // ── WORRY BUSTERS ──
+  BLK.worry=[
+    card('🫧 Pop Your Worries Away!',`${note('Tap every bubble to pop it! Pop them all to feel better. 💛')}<div class="bubble-arena" id="hhBubbleArena"></div><div class="bubble-score" id="hhBubbleScore">0 popped</div><div class="bubble-msg" id="hhBubbleMsg"></div><button class="bubble-restart" onclick="hhSpawnBubbles()">🫧 New Bubbles!</button>`),
+    card('🫙 Worry Jar',`<div class="hh-jar">🫙</div>${note('Think of a worry. Type it or just say it out loud, then put it in the jar. It will float away!')}<input class="hh-input" id="wjInput" maxlength="60" placeholder="My worry is..."><button class="hm-btn" onclick="hhDropWorry()">Put it in the jar 🫙</button><div id="wjMsg" style="font-size:.8rem;font-weight:700;color:var(--text2);margin-top:8px;line-height:1.5">${worryToday?`<b>${worryToday}</b> worr${worryToday===1?'y':'ies'} let go today. 🪁`:''}</div>`),
+    card('💛 Positive Thoughts',`<div class="hh-thought" id="hhPosText">${HH_POS[hhPosIdx]}</div><button class="hm-btn" onclick="hhNextThought('pos')">Next thought ➡️</button>`),
+    card('🦁 Brave Thoughts',`<div class="hh-thought" id="hhBraveText">${HH_BRAVE[hhBraveIdx]}</div><button class="hm-btn" onclick="hhNextThought('brave')">Next thought ➡️</button>`),
+  ];
+  // ── GROWTH ──
+  BLK.growth=[
+    card('⭐ My Listening Star Chart',note('Every time you listen well, tap a star! Fill 3 stars each day to earn your 🏅 badge.')+`<div class="star-chart-grid">${starChartHTML}</div>`),
+    card('🔥 Kindness Streak',`<div class="hh-streak"><div class="big">${streak}</div><div style="font-weight:800;color:var(--text)">kind day${streak===1?'':'s'} in a row!</div><div style="font-size:.76rem;color:var(--text3);font-weight:600;margin-top:4px">${streak?'Keep going — do a heart mission every day! 💖':'Do a heart mission today to start your streak! 💖'}</div></div>`),
+    card('🏅 Heart Achievements',`<div class="hh-stats">
+        <div class="hh-stat"><b>${missionTotal}</b><span>💖 Missions</span></div>
+        <div class="hh-stat"><b>${feelCount}</b><span>😊 Feelings shared</span></div>
+        <div class="hh-stat"><b>${hhCalmDone.length}/${HH_CALM_TOOLS.length}</b><span>🧘 Calm tools</span></div>
+        <div class="hh-stat"><b>${scenCount}</b><span>🧠 Kind choices</span></div>
+        <div class="hh-stat"><b>${worryTotal}</b><span>🫙 Worries let go</span></div></div>`),
+    card('🎖️ Emotional Growth Badges',`<div class="hh-badges">${badges.map(b=>`<div class="hh-badge ${b.ok?'on':''}"><div class="e">${b.ok?b.e:'🔒'}</div><div class="t">${b.t}</div><div class="d">${b.d}</div></div>`).join('')}</div><div style="text-align:center;font-size:.72rem;color:var(--text3);font-weight:700;margin-top:8px">${badges.filter(b=>b.ok).length} / ${badges.length} badges earned</div>`),
+  ];
 
-    <div class="hh-card">
-      <!-- Section 2: Calm Down Corner -->
-      <div class="hh-section">
-        <div class="hh-section-title">🧘 Calm Down Corner</div>
+  // Category chips (with counts) under the header
+  const totalN=HH_CATS.reduce((a,c)=>a+c.n,0);
+  const heartRow=document.getElementById('heartRow');
+  if(heartRow){
+    heartRow.innerHTML=`<button class="hp ${hhCat==='all'?'active':''}" data-h="all" onclick="hhSwitchCat('all')">❤️ All<span class="hp-n">${totalN}</span></button>`
+      +HH_CATS.map(c=>`<button class="hp ${hhCat===c.id?'active':''}" data-h="${c.id}" onclick="hhSwitchCat('${c.id}')">${c.emoji} ${c.name}<span class="hp-n">${c.n}</span></button>`).join('');
+    heartRow.classList.add('show');
+  }
 
-        <!-- Breathing bubble -->
-        <div class="hh-breathe-wrap">
-          <div class="hh-breathe-ring" id="hhBreathRing">Breathe<br>with me</div>
-          <div class="hh-breathe-label" id="hhBreathLabel">Press Start to begin</div>
-          <button class="hh-breathe-btn" id="hhBreathBtn" onclick="hhToggleBreathe()">🌬️ Start Breathing</button>
-        </div>
-
-        <!-- Calm tools grid -->
-        <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;color:var(--text);margin:12px 0 8px">
-          🛠️ Pick a calm-down tool:
-        </div>
-        <div class="calm-grid">${calmHTML}</div>
-
-        <!-- Feelings Thermometer -->
-        <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;color:var(--text);margin:16px 0 10px">
-          🌡️ How hot is your feeling right now?
-        </div>
-        <div style="background:linear-gradient(135deg,#fff0f8,#f0f0ff);border-radius:18px;padding:16px;border:2px solid rgba(167,139,250,.15);">
-          <div class="thermo-wrap">
-            <div class="thermo-face" id="hhThermoFace">😐</div>
-            <div class="thermo-desc" id="hhThermoDesc">Slide to show how you feel inside</div>
-            <div class="thermo-labels">
-              <span class="thermo-label-hot">🔥 Boiling Angry</span>
-              <span class="thermo-label-cold">🧊 Super Calm</span>
-            </div>
-            <input type="range" class="thermo-slider" id="hhThermoSlider"
-              min="0" max="100" value="50"
-              oninput="hhUpdateThermo(this.value)"
-              style="background:linear-gradient(to right,#ff6b9d 0%,#ffb830 30%,#4ecdc4 70%,#4fa3e0 100%)">
-            <div class="thermo-tip" id="hhThermoTip">Move the slider and see what helps!</div>
-          </div>
-        </div>
-
-        <!-- Bubble Popper -->
-        <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:700;color:var(--text);margin:16px 0 10px">
-          🫧 Pop Your Worries Away!
-        </div>
-        <div style="font-size:.74rem;color:var(--text3);margin-bottom:8px;line-height:1.5">
-          Tap every bubble to pop it! Pop them all to feel better. 💛
-        </div>
-        <div class="bubble-arena" id="hhBubbleArena"></div>
-        <div class="bubble-score" id="hhBubbleScore">0 popped</div>
-        <div class="bubble-msg" id="hhBubbleMsg"></div>
-        <button class="bubble-restart" onclick="hhSpawnBubbles()">🫧 New Bubbles!</button>
-      </div>
-    </div>
-
-    <div class="hh-card">
-      <!-- Section 3: Good Behaviour Rewards -->
-      <div class="hh-section">
-        <div class="hh-section-title">⭐ My Listening Star Chart</div>
-        <div style="font-size:.76rem;color:var(--text3);margin-bottom:10px;line-height:1.5">
-          Every time you listen well, tap a star! Fill 3 stars each day to earn your 🏅 badge.
-        </div>
-        <div class="star-chart-grid">${starChartHTML}</div>
-
-        <div class="listen-prog-wrap">
-          <div style="font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:700;color:var(--purple)">
-            Today's Listening Goal 🎯
-          </div>
-          <div class="listen-prog-bar">
-            <div class="listen-prog-fill" style="width:${listenPct}%"></div>
-          </div>
-          <div style="font-size:.75rem;color:var(--text3);margin-bottom:4px">
-            ${hhListenCount} / ${listenGoal} listening moments ✅
-          </div>
-          ${listenBadge}
-          <button class="listen-tap-btn" onclick="hhListenTap()">
-            👂 I listened just now! +1
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="hh-card">
-      <!-- Section 4: Communication Skills -->
-      <div class="hh-section">
-        <div class="hh-section-title">💬 What Would You Do?</div>
-        <div style="font-size:.76rem;color:var(--text3);margin-bottom:10px;line-height:1.5">
-          Read the situation and pick the kindest, wisest answer! 🧠
-        </div>
-        <div class="scenario-card">
-          <div class="scenario-q">${sc.q}</div>
-          ${scHTML}
-        </div>
-        <div style="font-size:.68rem;color:var(--text4);text-align:center;margin-top:4px">
-          Question ${(hhScenarioIdx%HH_SCENARIOS.length)+1} of ${HH_SCENARIOS.length}
-        </div>
-      </div>
-    </div>
-  `;
+  // Show only the selected category (or all, grouped)
+  const shown=hhCat==='all'?HH_CATS:HH_CATS.filter(c=>c.id===hhCat);
+  document.getElementById('area').innerHTML=shown.map(c=>
+    (hhCat==='all'?`<div class="hh-cat-head">${c.emoji} ${c.name}<span class="n">${c.n}</span></div>`:'')
+    +`<div class="hh-grid">${BLK[c.id].join('')}</div>`).join('');
 
   // Re-highlight any already-selected feeling from this session
   if(window._hhCurrentFeel){
@@ -11309,7 +11381,7 @@ function renderHeartsTab(){
   }
 
   // Spawn bubbles
-  setTimeout(hhSpawnBubbles,100);
+  if(document.getElementById('hhBubbleArena'))setTimeout(hhSpawnBubbles,100);
 }
 
 // ── Feeling selection ──
@@ -11319,6 +11391,9 @@ function hhSelectFeel(feel,emoji,label){
   document.querySelectorAll('.feel-btn').forEach(b=>b.classList.remove('selected'));
   document.querySelector(`.feel-btn[data-feel="${feel}"]`).classList.add('selected');
   window._hhCurrentFeel=feel;
+  try{localStorage.setItem('c_hh_checkin_'+hhMissionKey(),JSON.stringify({emoji,label}));localStorage.setItem('c_hh_feel_total',parseInt(localStorage.getItem('c_hh_feel_total')||'0')+1);}catch(e){}
+  const ci=document.getElementById('hhCheckin');
+  if(ci)ci.innerHTML=`<div style="font-size:2.4rem">${emoji}</div>You checked in today: <b>${label}</b><br><span style="font-size:.78rem;color:var(--text3)">Great job sharing your feelings! 💛</span>`;
 
   const resp=HH_FEEL_RESPONSES[feel];
   const el=document.getElementById('feelResponse');
@@ -11335,7 +11410,8 @@ function hhSelectFeel(feel,emoji,label){
 
   // Refresh mood history display
   const recentMoods=hhMoodHistory.slice(-4).reverse();
-  document.getElementById('moodHist').innerHTML=recentMoods.map(m=>`
+  const _mh=document.getElementById('moodHist');
+  if(_mh)_mh.innerHTML=recentMoods.map(m=>`
     <div class="mood-entry-row">
       <span class="me-emoji">${m.emoji}</span>
       <div class="me-info">
@@ -11643,6 +11719,7 @@ function openParentTab(){
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t==='parent'));
   document.getElementById('subjRow').classList.remove('show');
   document.getElementById('gameRow').classList.remove('show');
+  document.getElementById('heartRow').classList.remove('show');
   const pb=document.getElementById('progBar');if(pb)pb.style.display='none';
   const fc=document.getElementById('factCard');if(fc)fc.style.display='none';
   const tb=document.getElementById('timerBar');if(tb)tb.classList.remove('show');
@@ -15184,6 +15261,7 @@ function _bootApp(){
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.t===tab));
   document.getElementById('subjRow').classList.toggle('show',tab==='learning');
   document.getElementById('gameRow').classList.toggle('show',tab==='games');
+  document.getElementById('heartRow').classList.toggle('show',tab==='hearts');
   document.getElementById('thinkRow').classList.toggle('show',tab==='learning'&&subj==='think');
   document.getElementById('weatherBar').classList.toggle('show',tab==='morning');
 
