@@ -2469,6 +2469,20 @@ body.bedtime .scenario-card{background:linear-gradient(135deg,#1a2e1e,#1a2030);}
 .scenario-result.oops{background:#ffe8f0;color:var(--pink);}
 
 /* HH card wrapper (reuses .acard look) */
+
+/* HEART MISSIONS */
+.hm-card{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#fff5f8,#fff9e8);border:2px solid rgba(255,107,157,.18);border-radius:18px;padding:12px;margin-bottom:10px;flex-wrap:wrap;}
+.hm-card.done{opacity:.7;background:linear-gradient(135deg,#f0fff4,#e8fff8);border-color:rgba(86,207,129,.35);}
+body.bedtime .hm-card{background:linear-gradient(135deg,#2a1e26,#2a2618);}
+body.bedtime .hm-card.done{background:linear-gradient(135deg,#1a2e1e,#1a2a28);}
+.hm-emoji{font-size:2rem;flex-shrink:0;}
+.hm-body{flex:1;min-width:150px;}
+.hm-title{font-family:'Baloo 2',cursive;font-weight:800;font-size:1rem;color:var(--text);}
+.hm-desc{font-size:.8rem;color:var(--text2);font-weight:600;line-height:1.45;margin-top:2px;}
+.hm-stars{font-size:.75rem;margin-top:4px;}
+.hm-btn{border:none;background:linear-gradient(135deg,#ff6b9d,#ffb830);color:#fff;font-family:'Baloo 2',cursive;font-weight:800;font-size:.85rem;padding:9px 16px;border-radius:50px;cursor:pointer;min-height:44px;touch-action:manipulation;}
+.hm-done{font-weight:800;font-size:.8rem;color:var(--green);}
+.hm-count{text-align:center;font-size:.72rem;color:var(--text3);font-weight:700;margin-top:4px;}
 .hh-card{background:var(--cardbg);border-radius:var(--r);padding:18px 16px;margin-bottom:14px;
   box-shadow:0 12px 36px var(--shadow);position:relative;overflow:hidden;}
 .hh-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;
@@ -10942,6 +10956,166 @@ const HH_SCENARIOS=[
    correct:1, praise:"What a kind heart you have! Helping someone in a tricky moment is one of the best things a person can do.", oops:"Stopping to help someone who needs it — even when it's not convenient — is what truly kind people do!"},
 ];
 
+const HH_MISSIONS=[
+  {"title": "Feelings Check-In", "emoji": "😊", "description": "Point to the face that matches how you feel right now. Say its name out loud!", "stars": 1},
+  {"title": "Kindness Mission", "emoji": "❤️", "description": "Do one kind thing for someone today. Then tell us what you did!", "stars": 3},
+  {"title": "Proud Of Myself", "emoji": "🌟", "description": "Think of one thing you did well today. Give yourself a big high-five!", "stars": 2},
+  {"title": "Gratitude Moment", "emoji": "🙏", "description": "Say 3 things you are thankful for. Say them out loud!", "stars": 2},
+  {"title": "Compliment Challenge", "emoji": "🤗", "description": "Tell someone one nice thing about them. Watch them smile!", "stars": 2},
+  {"title": "Thank You Hero", "emoji": "💌", "description": "Say a big thank you to someone who helped you today.", "stars": 2},
+  {"title": "What Made Me Smile?", "emoji": "🌈", "description": "Think about something that made you smile today. Tell someone about it!", "stars": 1},
+  {"title": "Helping Heart", "emoji": "🫂", "description": "Ask someone, \"Can I help you?\" Then give them a helping hand.", "stars": 3},
+  {"title": "My Best Moment", "emoji": "✨", "description": "Remember the best moment of your day. Draw it or tell it!", "stars": 2},
+  {"title": "Heart Reflection", "emoji": "💭", "description": "Close your eyes. What is your heart feeling right now? Whisper it.", "stars": 1},
+  {"title": "Mirror Magic", "emoji": "🪞", "description": "Look in the mirror and say, \"I am kind and I am brave!\" Say it with a big smile.", "stars": 2},
+  {"title": "Calm Heart Breaths", "emoji": "🌬️", "description": "Put your hand on your heart. Take 5 slow breaths and feel it beat.", "stars": 2},
+  {"title": "Draw My Feeling", "emoji": "🎨", "description": "Draw a picture of how you feel. Use any colours you like!", "stars": 3},
+  {"title": "Hug Time", "emoji": "🐻", "description": "Ask someone you love for a gentle hug. Hugs make hearts happy!", "stars": 2},
+  {"title": "Sunshine Smile", "emoji": "🌻", "description": "Share a big smile with 3 people today. See who smiles back!", "stars": 2},
+  {"title": "Cuddly Friend Chat", "emoji": "🧸", "description": "Tell your favourite toy all about your day.", "stars": 1},
+  {"title": "Gift From My Heart", "emoji": "🎁", "description": "Make a tiny gift, like a drawing or a paper heart, for someone you love.", "stars": 4},
+  {"title": "Star Words", "emoji": "🌠", "description": "Say 3 words that describe you in a good way, like brave, funny or kind.", "stars": 2},
+  {"title": "Superhero Kindness", "emoji": "🦸", "description": "Pretend you are a kindness superhero. What kind power will you use today?", "stars": 2},
+  {"title": "Super Listener", "emoji": "👂", "description": "Listen to someone talk for one whole minute. Show them you care with your eyes!", "stars": 3},
+  {"title": "Friendly Hello", "emoji": "🤝", "description": "Say a friendly hello to someone you don't talk to very often.", "stars": 3},
+  {"title": "Lucky Me List", "emoji": "🍀", "description": "Name 3 things that make you feel lucky.", "stars": 2},
+  {"title": "Goodnight Wishes", "emoji": "🌙", "description": "Say goodnight with a happy wish to 3 people you love.", "stars": 1},
+  {"title": "Care For A Friend", "emoji": "🐾", "description": "Be extra gentle and kind to a pet, plant or toy today.", "stars": 2},
+  {"title": "I Can Try!", "emoji": "💪", "description": "Pick something a little bit tricky. Say, \"I can try!\" and give it a go.", "stars": 3},
+  {"title": "Learning Is Growing", "emoji": "🌱", "description": "Think of a time you tried something and learned from it. What did you learn?", "stars": 3},
+  {"title": "Try Again Magic", "emoji": "🧩", "description": "Try something one more time. Every try makes your brain stronger!", "stars": 3},
+  {"title": "Yet Power", "emoji": "🚀", "description": "Think of something you can't do yet. Say, \"I can't do it YET!\"", "stars": 2},
+  {"title": "Share The Joy", "emoji": "🎈", "description": "Tell someone about something that made you very happy.", "stars": 1},
+  {"title": "Love Notes", "emoji": "🫶", "description": "Draw a love note for someone in your family.", "stars": 3},
+  {"title": "Flower Of Kindness", "emoji": "🌼", "description": "Draw a flower with 3 petals. On each petal, draw a kind thing you can do.", "stars": 4},
+  {"title": "Who Loves Me?", "emoji": "🥰", "description": "Name 3 people who love you. Feel the warm love in your heart.", "stars": 2},
+  {"title": "Cosy Calm Spot", "emoji": "😌", "description": "Find a cosy spot. Sit quietly for one minute and feel calm.", "stars": 2},
+  {"title": "Slow Turtle", "emoji": "🐢", "description": "Move like a slow turtle for 1 minute. Notice how calm your body feels.", "stars": 1},
+  {"title": "Happy Hum", "emoji": "🎵", "description": "Hum or sing a happy tune. How does your heart feel?", "stars": 1},
+  {"title": "Open Hands Sharing", "emoji": "🤲", "description": "Share a toy, a snack or some time with someone today.", "stars": 3},
+  {"title": "Kind Words Only", "emoji": "🧡", "description": "For a few minutes, use only kind words. You can do it!", "stars": 3},
+  {"title": "Weather Feelings", "emoji": "🌤️", "description": "If your feelings were weather today, what would they be? Sunny, rainy or windy?", "stars": 1},
+  {"title": "Feeling Faces", "emoji": "🎭", "description": "Make a happy, sad, surprised and sleepy face. Can someone guess each one?", "stars": 2},
+  {"title": "I Feel Because", "emoji": "🗣️", "description": "Finish this: \"I feel ___ because ___.\" Tell it to someone you trust.", "stars": 3},
+  {"title": "Ask For Help", "emoji": "🙋", "description": "Practise saying, \"Can you help me, please?\" Asking for help is brave!", "stars": 2},
+  {"title": "Magic Manners", "emoji": "💬", "description": "Use \"please\" and \"thank you\" every time today.", "stars": 2},
+  {"title": "Kind Sorry Practice", "emoji": "🕊️", "description": "Practise saying a kind \"I'm sorry\" to your teddy. Kind words feel good!", "stars": 2},
+  {"title": "Peace Maker", "emoji": "☮️", "description": "Think of a kind way friends can fix a problem. Tell a grown-up your idea.", "stars": 3},
+  {"title": "Kind To Nature", "emoji": "🌍", "description": "Do one thing to care for nature, like watering a plant or saying hello to a tree.", "stars": 3},
+  {"title": "Busy Bee Helper", "emoji": "🐝", "description": "Do one helpful thing without being asked. Notice how it feels!", "stars": 3},
+  {"title": "Snack Sharing", "emoji": "🍪", "description": "Offer a snack to someone and see them smile.", "stars": 3},
+  {"title": "My Brain Is Growing", "emoji": "🧠", "description": "Say, \"My brain grows when I try new things!\" Then try something new.", "stars": 3},
+  {"title": "Learn Something New", "emoji": "📚", "description": "Ask someone to teach you one new thing today.", "stars": 3},
+  {"title": "Brave Voice", "emoji": "🎤", "description": "Say something you like in a loud, clear, happy voice.", "stars": 2},
+  {"title": "Lion Courage", "emoji": "🦁", "description": "Pretend to be a brave lion. Stand tall and say, \"I am brave!\"", "stars": 2},
+  {"title": "My Super Strength", "emoji": "💫", "description": "What are you really good at? Tell someone about it!", "stars": 2},
+  {"title": "Medal Of Effort", "emoji": "🏅", "description": "Give yourself an imaginary medal for trying hard today.", "stars": 2},
+  {"title": "Friendship Recipe", "emoji": "🍰", "description": "What 3 ingredients make a good friend? Draw them or tell someone.", "stars": 3},
+  {"title": "Cheer For Someone", "emoji": "📣", "description": "Clap or cheer for someone who did something good.", "stars": 2},
+  {"title": "Applause Time", "emoji": "👏", "description": "Give a family member a big round of applause for something they did.", "stars": 2},
+  {"title": "Morning Smile", "emoji": "🌅", "description": "When you wake up, smile and say, \"Today will be a good day!\"", "stars": 1},
+  {"title": "Today's Thank You", "emoji": "🌃", "description": "Before bed, say thank you for one good thing that happened today.", "stars": 1},
+  {"title": "Gentle Hands", "emoji": "🐶", "description": "Use gentle hands with everything you touch for 2 minutes.", "stars": 2},
+  {"title": "Kindness For Everyone", "emoji": "🌸", "description": "Say one kind thing to each person in your family.", "stars": 4},
+  {"title": "Warm Welcome", "emoji": "🏡", "description": "Welcome someone with a smile and a friendly hello.", "stars": 2},
+  {"title": "Rainbow Breathing", "emoji": "🧘", "description": "Breathe in and imagine a rainbow. Breathe out slowly. Do it 3 times.", "stars": 2},
+  {"title": "Bubble Breath", "emoji": "🫧", "description": "Pretend to blow a giant bubble with one slow breath. Do it 5 times.", "stars": 1},
+  {"title": "Today I Will", "emoji": "🎯", "description": "Pick one kind thing you will do today. Say it out loud!", "stars": 2},
+  {"title": "My Happy List", "emoji": "📝", "description": "Tell someone 3 things that make you happy.", "stars": 2},
+  {"title": "Celebrate Me", "emoji": "🥳", "description": "Do a happy dance because you are wonderful!", "stars": 1},
+  {"title": "Tree Of Thanks", "emoji": "🌳", "description": "Draw a tree. Add a leaf for every thing you are thankful for.", "stars": 4},
+  {"title": "Be Someone's Sunshine", "emoji": "☀️", "description": "Do something to cheer someone up today.", "stars": 3},
+  {"title": "Include Someone", "emoji": "🧑‍🤝‍🧑", "description": "Invite someone to play with you. Everyone loves to be included!", "stars": 3},
+  {"title": "Magic Words", "emoji": "🪄", "description": "Say \"You're doing great!\" to someone who is trying hard.", "stars": 2},
+  {"title": "Heart Mail", "emoji": "💝", "description": "Make a paper heart and give it to someone.", "stars": 3},
+  {"title": "Giggle Maker", "emoji": "😂", "description": "Make a kind, silly face to make someone giggle.", "stars": 2},
+  {"title": "Quiet Moment", "emoji": "🕯️", "description": "Sit still for 1 minute. What can you hear?", "stars": 2},
+  {"title": "My Heart Compass", "emoji": "🧭", "description": "Ask your heart, \"What would be kind right now?\" Then do it.", "stars": 3},
+  {"title": "Kite Of Worries", "emoji": "🪁", "description": "Imagine a worry floating away like a kite. Breathe out slowly.", "stars": 2},
+  {"title": "Worry Helper", "emoji": "🛡️", "description": "Tell a grown-up one small worry. Sharing makes it smaller!", "stars": 3},
+  {"title": "Face Detective", "emoji": "🔍", "description": "Look at someone's face. Can you guess how they feel? Ask them kindly.", "stars": 3},
+  {"title": "Kindness Spotter", "emoji": "👀", "description": "Spot one kind thing someone did. Tell them, \"I saw that, thank you!\"", "stars": 3},
+  {"title": "Teamwork Time", "emoji": "🙌", "description": "Work together with someone on a small, fun job.", "stars": 3},
+  {"title": "Door Helper", "emoji": "🚪", "description": "Hold a door open or pass something to someone with a smile.", "stars": 2},
+  {"title": "Kindness Song", "emoji": "🎶", "description": "Make up a short song about being kind. Sing it out loud!", "stars": 3},
+  {"title": "Kindness Story", "emoji": "📖", "description": "Tell a short story about someone being kind.", "stars": 3},
+  {"title": "Gentle Giant", "emoji": "🐘", "description": "Be gentle with your words and hands, like a kind elephant.", "stars": 2},
+  {"title": "One Good Thing", "emoji": "🌟", "description": "Tell someone one good thing that happened today.", "stars": 1},
+  {"title": "Floating Leaf Calm", "emoji": "🍃", "description": "Imagine a leaf floating gently down. Breathe slowly with it.", "stars": 1},
+  {"title": "Cheer Together", "emoji": "🎲", "description": "Play any game just for fun. Cheer for everyone's good moves!", "stars": 2},
+  {"title": "Peaceful Wish", "emoji": "🤍", "description": "Make a wish for someone you love to feel happy.", "stars": 1},
+  {"title": "Wish Upon A Star", "emoji": "⭐", "description": "Make a kind wish for the whole world.", "stars": 1},
+  {"title": "Say I Love You", "emoji": "📢", "description": "Tell someone, \"I love you because...\" and finish the sentence.", "stars": 3},
+  {"title": "Little Surprise", "emoji": "🧁", "description": "Plan a tiny surprise to make someone smile.", "stars": 4},
+  {"title": "Friend Fan", "emoji": "🎀", "description": "Think of a friend. Tell them one thing you love about being their friend.", "stars": 3},
+  {"title": "Brave Step", "emoji": "👣", "description": "Do one small brave thing today and tell someone about it.", "stars": 3},
+  {"title": "Home Is Love", "emoji": "🏠", "description": "Say one thing you love about your home or your family.", "stars": 2},
+  {"title": "New Way Today", "emoji": "🦋", "description": "Try doing something a new way today. Notice how it feels!", "stars": 2},
+  {"title": "Grow With Kindness", "emoji": "🪴", "description": "Give a plant a drink and say something kind to it.", "stars": 2},
+  {"title": "Tiny Creature Kindness", "emoji": "🐞", "description": "Watch a tiny bug quietly and wish it well. Be gentle!", "stars": 2},
+  {"title": "Kind Thought Backpack", "emoji": "🎒", "description": "Think of a kind thought to carry with you all day long.", "stars": 1},
+  {"title": "I Am Special", "emoji": "💎", "description": "Say one thing that makes you special and different.", "stars": 2},
+  {"title": "Gratitude Hug", "emoji": "🫶", "description": "Hug someone and tell them one thing you are thankful for about them.", "stars": 3},
+  {"title": "Heart Hero Wrap-Up", "emoji": "🏆", "description": "Look back at your day. Pick the kindest thing you did!", "stars": 4}
+];
+
+// ── Heart Missions: 3 new missions every day (100 in total, cycles forever) ──
+function hhMissionKey(){const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;}
+function hhTodayMissionIdx(){
+  const d=new Date();
+  const dn=Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5);
+  const start=(dn*3)%HH_MISSIONS.length;
+  return [0,1,2].map(i=>(start+i)%HH_MISSIONS.length);
+}
+function hhMissionsDoneToday(){
+  try{return JSON.parse(localStorage.getItem('c_hh_missions_'+hhMissionKey())||'[]');}catch(e){return [];}
+}
+function hhMissionsHTML(){
+  const doneList=hhMissionsDoneToday();
+  const cards=hhTodayMissionIdx().map(i=>{
+    const m=HH_MISSIONS[i];const isDone=doneList.includes(i);
+    return `<div class="hm-card ${isDone?'done':''}">
+      <div class="hm-emoji">${m.emoji}</div>
+      <div class="hm-body">
+        <div class="hm-title">${m.title}</div>
+        <div class="hm-desc">${m.description}</div>
+        <div class="hm-stars">${'⭐'.repeat(m.stars)}</div>
+      </div>
+      ${isDone?'<div class="hm-done">✅ Done!</div>':`<button class="hm-btn" onclick="hhMissionDone(${i})">I did it! 💛</button>`}
+    </div>`;
+  }).join('');
+  return cards+`<div class="hm-count">${doneList.length} / 3 missions today · ${HH_MISSIONS.length} heart missions to discover!</div>`;
+}
+function hhMissionDone(i){
+  const m=HH_MISSIONS[i];if(!m)return;
+  const key=hhMissionKey();
+  const doneList=hhMissionsDoneToday();
+  if(doneList.includes(i))return;
+  doneList.push(i);
+  localStorage.setItem('c_hh_missions_'+key,JSON.stringify(doneList));
+  // add stars to her existing totals (never subtracts anything)
+  stars+=m.stars;totalStarsEver+=m.stars;
+  localStorage.setItem('cs_'+key,stars);
+  localStorage.setItem('c_total_stars',totalStarsEver);
+  const ws=JSON.parse(localStorage.getItem('cws')||'{}');
+  ws[key]=(ws[key]||0)+m.stars;
+  localStorage.setItem('cws',JSON.stringify(ws));
+  if(typeof fbWrite==='function'&&typeof _syncReady!=='undefined'&&_syncReady&&typeof _currentUser!=='undefined'&&_currentUser){
+    fbWrite('c_total_stars',totalStarsEver);
+    fbWrite('cs_'+key,stars);
+    fbWrite('cws',JSON.stringify(ws));
+    fbWrite('c_hh_missions_'+key,JSON.stringify(doneList));
+  }
+  if(typeof showSpill==='function')showSpill();
+  if(typeof renderStarPath==='function')renderStarPath();
+  if(typeof renderTabBadges==='function')renderTabBadges();
+  if(typeof showToast==='function')showToast(`⭐ +${m.stars} for ${m.title}!`);
+  playStar();burst();
+  mascotSay(m.emoji+' Wonderful heart! +'+m.stars+' star'+(m.stars>1?'s':'')+' 💛',3000);
+  const el=document.getElementById('hhMissions');
+  if(el)el.innerHTML=hhMissionsHTML();
+}
+
 const HH_DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
 function renderHeartsTab(){
@@ -11010,6 +11184,17 @@ function renderHeartsTab(){
         </div>
         <div id="feelResponse" style="display:none" class="feel-response"></div>
         <div class="mood-entry-list" id="moodHist">${moodHistHTML}</div>
+      </div>
+    </div>
+
+    <div class="hh-card">
+      <!-- Section 1b: Heart Missions -->
+      <div class="hh-section">
+        <div class="hh-section-title">💖 Today's Heart Missions</div>
+        <div style="font-size:.76rem;color:var(--text3);margin-bottom:10px;line-height:1.5">
+          Three fun missions for your heart every day. Do one, then tap the button to earn stars! 🌟
+        </div>
+        <div id="hhMissions">${hhMissionsHTML()}</div>
       </div>
     </div>
 
