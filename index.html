@@ -4862,6 +4862,122 @@ async function fetchNext(forceAct){
 // ══════════════════════════════════════
 //  ACTIVITY PICKER — browse & choose
 // ══════════════════════════════════════
+
+// ══════════════════════════════════════
+//  📝 READING ADVENTURE — 5 CVC words/day (ABC field)
+// ══════════════════════════════════════
+const CVC_POOL=[
+ ['cat','🐱','The cat is big.','Can you find a cat in a book today?'],
+ ['dog','🐶','The dog can run.','Can you bark like a dog?'],
+ ['hat','🎩','I have a red hat.','Can you put on a hat and dance?'],
+ ['bat','🦇','The bat can fly.','Can you flap your arms like a bat?'],
+ ['mat','🧘','The cat sat on the mat.','Can you find a mat at home?'],
+ ['pig','🐷','The pig is pink.','Can you oink like a pig?'],
+ ['lip','👄','I can see my lip.','Can you make a big smile with your lips?'],
+ ['sun','☀️','The sun is hot.','Can you draw a big yellow sun?'],
+ ['run','🏃','I can run fast.','Can you run on the spot 5 times?'],
+ ['bug','🐛','A bug is on the leaf.','Can you spot a tiny bug outside?'],
+ ['mug','☕','The mug is full.','Can you find a mug in the kitchen?'],
+ ['cap','🧢','I put on my cap.','Can you wear a cap and say CAP?'],
+ ['map','🗺️','Look at the map.','Can you draw a map to your toy box?'],
+ ['fan','🪭','The fan is on.','Can you feel the wind from a fan?'],
+ ['pan','🍳','The pan is hot.','Can you pretend to cook in a pan?'],
+ ['jam','🍓','I like jam.','Can you say yummy jam three times?'],
+ ['van','🚐','The van is red.','Can you spot a van on the road?'],
+ ['hen','🐔','The hen is in the pen.','Can you cluck like a hen?'],
+ ['pen','🖊️','I have a pen.','Can you write your name with a pen?'],
+ ['bed','🛏️','I am in my bed.','Can you make your bed neat?'],
+ ['web','🕸️','A bug is in the web.','Can you draw a web with lines?'],
+ ['leg','🦵','I hop on one leg.','Can you hop on one leg?'],
+ ['cup','🥤','The cup is full.','Can you find a cup and say CUP?'],
+ ['fox','🦊','The fox is fast.','Can you tiptoe like a sly fox?'],
+ ['pot','🍲','The pot is hot.','Can you stir a pretend pot?'],
+ ['hug','🤗','I give a big hug.','Can you give someone a big hug?'],
+ ['bus','🚌','The bus is big.','Can you say beep beep like a bus?'],
+ ['nut','🥜','The nut is brown.','Can you find a nut at home?'],
+ ['rat','🐀','The rat is sad.','Can you squeak like a rat?'],
+ ['bin','🗑️','Put it in the bin.','Can you find the bin at home?'],
+ ['wig','👩‍🦰','The wig is funny.','Can you make a funny wig from paper?'],
+ ['jet','✈️','The jet is fast.','Can you zoom like a jet?'],
+ ['ten','🔟','I see ten.','Can you count to ten?'],
+ ['rug','🟫','The cat is on the rug.','Can you sit on a rug and read?'],
+ ['box','📦','The box is big.','Can you find a box to hide in?'],
+ ['log','🪵','The frog is on a log.','Can you find a log or a stick outside?'],
+ ['wet','💧','The dog is wet.','Can you touch something wet?'],
+ ['sad','😢','The pup is sad.','Can you make a sad face, then a happy face?'],
+ ['kid','🧒','The kid can hop.','Can you hop like a happy kid?'],
+ ['ham','🍖','I like ham.','Can you say ham in a silly voice?'],
+ ['gum','🫧','The gum is pink.','Can you blow a pretend bubble?']
+];
+const CVC_COLORS=['#ff6b9d','#4fa3e0','#56cf81','#ffb830','#a78bfa'];
+function cvcWeekKey(){return 'c_cvc_wk_'+(getWeek().week);}
+function cvcTodayWords(){
+  const tk='c_cvc_day_'+todayKey();
+  try{const saved=JSON.parse(localStorage.getItem(tk)||'null');if(saved&&saved.length===5)return saved.map(w=>CVC_POOL.find(x=>x[0]===w)).filter(Boolean);}catch(e){}
+  let used=[];try{used=JSON.parse(localStorage.getItem(cvcWeekKey())||'[]');}catch(e){}
+  let fresh=CVC_POOL.filter(x=>!used.includes(x[0]));
+  if(fresh.length<5){used=[];fresh=CVC_POOL.slice();}   // pool used up this week → start again
+  for(let i=fresh.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[fresh[i],fresh[j]]=[fresh[j],fresh[i]];}
+  const pick=fresh.slice(0,5);
+  localStorage.setItem(tk,JSON.stringify(pick.map(x=>x[0])));
+  localStorage.setItem(cvcWeekKey(),JSON.stringify(used.concat(pick.map(x=>x[0]))));
+  return pick;
+}
+function cvcSay(w){playClick&&playClick();speakText(w.split('').join(' ')+'. '+w);}
+function cvcSaySentence(i){const w=cvcTodayWords()[i];if(w)speakText(w[2]);}
+function cvcStar(){
+  const el=document.getElementById('cvcStar');if(!el)return;
+  el.classList.add('on');el.textContent='⭐';
+  localStorage.setItem('c_cvc_star_'+todayKey(),'1');
+  document.getElementById('cvcWow').style.display='block';
+  speakText('You did an amazing job today!');
+}
+function openReadingAdventure(){
+  playClick&&playClick();
+  const words=cvcTodayWords();
+  const starOn=localStorage.getItem('c_cvc_star_'+todayKey())==='1';
+  document.getElementById('hsub').textContent='📝 Today\'s Reading Adventure';
+  const cards=words.map((w,i)=>{
+    const c=CVC_COLORS[i%5],W=w[0].toUpperCase();
+    return `<div class="cvc-card" style="border-color:${c}">
+      <div class="cvc-head" style="background:${c}"><span>${i+1}. ${W} ${w[1]}</span>
+        <button onclick="cvcSay('${w[0]}')" aria-label="Hear ${W}">🔊</button></div>
+      <div class="cvc-lbl">✏️ Trace:</div>
+      <div class="cvc-trace">${[1,2,3].map(()=>`<div>${W}</div>`).join('')}</div>
+      <div class="cvc-lbl">📖 Sentence: <button class="cvc-mini" onclick="cvcSaySentence(${i})">🔊</button></div>
+      <div class="cvc-txt">${w[2]}</div>
+      <div class="cvc-lbl">🎯 Challenge:</div>
+      <div class="cvc-txt">${w[3]}</div>
+    </div>`;}).join('');
+  document.getElementById('area').innerHTML=`
+  <style>
+   .cvc-wrap{padding:4px 2px 18px}
+   .cvc-title{text-align:center;font-size:1.3rem;font-weight:800;margin:6px 0 10px;background:linear-gradient(90deg,#ff6b9d,#ffb830,#56cf81,#4fa3e0,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
+   .cvc-card{background:var(--cardbg);border:3px solid;border-radius:18px;margin-bottom:14px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.08)}
+   .cvc-head{display:flex;justify-content:space-between;align-items:center;color:#fff;font-weight:800;font-size:1.25rem;padding:9px 14px}
+   .cvc-head button,.cvc-mini{border:none;border-radius:50%;width:34px;height:34px;font-size:1rem;cursor:pointer;background:rgba(255,255,255,.85)}
+   .cvc-mini{width:26px;height:26px;font-size:.8rem;background:var(--inputbg);vertical-align:middle}
+   .cvc-lbl{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);padding:8px 14px 2px}
+   .cvc-trace div{font-size:2.4rem;font-weight:800;letter-spacing:.35em;padding:0 14px;line-height:1.15;color:transparent;-webkit-text-stroke:2px #9aa8b4;border-bottom:2px dashed var(--border);font-family:'Comic Sans MS','Chalkboard SE',sans-serif}
+   .cvc-txt{padding:2px 14px 8px;font-size:1.05rem;color:var(--text)}
+   .cvc-reward{text-align:center;background:var(--inputbg);border:3px dashed #ffb830;border-radius:18px;padding:14px;margin-top:6px}
+   #cvcStar{font-size:3rem;filter:grayscale(1) opacity(.45);cursor:pointer;border:none;background:none;transition:transform .2s}
+   #cvcStar.on{filter:none;transform:scale(1.25)}
+   .cvc-wow{display:none;font-size:.98rem;font-weight:600;color:var(--text);margin-top:8px}
+  </style>
+  <div class="cvc-wrap">
+   <div class="cvc-title">🌟 Today's Reading Adventure</div>
+   ${cards}
+   <div class="cvc-reward"><div style="font-weight:800;font-size:1.1rem">🏆 Star Reward</div>
+     <div style="margin:4px 0">If you read all 5 words, color one star:</div>
+     <button id="cvcStar" class="${starOn?'on':''}" onclick="cvcStar()">${starOn?'⭐':'☆'}</button>
+     <div class="cvc-wow" id="cvcWow" style="${starOn?'display:block':''}">"You did an amazing job today! Keep practicing and your reading superpower will grow stronger every day!"</div>
+   </div>
+   <button class="picker-random" style="margin:14px auto 0;display:block" onclick="busy=false;fetchNext()">⬅ Back to ABC activities</button>
+  </div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
 function showActivityPicker(pool){
   const isThinkView=tab==='learning'&&subj==='think';
   const tabName=isThinkView?'Think':(tab.charAt(0).toUpperCase()+tab.slice(1));
@@ -4936,6 +5052,7 @@ function showActivityPicker(pool){
       </div>
       ${allDoneToday?`<div style="text-align:center;padding:14px 12px;background:linear-gradient(135deg,#e8fff0,#f0fff4);border-radius:16px;margin-bottom:10px;border:2px dashed var(--green)"><div style="font-size:1.8rem">🎉</div><div style="font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--green)">All ${tabName} ${tab==='games'?'games':'activities'} done for today!</div><div style="font-size:.8rem;color:var(--text3);margin-top:4px">Amazing work! Everything comes back fresh tomorrow 🌟</div></div>`:''}
       <div class="picker-list">
+        ${(tab==='learning'&&subj==='abc')?`<div class="picker-item" onclick="openReadingAdventure()" style="border:2px solid #ff6b9d"><span class="pi-emoji">📝</span><div class="pi-info"><div class="pi-title">Today's Reading Adventure</div><div class="pi-desc">5 new easy words to trace, read &amp; play with!</div></div><span class="pi-tag" style="background:linear-gradient(135deg,#ff6b9d,#a78bfa)">NEW</span><span class="pi-stars">⭐1</span></div>`:''}
         ${availableHtml}
         ${doneHtml}
         ${skippedHtml}
