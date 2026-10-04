@@ -4864,144 +4864,115 @@ async function fetchNext(forceAct){
 // ══════════════════════════════════════
 
 // ══════════════════════════════════════
-//  📝 READING ADVENTURE — Word Family (5 CVC words / day) in ABC field
+//  📝 READING ADVENTURE — 5 CVC words/day (ABC field)
 // ══════════════════════════════════════
-const WF_FAMILIES={
- 'AT':[['cat','🐱','The cat is big.'],['hat','🎩','My hat is red.'],['bat','🦇','The bat can fly.'],['mat','🟫','Sit on the mat.'],['rat','🐭','The rat can run.'],['pat','🐕','I pat the dog.']],
- 'OG':[['dog','🐶','The dog can run.'],['log','🪵','The frog is on the log.'],['fog','🌫️','I see fog.'],['hog','🐗','The hog is big.'],['jog','🏃','I can jog.']],
- 'UN':[['sun','☀️','The sun is hot.'],['run','🏃','I can run fast.'],['fun','🎉','We have fun.'],['bun','🍞','I eat a bun.'],['nun','⛪','The nun is kind.']],
- 'AP':[['cap','🧢','I wear a cap.'],['map','🗺️','Look at the map.'],['nap','😴','I take a nap.'],['tap','🚰','Turn off the tap.'],['lap','🧍','The cat is on my lap.'],['zap','⚡','Zap! Zap! Zap!']],
- 'IG':[['pig','🐷','The pig is pink.'],['big','🐘','The elephant is big.'],['dig','⛏️','I can dig.'],['fig','🍈','I eat a fig.'],['wig','👩‍🦰','The wig is funny.']],
- 'AN':[['fan','🪭','The fan is on.'],['pan','🍳','The pan is hot.'],['van','🚐','The van is red.'],['man','👨','The man is tall.'],['can','🥫','I see a can.']],
- 'EN':[['hen','🐔','The hen is in the pen.'],['pen','🖊️','I have a pen.'],['ten','🔟','I see ten.'],['men','👨‍👨‍👦','The men can run.'],['den','🦁','The lion is in the den.']],
- 'UG':[['bug','🐛','A bug is on the leaf.'],['mug','☕','The mug is full.'],['hug','🤗','I give a big hug.'],['rug','🟫','The cat is on the rug.'],['jug','🫙','The jug is full.'],['dug','🕳️','I dug a hole.']],
- 'ET':[['net','🥅','The ball is in the net.'],['pet','🐕','I love my pet.'],['wet','💧','The dog is wet.'],['jet','✈️','The jet is fast.'],['vet','🩺','The vet is kind.']],
- 'IP':[['lip','👄','I can see my lip.'],['dip','🥣','I dip my bread.'],['sip','🥤','I sip my milk.'],['zip','🧥','Zip up my coat.'],['tip','👆','Tip, tip, tip.']],
- 'AM':[['jam','🍓','I like jam.'],['ham','🍖','I like ham.'],['ram','🐏','The ram is strong.'],['yam','🍠','The yam is yummy.'],['dam','🌊','The dam is big.']],
- 'OP':[['top','🔝','Go to the top.'],['hop','🐰','The bunny can hop.'],['mop','🧹','I use a mop.'],['pop','🍿','Pop, pop, pop!'],['cop','👮','The cop is kind.']],
- 'IN':[['bin','🗑️','Put it in the bin.'],['pin','📌','I see a pin.'],['fin','🦈','The shark has a fin.'],['win','🏆','I can win.'],['tin','🥫','The tin is shiny.']]
-};
-const WF_COLORS=['#ff6b9d','#4fa3e0','#56cf81','#ffb830','#a78bfa'];
-function wfWeekKey(){return 'c_wf_wk_'+(getWeek().week);}
-function wfToday(){
-  const tk='c_wf_day_'+todayKey();
-  try{const sv=JSON.parse(localStorage.getItem(tk)||'null');
-    if(sv&&sv.fam&&WF_FAMILIES[sv.fam]){const list=WF_FAMILIES[sv.fam];
-      const w=sv.words.map(x=>list.find(y=>y[0]===x)).filter(Boolean);if(w.length===5)return{fam:sv.fam,words:w};}}catch(e){}
-  let used=[];try{used=JSON.parse(localStorage.getItem(wfWeekKey())||'[]');}catch(e){}
-  const avail=f=>WF_FAMILIES[f].filter(x=>!used.includes(x[0]));
-  let fams=Object.keys(WF_FAMILIES).filter(f=>avail(f).length>=5);
-  if(!fams.length){used=[];fams=Object.keys(WF_FAMILIES).filter(f=>WF_FAMILIES[f].length>=5);} // everything used this week → restart
-  const fam=fams[Math.floor(Math.random()*fams.length)];
-  const pool=WF_FAMILIES[fam].filter(x=>!used.includes(x[0]));
-  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
-  const pick=pool.slice(0,5);
-  localStorage.setItem(tk,JSON.stringify({fam,words:pick.map(x=>x[0])}));
-  localStorage.setItem(wfWeekKey(),JSON.stringify(used.concat(pick.map(x=>x[0]))));
-  return{fam,words:pick};
+const CVC_POOL=[
+ ['cat','🐱','The cat is big.','Can you find a cat in a book today?'],
+ ['dog','🐶','The dog can run.','Can you bark like a dog?'],
+ ['hat','🎩','I have a red hat.','Can you put on a hat and dance?'],
+ ['bat','🦇','The bat can fly.','Can you flap your arms like a bat?'],
+ ['mat','🧘','The cat sat on the mat.','Can you find a mat at home?'],
+ ['pig','🐷','The pig is pink.','Can you oink like a pig?'],
+ ['lip','👄','I can see my lip.','Can you make a big smile with your lips?'],
+ ['sun','☀️','The sun is hot.','Can you draw a big yellow sun?'],
+ ['run','🏃','I can run fast.','Can you run on the spot 5 times?'],
+ ['bug','🐛','A bug is on the leaf.','Can you spot a tiny bug outside?'],
+ ['mug','☕','The mug is full.','Can you find a mug in the kitchen?'],
+ ['cap','🧢','I put on my cap.','Can you wear a cap and say CAP?'],
+ ['map','🗺️','Look at the map.','Can you draw a map to your toy box?'],
+ ['fan','🪭','The fan is on.','Can you feel the wind from a fan?'],
+ ['pan','🍳','The pan is hot.','Can you pretend to cook in a pan?'],
+ ['jam','🍓','I like jam.','Can you say yummy jam three times?'],
+ ['van','🚐','The van is red.','Can you spot a van on the road?'],
+ ['hen','🐔','The hen is in the pen.','Can you cluck like a hen?'],
+ ['pen','🖊️','I have a pen.','Can you write your name with a pen?'],
+ ['bed','🛏️','I am in my bed.','Can you make your bed neat?'],
+ ['web','🕸️','A bug is in the web.','Can you draw a web with lines?'],
+ ['leg','🦵','I hop on one leg.','Can you hop on one leg?'],
+ ['cup','🥤','The cup is full.','Can you find a cup and say CUP?'],
+ ['fox','🦊','The fox is fast.','Can you tiptoe like a sly fox?'],
+ ['pot','🍲','The pot is hot.','Can you stir a pretend pot?'],
+ ['hug','🤗','I give a big hug.','Can you give someone a big hug?'],
+ ['bus','🚌','The bus is big.','Can you say beep beep like a bus?'],
+ ['nut','🥜','The nut is brown.','Can you find a nut at home?'],
+ ['rat','🐀','The rat is sad.','Can you squeak like a rat?'],
+ ['bin','🗑️','Put it in the bin.','Can you find the bin at home?'],
+ ['wig','👩‍🦰','The wig is funny.','Can you make a funny wig from paper?'],
+ ['jet','✈️','The jet is fast.','Can you zoom like a jet?'],
+ ['ten','🔟','I see ten.','Can you count to ten?'],
+ ['rug','🟫','The cat is on the rug.','Can you sit on a rug and read?'],
+ ['box','📦','The box is big.','Can you find a box to hide in?'],
+ ['log','🪵','The frog is on a log.','Can you find a log or a stick outside?'],
+ ['wet','💧','The dog is wet.','Can you touch something wet?'],
+ ['sad','😢','The pup is sad.','Can you make a sad face, then a happy face?'],
+ ['kid','🧒','The kid can hop.','Can you hop like a happy kid?'],
+ ['ham','🍖','I like ham.','Can you say ham in a silly voice?'],
+ ['gum','🫧','The gum is pink.','Can you blow a pretend bubble?']
+];
+const CVC_COLORS=['#ff6b9d','#4fa3e0','#56cf81','#ffb830','#a78bfa'];
+function cvcWeekKey(){return 'c_cvc_wk_'+(getWeek().week);}
+function cvcTodayWords(){
+  const tk='c_cvc_day_'+todayKey();
+  try{const saved=JSON.parse(localStorage.getItem(tk)||'null');if(saved&&saved.length===5)return saved.map(w=>CVC_POOL.find(x=>x[0]===w)).filter(Boolean);}catch(e){}
+  let used=[];try{used=JSON.parse(localStorage.getItem(cvcWeekKey())||'[]');}catch(e){}
+  let fresh=CVC_POOL.filter(x=>!used.includes(x[0]));
+  if(fresh.length<5){used=[];fresh=CVC_POOL.slice();}   // pool used up this week → start again
+  for(let i=fresh.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[fresh[i],fresh[j]]=[fresh[j],fresh[i]];}
+  const pick=fresh.slice(0,5);
+  localStorage.setItem(tk,JSON.stringify(pick.map(x=>x[0])));
+  localStorage.setItem(cvcWeekKey(),JSON.stringify(used.concat(pick.map(x=>x[0]))));
+  return pick;
 }
-function wfSay(t){try{if(typeof playClick==='function')playClick();}catch(e){}speakText(t);}
-function wfSpell(w){return w.toUpperCase().split('').join('-');}
-function wfRobot(i){
-  const w=wfToday().words[i][0].toUpperCase();
-  const chips=document.querySelectorAll('#wfRobot'+i+' .wf-chip');
-  speechSynthesis&&speechSynthesis.cancel();
-  chips.forEach((c,k)=>setTimeout(()=>{chips.forEach(x=>x.classList.remove('hi'));c.classList.add('hi');speakText(w[k]);},k*700));
-  setTimeout(()=>{chips.forEach(x=>x.classList.remove('hi'));speakText(w);},chips.length*700+200);
-}
-function wfPick(i,ch,btn){
-  const d=wfToday(),w=d.words[i][0].toUpperCase(),vow=d.fam[0];
-  const slot=document.getElementById('wfSlot'+i),fb=document.getElementById('wfFb'+i);
-  if(ch===vow){slot.textContent=ch;slot.classList.add('ok');fb.textContent='🎉 Yes! '+w+'!';
-    document.querySelectorAll('#wfOpts'+i+' button').forEach(b=>b.disabled=true);speakText(w);}
-  else{btn.classList.add('bad');fb.textContent='Oops! Try again 💪';setTimeout(()=>btn.classList.remove('bad'),500);}
-}
-function wfMagic(k){
-  const w=wfToday().words;const a=w[k],b=w[k+1];
-  const el=document.getElementById('wfMagic'+k);
-  el.classList.add('pop');setTimeout(()=>el.classList.remove('pop'),600);
-  speakText(a[0]+'. Change the first letter. '+b[0]+'!');
-}
-function wfStar(){
-  const el=document.getElementById('wfStar');if(!el)return;
+function cvcSay(w){playClick&&playClick();speakText(w.split('').join(' ')+'. '+w);}
+function cvcSaySentence(i){const w=cvcTodayWords()[i];if(w)speakText(w[2]);}
+function cvcStar(){
+  const el=document.getElementById('cvcStar');if(!el)return;
   el.classList.add('on');el.textContent='⭐';
-  localStorage.setItem('c_wf_star_'+todayKey(),'1');
-  const m=document.getElementById('wfWow');if(m)m.style.display='block';
-  speakText('Great job reader!');
+  localStorage.setItem('c_cvc_star_'+todayKey(),'1');
+  document.getElementById('cvcWow').style.display='block';
+  speakText('You did an amazing job today!');
 }
 function openReadingAdventure(){
-  try{if(typeof playClick==='function')playClick();}catch(e){}
-  const d=wfToday(),words=d.words,fam='-'+d.fam,V=d.fam[0];
-  const starOn=localStorage.getItem('c_wf_star_'+todayKey())==='1';
-  const hs=document.getElementById('hsub');if(hs)hs.textContent="📝 Today's Reading Adventure";
-  const wordCards=words.map((w,i)=>{const c=WF_COLORS[i%5],W=w[0].toUpperCase();
-    return `<div class="wf-word" style="border-color:${c}"><div class="wf-emoji">${w[1]}</div>
-      <div class="wf-big" style="color:${c}">${W}</div>
-      <div class="wf-sent">${w[2]} <button class="wf-mini" onclick="wfSay('${w[2].replace(/'/g,"\\'")}')">🔊</button></div></div>`;}).join('');
-  const robot=words.map((w,i)=>`<div class="wf-robotrow" id="wfRobot${i}">
-      <span class="wf-r">🤖</span>${w[0].toUpperCase().split('').map(ch=>`<span class="wf-chip">${ch}</span>`).join('<span class="wf-dash">-</span>')}
-      <button class="wf-mini" onclick="wfRobot(${i})" aria-label="Robot read">▶</button></div>`).join('');
-  const trace=words.map((w,i)=>`<div class="wf-trace" style="--c:${WF_COLORS[i%5]}">${w[0].toUpperCase()} ${w[0].toUpperCase()} ${w[0].toUpperCase()}</div>`).join('');
-  const vowels=['A','E','I','O','U'];
-  const missing=words.map((w,i)=>{const W=w[0].toUpperCase();
-    const opts=[V].concat(vowels.filter(x=>x!==V).sort(()=>Math.random()-.5).slice(0,2)).sort(()=>Math.random()-.5);
-    return `<div class="wf-miss"><span class="wf-emoji-s">${w[1]}</span>
-      <span class="wf-mw">${W[0]}<span class="wf-slot" id="wfSlot${i}">_</span>${W.slice(2)}</span>
-      <span id="wfOpts${i}" class="wf-opts">${opts.map(o=>`<button onclick="wfPick(${i},'${o}',this)">${o}</button>`).join('')}</span>
-      <div class="wf-fb" id="wfFb${i}"></div></div>`;}).join('');
-  const magic=words.slice(0,4).map((w,k)=>{const A=w[0].toUpperCase(),B=words[k+1][0].toUpperCase();
-    return `<button class="wf-magic" id="wfMagic${k}" onclick="wfMagic(${k})"><span>${w[1]} ${A[0]}<b>${A.slice(1)}</b></span><span class="wf-arrow">✨→</span><span>${words[k+1][1]} <em>${B[0]}</em><b>${B.slice(1)}</b></span></button>`;}).join('');
-  const first=words[0][0].toUpperCase();
+  playClick&&playClick();
+  const words=cvcTodayWords();
+  const starOn=localStorage.getItem('c_cvc_star_'+todayKey())==='1';
+  document.getElementById('hsub').textContent='📝 Today\'s Reading Adventure';
+  const cards=words.map((w,i)=>{
+    const c=CVC_COLORS[i%5],W=w[0].toUpperCase();
+    return `<div class="cvc-card" style="border-color:${c}">
+      <div class="cvc-head" style="background:${c}"><span>${i+1}. ${W} ${w[1]}</span>
+        <button onclick="cvcSay('${w[0]}')" aria-label="Hear ${W}">🔊</button></div>
+      <div class="cvc-lbl">✏️ Trace:</div>
+      <div class="cvc-trace">${[1,2,3].map(()=>`<div>${W}</div>`).join('')}</div>
+      <div class="cvc-lbl">📖 Sentence: <button class="cvc-mini" onclick="cvcSaySentence(${i})">🔊</button></div>
+      <div class="cvc-txt">${w[2]}</div>
+      <div class="cvc-lbl">🎯 Challenge:</div>
+      <div class="cvc-txt">${w[3]}</div>
+    </div>`;}).join('');
   document.getElementById('area').innerHTML=`
   <style>
-   .wf-wrap{padding:4px 2px 18px}
-   .wf-title{text-align:center;font-size:1.35rem;font-weight:800;margin:6px 0 4px;background:linear-gradient(90deg,#ff6b9d,#ffb830,#56cf81,#4fa3e0,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
-   .wf-fam{text-align:center;font-size:2.4rem;font-weight:800;color:#fff;background:linear-gradient(135deg,#a78bfa,#ff6b9d);border-radius:20px;padding:6px 0;margin:8px 0 14px;letter-spacing:4px}
-   .wf-fam small{display:block;font-size:.72rem;letter-spacing:1px;font-weight:700;opacity:.9}
-   .wf-sec{background:var(--cardbg);border:2px solid var(--border);border-radius:18px;padding:10px 12px;margin-bottom:14px;box-shadow:0 3px 10px rgba(0,0,0,.06)}
-   .wf-sec h3{font-size:1rem;margin:0 0 8px;color:var(--text)}
-   .wf-word{display:flex;align-items:center;gap:10px;border:3px solid;border-radius:16px;padding:6px 10px;margin-bottom:8px;background:var(--inputbg)}
-   .wf-emoji{font-size:2rem}.wf-big{font-size:1.8rem;font-weight:800;letter-spacing:3px;min-width:78px}
-   .wf-sent{font-size:.95rem;color:var(--text);flex:1}
-   .wf-mini{border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;background:var(--cardbg);box-shadow:0 1px 4px rgba(0,0,0,.2)}
-   .wf-robotrow{display:flex;align-items:center;gap:4px;margin-bottom:6px;flex-wrap:wrap}
-   .wf-r{font-size:1.5rem;margin-right:4px}
-   .wf-chip{background:#e0f2fe;color:#075985;font-weight:800;font-size:1.4rem;padding:2px 12px;border-radius:10px;font-family:monospace;transition:.2s}
-   .wf-chip.hi{background:#ffb830;color:#fff;transform:scale(1.25)}
-   .wf-dash{color:#94a3b8;font-weight:800}
-   .wf-trace{font-size:2rem;font-weight:800;letter-spacing:.25em;color:transparent;-webkit-text-stroke:2px var(--c);border-bottom:2px dashed var(--border);margin-bottom:6px;font-family:'Comic Sans MS','Chalkboard SE',sans-serif}
-   .wf-miss{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;padding-bottom:8px;border-bottom:1px dashed var(--border)}
-   .wf-emoji-s{font-size:1.8rem}.wf-mw{font-size:1.8rem;font-weight:800;letter-spacing:3px;color:var(--text)}
-   .wf-slot{display:inline-block;min-width:1.1em;text-align:center;border-bottom:3px solid #ff6b9d;color:#ff6b9d;margin:0 2px}
-   .wf-slot.ok{color:#16a34a;border-color:#16a34a}
-   .wf-opts button{font-size:1.2rem;font-weight:800;border:2px solid #a78bfa;background:var(--cardbg);color:var(--text);border-radius:12px;width:44px;height:44px;margin-right:6px;cursor:pointer}
-   .wf-opts button.bad{background:#fecaca;animation:wfshake .4s}
-   .wf-opts button:disabled{opacity:.5}
-   .wf-fb{width:100%;font-size:.9rem;font-weight:700;color:var(--text2)}
-   @keyframes wfshake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-   .wf-magic{display:flex;justify-content:space-between;align-items:center;width:100%;font-size:1.25rem;font-weight:800;padding:10px 12px;margin-bottom:8px;border:2px solid #ffb830;border-radius:14px;background:var(--inputbg);color:var(--text);cursor:pointer}
-   .wf-magic em{color:#ff6b9d;font-style:normal;font-size:1.5rem}.wf-magic b{font-weight:800}
-   .wf-magic.pop{animation:wfpop .6s}@keyframes wfpop{50%{transform:scale(1.06);background:#fff3c4}}
-   .wf-treasure{font-size:1.05rem;color:var(--text);text-align:center;padding:4px}
-   .wf-reward{text-align:center;background:var(--inputbg);border:3px dashed #ffb830;border-radius:18px;padding:14px}
-   #wfStar{font-size:3rem;filter:grayscale(1) opacity(.45);cursor:pointer;border:none;background:none;transition:transform .2s}
-   #wfStar.on{filter:none;transform:scale(1.25)}
-   .wf-wow{display:none;font-weight:700;color:var(--text);margin-top:6px}
+   .cvc-wrap{padding:4px 2px 18px}
+   .cvc-title{text-align:center;font-size:1.3rem;font-weight:800;margin:6px 0 10px;background:linear-gradient(90deg,#ff6b9d,#ffb830,#56cf81,#4fa3e0,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
+   .cvc-card{background:var(--cardbg);border:3px solid;border-radius:18px;margin-bottom:14px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.08)}
+   .cvc-head{display:flex;justify-content:space-between;align-items:center;color:#fff;font-weight:800;font-size:1.25rem;padding:9px 14px}
+   .cvc-head button,.cvc-mini{border:none;border-radius:50%;width:34px;height:34px;font-size:1rem;cursor:pointer;background:rgba(255,255,255,.85)}
+   .cvc-mini{width:26px;height:26px;font-size:.8rem;background:var(--inputbg);vertical-align:middle}
+   .cvc-lbl{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);padding:8px 14px 2px}
+   .cvc-trace div{font-size:2.4rem;font-weight:800;letter-spacing:.35em;padding:0 14px;line-height:1.15;color:transparent;-webkit-text-stroke:2px #9aa8b4;border-bottom:2px dashed var(--border);font-family:'Comic Sans MS','Chalkboard SE',sans-serif}
+   .cvc-txt{padding:2px 14px 8px;font-size:1.05rem;color:var(--text)}
+   .cvc-reward{text-align:center;background:var(--inputbg);border:3px dashed #ffb830;border-radius:18px;padding:14px;margin-top:6px}
+   #cvcStar{font-size:3rem;filter:grayscale(1) opacity(.45);cursor:pointer;border:none;background:none;transition:transform .2s}
+   #cvcStar.on{filter:none;transform:scale(1.25)}
+   .cvc-wow{display:none;font-size:.98rem;font-weight:600;color:var(--text);margin-top:8px}
   </style>
-  <div class="wf-wrap">
-   <div class="wf-title">🌟 Today's Reading Adventure</div>
-   <div class="wf-fam"><small>🏠 WORD FAMILY</small>${fam}</div>
-   <div class="wf-sec"><h3>👀 Meet the family</h3>${wordCards}</div>
-   <div class="wf-sec"><h3>🤖 Robot Reading <small style="font-weight:500">(tap ▶)</small></h3>${robot}</div>
-   <div class="wf-sec"><h3>✏️ Trace Practice</h3>${trace}</div>
-   <div class="wf-sec"><h3>🔤 Missing Letter Game</h3>${missing}</div>
-   <div class="wf-sec"><h3>🪄 Word Magic Game <small style="font-weight:500">(tap to change the first letter!)</small></h3>${magic}</div>
-   <div class="wf-sec"><h3>🗺️ Treasure Hunt Challenge</h3>
-     <div class="wf-treasure">Can you find something that starts with the same sound as <b>${first}</b>? <button class="wf-mini" onclick="wfSay('${first.toLowerCase()}')">🔊</button></div></div>
-   <div class="wf-reward"><div style="font-weight:800;font-size:1.1rem">🏆 Star Reward</div>
+  <div class="cvc-wrap">
+   <div class="cvc-title">🌟 Today's Reading Adventure</div>
+   ${cards}
+   <div class="cvc-reward"><div style="font-weight:800;font-size:1.1rem">🏆 Star Reward</div>
      <div style="margin:4px 0">If you read all 5 words, color one star:</div>
-     <button id="wfStar" class="${starOn?'on':''}" onclick="wfStar()">${starOn?'⭐':'☆'}</button>
-     <div class="wf-wow" id="wfWow" style="${starOn?'display:block':''}">⭐ Great Job Reader!</div></div>
+     <button id="cvcStar" class="${starOn?'on':''}" onclick="cvcStar()">${starOn?'⭐':'☆'}</button>
+     <div class="cvc-wow" id="cvcWow" style="${starOn?'display:block':''}">"You did an amazing job today! Keep practicing and your reading superpower will grow stronger every day!"</div>
+   </div>
    <button class="picker-random" style="margin:14px auto 0;display:block" onclick="busy=false;fetchNext()">⬅ Back to ABC activities</button>
   </div>`;
   window.scrollTo({top:0,behavior:'smooth'});
@@ -5081,7 +5052,7 @@ function showActivityPicker(pool){
       </div>
       ${allDoneToday?`<div style="text-align:center;padding:14px 12px;background:linear-gradient(135deg,#e8fff0,#f0fff4);border-radius:16px;margin-bottom:10px;border:2px dashed var(--green)"><div style="font-size:1.8rem">🎉</div><div style="font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--green)">All ${tabName} ${tab==='games'?'games':'activities'} done for today!</div><div style="font-size:.8rem;color:var(--text3);margin-top:4px">Amazing work! Everything comes back fresh tomorrow 🌟</div></div>`:''}
       <div class="picker-list">
-        ${(tab==='learning'&&subj==='abc')?`<div class="picker-item" onclick="openReadingAdventure()" style="border:2px solid #ff6b9d"><span class="pi-emoji">📝</span><div class="pi-info"><div class="pi-title">Today's Reading Adventure</div><div class="pi-desc">A new word family: read, trace &amp; play 5 words!</div></div><span class="pi-tag" style="background:linear-gradient(135deg,#ff6b9d,#a78bfa)">NEW</span><span class="pi-stars">⭐1</span></div>`:''}
+        ${(tab==='learning'&&subj==='abc')?`<div class="picker-item" onclick="openReadingAdventure()" style="border:2px solid #ff6b9d"><span class="pi-emoji">📝</span><div class="pi-info"><div class="pi-title">Today's Reading Adventure</div><div class="pi-desc">5 new easy words to trace, read &amp; play with!</div></div><span class="pi-tag" style="background:linear-gradient(135deg,#ff6b9d,#a78bfa)">NEW</span><span class="pi-stars">⭐1</span></div>`:''}
         ${availableHtml}
         ${doneHtml}
         ${skippedHtml}
