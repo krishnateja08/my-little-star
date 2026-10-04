@@ -5188,31 +5188,14 @@ function buildVisualPanel(a){
           type="text"
           value="${defaultName}"
           placeholder="Type a name or word…"
-          maxlength="10"
           autocomplete="off"
+          spellcheck="false"
           style="flex:1;padding:11px 14px;border:2.5px solid #ff6b9d;border-radius:14px;
                  font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;color:#1b4332;
                  background:#fff5f8;outline:none;text-align:center;letter-spacing:2px"
-          oninput="(function(){
-            const raw=document.getElementById('ftNameInput').value;
-            const v=raw||'';
-            const g=document.getElementById('ftGuideText');
-            const h=document.getElementById('ftHint');
-            const len=Math.max(1,v.length);
-            const fs=len<=2?130:len<=3?110:len<=4?92:len<=5?78:len<=6?66:len<=7?58:len<=8?52:len<=9?47:42;
-            if(g){g.textContent=v||'Type here…';g.style.fontSize=fs+'px';g.style.letterSpacing=len<=4?'10px':len<=6?'8px':'4px';}
-            if(h){h.textContent=v?'☝️ Now trace: '+v:'☝️ Type a word above then trace it!';}
-            ftClear();
-          })()"
+          oninput="ftFitGuide(this.value);ftClear();"
         />
-        <button onclick="(function(){
-            document.getElementById('ftNameInput').value='';
-            const g=document.getElementById('ftGuideText');
-            if(g){g.textContent='Type here…';g.style.fontSize='80px';g.style.letterSpacing='10px';}
-            const h=document.getElementById('ftHint');
-            if(h) h.textContent='☝️ Type a word above then trace it!';
-            ftClear();
-          })()"
+        <button onclick="document.getElementById('ftNameInput').value='';ftFitGuide('');ftClear();"
           style="padding:11px 13px;border-radius:14px;border:none;background:#f0faf4;
                  font-size:1rem;cursor:pointer;color:#6b9e85;font-weight:700"
           title="Clear word">✕</button>
@@ -15229,7 +15212,32 @@ let ftDrawing=false;
 let ftLastX=0,ftLastY=0;
 let ftObserver=null;
 
-function ftInit(){
+
+// Auto-fit the "My Name in Letters" guide text: any length, shrinks then wraps
+function ftFitGuide(v){
+  const g=document.getElementById('ftGuideText'),h=document.getElementById('ftHint'),wrap=document.getElementById('ftCanvasWrap');
+  v=v||'';
+  if(h)h.textContent=v?'☝️ Now trace: '+v:'☝️ Type a word above then trace it!';
+  if(!g||!wrap)return;
+  g.textContent=v||'Type here…';
+  const W=(wrap.clientWidth||300)-24, H=(wrap.clientHeight||300)-40, n=Math.max(1,(v||'Type here…').length);
+  const MAXFS=130, MINSINGLE=34;
+  let fs=Math.min(MAXFS, W/(n*0.68));           // fits on one line?
+  if(fs>=MINSINGLE){
+    g.style.whiteSpace='nowrap';
+  } else {                                        // too long → wrap onto several lines
+    g.style.whiteSpace='normal';g.style.wordBreak='break-word';
+    fs=MINSINGLE;
+    while(fs>14){
+      const perLine=Math.max(1,Math.floor(W/(fs*0.68))), lines=Math.ceil(n/perLine);
+      if(lines*fs*1.15<=H)break;
+      fs-=2;
+    }
+  }
+  g.style.fontSize=fs+'px';
+  g.style.letterSpacing=fs>=92?'8px':fs>=50?'4px':'2px';
+}
+function ftInit(){ setTimeout(function(){var i=document.getElementById("ftNameInput");if(i)ftFitGuide(i.value);},0);
   const wrap=document.getElementById('ftCanvasWrap');
   const canvas=document.getElementById('ftCanvas');
   if(!wrap||!canvas)return;
