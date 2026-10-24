@@ -2966,7 +2966,7 @@ body.bedtime .streak-bar{background:linear-gradient(135deg,#1b2a00,#2a1800);colo
   <div class="mini-grid">
     <div class="mini-tile" style="background:linear-gradient(135deg,#ff6b9d,#a78bfa);" onclick="goToSection('create')">
       <div class="mt-badge" id="ts_create">&#x270F;&#xFE0F;</div>
-      <span class="mt-icon">&#x1F3A8;</span><div class="mt-name">Create</div>
+      <span class="mt-icon">&#x1F308;</span><div class="mt-name">Imagination Land</div>
     </div>
     <div class="mini-tile" style="background:linear-gradient(135deg,#ffb830,#ff6b9d);" onclick="goToSection('hearts')">
       <div class="mt-badge" id="ts_hearts">&#x1F49B;</div>
@@ -9210,6 +9210,1025 @@ function markDone(){
   current=null;currentlyPlaying=false;setTimeout(fetchNext,500);
 }
 
+// ══════════════════════════════════════════════════════════════════
+//  🌈 IMAGINATION LAND — Creative Studio for a 6-year-old
+//  Six open-ended activities · no scores · no timers · no wrong answers
+//  Entry point: renderCreativeZone()  (called by fetchNext when tab==='create')
+// ══════════════════════════════════════════════════════════════════
+const IL_KEY='c_il_creations';
+const IL_GARDEN_KEY='c_il_garden';
+const IL_WORLD_DRAFT='c_il_world_draft';
+let IL={creature:null,world:null,story:null,potion:null,garden:null,sel:null};
+let ilUid=0;
+
+/* ── tiny helpers ─────────────────────────────────────────────── */
+function ilEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function ilPick(a){return a[Math.floor(Math.random()*a.length)];}
+function ilShuffle(a){return a.slice().sort(()=>Math.random()-.5);}
+function ilCap(s){s=String(s||'');return s.charAt(0).toUpperCase()+s.slice(1);}
+function ilLoad(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v;}catch(e){return d;}}
+function ilStore(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
+function ilHash(str){let h=5381;for(let i=0;i<str.length;i++){h=((h<<5)+h+str.charCodeAt(i))>>>0;}return h;}
+function ilHex(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];}
+function ilRGB(r,g,b){const x=v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0');return '#'+x(r)+x(g)+x(b);}
+function ilMix(a,b,t){const A=ilHex(a),B=ilHex(b);return ilRGB(A[0]+(B[0]-A[0])*t,A[1]+(B[1]-A[1])*t,A[2]+(B[2]-A[2])*t);}
+function ilSfx(kind){
+  try{
+    if(kind==='pop'&&typeof playTone==='function')playTone(660+Math.random()*220,.07);
+    else if(kind==='tap'&&typeof playClick==='function')playClick();
+    else if(kind==='star'&&typeof playStar==='function')playStar();
+    else if(kind==='win'&&typeof playCorrect==='function')playCorrect();
+  }catch(e){}
+}
+function ilSay(t){try{if(typeof mascotSay==='function')mascotSay(t,3500);}catch(e){}}
+function ilSpeak(t){try{if(typeof speakText==='function')speakText(t);}catch(e){}}
+function ilSet(html){
+  const a=document.getElementById('area');if(!a)return;
+  a.innerHTML='<div class="il-root">'+html+'</div>';
+  const h=document.getElementById('hist');if(h)h.innerHTML='';
+  ilFitScenes();
+}
+function ilTop(title,back){
+  return `<div class="il-top"><button class="il-back" onclick="${back||'renderCreativeZone()'}" aria-label="Back">⬅</button><div class="il-title">${title}</div></div>`;
+}
+function ilCreations(){return ilLoad(IL_KEY,[]);}
+function ilAddCreation(c){
+  const list=ilCreations();
+  c.date=(typeof todayKey==='function')?todayKey():'';
+  c.id=Date.now()+'_'+Math.floor(Math.random()*1000);
+  if(c.type==='potion'){const i=list.findIndex(x=>x.type==='potion'&&x.title===c.title);if(i>=0)list.splice(i,1);}
+  list.push(c);
+  while(list.length>40)list.shift();
+  ilStore(IL_KEY,list);
+  return c;
+}
+// Log in today's "done" list (so the home screen shows a ✅) — gives NO stars/points
+function ilLogDone(title,emoji){
+  try{
+    if(typeof done==='undefined')return;
+    if(done.some(d=>d.tab==='create'&&d.title===title))return;
+    done.push({title,emoji,stars:0,tab:'create'});
+    localStorage.setItem('cd_'+todayKey(),JSON.stringify(done));
+    if(typeof updateHomepage==='function')updateHomepage();
+    if(typeof renderTabBadges==='function')renderTabBadges();
+  }catch(e){}
+}
+function ilMagicName(){
+  const a=['Sparkle','Twinkle','Fluff','Bubble','Moon','Sunny','Zippy','Giggle','Star','Rainbow','Cuddle','Whisper','Glitter','Pumpkin','Jelly','Cloud','Pickle','Marshmallow'];
+  const b=['puff','paw','wing','whisker','bean','tail','toes','snout','wiggle','doodle','pop','berry','fluff'];
+  return ilPick(a)+ilPick(b);
+}
+function ilWorldName(){
+  return ilPick(['Rainbow','Sparkle','Cloudy','Moonlight','Giggle','Candy','Starry','Cosy','Sunshine','Twinkle'])+' '+ilPick(['Kingdom','Valley','Land','Island','Garden','Meadow','Hills']);
+}
+
+/* ── styles (injected once) ───────────────────────────────────── */
+function ilInjectStyle(){
+  if(document.getElementById('ilStyle'))return;
+  const s=document.createElement('style');s.id='ilStyle';
+  s.textContent=`
+@keyframes ilFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes ilPop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.18);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes ilWiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-7deg)}75%{transform:rotate(7deg)}}
+@keyframes ilBounce{0%,100%{transform:scale(1)}40%{transform:scale(1.14)}70%{transform:scale(.96)}}
+@keyframes ilGrow{0%{transform:translate(-50%,-50%) scale(0) rotate(-20deg)}60%{transform:translate(-50%,-50%) scale(1.35) rotate(8deg)}100%{transform:translate(-50%,-50%) scale(1) rotate(0)}}
+@keyframes ilBubble{0%{transform:translateY(0) scale(.6);opacity:0}30%{opacity:.95}100%{transform:translateY(-46px) scale(1.15);opacity:0}}
+@keyframes ilConf{0%{transform:translateY(-12vh) rotate(0);opacity:1}100%{transform:translateY(108vh) rotate(600deg);opacity:.85}}
+@keyframes ilStir{0%,100%{transform:rotate(0)}20%{transform:rotate(-5deg) translateY(-3px)}50%{transform:rotate(5deg)}80%{transform:rotate(-4deg) translateY(-2px)}}
+@keyframes ilGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,184,48,.0)}50%{box-shadow:0 0 0 10px rgba(255,184,48,.28)}}
+@keyframes ilRise{from{transform:translateY(24px) scale(.9);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+@keyframes ilShine{0%{background-position:0 0}100%{background-position:200% 0}}
+.il-root{max-width:780px;margin:0 auto;padding:8px 12px 110px;font-family:'Baloo 2','Nunito',sans-serif;color:var(--text);-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+.il-root *{box-sizing:border-box}
+.il-root input{-webkit-user-select:text;user-select:text}
+.il-banner{text-align:center;padding:18px 14px 16px;border-radius:30px;color:#fff;position:relative;overflow:hidden;margin-bottom:16px;
+  background:linear-gradient(120deg,#ff6b9d,#ffb830,#56cf81,#4fa3e0,#a78bfa,#ff6b9d);background-size:300% 100%;animation:ilShine 9s linear infinite;box-shadow:0 10px 30px rgba(167,139,250,.35)}
+.il-banner h2{font-size:1.8rem;font-weight:800;text-shadow:2px 3px 0 rgba(0,0,0,.16);line-height:1.15;position:relative}
+.il-banner p{font-size:.98rem;font-weight:700;margin-top:4px;position:relative;text-shadow:0 1px 2px rgba(0,0,0,.18)}
+.il-banner .fl{position:absolute;font-size:1.7rem;animation:ilFloat 3.4s ease-in-out infinite;opacity:.92}
+.il-hub{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.il-card{border:none;border-radius:28px;padding:16px 10px 14px;min-height:160px;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-family:inherit;box-shadow:0 8px 22px rgba(0,0,0,.18);transition:transform .15s;text-align:center;position:relative;overflow:hidden;animation:ilRise .5s both}
+.il-card:active{transform:scale(.94)}
+.il-card::after{content:'';position:absolute;top:-30%;left:-30%;width:70%;height:70%;background:radial-gradient(circle,rgba(255,255,255,.35),transparent 70%);pointer-events:none}
+.il-card .ic{font-size:3.7rem;line-height:1.05;animation:ilFloat 3s ease-in-out infinite;filter:drop-shadow(0 4px 6px rgba(0,0,0,.22))}
+.il-card .nm{font-size:1.18rem;font-weight:800;line-height:1.1;text-shadow:0 2px 3px rgba(0,0,0,.22)}
+.il-card .ds{font-size:.82rem;font-weight:700;opacity:.96;line-height:1.2;padding:0 4px}
+.il-card.wide{grid-column:1/-1;min-height:92px;flex-direction:row;gap:14px}
+.il-card.wide .ic{font-size:2.6rem}
+.il-top{display:flex;align-items:center;gap:10px;margin:4px 0 12px}
+.il-back{width:54px;height:54px;border:none;border-radius:18px;background:var(--cardbg);box-shadow:0 4px 14px var(--shadow);font-size:1.5rem;cursor:pointer;flex-shrink:0;color:var(--text);transition:transform .12s}
+.il-back:active{transform:scale(.88)}
+.il-title{font-size:1.35rem;font-weight:800;color:var(--text);line-height:1.15}
+.il-panel{background:var(--cardbg);border-radius:26px;padding:14px;box-shadow:0 6px 22px var(--shadow);margin-bottom:14px}
+.il-center{text-align:center}
+.il-hint{font-size:.92rem;font-weight:700;color:var(--text3);margin-top:4px;line-height:1.3}
+.il-label{display:block;font-size:1.02rem;font-weight:800;color:var(--text2);margin:14px 0 8px;text-align:left}
+.il-input{width:100%;padding:14px 16px;border-radius:18px;border:3px solid var(--border);background:var(--inputbg);font-family:inherit;font-size:1.1rem;font-weight:700;color:var(--text);outline:none;margin-bottom:8px}
+.il-input:focus{border-color:#a78bfa}
+.il-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.il-row .il-btn{flex:1 1 140px}
+.il-btn{border:none;border-radius:22px;min-height:60px;padding:12px 18px;font-family:inherit;font-size:1.12rem;font-weight:800;color:#fff;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.2);transition:transform .12s;line-height:1.1}
+.il-btn:active{transform:scale(.93)}
+.il-btn.go{background:linear-gradient(135deg,#ff6b9d,#a78bfa);animation:ilGlow 2.2s infinite}
+.il-btn.alt{background:linear-gradient(135deg,#4fa3e0,#4ecdc4)}
+.il-btn.warm{background:linear-gradient(135deg,#ffb830,#ff8c69)}
+.il-btn.green{background:linear-gradient(135deg,#52b788,#4ecdc4)}
+.il-btn.soft{background:var(--inputbg);color:var(--text2);box-shadow:0 3px 10px var(--shadow2)}
+.il-link{background:none;border:none;color:var(--text3);font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;padding:10px;text-decoration:underline}
+.il-tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.il-tabs::-webkit-scrollbar{display:none}
+.il-tab{flex:0 0 auto;border:none;border-radius:18px;padding:12px 16px;min-height:52px;font-family:inherit;font-size:1.02rem;font-weight:800;background:var(--cardbg);color:var(--text2);box-shadow:0 3px 10px var(--shadow2);cursor:pointer;transition:transform .12s}
+.il-tab.on{background:linear-gradient(135deg,#a78bfa,#ff6b9d);color:#fff;transform:translateY(-2px);box-shadow:0 6px 16px rgba(167,139,250,.5)}
+.il-opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:10px}
+.il-opt{border:3px solid transparent;border-radius:20px;min-height:78px;background:var(--inputbg);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:inherit;font-size:2.3rem;padding:4px;transition:transform .12s;color:var(--text);line-height:1.1}
+.il-opt:active{transform:scale(.9)}
+.il-opt.on{border-color:#ff6b9d;background:rgba(255,107,157,.14);transform:scale(1.06);box-shadow:0 5px 14px rgba(255,107,157,.35)}
+.il-opt small{font-size:.74rem;font-weight:800;color:var(--text2);margin-top:2px}
+.il-opt.txt{font-size:1rem;font-weight:800;min-height:64px;padding:8px 10px;text-align:center}
+.il-swatch{width:52px;height:52px;border-radius:50%;border:4px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.25)}
+.il-stage{display:flex;justify-content:center;align-items:center;border-radius:24px;padding:6px;background:radial-gradient(circle at 50% 55%,rgba(167,139,250,.25),transparent 72%)}
+.il-stage.pop svg{animation:ilBounce .45s}
+.il-stage svg{animation:ilFloat 3.2s ease-in-out infinite;max-width:100%;height:auto}
+.il-bigpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
+.il-bp{border:3px solid transparent;border-radius:22px;padding:10px 6px;background:var(--inputbg);cursor:pointer;font-family:inherit;color:var(--text);display:flex;flex-direction:column;align-items:center;gap:2px;transition:transform .12s;min-height:96px}
+.il-bp:active{transform:scale(.92)}
+.il-bp .e{font-size:2.5rem;line-height:1.1}
+.il-bp .n{font-size:.86rem;font-weight:800;line-height:1.15;text-align:center}
+.il-bp.on{border-color:#ffb830;background:rgba(255,184,48,.18);transform:scale(1.05);box-shadow:0 5px 14px rgba(255,184,48,.4)}
+.il-scene{position:relative;width:100%;aspect-ratio:5/4;border-radius:26px;overflow:hidden;box-shadow:0 8px 26px var(--shadow),0 0 0 4px rgba(255,255,255,.7);touch-action:none;--w:360px}
+.il-ground{position:absolute;left:0;right:0;bottom:0;height:30%;border-radius:50% 50% 0 0/22% 22% 0 0;pointer-events:none}
+.il-stars{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(circle,#fff 1.2px,transparent 1.6px),radial-gradient(circle,#fff6a8 1px,transparent 1.5px);background-size:46px 46px,71px 71px;background-position:0 0,17px 23px;opacity:.85}
+.il-wi{position:absolute;line-height:1;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;filter:drop-shadow(0 3px 3px rgba(0,0,0,.2))}
+.il-wi.sel{outline:3px dashed #ff6b9d;outline-offset:4px;border-radius:12px;cursor:grabbing}
+.il-wi.newpop{animation:ilGrow .5s both}
+.il-mini .il-wi{cursor:default;pointer-events:none}
+.il-pal{width:100%;aspect-ratio:1;border:none;border-radius:18px;background:var(--inputbg);font-size:2.2rem;cursor:grab;touch-action:none;display:flex;align-items:center;justify-content:center;transition:transform .12s;padding:0;line-height:1}
+.il-pal:active{transform:scale(.88)}
+.il-palgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:8px}
+.il-ghost{position:fixed;font-size:3rem;pointer-events:none;z-index:100000;transform:translate(-50%,-50%) scale(1.2);filter:drop-shadow(0 8px 8px rgba(0,0,0,.35));line-height:1}
+.il-seltools{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0 4px;min-height:58px;align-items:center}
+.il-seltools button{border:none;border-radius:16px;min-width:58px;min-height:54px;padding:8px 12px;background:var(--cardbg);box-shadow:0 3px 10px var(--shadow);font-family:inherit;font-size:1.05rem;font-weight:800;color:var(--text);cursor:pointer}
+.il-seltools button:active{transform:scale(.9)}
+.il-book{background:linear-gradient(160deg,#fffaf0,#fff3e0);color:#4a3320;border-radius:26px;padding:18px 18px 14px;box-shadow:0 8px 26px var(--shadow),inset 0 0 0 4px rgba(255,184,48,.35);margin-bottom:14px;text-align:left;-webkit-user-select:text;user-select:text}
+body.bedtime .il-book{background:linear-gradient(160deg,#2c2650,#241f45);color:#eadfff;box-shadow:0 8px 26px var(--shadow),inset 0 0 0 4px rgba(167,139,250,.35)}
+.il-book .em{font-size:2.6rem;text-align:center;letter-spacing:6px;margin-bottom:4px}
+.il-book h3{font-size:1.45rem;text-align:center;font-weight:800;margin-bottom:10px;line-height:1.15}
+.il-book p{font-family:'Nunito',sans-serif;font-size:1.1rem;line-height:1.65;font-weight:600;margin-bottom:12px}
+.il-book .moral{font-weight:800;text-align:center;color:#d9480f;font-size:1.05rem}
+body.bedtime .il-book .moral{color:#ffd480}
+.il-cauldron{display:flex;justify-content:center}
+.il-cauldron svg{max-width:100%;height:auto}
+.il-cauldron.stir svg{animation:ilStir .55s infinite}
+.il-chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;min-height:58px;margin:6px 0}
+.il-chip{border:none;border-radius:50px;padding:8px 14px;background:var(--inputbg);font-family:inherit;font-size:1.05rem;font-weight:800;color:var(--text);cursor:pointer;box-shadow:0 3px 8px var(--shadow2);animation:ilPop .3s both}
+.il-chip.on{background:linear-gradient(135deg,#ffb830,#ff8c69);color:#fff}
+.il-ov{position:fixed;inset:0;z-index:99990;background:rgba(30,10,60,.62);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
+.il-celbox{border-radius:34px;padding:22px 18px 16px;max-width:420px;width:100%;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.4);animation:ilPop .5s both;max-height:94vh;overflow-y:auto;font-family:'Baloo 2','Nunito',sans-serif;color:var(--text);border:5px solid transparent;background:linear-gradient(var(--cardbg),var(--cardbg)) padding-box,linear-gradient(120deg,#ff6b9d,#ffb830,#56cf81,#4fa3e0,#a78bfa) border-box}
+.il-cel-emoji{font-size:4.2rem;animation:ilBounce 1s infinite;line-height:1.1}
+.il-cel-title{font-size:1.55rem;font-weight:800;line-height:1.15;margin:4px 0 6px;color:var(--text)}
+.il-cel-card{margin:8px auto 10px;padding:10px;border-radius:22px;background:var(--inputbg);display:flex;flex-direction:column;align-items:center;gap:4px}
+.il-cel-msg{font-size:1.1rem;font-weight:800;color:#d6336c;margin:6px 0 2px;line-height:1.25}
+body.bedtime .il-cel-msg{color:#ff9ec4}
+.il-cel-sub{font-size:.92rem;font-weight:700;color:var(--text3);margin-bottom:12px;line-height:1.3}
+.il-celbox .il-btn{display:block;width:100%;margin-bottom:10px}
+.il-conf{position:fixed;top:0;z-index:99995;pointer-events:none;animation:ilConf linear forwards}
+.il-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.il-coll{border:none;border-radius:22px;padding:10px;background:var(--cardbg);box-shadow:0 4px 14px var(--shadow);cursor:pointer;font-family:inherit;color:var(--text);display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .12s}
+.il-coll:active{transform:scale(.94)}
+.il-coll .t{font-size:.92rem;font-weight:800;line-height:1.1;text-align:center;word-break:break-word}
+.il-coll .k{font-size:.72rem;font-weight:700;color:var(--text3)}
+.il-coll .th{width:100%;display:flex;justify-content:center;align-items:center;min-height:100px;overflow:hidden;border-radius:14px}
+.il-feel{border:3px solid transparent;border-radius:22px;background:var(--inputbg);cursor:pointer;font-family:inherit;color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:92px;padding:8px 4px;transition:transform .12s}
+.il-feel:active{transform:scale(.9)}
+.il-feel .e{font-size:2.6rem;line-height:1.1}
+.il-feel .n{font-size:.88rem;font-weight:800}
+.il-feel.on{border-color:#52b788;background:rgba(82,183,136,.18);transform:scale(1.06)}
+.il-gdeco{position:absolute;pointer-events:none;line-height:1}
+.il-gp{position:absolute;line-height:1;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.18))}
+.il-gp.newp{animation:ilGrow .9s both}
+.il-gp.sway{animation:ilWiggle 4s ease-in-out infinite;transform-origin:50% 100%}
+.il-scene.il-mini{touch-action:auto}
+.il-thumbimg{width:100%;aspect-ratio:5/4;object-fit:contain;border-radius:12px;background:repeating-conic-gradient(#f4eefc 0 25%,#fff 0 50%) 0 0/16px 16px}
+@media(max-width:360px){.il-hub{gap:10px}.il-card{min-height:140px}.il-card .ic{font-size:3.1rem}}
+@media(min-width:700px){.il-hub{grid-template-columns:repeat(3,1fr)}.il-card.wide{grid-column:span 3}}
+`;
+  document.head.appendChild(s);
+  if(!window._ilResizeBound){
+    window._ilResizeBound=true;
+    window.addEventListener('resize',()=>{if(typeof tab!=='undefined'&&tab==='create')ilFitScenes();});
+  }
+}
+// scenes size their emoji with --w (the scene's pixel width)
+function ilFitScenes(){
+  document.querySelectorAll('.il-scene').forEach(el=>{
+    const w=el.clientWidth||el.getBoundingClientRect().width;
+    if(w)el.style.setProperty('--w',w+'px');
+  });
+}
+
+/* ── celebration (after EVERY creation) ───────────────────────── */
+const IL_PRAISE=[
+  'WOW! You made something truly special! 🌟','That is SO creative! I love it! 💖','What an amazing imagination you have! 🌈',
+  'Look what YOU made! Brilliant! ✨','You are a wonderful creator! 🦄','Hooray! That is magical! 🎉','I am so proud of your idea! 💛'
+];
+const IL_UNIQUE=[
+  'There is only ONE of these in the whole wide world — and YOU made it!','Nobody else has made one exactly like this. It is yours!',
+  'Your idea is one-of-a-kind. That makes it extra special!','Only you could have imagined this. What a clever creator!',
+  'This is 100% YOU. Your imagination is magic!'
+];
+function ilConfetti(){
+  const em=['✨','🌟','💖','🦄','🌈','⭐','🎈','💫','🌸','🦋'];
+  for(let i=0;i<34;i++){
+    const d=document.createElement('div');d.className='il-conf';
+    d.textContent=ilPick(em);
+    d.style.left=(Math.random()*100)+'vw';
+    d.style.fontSize=(16+Math.random()*22)+'px';
+    d.style.animationDuration=(2.4+Math.random()*2.2)+'s';
+    d.style.animationDelay=(Math.random()*.8)+'s';
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(),5600);
+  }
+}
+function ilCelebrate(o){
+  ilInjectStyle();
+  const old=document.getElementById('ilCel');if(old)old.remove();
+  const ov=document.createElement('div');ov.id='ilCel';ov.className='il-ov';
+  const praise=o.msg||ilPick(IL_PRAISE);
+  ov.innerHTML=`<div class="il-celbox">
+    <div class="il-cel-emoji">${o.emoji||'🌟'}</div>
+    <div class="il-cel-title">${o.title||'You made something special!'}</div>
+    ${o.card?`<div class="il-cel-card">${o.card}</div>`:''}
+    <div class="il-cel-msg">${praise}</div>
+    <div class="il-cel-sub">${ilPick(IL_UNIQUE)}${o.saved===false?'':' It is saved in your Magic Collection 🎁'}</div>
+    <button class="il-btn go" onclick="ilCelDone('again')">${o.againLabel||'✨ Make another!'}</button>
+    <button class="il-btn alt" onclick="ilCelDone('hub')">🌈 Imagination Land</button>
+    <button class="il-link" onclick="ilCelDone('stay')">Keep looking at it</button>
+  </div>`;
+  ov._o=o;
+  document.body.appendChild(ov);
+  ilConfetti();ilSfx('win');setTimeout(()=>ilSfx('star'),350);
+  ilSay(praise.replace(/[^\w\s!.,'’?-]/g,'').trim()||'Wonderful!');
+}
+function ilCelDone(kind){
+  const ov=document.getElementById('ilCel');const o=ov&&ov._o;
+  if(ov)ov.remove();
+  ilSfx('tap');
+  if(kind==='hub'){renderCreativeZone();return;}
+  if(kind==='again'&&o&&o.again){ilOpen(o.again);}
+}
+
+/* ── hub ──────────────────────────────────────────────────────── */
+const IL_ACTS=[
+  {id:'creature',emoji:'🦄',title:'Create a Creature',desc:'Mix heads, wings & tails!',g:'linear-gradient(135deg,#ff6b9d,#a78bfa)'},
+  {id:'world',emoji:'🏰',title:'Build My World',desc:'Drag castles, trees & rainbows!',g:'linear-gradient(135deg,#3b9be0,#35c4b8)'},
+  {id:'story',emoji:'📖',title:'Story Maker',desc:'Make your very own story!',g:'linear-gradient(135deg,#ff9f1c,#ff6b6b)'},
+  {id:'potion',emoji:'🧪',title:'Magic Potion Lab',desc:'Mix magic & see what happens!',g:'linear-gradient(135deg,#7c3aed,#06b6d4)'},
+  {id:'garden',emoji:'🎭',title:'Feeling Garden',desc:'Grow flowers from feelings!',g:'linear-gradient(135deg,#2f9e6f,#7bd88f)'},
+  {id:'draw',emoji:'🎨',title:'Draw & Sticker Fun',desc:'Crayons, sparkles & stamps!',g:'linear-gradient(135deg,#ff7a59,#ff5fa2)'}
+];
+const IL_HUB_LINES=[
+  'What will you imagine today? ✨','There are no wrong ideas here — only YOUR ideas! 💛','Pick anything you like and make it yours! 🌈',
+  'Everything you make here is one-of-a-kind! 🦄','Ready to make something magical? 🪄'
+];
+function renderCreativeZone(){
+  ilInjectStyle();
+  ilLeaveDraw();
+  const qf=document.getElementById('qcFab');if(qf)qf.style.display='none';
+  const n=ilCreations().length+((typeof gallery!=='undefined'&&gallery.length)?gallery.length:0);
+  ilSet(`
+    <div class="il-banner">
+      <span class="fl" style="left:6%;top:12%">🦋</span><span class="fl" style="right:7%;top:10%;animation-delay:.7s">⭐</span>
+      <span class="fl" style="left:12%;bottom:8%;animation-delay:1.2s">🌸</span><span class="fl" style="right:12%;bottom:10%;animation-delay:1.8s">✨</span>
+      <h2>🌈 Imagination Land</h2>
+      <p>${ilPick(IL_HUB_LINES)}</p>
+    </div>
+    <div class="il-hub">
+      ${IL_ACTS.map((a,i)=>`<button class="il-card" style="background:${a.g};animation-delay:${i*.07}s" onclick="ilOpen('${a.id}')">
+        <span class="ic" style="animation-delay:${i*.3}s">${a.emoji}</span><span class="nm">${a.title}</span><span class="ds">${a.desc}</span></button>`).join('')}
+      <button class="il-card wide" style="background:linear-gradient(135deg,#ffb830,#ff8c69)" onclick="ilOpen('collection')">
+        <span class="ic">🎁</span><span><span class="nm" style="display:block">My Magic Collection</span><span class="ds">${n?'Look at everything you have made!':'Everything you make will live here!'}</span></span></button>
+    </div>`);
+}
+function ilOpen(id){
+  ilInjectStyle();ilSfx('tap');
+  const qf=document.getElementById('qcFab');if(qf)qf.style.display=(id==='draw')?'flex':'none';
+  try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){}
+  const map={creature:ilCreatureStart,world:ilWorldStart,story:ilStoryStart,potion:ilPotionStart,garden:ilGardenStart,draw:ilDrawStart,collection:ilCollection};
+  if(map[id])map[id]();
+}
+function ilLeaveDraw(){
+  try{
+    const c=document.getElementById('drawCanvas');
+    if(c&&drawCanvas===c&&czUndoStack.length>0&&c.width>0){window._czKeepImg=c.toDataURL('image/png');}
+  }catch(e){}
+  drawCanvas=null;drawCtx=null;
+}
+function ilDrawStart(){czRenderDrawStudio();}
+
+/* ════════════════════════════════════════════════════════════════
+   🦄 1 · CREATE A CREATURE
+════════════════════════════════════════════════════════════════ */
+const IL_HEADS=['🦁','🐱','🐶','🦊','🐰','🐸','🐼','🦉','🐲','🦄','🐙','🐵','🐻','🐯','🐧','🦖'];
+const IL_COLORS=['#ff6b9d','#ff8c69','#ffb830','#ffe066','#7ddc8a','#4ecdc4','#4fa3e0','#a78bfa','#c77dff','#f5a6d0','#b08968','rainbow'];
+function ilStarPath(cx,cy,R,r){let p='';for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r:R;p+=(i?'L':'M')+(cx+Math.cos(a)*rr).toFixed(1)+' '+(cy+Math.sin(a)*rr).toFixed(1);}return p+'Z';}
+const IL_BODY={
+  round:{n:'Round',head:[150,148],wy:0,tail:[236,236],feet:[[116,270],[184,270]],
+    draw:(f,d)=>`<ellipse cx="150" cy="205" rx="74" ry="68" fill="${f}" stroke="${d}" stroke-width="3"/>`,belly:`<ellipse cx="150" cy="222" rx="42" ry="40" fill="#fff" opacity=".35"/>`},
+  tall:{n:'Tall',head:[150,122],wy:-24,tail:[232,252],feet:[[122,284],[178,284]],
+    draw:(f,d)=>`<rect x="94" y="136" width="112" height="148" rx="56" fill="${f}" stroke="${d}" stroke-width="3"/>`,belly:`<ellipse cx="150" cy="232" rx="34" ry="46" fill="#fff" opacity=".35"/>`},
+  long:{n:'Long',head:[150,160],wy:8,tail:[262,228],feet:[[92,266],[208,266]],
+    draw:(f,d)=>`<ellipse cx="150" cy="216" rx="104" ry="52" fill="${f}" stroke="${d}" stroke-width="3"/>`,belly:`<ellipse cx="150" cy="228" rx="64" ry="28" fill="#fff" opacity=".35"/>`},
+  fluffy:{n:'Fluffy',head:[150,146],wy:0,tail:[240,232],feet:[[118,272],[182,272]],
+    draw:(f,d)=>{const c=[[108,208,40],[150,190,48],[194,208,40],[132,232,42],[170,232,42]];return `<g fill="${f}" stroke="${d}" stroke-width="3">${c.map(a=>`<circle cx="${a[0]}" cy="${a[1]}" r="${a[2]}"/>`).join('')}</g><g fill="${f}">${c.map(a=>`<circle cx="${a[0]}" cy="${a[1]}" r="${a[2]-1.5}"/>`).join('')}</g>`;},belly:''},
+  tiny:{n:'Tiny',head:[150,176],wy:44,tail:[206,262],feet:[[128,278],[172,278]],
+    draw:(f,d)=>`<ellipse cx="150" cy="238" rx="50" ry="44" fill="${f}" stroke="${d}" stroke-width="3"/>`,belly:`<ellipse cx="150" cy="248" rx="28" ry="26" fill="#fff" opacity=".35"/>`},
+  star:{n:'Starry',head:[150,150],wy:0,tail:[240,244],feet:[[122,282],[178,282]],
+    draw:(f,d)=>`<path d="${ilStarPath(150,212,88,44)}" fill="${f}" stroke="${d}" stroke-width="3" stroke-linejoin="round"/>`,belly:''}
+};
+const IL_WING={
+  angel:'M122 168 C84 118 44 100 18 112 C28 142 54 166 82 176 C60 186 50 206 66 212 C88 206 108 196 124 190 Z',
+  butterfly:'M124 176 C76 82 18 96 28 150 C34 176 92 188 124 186 Z M124 188 C84 192 50 222 70 238 C96 248 116 216 124 198 Z',
+  bat:'M122 170 C92 120 50 110 14 126 C34 136 40 152 34 168 C54 162 66 176 62 192 C86 176 106 182 122 192 Z',
+  fairy:'M122 172 C106 100 64 52 28 40 C22 84 56 142 118 188 Z'
+};
+const IL_WING_NAMES={none:'No wings',angel:'Feathers',butterfly:'Butterfly',bat:'Bat',fairy:'Fairy'};
+const IL_TAILS=['none','🌈','🔥','⭐','🌸','🍃','❄️','🪶','🎀'];
+function ilCreatureSVG(c,px){
+  const id='ilg'+(++ilUid);
+  const B=IL_BODY[c.body]||IL_BODY.round;
+  const rb=c.color==='rainbow';
+  const fill=rb?`url(#${id})`:c.color;
+  const dark=rb?'#8e6bd8':ilMix(c.color,'#000000',.24);
+  const light=rb?'#ffe4f6':ilMix(c.color,'#ffffff',.55);
+  let s=`<svg viewBox="0 0 300 300" width="${px}" height="${px}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">`;
+  if(rb)s+=`<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff6b9d"/><stop offset=".25" stop-color="#ffb830"/><stop offset=".5" stop-color="#7ddc8a"/><stop offset=".75" stop-color="#4fa3e0"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>`;
+  if(c.wings&&c.wings!=='none'&&IL_WING[c.wings]){
+    const w=IL_WING[c.wings];
+    s+=`<g transform="translate(0 ${B.wy})" fill="${light}" stroke="${dark}" stroke-width="3" stroke-linejoin="round"><path d="${w}"/><path d="${w}" transform="translate(300 0) scale(-1 1)"/></g>`;
+  }
+  if(c.tail&&c.tail!=='none'){
+    s+=`<text x="${B.tail[0]}" y="${B.tail[1]}" font-size="64" text-anchor="middle" dominant-baseline="central" transform="rotate(18 ${B.tail[0]} ${B.tail[1]})">${c.tail}</text>`;
+  }
+  B.feet.forEach(f=>{s+=`<ellipse cx="${f[0]}" cy="${f[1]}" rx="24" ry="13" fill="${dark}"/>`;});
+  s+=B.draw(fill,dark)+B.belly;
+  s+=`<text x="${B.head[0]}" y="${B.head[1]}" font-size="108" text-anchor="middle" dominant-baseline="central">${c.head}</text>`;
+  return s+'</svg>';
+}
+const IL_POWERS=[
+  {e:'🌈',t:'Makes rainbows appear anywhere'},{e:'🕊️',t:'Flies faster than the wind'},{e:'🍭',t:'Rains sweet candy when happy'},
+  {e:'🗣️',t:'Can talk to every animal'},{e:'🌟',t:'Grants one tiny wish every day'},{e:'🫧',t:'Floats inside giant bubbles'},
+  {e:'🎵',t:'Sings sleepy flowers awake'},{e:'🪄',t:'Turns anything into sparkles'},{e:'🤗',t:'Gives the warmest, cosiest hugs'},
+  {e:'🔮',t:'Can see happy dreams coming'}
+];
+function ilCreatureStart(){
+  const rnd=a=>ilPick(a);
+  IL.creature={head:rnd(IL_HEADS),body:rnd(Object.keys(IL_BODY)),wings:rnd(['none','angel','butterfly','bat','fairy']),tail:rnd(IL_TAILS),color:rnd(IL_COLORS),name:'',power:'',pe:'',cat:'head'};
+  ilCreatureRender();
+}
+function ilCreatureRender(){
+  const c=IL.creature;
+  const cats=[['head','🙂 Head'],['body','🫧 Body'],['wings','🦋 Wings'],['tail','🌈 Tail'],['color','🎨 Colour']];
+  ilSet(`${ilTop('🦄 Create a Creature')}
+    <div class="il-panel il-center">
+      <div class="il-stage" id="ilCStage">${ilCreatureSVG(c,250)}</div>
+      <div class="il-hint">Tap the parts below to mix & match. Every mix is perfect! ✨</div>
+    </div>
+    <div class="il-tabs" id="ilCTabs">${cats.map(k=>`<button class="il-tab ${c.cat===k[0]?'on':''}" onclick="ilCCat('${k[0]}')">${k[1]}</button>`).join('')}</div>
+    <div class="il-panel"><div class="il-opts" id="ilCOpts"></div></div>
+    <div class="il-row">
+      <button class="il-btn warm" onclick="ilCreatureRandom()">🎲 Surprise me!</button>
+      <button class="il-btn go" onclick="ilCreatureName()">Next: Name it ➜</button>
+    </div>`);
+  ilCreatureOpts();
+}
+function ilCCat(k){IL.creature.cat=k;ilSfx('tap');
+  document.querySelectorAll('#ilCTabs .il-tab').forEach((b,i)=>b.classList.toggle('on',['head','body','wings','tail','color'][i]===k));
+  ilCreatureOpts();}
+function ilCreatureOpts(){
+  const c=IL.creature,el=document.getElementById('ilCOpts');if(!el)return;
+  let h='';
+  if(c.cat==='head')h=IL_HEADS.map(x=>`<button class="il-opt ${c.head===x?'on':''}" onclick="ilCPick('head','${x}')">${x}</button>`).join('');
+  else if(c.cat==='body')h=Object.keys(IL_BODY).map(k=>`<button class="il-opt ${c.body===k?'on':''}" onclick="ilCPick('body','${k}')">${ilCreatureSVG({...c,body:k},64)}<small>${IL_BODY[k].n}</small></button>`).join('');
+  else if(c.cat==='wings')h=Object.keys(IL_WING_NAMES).map(k=>`<button class="il-opt ${c.wings===k?'on':''}" onclick="ilCPick('wings','${k}')">${k==='none'?'🙂':ilCreatureSVG({...c,wings:k},64)}<small>${IL_WING_NAMES[k]}</small></button>`).join('');
+  else if(c.cat==='tail')h=IL_TAILS.map(x=>`<button class="il-opt ${c.tail===x?'on':''}" onclick="ilCPick('tail','${x}')">${x==='none'?'🙂':x}<small>${x==='none'?'No tail':''}</small></button>`).join('');
+  else h=IL_COLORS.map(x=>`<button class="il-opt ${c.color===x?'on':''}" onclick="ilCPick('color','${x}')"><span class="il-swatch" style="background:${x==='rainbow'?'linear-gradient(135deg,#ff6b9d,#ffb830,#7ddc8a,#4fa3e0,#a78bfa)':x}"></span></button>`).join('');
+  el.innerHTML=h;
+}
+function ilCreatureRefresh(){
+  const st=document.getElementById('ilCStage');
+  if(st){st.innerHTML=ilCreatureSVG(IL.creature,250);st.classList.remove('pop');void st.offsetWidth;st.classList.add('pop');}
+  ilCreatureOpts();
+}
+function ilCPick(k,v){IL.creature[k]=v;ilSfx('pop');ilCreatureRefresh();}
+function ilCreatureRandom(){
+  const c=IL.creature;
+  c.head=ilPick(IL_HEADS);c.body=ilPick(Object.keys(IL_BODY));c.wings=ilPick(Object.keys(IL_WING_NAMES));c.tail=ilPick(IL_TAILS);c.color=ilPick(IL_COLORS);
+  ilSfx('star');ilCreatureRefresh();
+}
+function ilCreatureName(){
+  const c=IL.creature;ilSfx('tap');
+  ilSet(`${ilTop('✨ Name & Power','ilCreatureRender()')}
+    <div class="il-panel il-center">
+      <div class="il-stage"><div id="ilCS2">${ilCreatureSVG(c,200)}</div></div>
+      <label class="il-label" for="ilCName">What is your creature’s name?</label>
+      <input id="ilCName" class="il-input" maxlength="22" placeholder="Type a name…" value="${ilEsc(c.name)}" oninput="IL.creature.name=this.value">
+      <button class="il-btn warm" style="width:100%" onclick="ilCreatureMagicName()">🎲 Give me a magic name!</button>
+      <label class="il-label">Pick a magical power ✨</label>
+      <div class="il-bigpick" id="ilCPow">${IL_POWERS.map((p,i)=>`<button class="il-bp ${c.power===p.t?'on':''}" onclick="ilCPower(${i})"><span class="e">${p.e}</span><span class="n">${p.t}</span></button>`).join('')}</div>
+      <input id="ilCPowOwn" class="il-input" style="margin-top:12px" maxlength="48" placeholder="…or invent your very own power!" oninput="IL.creature.power=this.value;IL.creature.pe='🌟';document.querySelectorAll('#ilCPow .il-bp').forEach(b=>b.classList.remove('on'))">
+      <div class="il-row"><button class="il-btn go" onclick="ilCreatureFinish()">✨ Bring it to life!</button></div>
+    </div>`);
+}
+function ilCreatureMagicName(){IL.creature.name=ilMagicName();const i=document.getElementById('ilCName');if(i)i.value=IL.creature.name;ilSfx('star');}
+function ilCPower(i){const p=IL_POWERS[i];IL.creature.power=p.t;IL.creature.pe=p.e;ilSfx('pop');
+  document.querySelectorAll('#ilCPow .il-bp').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const o=document.getElementById('ilCPowOwn');if(o)o.value='';}
+function ilCreatureFinish(){
+  const c=IL.creature;
+  c.name=(c.name||'').trim()||ilMagicName();
+  if(!c.power){const p=ilPick(IL_POWERS);c.power=p.t;c.pe=p.e;}
+  const data={head:c.head,body:c.body,wings:c.wings,tail:c.tail,color:c.color,power:c.power,pe:c.pe||'🌟'};
+  ilAddCreation({type:'creature',title:c.name,emoji:c.head,data});
+  ilLogDone('Imagination Land: Create a Creature','🦄');
+  ilCelebrate({emoji:c.head,title:`Meet ${ilEsc(c.name)}!`,again:'creature',againLabel:'🦄 Create another creature',
+    card:`${ilCreatureSVG(c,190)}<div style="font-weight:800;font-size:1.05rem;line-height:1.2">${ilEsc(c.pe||'🌟')} ${ilEsc(c.power)}</div>`});
+}
+
+/* ════════════════════════════════════════════════════════════════
+   🏰 2 · BUILD MY WORLD  (drag & drop · save · keep building)
+════════════════════════════════════════════════════════════════ */
+const IL_BG={
+  day:{n:'☀️ Day',sky:'linear-gradient(180deg,#7fcbff 0%,#cdeeff 64%,#eaf9ff 100%)',ground:'linear-gradient(180deg,#8be28b,#4fb866)'},
+  sunset:{n:'🌅 Sunset',sky:'linear-gradient(180deg,#ff8fa3 0%,#ffc27a 58%,#ffe9b0 100%)',ground:'linear-gradient(180deg,#86c97f,#4a9d6b)'},
+  night:{n:'🌙 Night',sky:'linear-gradient(180deg,#14143c 0%,#3b2a78 70%,#5a3d9a 100%)',ground:'linear-gradient(180deg,#2f7d5b,#1f5b44)',stars:true},
+  candy:{n:'🍭 Candy',sky:'linear-gradient(180deg,#ffbde6 0%,#ffe0f2 60%,#fff2c6 100%)',ground:'linear-gradient(180deg,#ffc1df,#ff94c6)'},
+  ocean:{n:'🌊 Ocean',sky:'linear-gradient(180deg,#8fe6ff 0%,#2ea8d8 68%,#1b7fb3 100%)',ground:'linear-gradient(180deg,#f7e2a3,#e8c878)'}
+};
+const IL_PAL={
+  '🏰 Places':['🏰','🏯','🏠','🛖','⛪','🎪','⛺','🗼','🎡','🌉','🏝️','⛲'],
+  '🌳 Nature':['🌳','🌲','🌴','🌻','🌷','🌸','🌺','🍄','🌵','🌾','⛰️','🪨'],
+  '🐾 Animals':['🦄','🐘','🦒','🐇','🐱','🐶','🦊','🐉','🦋','🐝','🐢','🦜','🐠','🐙','🦕','🐑'],
+  '☁️ Sky':['🌈','☁️','☀️','🌙','⭐','🎈','🪁','🚀','🛸','🌟','💫','🦅'],
+  '🧚 Magic':['🧚','🧙','🧜‍♀️','🧝','👸','🤴','🧞','🪄','🔮','👑','✨','💎','🎠','🧸']
+};
+function ilWorldStart(){
+  const d=ilLoad(IL_WORLD_DRAFT,null);
+  IL.world=(d&&Array.isArray(d.items))?{bg:d.bg||'day',items:d.items,name:d.name||'',sel:-1,cat:Object.keys(IL_PAL)[0],last:-1}
+           :{bg:'day',items:[],name:'',sel:-1,cat:Object.keys(IL_PAL)[0],last:-1};
+  ilWorldRender();
+}
+function ilSceneHTML(w,id,mini){
+  const B=IL_BG[w.bg]||IL_BG.day;
+  return `<div class="il-scene ${mini?'il-mini':''}" ${id?`id="${id}"`:''} style="background:${B.sky}">
+    ${B.stars?'<div class="il-stars"></div>':''}
+    <div class="il-ground" style="background:${B.ground}"></div>
+    ${w.items.map((it,i)=>ilItemHTML(it,i,w)).join('')}
+  </div>`;
+}
+function ilItemHTML(it,i,w){
+  const sel=(w.sel===i)?' sel':'';const nw=(w.last===i)?' newpop':'';
+  return `<div class="il-wi${sel}${nw}" data-i="${i}" style="left:${it.x.toFixed(2)}%;top:${it.y.toFixed(2)}%;font-size:calc(var(--w)*${(0.13*it.s).toFixed(3)});transform:translate(-50%,-50%) scaleX(${it.f});z-index:${i+2}">${it.e}</div>`;
+}
+function ilWorldRender(){
+  const w=IL.world;
+  ilSet(`${ilTop('🏰 Build My World')}
+    <div class="il-tabs">${Object.keys(IL_BG).map(k=>`<button class="il-tab ${w.bg===k?'on':''}" onclick="ilWBg('${k}')">${IL_BG[k].n}</button>`).join('')}</div>
+    <div id="ilSceneHost">${ilSceneHTML(w,'ilScene')}</div>
+    <div class="il-seltools" id="ilSelTools"></div>
+    <div class="il-panel">
+      <div class="il-tabs" id="ilPalTabs">${Object.keys(IL_PAL).map(k=>`<button class="il-tab ${w.cat===k?'on':''}" onclick="ilWCat(this.dataset.k)" data-k="${k}">${k}</button>`).join('')}</div>
+      <div class="il-palgrid" id="ilPal"></div>
+      <div class="il-hint il-center" style="margin-top:8px">Tap to add · drag onto your world · drag things to move them!</div>
+    </div>
+    <div class="il-panel il-center">
+      <input id="ilWName" class="il-input" maxlength="26" placeholder="Name your world (or I’ll pick one!)" value="${ilEsc(w.name)}" oninput="IL.world.name=this.value;ilWDraft()">
+      <div class="il-row">
+        <button class="il-btn warm" onclick="ilWMagic()">🎲 Add some magic!</button>
+        <button class="il-btn green" onclick="ilWSave()">💾 Save my world</button>
+      </div>
+      <button class="il-link" id="ilWClear" onclick="ilWClear()">🌱 Start a brand-new world</button>
+    </div>`);
+  ilWPal();ilWSelTools();ilWBind();
+}
+function ilWPal(){
+  const w=IL.world,el=document.getElementById('ilPal');if(!el)return;
+  el.innerHTML=IL_PAL[w.cat].map(e=>`<button class="il-pal" onpointerdown="ilPalDown(event,this.dataset.e)" data-e="${e}">${e}</button>`).join('');
+}
+function ilWCat(k){IL.world.cat=k;ilSfx('tap');
+  document.querySelectorAll('#ilPalTabs .il-tab').forEach(b=>b.classList.toggle('on',b.dataset.k===k));ilWPal();}
+function ilWBg(k){IL.world.bg=k;ilSfx('pop');ilWDraw();ilWDraft();
+  document.querySelectorAll('.il-tabs')[0].querySelectorAll('.il-tab').forEach((b,i)=>b.classList.toggle('on',Object.keys(IL_BG)[i]===k));}
+function ilWDraw(){
+  const h=document.getElementById('ilSceneHost');if(!h)return;
+  h.innerHTML=ilSceneHTML(IL.world,'ilScene');ilFitScenes();ilWBind();ilWSelTools();
+}
+function ilWDraft(){const w=IL.world;ilStore(IL_WORLD_DRAFT,{bg:w.bg,items:w.items,name:w.name});}
+function ilWAdd(e,x,y){
+  const w=IL.world;
+  if(x==null){x=28+Math.random()*44;y=42+Math.random()*28;}
+  x=Math.max(5,Math.min(95,x));y=Math.max(8,Math.min(94,y));
+  w.items.push({e,x,y,s:1,f:1});
+  if(w.items.length>70)w.items.shift();
+  w.sel=w.items.length-1;w.last=w.sel;
+  ilSfx('pop');ilWDraw();ilWDraft();
+  setTimeout(()=>{if(IL.world)IL.world.last=-1;},700);
+}
+function ilWMagic(){
+  const all=[].concat(...Object.values(IL_PAL));
+  for(let i=0;i<4;i++)ilWAdd(ilPick(all));
+  ilSfx('star');ilSay('Ooh, magic! ✨');
+}
+function ilWSelTools(){
+  const el=document.getElementById('ilSelTools');if(!el)return;
+  const w=IL.world;
+  if(w.sel<0||!w.items[w.sel]){el.innerHTML='<div class="il-hint">👆 Tap a picture in your world to make it bigger, smaller, flip it or remove it!</div>';return;}
+  el.innerHTML=`<button onclick="ilWEdit('big')">➕ Bigger</button><button onclick="ilWEdit('small')">➖ Smaller</button><button onclick="ilWEdit('flip')">↔️ Flip</button><button onclick="ilWEdit('front')">⬆️ Front</button><button onclick="ilWEdit('del')">🗑️ Remove</button>`;
+}
+function ilWEdit(a){
+  const w=IL.world,it=w.items[w.sel];if(!it)return;w.last=-1;
+  if(a==='big')it.s=Math.min(3,it.s+.25);
+  else if(a==='small')it.s=Math.max(.5,it.s-.25);
+  else if(a==='flip')it.f=-it.f;
+  else if(a==='front'){w.items.push(w.items.splice(w.sel,1)[0]);w.sel=w.items.length-1;}
+  else if(a==='del'){w.items.splice(w.sel,1);w.sel=-1;}
+  ilSfx('pop');ilWDraw();ilWDraft();
+}
+function ilWClear(){
+  const b=document.getElementById('ilWClear');if(!b)return;
+  if(!b.dataset.ask){b.dataset.ask='1';b.textContent='Tap again to clear the page 🧹';setTimeout(()=>{if(b){delete b.dataset.ask;b.textContent='🌱 Start a brand-new world';}},3500);return;}
+  IL.world.items=[];IL.world.sel=-1;IL.world.name='';
+  const n=document.getElementById('ilWName');if(n)n.value='';
+  ilWDraw();ilWDraft();b.dataset.ask='';b.textContent='🌱 Start a brand-new world';ilSfx('tap');
+}
+function ilWSave(){
+  const w=IL.world;
+  if(!w.items.length){ilSay('Put a few magical things in your world first! 🌈');if(typeof showToast==='function')showToast('🌈 Add something to your world first!');return;}
+  const name=(w.name||'').trim()||ilWorldName();
+  const data={bg:w.bg,items:w.items.map(i=>({e:i.e,x:+i.x.toFixed(2),y:+i.y.toFixed(2),s:i.s,f:i.f}))};
+  ilAddCreation({type:'world',title:name,emoji:'🏰',data});
+  ilLogDone('Imagination Land: Build My World','🏰');
+  const prev={bg:w.bg,items:data.items,sel:-1,last:-1};
+  ilCelebrate({emoji:'🏰',title:`Welcome to ${ilEsc(name)}!`,again:'world',againLabel:'🏰 Keep building',card:`<div style="width:100%">${ilSceneHTML(prev,'',true)}</div>`});
+  setTimeout(ilFitScenes,30);
+}
+/* pointer handling: drag items in the scene */
+let ilDrag=null;
+function ilWBind(){
+  const sc=document.getElementById('ilScene');if(!sc)return;
+  sc.addEventListener('pointerdown',ev=>{
+    const el=ev.target.closest('.il-wi');const w=IL.world;
+    if(!el){if(w.sel!==-1){w.sel=-1;ilWRefreshSel();}return;}
+    const i=+el.dataset.i,it=w.items[i];if(!it)return;
+    const r=sc.getBoundingClientRect();
+    ilDrag={i,el,dx:(ev.clientX-r.left)/r.width*100-it.x,dy:(ev.clientY-r.top)/r.height*100-it.y};
+    w.sel=i;ilWRefreshSel();
+    try{el.setPointerCapture(ev.pointerId);}catch(e){}
+    ev.preventDefault();
+  });
+  sc.addEventListener('pointermove',ev=>{
+    if(!ilDrag)return;
+    const r=sc.getBoundingClientRect(),it=IL.world.items[ilDrag.i];if(!it)return;
+    it.x=Math.max(3,Math.min(97,(ev.clientX-r.left)/r.width*100-ilDrag.dx));
+    it.y=Math.max(5,Math.min(97,(ev.clientY-r.top)/r.height*100-ilDrag.dy));
+    ilDrag.el.style.left=it.x+'%';ilDrag.el.style.top=it.y+'%';
+  });
+  const end=()=>{if(ilDrag){ilDrag=null;ilWDraft();}};
+  sc.addEventListener('pointerup',end);sc.addEventListener('pointercancel',end);
+}
+function ilWRefreshSel(){
+  document.querySelectorAll('#ilScene .il-wi').forEach(e=>e.classList.toggle('sel',+e.dataset.i===IL.world.sel));
+  ilWSelTools();
+}
+/* drag from palette → scene (tap = add near centre) */
+let ilPalDrag=null;
+function ilPalDown(ev,e){
+  ev.preventDefault();
+  ilPalDrag={e,sx:ev.clientX,sy:ev.clientY,ghost:null,moved:false};
+  window.addEventListener('pointermove',ilPalMove);
+  window.addEventListener('pointerup',ilPalUp);
+  window.addEventListener('pointercancel',ilPalUp);
+}
+function ilPalMove(ev){
+  const d=ilPalDrag;if(!d)return;
+  if(!d.moved&&Math.hypot(ev.clientX-d.sx,ev.clientY-d.sy)>8){
+    d.moved=true;const g=document.createElement('div');g.className='il-ghost';g.textContent=d.e;document.body.appendChild(g);d.ghost=g;
+  }
+  if(d.ghost){d.ghost.style.left=ev.clientX+'px';d.ghost.style.top=ev.clientY+'px';}
+}
+function ilPalUp(ev){
+  window.removeEventListener('pointermove',ilPalMove);
+  window.removeEventListener('pointerup',ilPalUp);
+  window.removeEventListener('pointercancel',ilPalUp);
+  const d=ilPalDrag;ilPalDrag=null;if(!d)return;
+  if(d.ghost)d.ghost.remove();
+  const sc=document.getElementById('ilScene');if(!sc)return;
+  if(!d.moved){ilWAdd(d.e);return;}
+  const r=sc.getBoundingClientRect();
+  if(ev.type!=='pointercancel'&&ev.clientX>=r.left&&ev.clientX<=r.right&&ev.clientY>=r.top&&ev.clientY<=r.bottom)
+    ilWAdd(d.e,(ev.clientX-r.left)/r.width*100,(ev.clientY-r.top)/r.height*100);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   📖 3 · STORY MAKER
+════════════════════════════════════════════════════════════════ */
+const IL_CHARS=[
+  {id:'unicorn',e:'🦄',name:'Luna',kind:'unicorn',s:'she',o:'her',pos:'her'},
+  {id:'dragon',e:'🐉',name:'Ember',kind:'little dragon',s:'he',o:'him',pos:'his'},
+  {id:'fairy',e:'🧚',name:'Pip',kind:'fairy',s:'she',o:'her',pos:'her'},
+  {id:'bunny',e:'🐰',name:'Biscuit',kind:'bunny',s:'he',o:'him',pos:'his'},
+  {id:'robot',e:'🤖',name:'Beep',kind:'friendly robot',s:'he',o:'him',pos:'his'},
+  {id:'mermaid',e:'🧜‍♀️',name:'Coral',kind:'mermaid',s:'she',o:'her',pos:'her'},
+  {id:'bear',e:'🐻',name:'Honey',kind:'teddy bear',s:'she',o:'her',pos:'her'},
+  {id:'astro',e:'🧑‍🚀',name:'Nova',kind:'space explorer',s:'she',o:'her',pos:'her'}
+];
+const IL_PLACES=[
+  {id:'cloud',e:'🏰',name:'the Cloud Castle',n:'Cloud Castle',feel:'Everything up there was soft, fluffy and floaty'},
+  {id:'forest',e:'🌲',name:'the Whispering Forest',n:'Whispering Forest',feel:'The tall trees whispered friendly little secrets'},
+  {id:'beach',e:'🏖️',name:'Rainbow Beach',n:'Rainbow Beach',feel:'The sand sparkled in every colour you can imagine'},
+  {id:'ocean',e:'🌊',name:'the Bubble Kingdom under the sea',n:'Bubble Kingdom',feel:'Shiny bubbles drifted up like tiny moons'},
+  {id:'space',e:'🚀',name:'Twinkle Space',n:'Twinkle Space',feel:'Millions of stars blinked hello'},
+  {id:'candy',e:'🍭',name:'Candy Hill',n:'Candy Hill',feel:'The whole hill smelled sweet, like birthday cake'},
+  {id:'mountain',e:'🏔️',name:'Crystal Mountain',n:'Crystal Mountain',feel:'Glowing crystals shone softly like night-lights'},
+  {id:'garden',e:'🌻',name:'the Giant Flower Garden',n:'Flower Garden',feel:'Flowers as tall as houses swayed and giggled in the breeze'}
+];
+const IL_ADVS=[
+  {id:'treasure',e:'🗺️',n:'Find hidden treasure',title:'{name} and the Treasure of Giggles',p:[
+    'One bright morning, {name} the {kind} found a sparkly treasure map that led all the way to {place}. {Feel}. “This is going to be the best adventure ever!” said {name}.',
+    'Halfway there, {name} met {friend}, who was sitting all alone and looking a little sad. “I would love to find the treasure too, but I am too shy to go by myself,” said {fn}. {name} smiled. “Come with me! Treasure is more fun with a friend.”',
+    'At the end of the map stood a big golden door with a riddle: “Only kindness and imagination can open me.” {name} and {fn} closed their eyes and imagined a key made of rainbows. POP! A shiny rainbow key appeared in {pos} hand. The door swung open with a happy jingle.',
+    'Inside the treasure chest there was no gold at all. It was full of {things} and, right on top, {gift}! {name} and {fn} shared everything with all their friends, and soon the whole of {place} was giggling. {S} felt warm and proud inside.']},
+  {id:'lostbaby',e:'🐣',n:'Help a lost baby animal',title:'The Little Lost {Baby}',p:[
+    'One golden afternoon in {place}, {name} the {kind} heard a tiny sound. “Peep, peep!” {Feel}, but this sound was sad. It was {a_baby}, all alone and a little bit scared.',
+    '{name} knelt down and spoke very softly. “Do not worry, I will help you find your family,” {s} said, giving the {baby} a gentle hug. Just then {friend} came along. “I would love to help too!” said {fn}.',
+    'Evening was coming and it was getting dark. So {name} used {pos} imagination. {S} pictured a path of tiny glowing lanterns. “Let there be lights!” and, one by one, soft golden lanterns lit up the way. {fn} and {name} followed the glowing path with the {baby} snuggled safely between them.',
+    'At the end of the path, the {baby}’s family was waiting! There were happy hugs and happy tears. “Thank you for being so kind,” they said, and gave {name} {gift} as a thank-you. {name} went home with a heart that glowed brighter than any lantern.']},
+  {id:'party',e:'🎉',n:'Throw a surprise party',title:'{name}’s Surprise Party',p:[
+    'It was almost the birthday of {fn} the {fk}, and nobody had planned a thing! {name} the {kind} gasped. “We must throw a surprise party in {place}!” {Feel}, which was just the right place for a party.',
+    'But there was a problem: no cake, no balloons and no music. {name} did not feel worried at all. “If we all help, it will be wonderful,” {s} said. So {s} went around and asked every friend, very kindly, “Could you share a little something?”',
+    'One friend baked a rainbow cake. Another blew up hundreds of bubble balloons. And {name} used imagination to make confetti out of falling stars: sprinkle, sprinkle, sparkle! Everyone worked together and nobody was left out. Someone even brought {gift}.',
+    'When {fn} arrived, everyone jumped out and shouted “SURPRISE!” {fn}’s eyes filled with happy tears. “This is the best birthday ever,” {fn} whispered. {name} smiled, because making others happy is the happiest feeling of all.']},
+  {id:'rainbow',e:'🌈',n:'Bring back the rainbow',title:'The Day the Rainbow Went Missing',p:[
+    'One morning in {place}, {name} the {kind} looked up and gasped. The rainbow was gone! All the colours had floated away and everything looked a little grey. {Feel}, but today it felt quiet.',
+    '{Friend} came to help. “We must find the colours,” said {fn}. {name} nodded. “Let us search together! Even a small friend can find a big colour.” They found red hiding in a ladybird’s spots, yellow inside a sleepy sunflower, and blue tucked in a puddle.',
+    'But the very last colour, purple, was nowhere to be found. {name} sat down and thought. Then {s} closed {pos} eyes and imagined. “Purple is made of imagination!” {s} laughed, and painted the last stripe with a giggle and a wiggle. WHOOSH! The purple stripe shone bright.',
+    'The rainbow stretched across {place}, more beautiful than ever, and everyone cheered. {fn} gave {name} {gift}, and {name} said thank you with a great big hug. Friends and imagination can bring the colour back to anything.']},
+  {id:'garden',e:'🌱',n:'Grow a magic garden',title:'{name}’s Magic Garden',p:[
+    '{name} the {kind} found one tiny, shiny seed in {place}. “What will you grow into?” {s} whispered. {Feel}.',
+    '{name} dug a little hole, gave the seed a drink of water and sang it a gentle song. {Friend} came by. “What are you doing?” asked {fn}. “Growing something magical,” said {name}. “Would you like to help?” {fn} was so happy to be asked.',
+    'Every day they sang to the seed and watered it with kind words. “You are wonderful!” “You are loved!” And do you know what happened? The seed grew into a tall, tall tree with {things} hanging from every branch!',
+    'All the animals came to share the magical fruit. “Thank you for growing something so lovely,” they said. {name} smiled and gave {fn} {gift} to say thank you. Kindness is a seed too, and when you plant it, it grows into happiness for everyone.']},
+  {id:'door',e:'🚪',n:'Discover a secret door',title:'{name} and the Secret Door',p:[
+    'Behind a curtain of glittering vines in {place}, {name} the {kind} spotted a tiny round door, no bigger than a cookie. {Feel}, and the little door seemed to hum a happy tune.',
+    '{name} knocked softly. A tiny voice said, “I only open for kind words!” {name} thought for a moment. “You are a beautiful door, and I am so glad I found you,” {s} said. Click! The door opened. {Friend} popped up beside {o}. “Can I come too?” “Of course!” said {name}.',
+    'Inside was an enormous room with a sign: “Whatever you imagine will appear!” {name} imagined a soft cloud-swing, and it appeared. {fn} imagined {gift}, and ta-da, there it was! They played until their hearts were bursting with joy.',
+    'Before leaving, {name} imagined a gift for every friend in {place}, and POOF! Each one got exactly what made them happiest. {name} learned that imagination is magic everyone has inside, and it shines brightest when we share it.']},
+  {id:'stars',e:'🌟',n:'Make the stars shine',title:'The Night the Stars Got Sleepy',p:[
+    'One evening, {name} the {kind} looked up from {place} and noticed something sad. The stars were dim and droopy, as if they had forgotten how to sparkle. {Feel}, but the night sky felt sleepy.',
+    '{Friend} floated over. “I think the stars feel lonely up there,” said {fn}. {name} thought hard. “Then let us show them how much we care!”',
+    '{name} and {fn} sang the happiest song they knew and told the stars kind things. “You are brilliant!” “You light up our nights!” With every kind word, one little star blinked, twinkled and began to glow. Then {name} imagined a gentle wind of sparkles that carried {gift} up to the sky.',
+    'Soon the whole sky was twinkling like a giant party. The stars winked down at {name} and {fn} as if to say thank you, and everyone in {place} fell asleep with sweet dreams. Kind words are like starlight: they make everything glow.']},
+  {id:'bridge',e:'🌉',n:'Build a friendship bridge',title:'{name} and the Rainbow Bridge',p:[
+    'A wide, sparkling river ran through {place}. {name} the {kind} lived on one side. On the other side lived {friend} whom {name} had never met. {Feel}.',
+    'Every day they waved at each other across the water. One day {name} decided, “I want to be friends with {fn}!” But the river was too wide to cross, and {fn} was too shy to shout hello. “I will find a way,” said {name}.',
+    '{name} closed {pos} eyes and imagined a bridge made of rainbow light. WHOOSH! A shimmering rainbow bridge stretched across the river. {fn} gasped, then smiled, then tiptoed across. They met in the middle and shared {gift}.',
+    'They played together all day, and soon friends from both sides joined in. The bridge stayed there forever. {name} learned that a kind hello is the first stone of every bridge.']}
+];
+const IL_FRIENDS=[{n:'Shelly',k:'snail'},{n:'Twinkle',k:'firefly'},{n:'Hoot',k:'owl'},{n:'Splash',k:'dolphin'},{n:'Prickles',k:'hedgehog'},{n:'Puff',k:'little cloud'},{n:'Glimmer',k:'baby star'},{n:'Flutter',k:'butterfly'}];
+const IL_GIFTS=['a jar of glowing fireflies','a tiny rainbow in a bottle','a basket of giggling bubbles','a blanket woven from sunshine','a music box that plays happy dreams'];
+const IL_THINGS=['glowing stars','tiny rainbows','giggling bubbles','sparkly butterflies'];
+const IL_BABIES=['baby duckling','tiny kitten','little lamb','baby elephant','tiny fox cub'];
+const IL_MORALS=['Kindness is the strongest magic of all.','When friends work together, anything is possible.','Your imagination can make the world brighter.','Being brave means helping others, even when you feel small.','Sharing makes happiness grow bigger.','Everyone is special, and the world needs your ideas.'];
+function ilPlural(w){w=w.trim();if(/s$/i.test(w))return w;if(/[^aeiou]y$/i.test(w))return w.slice(0,-1)+'ies';if(/(x|ch|sh|z)$/i.test(w))return w+'es';return w+'s';}
+function ilChars(){
+  const nm=(typeof childName!=='undefined'&&childName)?childName:'Star';
+  return IL_CHARS.concat([{id:'me',e:'🌟',name:nm,kind:'brave explorer',s:'they',o:'them',pos:'their',me:true}]);
+}
+function ilStoryStart(){IL.story={ch:null,pl:null,ad:null,special:''};ilStoryRender();}
+function ilStoryRender(){
+  const s=IL.story,chars=ilChars();
+  const grp=(key,list,fn)=>`<div class="il-bigpick" id="ilSG_${key}">${list.map(x=>`<button class="il-bp ${s[key]===x.id?'on':''}" onclick="ilSPick('${key}','${x.id}')"><span class="e">${x.e}</span><span class="n">${ilEsc(fn(x))}</span></button>`).join('')}</div>`;
+  ilSet(`${ilTop('📖 Story Maker')}
+    <div class="il-panel">
+      <label class="il-label" style="margin-top:0">1 · Who is your hero? 🦸</label>${grp('ch',chars,x=>x.me?'Me! ('+x.name+')':x.name+' the '+x.kind)}
+      <label class="il-label">2 · Where does the story happen? 🗺️</label>${grp('pl',IL_PLACES,x=>x.n)}
+      <label class="il-label">3 · What is the adventure? ✨</label>${grp('ad',IL_ADVS,x=>x.n)}
+      <label class="il-label" for="ilSSpecial">4 · Add something special (optional) 🎁</label>
+      <input id="ilSSpecial" class="il-input" maxlength="24" placeholder="e.g. a balloon, a dinosaur, a cake…" value="${ilEsc(s.special)}" oninput="IL.story.special=this.value">
+      <div class="il-hint">Not sure? That is okay! I will surprise you with the parts you skip. 🎲</div>
+    </div>
+    <div class="il-row"><button class="il-btn go" onclick="ilStoryTell()">✨ Make my story!</button></div>`);
+}
+function ilSPick(k,id){
+  IL.story[k]=id;ilSfx('pop');
+  const list=document.querySelectorAll('#ilSG_'+k+' .il-bp');
+  const src=k==='ch'?ilChars():(k==='pl'?IL_PLACES:IL_ADVS);
+  list.forEach((b,i)=>b.classList.toggle('on',src[i]&&src[i].id===id));
+}
+function ilStoryBuild(s){
+  const chars=ilChars();
+  const ch=chars.find(c=>c.id===s.ch)||ilPick(chars);
+  const pl=IL_PLACES.find(p=>p.id===s.pl)||ilPick(IL_PLACES);
+  const ad=IL_ADVS.find(a=>a.id===s.ad)||ilPick(IL_ADVS);
+  const fr=ilPick(IL_FRIENDS);
+  const adj=ilPick(['gentle','shy','cheerful','curious','sleepy','giggly','wise']);
+  const sp=(s.special||'').trim().slice(0,24);
+  const baby=ilPick(IL_BABIES);
+  const V={name:ch.name,kind:ch.kind,s:ch.s,S:ilCap(ch.s),o:ch.o,pos:ch.pos,place:pl.name,Feel:pl.feel,
+    friend:`${/^[aeiou]/.test(adj)?'an':'a'} ${adj} ${fr.k} named ${fr.n}`,Friend:ilCap(`${/^[aeiou]/.test(adj)?'an':'a'} ${adj} ${fr.k} named ${fr.n}`),fn:fr.n,fk:fr.k,
+    gift:sp?`a magical ${sp}`:ilPick(IL_GIFTS),things:sp?ilPlural(sp):ilPick(IL_THINGS),
+    baby,Baby:ilCap(baby.replace(/^(baby|tiny|little)\s/,'')),a_baby:'a '+baby};
+  const fill=t=>t.replace(/\{(\w+)\}/g,(m,k)=>V[k]!=null?V[k]:m);
+  return {ch,pl,ad,title:fill(ad.title),paras:ad.p.map(fill),moral:ilPick(IL_MORALS)};
+}
+function ilStoryTell(){
+  const s=IL.story;
+  const st=ilStoryBuild(s);
+  // skipped picks are remembered so "Tell it differently" keeps the same hero / place / adventure
+  s.ch=st.ch.id;s.pl=st.pl.id;s.ad=st.ad.id;s.cur=st;
+  ilSfx('star');
+  ilSet(`${ilTop('📖 Your Story','ilStoryRender()')}
+    <div class="il-book">
+      <div class="em">${st.ch.e}${st.pl.e}${st.ad.e}</div>
+      <h3>${ilEsc(st.title)}</h3>
+      ${st.paras.map(p=>`<p>${ilEsc(p)}</p>`).join('')}
+      <p class="moral">💛 ${ilEsc(st.moral)}</p>
+    </div>
+    <div class="il-row">
+      <button class="il-btn alt" onclick="ilStoryRead()">🔊 Read it to me</button>
+      <button class="il-btn warm" onclick="ilStoryTell()">🔁 Tell it differently</button>
+    </div>
+    <div class="il-row"><button class="il-btn go" onclick="ilStoryKeep()">✨ I love it! Keep my story</button></div>
+    <div class="il-center"><button class="il-link" onclick="ilStoryRender()">✏️ Change my picks</button></div>`);
+  try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){}
+}
+function ilStoryRead(){
+  const st=IL.story&&IL.story.cur;if(!st)return;
+  if(typeof soundOn!=='undefined'&&!soundOn){if(typeof showToast==='function')showToast('🔊 Turn the sound on at the top to hear it!');return;}
+  ilSpeak(st.title+'. '+st.paras.join(' ')+' '+st.moral);
+}
+function ilStoryKeep(){
+  const st=IL.story&&IL.story.cur;if(!st)return;
+  ilAddCreation({type:'story',title:st.title,emoji:st.ch.e,data:{title:st.title,paras:st.paras,moral:st.moral,em:st.ch.e+st.pl.e+st.ad.e}});
+  ilLogDone('Imagination Land: Story Maker','📖');
+  ilCelebrate({emoji:'📖',title:'A brand-new story!',again:'story',againLabel:'📖 Make another story',
+    card:`<div style="font-size:2.4rem;letter-spacing:6px">${st.ch.e}${st.pl.e}${st.ad.e}</div><div style="font-weight:800;font-size:1.1rem;line-height:1.2">${ilEsc(st.title)}</div>`});
+}
+
+/* ════════════════════════════════════════════════════════════════
+   🧪 4 · MAGIC POTION LAB
+════════════════════════════════════════════════════════════════ */
+const IL_ING=[
+  {id:'rainbow',e:'🌈',n:'Rainbow Sprinkles',adj:'Rainbow',c:'#ff7eb6',fx:'turns your shadow into a rainbow'},
+  {id:'stardust',e:'⭐',n:'Stardust',adj:'Twinkly',c:'#ffd84d',fx:'makes your fingertips twinkle like stars'},
+  {id:'unicorn',e:'🦄',n:'Unicorn Hair',adj:'Unicorny',c:'#f3a6ff',fx:'lets you gallop super-fast on tiptoes'},
+  {id:'mushroom',e:'🍄',n:'Giggle Mushroom',adj:'Giggly',c:'#ff6b6b',fx:'makes everything you say sound extra giggly'},
+  {id:'bubbles',e:'🫧',n:'Cloud Bubbles',adj:'Bubbly',c:'#8fdcff',fx:'floats you gently up like a bubble'},
+  {id:'berry',e:'🍓',n:'Moon-Berry Juice',adj:'Berry',c:'#ff5d8f',fx:'makes you smell like strawberry ice cream'},
+  {id:'dragon',e:'🐉',n:'Dragon Sneeze',adj:'Sneezy',c:'#ff9f43',fx:'lets you sneeze tiny, harmless fireworks'},
+  {id:'snow',e:'❄️',n:'Snowflake',adj:'Frosty',c:'#b8e8ff',fx:'turns puddles into sparkly ice-slides'},
+  {id:'sun',e:'🌻',n:'Sunshine Petals',adj:'Sunny',c:'#ffe066',fx:'makes you glow warm like a sunny day'},
+  {id:'pearl',e:'🐚',n:'Mermaid Pearl',adj:'Pearly',c:'#d5c3ff',fx:'lets you blow giggly bubbles underwater'},
+  {id:'feather',e:'🪶',n:'Phoenix Feather',adj:'Feathery',c:'#ff8a5b',fx:'makes your hair flutter like soft feathers'},
+  {id:'moon',e:'🌙',n:'Moonbeam',adj:'Moony',c:'#c3b6ff',fx:'fills your dreams with silver sparkles'},
+  {id:'candy',e:'🍭',n:'Candy Cloud',adj:'Sugary',c:'#ff9ed8',fx:'makes raindrops taste like lemonade'},
+  {id:'butterfly',e:'🦋',n:'Butterfly Dust',adj:'Fluttery',c:'#7fd8ff',fx:'gives you tiny butterfly wings for a little while'},
+  {id:'honey',e:'🍯',n:'Golden Honey',adj:'Honeyed',c:'#ffc233',fx:'makes your voice sound as sweet as a songbird'},
+  {id:'frog',e:'🐸',n:'Frog Hiccup',adj:'Hoppy',c:'#6fd36f',fx:'makes you hop higher than a rooftop'}
+];
+const IL_P_PRE=['','Professor Pip’s ','Grandma Moon’s ','Captain Sparkle’s ','Wizard Wobble’s ','Princess Pudding’s '];
+const IL_P_NOUN=['Fizz','Brew','Surprise','Splash','Swirl','Zing','Wobble','Delight','Burst','Giggle-Juice','Sparkle-Soup','Bubble-Tonic'];
+const IL_P_SIDE=[
+  'Warning: may cause hiccups that sound like tiny trumpets!','Side effect: your socks might start dancing!','Careful: you may giggle at every cloud you see!',
+  'Side effect: smells like birthday cake all afternoon!','Warning: your teddy might start telling jokes!','Side effect: you may sneeze glitter!',
+  'Careful: your shoes might want to skip instead of walk!','Warning: you may burp little rainbows. Excuse you!','Side effect: everything you touch goes boing!'
+];
+const IL_P_BEST=['best sipped under a rainbow','best enjoyed on a fluffy cloud','best shared with a friend','best stirred three times to the left','best drunk while wearing a silly hat','best served with a giggle'];
+function ilBottleSVG(color,px){
+  const id='ilp'+(++ilUid),d='M48 40 H72 V58 C100 70 108 95 104 115 C100 145 80 156 60 156 C40 156 20 145 16 115 C12 95 20 70 48 58 Z';
+  return `<svg viewBox="0 0 120 162" width="${px}" height="${Math.round(px*1.35)}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+    <defs><clipPath id="${id}"><path d="${d}"/></clipPath></defs>
+    <g clip-path="url(#${id})"><rect x="0" y="86" width="120" height="90" fill="${color}"/><ellipse cx="60" cy="86" rx="52" ry="7" fill="${ilMix(color,'#ffffff',.35)}"/></g>
+    <path d="${d}" fill="rgba(255,255,255,.18)" stroke="#fff" stroke-opacity=".9" stroke-width="4" stroke-linejoin="round"/>
+    <rect x="42" y="2" width="36" height="20" rx="6" fill="#c8905a"/><rect x="46" y="20" width="28" height="22" fill="rgba(255,255,255,.28)"/>
+    <ellipse cx="38" cy="108" rx="6" ry="16" fill="#fff" opacity=".4" transform="rotate(18 38 108)"/>
+    <circle cx="52" cy="120" r="5" fill="#fff" opacity=".7"/><circle cx="72" cy="108" r="4" fill="#fff" opacity=".7"/><circle cx="64" cy="132" r="3" fill="#fff" opacity=".7"/>
+    <text x="60" y="20" font-size="16" text-anchor="middle" dominant-baseline="central">✨</text></svg>`;
+}
+function ilCauldronSVG(color){
+  const bub=[[84,70,6,0],[112,66,5,.7],[136,72,7,1.3]].map(b=>`<circle cx="${b[0]}" cy="${b[1]}" r="${b[2]}" fill="#fff" opacity=".85" style="transform-box:fill-box;transform-origin:center;animation:ilBubble 2.2s ${b[3]}s infinite"/>`).join('');
+  return `<svg viewBox="0 0 220 176" width="240" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+    <ellipse cx="110" cy="164" rx="74" ry="8" fill="rgba(0,0,0,.2)"/>
+    <path d="M32 82 C8 82 8 110 34 110" fill="none" stroke="#2a2840" stroke-width="8" stroke-linecap="round"/><path d="M188 82 C212 82 212 110 186 110" fill="none" stroke="#2a2840" stroke-width="8" stroke-linecap="round"/>
+    <rect x="58" y="146" width="16" height="18" rx="6" fill="#2a2840"/><rect x="146" y="146" width="16" height="18" rx="6" fill="#2a2840"/>
+    <path d="M30 72 C22 134 62 158 110 158 C158 158 198 134 190 72 Z" fill="#3d3b52" stroke="#2a2840" stroke-width="3"/>
+    <ellipse cx="110" cy="72" rx="82" ry="20" fill="#55526f" stroke="#2a2840" stroke-width="3"/>
+    <ellipse cx="110" cy="74" rx="70" ry="14" fill="${color}"/><ellipse cx="94" cy="70" rx="22" ry="4.5" fill="#fff" opacity=".35"/>
+    ${bub}<text x="110" y="30" font-size="26" text-anchor="middle" dominant-baseline="central">✨</text></svg>`;
+}
+function ilPotionStart(){IL.potion={sel:[],busy:false};ilPotionRender();}
+function ilPotionColor(ids){
+  if(!ids.length)return '#8e7cc3';
+  const rgb=ids.map(id=>ilHex(IL_ING.find(x=>x.id===id).c));
+  const n=rgb.length;return ilRGB(rgb.reduce((a,c)=>a+c[0],0)/n,rgb.reduce((a,c)=>a+c[1],0)/n,rgb.reduce((a,c)=>a+c[2],0)/n);
+}
+function ilPotionRender(){
+  ilSet(`${ilTop('🧪 Magic Potion Lab')}
+    <div class="il-panel il-center">
+      <div class="il-cauldron" id="ilCauldron"></div>
+      <div class="il-chips" id="ilPChips"></div>
+      <div class="il-hint" id="ilPHint">Pick 2 to 4 magic ingredients, then stir! 🥄</div>
+    </div>
+    <div class="il-panel"><div class="il-bigpick" id="ilIngs">
+      ${IL_ING.map(x=>`<button class="il-bp" data-id="${x.id}" onclick="ilIngTap('${x.id}')"><span class="e">${x.e}</span><span class="n">${x.n}</span></button>`).join('')}
+    </div></div>
+    <div class="il-row"><button class="il-btn go" id="ilStirBtn" onclick="ilPotionStir()">🥄 Stir the potion!</button></div>`);
+  ilPotionRefresh();
+}
+function ilPotionRefresh(){
+  const sel=IL.potion.sel;
+  const c=document.getElementById('ilCauldron');if(c)c.innerHTML=ilCauldronSVG(ilPotionColor(sel));
+  const ch=document.getElementById('ilPChips');
+  if(ch)ch.innerHTML=sel.length?sel.map(id=>{const x=IL_ING.find(i=>i.id===id);return `<button class="il-chip" onclick="ilIngTap('${id}')" title="Take out">${x.e} ${x.n} ✕</button>`;}).join(''):'<div class="il-hint" style="align-self:center">Your cauldron is empty… 🫕</div>';
+  document.querySelectorAll('#ilIngs .il-bp').forEach(b=>b.classList.toggle('on',sel.includes(b.dataset.id)));
+}
+function ilIngTap(id){
+  const p=IL.potion;if(p.busy)return;
+  const i=p.sel.indexOf(id);
+  if(i>=0)p.sel.splice(i,1);
+  else{if(p.sel.length>=4){p.sel.shift();ilSay('The cauldron is full, so one ingredient hopped out! 🐸');}p.sel.push(id);}
+  ilSfx('pop');ilPotionRefresh();
+}
+function ilPotionStir(){
+  const p=IL.potion;if(p.busy)return;
+  if(!p.sel.length){ilSay('Pick a magic ingredient first! 🍄');const c=document.getElementById('ilIngs');if(c){c.style.animation='ilWiggle .5s';setTimeout(()=>c.style.animation='',600);}return;}
+  p.busy=true;
+  const c=document.getElementById('ilCauldron');if(c)c.classList.add('stir');
+  const h=document.getElementById('ilPHint');if(h)h.textContent='Stir, stir, stir… something magical is happening! ✨';
+  ilSfx('star');setTimeout(()=>ilSfx('pop'),350);setTimeout(()=>ilSfx('pop'),700);
+  setTimeout(()=>{p.busy=false;if(c)c.classList.remove('stir');ilPotionReveal();},1500);
+}
+function ilJoin(a){return a.length<2?(a[0]||''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];}
+function ilPotionMake(ids){
+  const sorted=ids.slice().sort(),h=ilHash(sorted.join('|'));
+  const ings=sorted.map(id=>IL_ING.find(x=>x.id===id));
+  const name=(IL_P_PRE[h%IL_P_PRE.length]+ings.slice(0,3).map(i=>i.adj).join(' ')+' '+IL_P_NOUN[(h>>3)%IL_P_NOUN.length]).trim();
+  return {name,color:ilPotionColor(sorted),fxText:'This potion '+ilJoin(ings.map(i=>i.fx))+'!',side:IL_P_SIDE[(h>>5)%IL_P_SIDE.length],best:IL_P_BEST[(h>>7)%IL_P_BEST.length],ings};
+}
+function ilPotionReveal(){
+  const ids=IL.potion.sel.slice(),r=ilPotionMake(ids);
+  ilAddCreation({type:'potion',title:r.name,emoji:'🧪',data:{ids,name:r.name,color:r.color,fx:r.fxText,side:r.side,best:r.best}});
+  ilLogDone('Imagination Land: Magic Potion Lab','🧪');
+  ilCelebrate({emoji:'🧪',title:ilEsc(r.name)+'!',msg:'It fizzed! It sparkled! A one-of-a-kind potion! 🧪',again:'potion',againLabel:'🧪 Brew another potion',
+    card:`${ilBottleSVG(r.color,96)}<div style="font-size:1.6rem">${r.ings.map(i=>i.e).join(' ')}</div><div style="font-weight:700;font-size:.98rem;line-height:1.35">${ilEsc(r.fxText)}</div><div style="font-size:.88rem;font-weight:800;color:#d6336c;line-height:1.3">${ilEsc(r.side)}</div><div style="font-size:.82rem;font-weight:700;opacity:.8">Tip: ${ilEsc(r.best)}</div>`});
+}
+
+/* ════════════════════════════════════════════════════════════════
+   🎭 5 · FEELING GARDEN
+════════════════════════════════════════════════════════════════ */
+const IL_FEELS=[
+  {id:'happy',e:'😄',n:'Happy',p:'🌻',k:'flower',msg:'Happy feelings grow tall, sunny sunflowers! 🌻',ask:'What made you smile today?',chips:['🎈 Playing','👨‍👩‍👧 My family','🍦 A yummy treat','🐶 A cuddly pet']},
+  {id:'excited',e:'🤩',n:'Excited',p:'🌟',k:'star',msg:'Excited feelings zoom up into the sky and become shining stars! 🌟',ask:'What are you looking forward to?',chips:['🎂 A party','🚗 A trip','🎁 A surprise','🎮 Playing']},
+  {id:'loved',e:'🥰',n:'Loved',p:'🌸',k:'flower',msg:'Feeling loved grows soft, pink blossoms. You are so, so loved! 💖',ask:'Who makes you feel loved?',chips:['👩 Mummy','👨 Daddy','👵 My family','🐶 A pet']},
+  {id:'proud',e:'😎',n:'Proud',p:'🌳',k:'tree',msg:'Proud feelings grow into big, strong trees. You should feel proud! 🌳',ask:'What are you proud of?',chips:['🧩 Learning something','🤝 Helping someone','🎨 Making something','💪 Trying hard']},
+  {id:'calm',e:'😌',n:'Calm',p:'🍀',k:'flower',msg:'Calm feelings grow peaceful little clovers. Ahh, so cosy. 🍀',ask:'Where do you feel calm?',chips:['🛏️ In my bed','🌳 Outside','🎵 With music','🤗 With a hug']},
+  {id:'silly',e:'🤪',n:'Silly',p:'🌺',k:'flower',msg:'Silly feelings grow giggly, colourful flowers! Hehe! 🌺',ask:'What is the silliest thing you can think of?',chips:['🐸 Funny faces','🕺 Dancing','😂 Jokes','🦄 Pretending']},
+  {id:'sad',e:'😢',n:'Sad',p:'💐',k:'flower',msg:'It is okay to feel sad. Every feeling is welcome here. Your feeling grew a gentle bouquet. 💙',ask:'What would help your heart feel cosy?',chips:['🤗 A hug','🧸 My toy','🎵 A song','💬 Talking']},
+  {id:'angry',e:'😠',n:'Angry',p:'🌹',k:'flower',msg:'Angry feelings are strong, and strong feelings grow red roses. It is okay to feel cross. Big breaths help roses bloom! 🌬️',ask:'What helps you feel calm when you are cross?',chips:['🌬️ Big breaths','🏃 Running around','🎨 Drawing it out','🤗 A hug']},
+  {id:'scared',e:'😨',n:'Scared',p:'🌼',k:'flower',msg:'Everyone feels scared sometimes, even superheroes! Brave little daisies grow when we feel scared. 🌼',ask:'What helps you feel safe?',chips:['🤗 A hug','💡 A night-light','🗣️ Telling someone','🧸 My toy']},
+  {id:'worried',e:'😟',n:'Worried',p:'🌿',k:'flower',msg:'Worried feelings grow soft green leaves. Talking about a worry makes it feel smaller. 🌿',ask:'Who could you tell about it?',chips:['👩 Mummy','👨 Daddy','🧑‍🏫 My teacher','🧸 My toy friend']},
+  {id:'tired',e:'😴',n:'Tired',p:'🌷',k:'flower',msg:'Tired feelings grow sleepy tulips. Your body needs a little rest, and that is okay! 🌷',ask:'What helps you feel rested?',chips:['😴 A cuddle nap','📖 A story','🥛 A cosy drink','🛁 A warm bath']},
+  {id:'lonely',e:'🥺',n:'Lonely',p:'💫',k:'star',msg:'Lonely feelings turn into friendly stars that keep you company. You are not alone. You are loved! 💛',ask:'Who would you love to play with?',chips:['👭 A friend','👨‍👩‍👧 My family','🐶 A pet','🧸 My toy friends']}
+];
+function ilGardenStart(){IL.garden={sel:null,chip:''};ilGardenRender();}
+function ilGardenHTML(items,fromIdx,mini){
+  const fs={flower:.11,tree:.2,star:.085};
+  const bf=items.length>=5?`<span class="il-gdeco" style="left:18%;top:46%;font-size:calc(var(--w)*.06);animation:ilFloat 3.6s ease-in-out infinite">🦋</span><span class="il-gdeco" style="left:72%;top:38%;font-size:calc(var(--w)*.05);animation:ilFloat 4.2s ease-in-out infinite .8s">🐝</span>`:'';
+  return `<div class="il-scene ${mini?'il-mini':''}" ${mini?'':'id="ilGScene2"'} style="background:linear-gradient(180deg,#8fd3ff 0%,#d8f2ff 60%,#f0fbff 100%)">
+    <span class="il-gdeco" style="left:4%;top:3%;font-size:calc(var(--w)*.12)">☀️</span>
+    <span class="il-gdeco" style="left:58%;top:5%;font-size:calc(var(--w)*.14);opacity:.9">☁️</span>
+    <div class="il-ground" style="background:linear-gradient(180deg,#8be28b,#4fb866);height:46%"></div>${bf}
+    ${items.map((it,i)=>`<div class="il-gp ${(fromIdx>=0&&i>=fromIdx)?'newp':''}" style="left:${it.x.toFixed(1)}%;top:${it.y.toFixed(1)}%;font-size:calc(var(--w)*${fs[it.k]||.1});transform:translate(-50%,-50%);z-index:${Math.round(it.y)}"><span style="display:inline-block;transform-origin:50% 100%;${mini?'':`animation:ilWiggle ${(3.2+(i%5)*.6).toFixed(1)}s ease-in-out infinite`}">${it.p}</span></div>`).join('')}
+  </div>`;
+}
+function ilGardenPos(kind,items){
+  const R={flower:[8,92,62,92],tree:[10,90,56,78],star:[6,94,7,34]}[kind]||[8,92,62,92];
+  let best=null,bd=-1;
+  for(let t=0;t<14;t++){
+    const x=R[0]+Math.random()*(R[1]-R[0]),y=R[2]+Math.random()*(R[3]-R[2]);
+    let md=999;items.forEach(o=>{md=Math.min(md,Math.hypot(o.x-x,(o.y-y)*1.25));});
+    if(md>bd){bd=md;best=[x,y];}
+  }
+  return best;
+}
+function ilGardenRender(){
+  const g=ilLoad(IL_GARDEN_KEY,[]);
+  ilSet(`${ilTop('🎭 Feeling Garden')}
+    <div id="ilGSceneHost">${ilGardenHTML(g,-1)}</div>
+    <div class="il-hint il-center" style="margin:8px 0 12px">${g.length?'Look at your garden! Every feeling made something beautiful. 🌈':'Your garden is waiting for its first feeling! 🌱'}</div>
+    <div class="il-panel il-center" id="ilGPanel"></div>`);
+  ilGardenPanel();
+}
+function ilGardenPanel(){
+  const el=document.getElementById('ilGPanel');if(!el)return;
+  const s=IL.garden.sel,f=s&&IL_FEELS.find(x=>x.id===s);
+  if(!f){
+    el.innerHTML=`<div style="font-size:1.25rem;font-weight:800;margin-bottom:10px">How do you feel today? 🌈</div>
+      <div class="il-opts" style="grid-template-columns:repeat(auto-fill,minmax(92px,1fr))">${IL_FEELS.map(x=>`<button class="il-feel" onclick="ilGFeel('${x.id}')"><span class="e">${x.e}</span><span class="n">${x.n}</span></button>`).join('')}</div>
+      <div class="il-hint" style="margin-top:10px">All feelings are welcome here. There are no wrong ones! 💛</div>`;
+  }else{
+    el.innerHTML=`<div style="font-size:3.6rem;line-height:1.1;animation:ilBounce 1.4s infinite">${f.e}</div>
+      <div style="font-size:1.15rem;font-weight:800;margin:6px 0 8px;line-height:1.3">${ilEsc(f.msg)}</div>
+      <div class="il-label" style="text-align:center;margin:12px 0 6px">${ilEsc(f.ask)}</div>
+      <div class="il-chips">${f.chips.map((c,i)=>`<button class="il-chip ${IL.garden.chip===c?'on':''}" onclick="ilGChip(${i})">${ilEsc(c)}</button>`).join('')}</div>
+      <div class="il-hint" id="ilGReply">${IL.garden.chip?'What a lovely idea! 💛':'Tap one if you like, or just keep it in your heart.'}</div>
+      <div class="il-row" style="margin-top:12px"><button class="il-btn green" onclick="ilGPlant()">🌱 Plant my feeling ${f.p}</button></div>
+      <button class="il-link" onclick="ilGBack()">⬅ Pick a different feeling</button>`;
+  }
+}
+function ilGFeel(id){IL.garden.sel=id;IL.garden.chip='';ilSfx('pop');ilGardenPanel();
+  const f=IL_FEELS.find(x=>x.id===id);if(f)ilSay(f.msg.replace(/[^\w\s!.,'’?-]/g,'').trim());}
+function ilGBack(){IL.garden.sel=null;IL.garden.chip='';ilSfx('tap');ilGardenPanel();}
+function ilGChip(i){
+  const f=IL_FEELS.find(x=>x.id===IL.garden.sel);if(!f)return;
+  IL.garden.chip=f.chips[i];ilSfx('pop');
+  ilGardenPanel();
+}
+function ilGPlant(){
+  const f=IL_FEELS.find(x=>x.id===IL.garden.sel);if(!f)return;
+  const g=ilLoad(IL_GARDEN_KEY,[]);
+  const from=g.length;
+  const pos=ilGardenPos(f.k,g);
+  g.push({p:f.p,k:f.k,x:pos[0],y:pos[1],f:f.id});
+  const real=g.filter(x=>!x.b).length;
+  if(real%4===0){const q=ilGardenPos('star',g);g.push({p:ilPick(['⭐','✨','💫']),k:'star',x:q[0],y:q[1],b:1});}
+  if(real%6===0){const q=ilGardenPos('tree',g);g.push({p:ilPick(['🌳','🌲','🌴']),k:'tree',x:q[0],y:q[1],b:1});}
+  while(g.length>70)g.shift();
+  ilStore(IL_GARDEN_KEY,g);
+  ilLogDone('Imagination Land: Feeling Garden','🎭');
+  const host=document.getElementById('ilGSceneHost');
+  if(host){host.innerHTML=ilGardenHTML(g,Math.max(0,from-(g.length>70?1:0)));ilFitScenes();}
+  const msgs=['Look at your garden grow! Your feelings are beautiful. 🌈','Your feelings made something lovely. Thank you for sharing them! 💛','Every feeling matters, and now it is growing in your garden. 🌱'];
+  IL.garden.sel=null;IL.garden.chip='';
+  ilGardenPanel();
+  ilCelebrate({emoji:f.p,title:`Your ${ilEsc(f.n)} feeling grew a ${f.p}!`,msg:ilPick(msgs),again:'garden',againLabel:'🌱 Plant another feeling',
+    card:`<div style="width:100%">${ilGardenHTML(g,-1,true)}</div>`});
+  setTimeout(ilFitScenes,30);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   🎁 MY MAGIC COLLECTION  (everything the child has made)
+════════════════════════════════════════════════════════════════ */
+const IL_TYPE_LABEL={creature:'🦄 Creature',world:'🏰 World',story:'📖 Story',potion:'🧪 Potion'};
+function ilCollection(){
+  const list=ilCreations().slice().reverse();
+  const garden=ilLoad(IL_GARDEN_KEY,[]);
+  const art=(typeof gallery!=='undefined'&&Array.isArray(gallery))?gallery.map((g,i)=>({g,i})).reverse():[];
+  let cards='';
+  if(garden.length)cards+=`<button class="il-coll" onclick="ilOpen('garden')"><div class="th" style="display:block">${ilGardenHTML(garden,-1,true)}</div><div class="t">My Feeling Garden</div><div class="k">🎭 Garden</div></button>`;
+  list.forEach(c=>{
+    let th='';const d=c.data||{};
+    if(c.type==='creature')th=ilCreatureSVG(d,110);
+    else if(c.type==='world')th=`<div style="width:100%">${ilSceneHTML({bg:d.bg,items:d.items||[],sel:-1,last:-1},'',true)}</div>`;
+    else if(c.type==='story')th=`<div style="font-size:2rem;letter-spacing:3px;line-height:1.3">${ilEsc(d.em||'📖')}</div>`;
+    else if(c.type==='potion')th=ilBottleSVG(d.color||'#a78bfa',70);
+    cards+=`<button class="il-coll" onclick="ilView('${c.id}')"><div class="th" ${c.type==='world'?'style="display:block"':''}>${th}</div><div class="t">${ilEsc(c.title)}</div><div class="k">${IL_TYPE_LABEL[c.type]||''}</div></button>`;
+  });
+  art.forEach(a=>{
+    cards+=`<button class="il-coll" onclick="viewGalleryItem(${a.i})"><div class="th"><img class="il-thumbimg" src="${a.g.data}" alt="Drawing"></div><div class="t">My Drawing</div><div class="k">🎨 Drawing</div></button>`;
+  });
+  ilSet(`${ilTop('🎁 My Magic Collection')}
+    ${cards?`<div class="il-hint il-center" style="margin-bottom:12px">Look at all the special things YOU made! 🌟</div><div class="il-grid">${cards}</div>`
+      :`<div class="il-panel il-center"><div style="font-size:4rem">🎁</div><div style="font-size:1.2rem;font-weight:800;margin:6px 0">Your collection is waiting!</div><div class="il-hint">Everything you make in Imagination Land will live here.</div><div class="il-row" style="margin-top:12px"><button class="il-btn go" onclick="renderCreativeZone()">🌈 Go and make something!</button></div></div>`}`);
+}
+function ilView(id){
+  const c=ilCreations().find(x=>x.id===id);if(!c)return;
+  const d=c.data||{};let body='';
+  if(c.type==='creature')body=`<div class="il-stage">${ilCreatureSVG(d,230)}</div><div style="font-size:1.4rem;font-weight:800">${ilEsc(c.title)}</div><div style="font-weight:700;font-size:1.02rem;line-height:1.3">${ilEsc(d.pe||'🌟')} ${ilEsc(d.power||'')}</div>`;
+  else if(c.type==='world')body=`<div style="width:100%">${ilSceneHTML({bg:d.bg,items:d.items||[],sel:-1,last:-1},'',true)}</div><div style="font-size:1.35rem;font-weight:800">${ilEsc(c.title)}</div><button class="il-btn warm" style="width:100%" onclick="ilWorldContinue('${c.id}')">✏️ Keep building this world</button>`;
+  else if(c.type==='story')body=`<div class="il-book" style="width:100%;max-height:52vh;overflow-y:auto;margin:0"><div class="em">${ilEsc(d.em||'📖')}</div><h3>${ilEsc(d.title||c.title)}</h3>${(d.paras||[]).map(p=>`<p>${ilEsc(p)}</p>`).join('')}<p class="moral">💛 ${ilEsc(d.moral||'')}</p></div><button class="il-btn alt" style="width:100%" onclick="ilSpeak(${JSON.stringify((d.title||'')+'. '+(d.paras||[]).join(' ')).replace(/"/g,'&quot;')})">🔊 Read it to me</button>`;
+  else if(c.type==='potion')body=`${ilBottleSVG(d.color||'#a78bfa',110)}<div style="font-size:1.35rem;font-weight:800;line-height:1.2">${ilEsc(c.title)}</div><div style="font-weight:700;line-height:1.35">${ilEsc(d.fx||'')}</div><div style="font-size:.92rem;font-weight:800;color:#d6336c">${ilEsc(d.side||'')}</div>`;
+  const old=document.getElementById('ilViewOv');if(old)old.remove();
+  const ov=document.createElement('div');ov.id='ilViewOv';ov.className='il-ov';
+  ov.innerHTML=`<div class="il-celbox" style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:8px">${body}</div>
+    <button class="il-btn alt" style="width:100%" onclick="ilViewClose()">💛 Close</button>
+    <button class="il-link" id="ilDelBtn" onclick="ilViewDelete('${c.id}')">🎈 Let it fly away</button></div>`;
+  ov.addEventListener('click',e=>{if(e.target===ov)ilViewClose();});
+  document.body.appendChild(ov);ilFitScenes();setTimeout(ilFitScenes,30);ilSfx('tap');
+}
+function ilViewClose(){const o=document.getElementById('ilViewOv');if(o)o.remove();ilSfx('tap');}
+function ilViewDelete(id){
+  const b=document.getElementById('ilDelBtn');if(!b)return;
+  if(!b.dataset.ask){b.dataset.ask='1';b.textContent='Really? It will float away forever 🥺 Tap again';return;}
+  const list=ilCreations().filter(x=>x.id!==id);ilStore(IL_KEY,list);
+  ilViewClose();ilCollection();
+}
+function ilWorldContinue(id){
+  const c=ilCreations().find(x=>x.id===id);if(!c)return;
+  ilStore(IL_WORLD_DRAFT,{bg:c.data.bg,items:c.data.items,name:c.title});
+  ilViewClose();ilWorldStart();
+}
+
+
 // ══════════════════════════════════════
 //  CREATIVE ZONE (#7)
 // ══════════════════════════════════════
@@ -9220,7 +10239,7 @@ let isDrawing=false,drawCanvas,drawCtx;
 //  CREATIVE ZONE  — Professional Rebuild
 // ══════════════════════════════════════════════════════
 // State
-if(typeof czBrushType==='undefined')   var czBrushType='marker';
+if(typeof czBrushType==='undefined')   var czBrushType='crayon';
 if(typeof czBgIdx==='undefined')       var czBgIdx=0;
 if(typeof czUndoStack==='undefined')   var czUndoStack=[];
 if(typeof czRedoStack==='undefined')   var czRedoStack=[];
@@ -9236,9 +10255,10 @@ const CZ_COLORS=[
 const CZ_BRUSHES=[
   {id:'pencil', icon:'✏️', label:'Pencil',  preview:'thin line',      tip:'Thin & sharp'},
   {id:'marker', icon:'🖊️', label:'Marker',  preview:'thick stroke',   tip:'Smooth & bold'},
-  {id:'chalk',  icon:'🖍️', label:'Chalk',   preview:'rough stroke',   tip:'Soft & rough'},
+  {id:'crayon', icon:'🖍️', label:'Crayon',  preview:'waxy stroke',    tip:'Waxy & colourful'},
   {id:'spray',  icon:'💨', label:'Spray',   preview:'dotted cloud',   tip:'Scattered dots'},
   {id:'rainbow',icon:'🌈', label:'Rainbow', preview:'colour shift',   tip:'Shifts colour!'},
+  {id:'sparkle',icon:'✨', label:'Sparkle', preview:'star trail',     tip:'Leaves sparkles!'},
   {id:'eraser', icon:'🧹', label:'Eraser',  preview:'white stroke',   tip:'Rub out'},
 ];
 const CZ_SIZES=[
@@ -9256,6 +10276,7 @@ const CZ_SHAPES=[
   {id:'arrow',   icon:'➡️',label:'Arrow'},
 ];
 const CZ_STICKER_CATS={
+  '🦄':['🦄','🧚','🧜‍♀️','🐉','🏰','👑','🪄','🔮','🌈','💖','🦋','🧙','🎠','🧞','✨'],
   '🐾':['🐱','🐶','🦊','🐸','🦁','🐯','🐘','🦋','🐝','🐬','🦄','🐧','🦕','🐙','🐠'],
   '🌸':['🌸','🌻','🌈','⭐','🌙','☀️','🌊','🌲','🌵','🍀','❄️','🌺','🍁','🌿','💫'],
   '🍕':['🍕','🍦','🎂','🍩','🍭','🍓','🍉','🍌','🍇','🍫','🧁','🍒','🥝','🍋','🍪'],
@@ -9291,7 +10312,7 @@ const CZ_BGS=[
   {label:'🫧 Bubbles',   bg:'radial-gradient(circle at 20% 30%,rgba(167,139,250,.3) 0%,transparent 30%),radial-gradient(circle at 80% 60%,rgba(96,165,250,.3) 0%,transparent 25%),radial-gradient(circle at 50% 80%,rgba(244,114,182,.25) 0%,transparent 28%),#fff8ff'},
   {label:'🎨 Tie-Dye',   bg:'conic-gradient(from 0deg at 50% 50%,#ff6b9d,#ffb830,#56cf81,#4fa3e0,#a78bfa,#ff6b9d)'},
 ];
-const MASCOT_TIPS=['🎨 Pick a colour!','✏️ Try a brush!','🌈 Spray paint!','⭐ Stamp a sticker!','❤️ Draw a heart!','🦄 Try rainbow!','💾 Save your art!','😊 Keep drawing!'];
+const MASCOT_TIPS=['🎨 Pick a colour!','🖍️ Try the crayon!','✨ Try the sparkle brush!','⭐ Stamp a sticker!','❤️ Stamp a heart!','🦄 Try rainbow!','💾 Save your art!','😊 Draw anything you like!'];
 
 // ── Helpers ──────────────────────────────────────────
 function czCard(title,icon,content,accent='#a78bfa'){
@@ -9305,7 +10326,9 @@ function czCard(title,icon,content,accent='#a78bfa'){
 }
 
 // ── Main Render ───────────────────────────────────────
-function renderCreativeZone(){
+function czRenderDrawStudio(){
+  ilInjectStyle();
+  { const _qf=document.getElementById('qcFab'); if(_qf)_qf.style.display='flex'; }
   const activeCat=window.czActiveStickerCat||Object.keys(CZ_STICKER_CATS)[0];
   const catKeys=Object.keys(CZ_STICKER_CATS);
   const activeBgCat=window.czActiveBgCat||'all';
@@ -9404,7 +10427,7 @@ function renderCreativeZone(){
 
           <!-- SHAPES divider -->
           <div style="width:80%;height:1.5px;background:linear-gradient(90deg,transparent,rgba(13,148,136,.4),transparent);flex-shrink:0;margin:3px 0"></div>
-          <div style="font-family:'Baloo 2',cursive;font-size:.52rem;font-weight:900;color:#0d9488;letter-spacing:.4px;flex-shrink:0">SHAPES</div>
+          <div style="font-family:'Baloo 2',cursive;font-size:.52rem;font-weight:900;color:#0d9488;letter-spacing:.4px;flex-shrink:0">STAMPS</div>
           <div style="display:flex;flex-direction:column;align-items:center;gap:4px;width:100%">
             ${CZ_SHAPES.map(sh=>`
               <div class="cz-tool-btn cz-shape-btn" onclick="czSetShape('${sh.id}')" data-czshape="${sh.id}" title="${sh.label}"
@@ -9436,6 +10459,8 @@ function renderCreativeZone(){
       <div style="flex:1;display:flex;flex-direction:column;min-width:0;position:relative">
         <!-- Canvas action buttons row (top of canvas) -->
         <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;padding:6px 10px 4px;flex-shrink:0;background:transparent">
+          <button onclick="renderCreativeZone()" title="Back to Imagination Land"
+            style="margin-right:auto;display:flex;align-items:center;gap:4px;padding:8px 14px;min-height:40px;border:none;border-radius:20px;background:linear-gradient(135deg,#ff6b9d,#a78bfa);cursor:pointer;box-shadow:0 3px 10px rgba(167,139,250,.45);font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:900;color:#fff">🌈 Back</button>
           <button onclick="czDeselectSticker()" id="czDeselectBtn" title="Back to Draw"
             style="display:${drawSticker?'flex':'none'};align-items:center;gap:4px;padding:6px 12px;border:none;border-radius:20px;
                    background:linear-gradient(135deg,#a78bfa,#7c3aed);cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(124,58,237,.35);
@@ -9587,11 +10612,6 @@ function renderCreativeZone(){
               ${s}
             </div>`).join('')}
         </div>
-        <!-- Stars -->
-        <div style="display:flex;align-items:center;justify-content:center;gap:4px;padding:6px 5px;border-top:1px solid rgba(255,107,157,.1)">
-          <span style="font-size:1.2rem">⭐</span>
-          <span id="czStarCount" style="font-family:'Baloo 2',cursive;font-size:.72rem;font-weight:900;color:#ffb830">${window.czStars||0}</span>
-        </div>
       </div>
 
     </div>
@@ -9623,7 +10643,8 @@ function renderCreativeZone(){
     czApplyBg();
   }
   requestAnimationFrame(()=>{requestAnimationFrame(sizeCanvas);});
-  window.addEventListener('resize',()=>{if(tab==='create'&&drawCanvas)sizeCanvas();});
+  window._czSizeFn=sizeCanvas;
+  if(!window._czResizeBound){window._czResizeBound=true;window.addEventListener('resize',()=>{if(tab==='create'&&drawCanvas&&window._czSizeFn&&document.getElementById('czWrap'))window._czSizeFn();});}
 
   // ── Drag-to-resize canvas ──────────────────────────
   (function(){
@@ -9682,6 +10703,10 @@ function renderCreativeZone(){
   // Show mascot tip after 1s
   setTimeout(()=>{const b=document.getElementById('czTipBubble');if(b)b.style.opacity='1';},1000);
   setTimeout(()=>{const b=document.getElementById('czTipBubble');if(b)b.style.opacity='0';},4000);
+  // Come back to an unsaved drawing exactly as it was left
+  if(window._czKeepImg){const _src=window._czKeepImg;window._czKeepImg=null;
+    setTimeout(()=>{if(!drawCanvas||!drawCtx)return;const im=new Image();
+      im.onload=()=>{try{const k=window.devicePixelRatio||1;drawCtx.drawImage(im,0,0,drawCanvas.width/k,drawCanvas.height/k);}catch(e){}};im.src=_src;},260);}
 }
 
 // ── Actions ──────────────────────────────────────────
@@ -10001,7 +11026,7 @@ function czConfirmClear(){
           onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform=''">
           ❌ Keep it!
         </button>
-        <button onclick="this.closest('div[style*=fixed]').remove();czClear();renderCreativeZone()"
+        <button onclick="this.closest('div[style*=fixed]').remove();czClear();czRenderDrawStudio()"
           style="flex:1;padding:12px;border:none;border-radius:16px;background:linear-gradient(135deg,#ff2d55,#ff6b6b);color:#fff;font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(255,45,85,.35)"
           onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform=''">
           🗑️ Yes, clear!
@@ -10012,6 +11037,7 @@ function czConfirmClear(){
   overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove();});
 }
 function czClear(){
+  window._czKeepImg=null;
   czSaveUndo();
   if(drawCtx){const w=drawCanvas.width/window.devicePixelRatio,h=drawCanvas.height/window.devicePixelRatio;drawCtx.clearRect(0,0,w,h);}
 }
@@ -10020,24 +11046,13 @@ function czSave(){
   const btn=document.getElementById('czSaveBtn');
   if(btn){btn.style.background='linear-gradient(135deg,#ffb830,#ff6b9d)';}
   try{
-    saveToGallery();burst();playCorrect();
-    // Award stars (suggestion 10: reward system)
-    if(!window.czStars)window.czStars=0;
-    window.czStars+=3;
-    const sc=document.getElementById('czStarCount');
-    if(sc){sc.textContent=window.czStars;sc.style.animation='czBounce .4s';}
-    // Check for badges
-    if(!window.czBadges)window.czBadges=[];
-    if(window.czStars>=3&&!window.czBadges.includes('first_save')){
-      window.czBadges.push('first_save');
-      setTimeout(()=>czShowBadge('🎨','First Masterpiece!','You saved your first drawing!'),800);
-    }
-    if(window.czStars>=15&&!window.czBadges.includes('artist')){
-      window.czBadges.push('artist');
-      setTimeout(()=>czShowBadge('🌟','Super Artist!','You earned 15 stars!'),800);
-    }
-    mascotSay('Amazing art! ⭐+3 stars!');
-    setTimeout(()=>czMascotCelebrate('Saved! 💾 +3 ⭐'),400);
+    saveToGallery();
+    ilLogDone('Imagination Land: Free Draw & Stickers','🎨');
+    const layer=document.getElementById('czBgLayer');
+    const bg=layer?`background:${layer.style.background};background-color:${layer.style.backgroundColor};background-size:${layer.style.backgroundSize||'cover'}`:'';
+    let img='';try{img=drawCanvas.toDataURL('image/png');}catch(e){}
+    ilCelebrate({emoji:'🎨',title:'What a masterpiece!',againLabel:'🎨 Keep drawing',
+      card:img?`<div style='width:100%;border-radius:16px;overflow:hidden;${bg}'><img src="${img}" alt="Your drawing" style="width:100%;display:block"></div>`:''});
   }catch(e){}
   setTimeout(()=>{if(btn){btn.style.background='linear-gradient(135deg,#4ade80,#22c55e)';}},1000);
 }
@@ -10115,8 +11130,11 @@ function czStartDraw(e){
       drawCtx.font=`${Math.max(drawSize*2.5,24)}px serif`;
       drawCtx.fillText(drawSticker,x-drawSize,y+drawSize);
     }
+    czSparkleBurst(x,y);
     isDrawing=false;return;
   }
+  window._czAcc=0;window._czLX=x;window._czLY=y;
+  if(czBrushType==='sparkle')czDrawSparkle(x,y);
   if(czBrushType==='spray'){czSprayInterval=setInterval(()=>czSprayDot(x,y),25);return;}
   drawCtx.beginPath();drawCtx.moveTo(x,y);
 }
@@ -10124,6 +11142,23 @@ function czDoDraw(e){
   if(!isDrawing||drawSticker)return;
   const{x,y}=czGetPos(e);
   if(czBrushType==='spray'){if(czSprayInterval)clearInterval(czSprayInterval);czSprayInterval=setInterval(()=>czSprayDot(x,y),25);return;}
+  if(czBrushType==='crayon'){
+    drawCtx.strokeStyle=drawColor;drawCtx.lineWidth=Math.max(4,drawSize*1.3);drawCtx.globalAlpha=.9;
+    drawCtx.lineTo(x,y);drawCtx.stroke();drawCtx.globalAlpha=1;
+    // paper-grain: tiny gaps make it look waxy
+    drawCtx.save();drawCtx.globalCompositeOperation='destination-out';
+    for(let i=0;i<6;i++){drawCtx.globalAlpha=.25+Math.random()*.25;const a=Math.random()*6.283,rr=Math.random()*drawSize*.8;drawCtx.fillRect(x+Math.cos(a)*rr,y+Math.sin(a)*rr,1.6,1.6);}
+    drawCtx.restore();
+    return;
+  }
+  if(czBrushType==='sparkle'){
+    window._czAcc=(window._czAcc||0)+Math.hypot(x-(window._czLX==null?x:window._czLX),y-(window._czLY==null?y:window._czLY));
+    window._czLX=x;window._czLY=y;
+    drawCtx.strokeStyle=drawColor;drawCtx.lineWidth=Math.max(2,drawSize*.5);drawCtx.globalAlpha=.55;
+    drawCtx.lineTo(x,y);drawCtx.stroke();drawCtx.globalAlpha=1;
+    if(window._czAcc>14){window._czAcc=0;czDrawSparkle(x+(Math.random()-.5)*drawSize*2,y+(Math.random()-.5)*drawSize*2);drawCtx.beginPath();drawCtx.moveTo(x,y);}
+    return;
+  }
   const isErase=czBrushType==='eraser';
   drawCtx.strokeStyle=isErase?'#fff':czGetBrushColor();
   drawCtx.lineWidth=isErase?drawSize*2.5:czGetBrushWidth();
@@ -10148,6 +11183,28 @@ function czSprayDot(x,y){
   if(!drawCtx)return;const spread=drawSize*3;
   drawCtx.fillStyle=czGetBrushColor();
   for(let i=0;i<14;i++){const a=Math.random()*Math.PI*2,r=Math.random()*spread;drawCtx.fillRect(x+Math.cos(a)*r,y+Math.sin(a)*r,1.5,1.5);}
+}
+// ✨ sparkle helpers (magic stars on the canvas + a little burst when you stamp)
+function czDrawSparkle(x,y){
+  if(!drawCtx)return;
+  const r=Math.max(5,drawSize*.9+Math.random()*5);
+  drawCtx.save();
+  drawCtx.fillStyle=['#fff6a8','#ffffff',drawColor,'#ffd1f0'][Math.floor(Math.random()*4)];
+  drawCtx.shadowColor=drawColor;drawCtx.shadowBlur=8;
+  drawCtx.beginPath();
+  for(let i=0;i<8;i++){const a=i*Math.PI/4,rr=(i%2===0)?r:r*.3,px=x+Math.cos(a)*rr,py=y+Math.sin(a)*rr;if(i)drawCtx.lineTo(px,py);else drawCtx.moveTo(px,py);}
+  drawCtx.closePath();drawCtx.fill();drawCtx.restore();
+}
+function czSparkleBurst(x,y){
+  const w=document.getElementById('czWrap');if(!w)return;
+  for(let i=0;i<7;i++){
+    const el=document.createElement('div');el.textContent=['✨','⭐','💫','🌟'][i%4];
+    el.style.cssText=`position:absolute;left:${x}px;top:${y}px;font-size:${14+Math.random()*12}px;pointer-events:none;z-index:4;transition:transform .7s ease-out,opacity .7s;opacity:1;transform:translate(-50%,-50%)`;
+    w.appendChild(el);
+    const a=Math.random()*Math.PI*2,d=30+Math.random()*40;
+    requestAnimationFrame(()=>{el.style.transform=`translate(calc(-50% + ${Math.cos(a)*d}px),calc(-50% + ${Math.sin(a)*d}px)) scale(.4) rotate(${Math.random()*180}deg)`;el.style.opacity='0';});
+    setTimeout(()=>el.remove(),800);
+  }
 }
 function czDrawShape(id,x,y){
   if(!drawCtx)return;
@@ -12022,7 +13079,7 @@ const SECTION_META={
   learning:{name:'Learning Time',   sub:'Maths, ABC, Science & more',       icon:'📚',bn:'bn_learning'},
   games:   {name:'Fun Games',       sub:'Letters, shapes, maths & brain teasers',icon:'🎮',bn:'bn_games'},
   evening: {name:'Evening Wind Down',sub:'Calm time & getting ready for sleep',icon:'🌿',bn:'bn_evening'},
-  create:  {name:'Create & Draw',   sub:'Art, music, stickers & more',      icon:'🎨',bn:'bn_create'},
+  create:  {name:'Imagination Land',sub:'Create, imagine & make it yours!', icon:'🌈',bn:'bn_create'},
   stories: {name:'Story Time',      sub:'Read amazing adventure stories',    icon:'📖',bn:'bn_stories'},
   body:    {name:'Body Explorer',   sub:'Learn one body part today — one a day!', icon:'🫀',bn:'bn_body'},
   hearts:  {name:'Hearts & Feelings',sub:'Understand your emotions',         icon:'❤️',bn:'bn_hearts'},
@@ -13185,6 +14242,7 @@ function startQuickCreate(prompt){
   qcOpen=false;
   document.getElementById('qcPopup').classList.remove('show');
   switchTab('create');
+  ilOpen('draw');
   setTimeout(()=>mascotSay(prompt,4000),600);
 }
 // Close popup when clicking elsewhere
@@ -14946,13 +16004,10 @@ function deleteGalleryItem(idx){
 function editGalleryItem(idx){
   if(!gallery[idx])return;
   const imgData=gallery[idx].data;
-  // Switch to create tab if not already there
-  if(tab!=='create'){
-    switchTab('create');
-    setTimeout(()=>loadImageIntoCanvas(imgData),600);
-  } else {
-    loadImageIntoCanvas(imgData);
-  }
+  // Open the drawing studio (Imagination Land → Draw & Sticker Fun), then load the picture
+  if(tab!=='create')switchTab('create');
+  ilOpen('draw');
+  setTimeout(()=>loadImageIntoCanvas(imgData),700);
   showToast('✏️ Drawing loaded — edit away!');
   mascotSay('Edit your drawing! 🎨');
 }
