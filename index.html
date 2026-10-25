@@ -4586,7 +4586,6 @@ const GAMES = window.GAMES = [
 {id:'ilWorld',    week:1, emoji:'🏰', title:'Build My World!',      desc:'Drag castles, trees & rainbows to build a fantasy world!',    cat:'creative'},
 {id:'ilStory',    week:1, emoji:'📖', title:'Story Maker!',         desc:'Pick a hero, a place and an adventure — get your own story!', cat:'creative'},
 {id:'ilPotion',   week:1, emoji:'🧪', title:'Magic Potion Lab!',    desc:'Mix magic ingredients and see what funny potion you make!',   cat:'creative'},
-{id:'ilGarden',   week:1, emoji:'🌷', title:'Feeling Garden!',      desc:'Say how you feel today and grow a magical garden!',           cat:'creative'},
 {id:'ilDraw',     week:1, emoji:'🖍️', title:'Draw & Sticker Fun!',  desc:'Crayons, sparkles, magic stickers and stamps!',               cat:'creative'},
 {id:'colourMix',   week:2, emoji:'🎨', title:'Colour Mixing Lab',        desc:'Mix two colours and discover what new colour you make!',         cat:'creative'},
   {id:'drawEmoji',   week:1, emoji:'✏️', title:'Draw the Emoji!',          desc:'Follow the steps to draw a cute emoji face step by step!',        cat:'creative'},
@@ -4596,7 +4595,6 @@ const GAMES = window.GAMES = [
   {id:'emotionFaces', week:1,emoji:'🎭',title:'Emotion Faces!',             desc:'Tap a feeling and learn how to draw that face!',                   cat:'creative'},
   {id:'rainbowOrder', week:1,emoji:'🌈',title:'Design a Rainbow!',          desc:'Put the rainbow colours in the right order!',                      cat:'creative'},
   {id:'makePattern',  week:1,emoji:'🎪',title:'Make a Pattern!',            desc:'Stamp shapes to build a repeating pattern!',                       cat:'creative'},
-  {id:'colourByNum',  week:2,emoji:'🖍️',title:'Colour by Number!',          desc:'Tap each zone to fill in the hidden picture!',                     cat:'creative'},
   {id:'miniStory',    week:2,emoji:'🎬',title:'My Mini Story!',             desc:'Choose a character, place and plot to build your own comic strip!', cat:'creative'},
   {id:'shapeTap',  week:1, emoji:'🔺', title:'Tap the Right Shape!',    desc:'Listen to the shape name and tap the correct one!',  cat:'shapes'},
   {id:'memoryFlip',week:1, emoji:'🧠', title:'Memory Flip Cards!',      desc:'Flip cards to find matching pairs!',                 cat:'brain'},
@@ -7271,7 +7269,7 @@ function renderGame(g){
   if(window._hintTimer)clearTimeout(window._hintTimer);
   window._currentHint=null;
   const fns={numMatch:buildNumMatch,wordBuild:buildWordBuild,countGame:buildCountGame,
-    colourMix:buildColourMix,drawEmoji:buildDrawEmoji,buildScene:buildBuildScene,makeMusic:buildMakeMusic,storyStarter:buildStoryStarter,emotionFaces:buildEmotionFaces,rainbowOrder:buildRainbowOrder,makePattern:buildMakePattern,colourByNum:buildColourByNum,miniStory:buildMiniStory,shapeTap:buildShapeTap,memoryFlip:buildMemoryFlip,
+    colourMix:buildColourMix,drawEmoji:buildDrawEmoji,buildScene:buildBuildScene,makeMusic:buildMakeMusic,storyStarter:buildStoryStarter,emotionFaces:buildEmotionFaces,rainbowOrder:buildRainbowOrder,makePattern:buildMakePattern,miniStory:buildMiniStory,shapeTap:buildShapeTap,memoryFlip:buildMemoryFlip,
     findLetter:buildFindLetter,animalSound:buildAnimalSound,phonicsMatch:buildPhonicsMatch,abcOrder:buildAbcOrder,letterPic:buildLetterPic,upperLower:buildUpperLower,firstLetter:buildFirstLetter,singAbc:buildSingAbc,spotLetter:buildSpotLetter,whichNext:buildWhichNext,vowelCon:buildVowelCon,
     daysOrder:buildDaysOrder,clockGame:buildClockGame,monthsOrder:buildMonthsOrder,amPmGame:buildAmPmGame,seasonsGame:buildSeasonsGame,yttGame:buildYttGame,simonSays:buildSimonSays,
     whatsMissing:buildWhatsMissing,colourPattern:buildColourPattern,numberMemory:buildNumberMemory,
@@ -9220,13 +9218,12 @@ function markDone(){
 // ══════════════════════════════════════════════════════════════════
 //  🌈 IMAGINATION LAND — Creative Studio for a 6-year-old
 //  Six open-ended activities · no scores · no timers · no wrong answers
-//  Lives in  Fun Games ▸ Creative  (GAMES ids ilCreature, ilWorld, ilStory, ilPotion, ilGarden, ilDraw)
+//  Lives in  Fun Games ▸ Creative  (GAMES ids ilCreature, ilWorld, ilStory, ilPotion, ilDraw)
 //  The Create tab keeps the original drawing studio (renderCreativeZone → czRenderDrawStudio)
 // ══════════════════════════════════════════════════════════════════
 const IL_KEY='c_il_creations';
-const IL_GARDEN_KEY='c_il_garden';
 const IL_WORLD_DRAFT='c_il_world_draft';
-let IL={creature:null,world:null,story:null,potion:null,garden:null,sel:null};
+let IL={creature:null,world:null,story:null,potion:null,sel:null};
 let ilUid=0;
 
 /* ── tiny helpers ─────────────────────────────────────────────── */
@@ -9407,15 +9404,6 @@ body.bedtime .il-cel-msg{color:#ff9ec4}
 .il-coll .t{font-size:.92rem;font-weight:800;line-height:1.1;text-align:center;word-break:break-word}
 .il-coll .k{font-size:.72rem;font-weight:700;color:var(--text3)}
 .il-coll .th{width:100%;display:flex;justify-content:center;align-items:center;min-height:100px;overflow:hidden;border-radius:14px}
-.il-feel{border:3px solid transparent;border-radius:22px;background:var(--inputbg);cursor:pointer;font-family:inherit;color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:92px;padding:8px 4px;transition:transform .12s}
-.il-feel:active{transform:scale(.9)}
-.il-feel .e{font-size:2.6rem;line-height:1.1}
-.il-feel .n{font-size:.88rem;font-weight:800}
-.il-feel.on{border-color:#52b788;background:rgba(82,183,136,.18);transform:scale(1.06)}
-.il-gdeco{position:absolute;pointer-events:none;line-height:1}
-.il-gp{position:absolute;line-height:1;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.18))}
-.il-gp.newp{animation:ilGrow .9s both}
-.il-gp.sway{animation:ilWiggle 4s ease-in-out infinite;transform-origin:50% 100%}
 .il-scene.il-mini{touch-action:auto}
 .il-thumbimg{width:100%;aspect-ratio:5/4;object-fit:contain;border-radius:12px;background:repeating-conic-gradient(#f4eefc 0 25%,#fff 0 50%) 0 0/16px 16px}
 @media(max-width:360px){.il-hub{gap:10px}.il-card{min-height:140px}.il-card .ic{font-size:3.1rem}}
@@ -9487,7 +9475,7 @@ function ilCelDone(kind){
 }
 
 /* ── Fun-Games plumbing ───────────────────────────────────────── */
-const IL_GAME_IDS={ilCreature:'creature',ilWorld:'world',ilStory:'story',ilPotion:'potion',ilGarden:'garden',ilDraw:'draw'};
+const IL_GAME_IDS={ilCreature:'creature',ilWorld:'world',ilStory:'story',ilPotion:'potion',ilDraw:'draw'};
 function ilInGames(){return typeof tab!=='undefined'&&tab==='games';}
 // Create tab = the original drawing studio (now with crayons, sparkles, magic stickers & stamps)
 function renderCreativeZone(){ilInjectStyle();czRenderDrawStudio();}
@@ -9507,7 +9495,7 @@ function ilOpen(id){
   ilInjectStyle();ilSfx('tap');
   const qf=document.getElementById('qcFab');if(qf)qf.style.display=(id==='draw')?'flex':'none';
   try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){}
-  const map={creature:ilCreatureStart,world:ilWorldStart,story:ilStoryStart,potion:ilPotionStart,garden:ilGardenStart,draw:ilDrawStart,collection:ilCollection};
+  const map={creature:ilCreatureStart,world:ilWorldStart,story:ilStoryStart,potion:ilPotionStart,draw:ilDrawStart,collection:ilCollection};
   if(map[id])map[id]();
 }
 function ilLeaveDraw(){
@@ -10077,108 +10065,13 @@ function ilPotionReveal(){
 }
 
 /* ════════════════════════════════════════════════════════════════
-   🎭 5 · FEELING GARDEN
-════════════════════════════════════════════════════════════════ */
-const IL_FEELS=[
-  {id:'happy',e:'😄',n:'Happy',p:'🌻',k:'flower',msg:'Happy feelings grow tall, sunny sunflowers! 🌻',ask:'What made you smile today?',chips:['🎈 Playing','👨‍👩‍👧 My family','🍦 A yummy treat','🐶 A cuddly pet']},
-  {id:'excited',e:'🤩',n:'Excited',p:'🌟',k:'star',msg:'Excited feelings zoom up into the sky and become shining stars! 🌟',ask:'What are you looking forward to?',chips:['🎂 A party','🚗 A trip','🎁 A surprise','🎮 Playing']},
-  {id:'loved',e:'🥰',n:'Loved',p:'🌸',k:'flower',msg:'Feeling loved grows soft, pink blossoms. You are so, so loved! 💖',ask:'Who makes you feel loved?',chips:['👩 Mummy','👨 Daddy','👵 My family','🐶 A pet']},
-  {id:'proud',e:'😎',n:'Proud',p:'🌳',k:'tree',msg:'Proud feelings grow into big, strong trees. You should feel proud! 🌳',ask:'What are you proud of?',chips:['🧩 Learning something','🤝 Helping someone','🎨 Making something','💪 Trying hard']},
-  {id:'calm',e:'😌',n:'Calm',p:'🍀',k:'flower',msg:'Calm feelings grow peaceful little clovers. Ahh, so cosy. 🍀',ask:'Where do you feel calm?',chips:['🛏️ In my bed','🌳 Outside','🎵 With music','🤗 With a hug']},
-  {id:'silly',e:'🤪',n:'Silly',p:'🌺',k:'flower',msg:'Silly feelings grow giggly, colourful flowers! Hehe! 🌺',ask:'What is the silliest thing you can think of?',chips:['🐸 Funny faces','🕺 Dancing','😂 Jokes','🦄 Pretending']},
-  {id:'sad',e:'😢',n:'Sad',p:'💐',k:'flower',msg:'It is okay to feel sad. Every feeling is welcome here. Your feeling grew a gentle bouquet. 💙',ask:'What would help your heart feel cosy?',chips:['🤗 A hug','🧸 My toy','🎵 A song','💬 Talking']},
-  {id:'angry',e:'😠',n:'Angry',p:'🌹',k:'flower',msg:'Angry feelings are strong, and strong feelings grow red roses. It is okay to feel cross. Big breaths help roses bloom! 🌬️',ask:'What helps you feel calm when you are cross?',chips:['🌬️ Big breaths','🏃 Running around','🎨 Drawing it out','🤗 A hug']},
-  {id:'scared',e:'😨',n:'Scared',p:'🌼',k:'flower',msg:'Everyone feels scared sometimes, even superheroes! Brave little daisies grow when we feel scared. 🌼',ask:'What helps you feel safe?',chips:['🤗 A hug','💡 A night-light','🗣️ Telling someone','🧸 My toy']},
-  {id:'worried',e:'😟',n:'Worried',p:'🌿',k:'flower',msg:'Worried feelings grow soft green leaves. Talking about a worry makes it feel smaller. 🌿',ask:'Who could you tell about it?',chips:['👩 Mummy','👨 Daddy','🧑‍🏫 My teacher','🧸 My toy friend']},
-  {id:'tired',e:'😴',n:'Tired',p:'🌷',k:'flower',msg:'Tired feelings grow sleepy tulips. Your body needs a little rest, and that is okay! 🌷',ask:'What helps you feel rested?',chips:['😴 A cuddle nap','📖 A story','🥛 A cosy drink','🛁 A warm bath']},
-  {id:'lonely',e:'🥺',n:'Lonely',p:'💫',k:'star',msg:'Lonely feelings turn into friendly stars that keep you company. You are not alone. You are loved! 💛',ask:'Who would you love to play with?',chips:['👭 A friend','👨‍👩‍👧 My family','🐶 A pet','🧸 My toy friends']}
-];
-function ilGardenStart(){IL.garden={sel:null,chip:''};ilGardenRender();}
-function ilGardenHTML(items,fromIdx,mini){
-  const fs={flower:.11,tree:.2,star:.085};
-  const bf=items.length>=5?`<span class="il-gdeco" style="left:18%;top:46%;font-size:calc(var(--w)*.06);animation:ilFloat 3.6s ease-in-out infinite">🦋</span><span class="il-gdeco" style="left:72%;top:38%;font-size:calc(var(--w)*.05);animation:ilFloat 4.2s ease-in-out infinite .8s">🐝</span>`:'';
-  return `<div class="il-scene ${mini?'il-mini':''}" ${mini?'':'id="ilGScene2"'} style="background:linear-gradient(180deg,#8fd3ff 0%,#d8f2ff 60%,#f0fbff 100%)">
-    <span class="il-gdeco" style="left:4%;top:3%;font-size:calc(var(--w)*.12)">☀️</span>
-    <span class="il-gdeco" style="left:58%;top:5%;font-size:calc(var(--w)*.14);opacity:.9">☁️</span>
-    <div class="il-ground" style="background:linear-gradient(180deg,#8be28b,#4fb866);height:46%"></div>${bf}
-    ${items.map((it,i)=>`<div class="il-gp ${(fromIdx>=0&&i>=fromIdx)?'newp':''}" style="left:${it.x.toFixed(1)}%;top:${it.y.toFixed(1)}%;font-size:calc(var(--w)*${fs[it.k]||.1});transform:translate(-50%,-50%);z-index:${Math.round(it.y)}"><span style="display:inline-block;transform-origin:50% 100%;${mini?'':`animation:ilWiggle ${(3.2+(i%5)*.6).toFixed(1)}s ease-in-out infinite`}">${it.p}</span></div>`).join('')}
-  </div>`;
-}
-function ilGardenPos(kind,items){
-  const R={flower:[8,92,62,92],tree:[10,90,56,78],star:[6,94,7,34]}[kind]||[8,92,62,92];
-  let best=null,bd=-1;
-  for(let t=0;t<14;t++){
-    const x=R[0]+Math.random()*(R[1]-R[0]),y=R[2]+Math.random()*(R[3]-R[2]);
-    let md=999;items.forEach(o=>{md=Math.min(md,Math.hypot(o.x-x,(o.y-y)*1.25));});
-    if(md>bd){bd=md;best=[x,y];}
-  }
-  return best;
-}
-function ilGardenRender(){
-  const g=ilLoad(IL_GARDEN_KEY,[]);
-  ilSet(`${ilTop('🎭 Feeling Garden')}
-    <div id="ilGSceneHost">${ilGardenHTML(g,-1)}</div>
-    <div class="il-hint il-center" style="margin:8px 0 12px">${g.length?'Look at your garden! Every feeling made something beautiful. 🌈':'Your garden is waiting for its first feeling! 🌱'}</div>
-    <div class="il-panel il-center" id="ilGPanel"></div>`);
-  ilGardenPanel();
-}
-function ilGardenPanel(){
-  const el=document.getElementById('ilGPanel');if(!el)return;
-  const s=IL.garden.sel,f=s&&IL_FEELS.find(x=>x.id===s);
-  if(!f){
-    el.innerHTML=`<div style="font-size:1.25rem;font-weight:800;margin-bottom:10px">How do you feel today? 🌈</div>
-      <div class="il-opts" style="grid-template-columns:repeat(auto-fill,minmax(92px,1fr))">${IL_FEELS.map(x=>`<button class="il-feel" onclick="ilGFeel('${x.id}')"><span class="e">${x.e}</span><span class="n">${x.n}</span></button>`).join('')}</div>
-      <div class="il-hint" style="margin-top:10px">All feelings are welcome here. There are no wrong ones! 💛</div>`;
-  }else{
-    el.innerHTML=`<div style="font-size:3.6rem;line-height:1.1;animation:ilBounce 1.4s infinite">${f.e}</div>
-      <div style="font-size:1.15rem;font-weight:800;margin:6px 0 8px;line-height:1.3">${ilEsc(f.msg)}</div>
-      <div class="il-label" style="text-align:center;margin:12px 0 6px">${ilEsc(f.ask)}</div>
-      <div class="il-chips">${f.chips.map((c,i)=>`<button class="il-chip ${IL.garden.chip===c?'on':''}" onclick="ilGChip(${i})">${ilEsc(c)}</button>`).join('')}</div>
-      <div class="il-hint" id="ilGReply">${IL.garden.chip?'What a lovely idea! 💛':'Tap one if you like, or just keep it in your heart.'}</div>
-      <div class="il-row" style="margin-top:12px"><button class="il-btn green" onclick="ilGPlant()">🌱 Plant my feeling ${f.p}</button></div>
-      <button class="il-link" onclick="ilGBack()">⬅ Pick a different feeling</button>`;
-  }
-}
-function ilGFeel(id){IL.garden.sel=id;IL.garden.chip='';ilSfx('pop');ilGardenPanel();
-  const f=IL_FEELS.find(x=>x.id===id);if(f)ilSay(f.msg.replace(/[^\w\s!.,'’?-]/g,'').trim());}
-function ilGBack(){IL.garden.sel=null;IL.garden.chip='';ilSfx('tap');ilGardenPanel();}
-function ilGChip(i){
-  const f=IL_FEELS.find(x=>x.id===IL.garden.sel);if(!f)return;
-  IL.garden.chip=f.chips[i];ilSfx('pop');
-  ilGardenPanel();
-}
-function ilGPlant(){
-  const f=IL_FEELS.find(x=>x.id===IL.garden.sel);if(!f)return;
-  const g=ilLoad(IL_GARDEN_KEY,[]);
-  const from=g.length;
-  const pos=ilGardenPos(f.k,g);
-  g.push({p:f.p,k:f.k,x:pos[0],y:pos[1],f:f.id});
-  const real=g.filter(x=>!x.b).length;
-  if(real%4===0){const q=ilGardenPos('star',g);g.push({p:ilPick(['⭐','✨','💫']),k:'star',x:q[0],y:q[1],b:1});}
-  if(real%6===0){const q=ilGardenPos('tree',g);g.push({p:ilPick(['🌳','🌲','🌴']),k:'tree',x:q[0],y:q[1],b:1});}
-  while(g.length>70)g.shift();
-  ilStore(IL_GARDEN_KEY,g);
-  ilLogDone('Imagination Land: Feeling Garden','🎭');
-  const host=document.getElementById('ilGSceneHost');
-  if(host){host.innerHTML=ilGardenHTML(g,Math.max(0,from-(g.length>70?1:0)));ilFitScenes();}
-  const msgs=['Look at your garden grow! Your feelings are beautiful. 🌈','Your feelings made something lovely. Thank you for sharing them! 💛','Every feeling matters, and now it is growing in your garden. 🌱'];
-  IL.garden.sel=null;IL.garden.chip='';
-  ilGardenPanel();
-  ilCelebrate({emoji:f.p,title:`Your ${ilEsc(f.n)} feeling grew a ${f.p}!`,msg:ilPick(msgs),again:'garden',againLabel:'🌱 Plant another feeling',
-    card:`<div style="width:100%">${ilGardenHTML(g,-1,true)}</div>`});
-  setTimeout(ilFitScenes,30);
-}
-
-/* ════════════════════════════════════════════════════════════════
    🎁 MY MAGIC COLLECTION  (everything the child has made)
 ════════════════════════════════════════════════════════════════ */
 const IL_TYPE_LABEL={creature:'🦄 Creature',world:'🏰 World',story:'📖 Story',potion:'🧪 Potion'};
 function ilCollection(){
   const list=ilCreations().slice().reverse();
-  const garden=ilLoad(IL_GARDEN_KEY,[]);
   const art=(typeof gallery!=='undefined'&&Array.isArray(gallery))?gallery.map((g,i)=>({g,i})).reverse():[];
   let cards='';
-  if(garden.length)cards+=`<button class="il-coll" onclick="ilOpen('garden')"><div class="th" style="display:block">${ilGardenHTML(garden,-1,true)}</div><div class="t">My Feeling Garden</div><div class="k">🎭 Garden</div></button>`;
   list.forEach(c=>{
     let th='';const d=c.data||{};
     if(c.type==='creature')th=ilCreatureSVG(d,110);
@@ -18926,77 +18819,6 @@ function checkPattern(el,chosen,answer){
 }
 
 // ══════════════════════════════════════
-//  COLOUR BY NUMBER GAME
-// ══════════════════════════════════════
-const CBN_PICTURES=[
-  {name:'🌻 Sunflower',zones:[
-    {id:'z1',label:'Petals',num:1,color:'#FFD700',path:'M150,80 Q170,50 190,80 Q210,50 230,80 Q250,50 270,80 Q290,110 270,130 Q290,160 270,170 Q250,200 230,170 Q210,200 190,170 Q170,200 150,170 Q130,160 110,170 Q90,160 110,130 Q90,110 110,80 Q130,50 150,80Z'},
-    {id:'z2',label:'Centre',num:2,color:'#8B4513',path:'M190,110 A40,40 0 1,1 190,111Z'},
-    {id:'z3',label:'Stem',num:3,color:'#228B22',path:'M180,200 Q185,230 180,260 L200,260 Q195,230 200,200Z'},
-    {id:'z4',label:'Leaves',num:4,color:'#32CD32',path:'M185,230 Q160,210 140,225 Q160,245 185,235Z M195,240 Q220,220 240,235 Q220,255 195,245Z'},
-  ]},
-  {name:'🏠 House',zones:[
-    {id:'z1',label:'Roof',num:1,color:'#DC143C',path:'M100,160 L200,80 L300,160Z'},
-    {id:'z2',label:'Walls',num:2,color:'#F5DEB3',path:'M120,160 L120,270 L280,270 L280,160Z'},
-    {id:'z3',label:'Door',num:3,color:'#8B4513',path:'M175,200 L175,270 L225,270 L225,200 Q200,185 175,200Z'},
-    {id:'z4',label:'Windows',num:4,color:'#87CEEB',path:'M135,175 L165,175 L165,205 L135,205Z M235,175 L265,175 L265,205 L235,205Z'},
-  ]},
-  {name:'🌈 Rainbow Scene',zones:[
-    {id:'z1',label:'Sky',num:1,color:'#87CEEB',path:'M50,50 L350,50 L350,200 L50,200Z'},
-    {id:'z2',label:'Ground',num:2,color:'#90EE90',path:'M50,200 L350,200 L350,290 L50,290Z'},
-    {id:'z3',label:'Sun',num:3,color:'#FFD700',path:'M290,90 A35,35 0 1,1 290,91Z'},
-    {id:'z4',label:'Rainbow',num:4,color:'#FF69B4',path:'M80,180 Q200,80 320,180 Q320,160 200,65 Q80,160 80,180Z'},
-  ]},
-];
-let cbnPicIdx=0,cbnFilled={};
-function buildColourByNum(){
-  cbnPicIdx=Math.floor(Math.random()*CBN_PICTURES.length);
-  cbnFilled={};renderCbn();
-}
-function renderCbn(){
-  const pic=CBN_PICTURES[cbnPicIdx];
-  const palette=pic.zones.map(z=>`
-    <div style="display:flex;align-items:center;gap:6px;background:var(--inputbg);border-radius:10px;padding:6px 10px;border:2px solid ${cbnFilled[z.id]?z.color:'var(--border)'}">
-      <div style="width:22px;height:22px;border-radius:6px;background:${z.color};flex-shrink:0;border:2px solid rgba(0,0,0,.15)"></div>
-      <span style="font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:800;color:var(--text)">${z.num} = ${z.label}</span>
-      ${cbnFilled[z.id]?'<span style="color:var(--green);font-size:.9rem">✓</span>':''}
-    </div>`).join('');
-  const paths=pic.zones.map(z=>`
-    <path id="${z.id}" d="${z.path}" fill="${cbnFilled[z.id]?z.color:'var(--inputbg)'}"
-      stroke="var(--border)" stroke-width="2" cursor="pointer"
-      onclick="cbnFill('${z.id}')"
-      style="transition:fill .3s">
-      <title>${z.num} - ${z.label}</title>
-    </path>`).join('');
-  const allDone=pic.zones.every(z=>cbnFilled[z.id]);
-  document.getElementById('area').innerHTML=`
-    <div class="game-panel">
-      <div class="game-title">🖍️ Colour by Number!</div>
-      <div class="game-inst">Tap each zone to colour it in! ${pic.name}</div>
-      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">${palette}</div>
-      <svg viewBox="50 50 300 250" style="width:100%;border-radius:14px;background:var(--inputbg);border:3px solid var(--border)">${paths}
-        ${pic.zones.map(z=>{
-          const m=z.path.match(/[ML]\s*(\d+)[,\s](\d+)/i);
-          if(!m)return'';
-          return`<text x="${parseInt(m[1])+10}" y="${parseInt(m[2])+16}" font-size="14" font-weight="800" fill="${cbnFilled[z.id]?'white':'var(--text3)'}" pointer-events="none">${z.num}</text>`;
-        }).join('')}
-      </svg>
-      ${allDone?`<div style="text-align:center;margin-top:10px;font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--green)">🎉 Amazing colouring! You did it!</div>
-        <button class="game-next-btn" onclick="cbnPicIdx=(cbnPicIdx+1)%${CBN_PICTURES.length};cbnFilled={};renderCbn()" style="margin-top:8px">🖍️ Next Picture!</button>
-        <button class="game-done-btn" onclick="markGameDone(5)">✅ Done! Give me stars! →</button>`:''}
-    </div>`;
-}
-function cbnFill(id){
-  const pic=CBN_PICTURES[cbnPicIdx];
-  if(cbnFilled[id])return;
-  cbnFilled[id]=true;playCorrect();
-  const zone=pic.zones.find(z=>z.id===id);
-  if(zone)if(typeof mascotSay==='function')mascotSay('Great! You coloured the '+zone.label+'! 🎨',1500);
-  renderCbn();
-  if(pic.zones.every(z=>cbnFilled[z.id])){burst();if(typeof mascotPraise==='function')mascotPraise();}
-}
-
-// ══════════════════════════════════════
 //  MY MINI STORY GAME
 // ══════════════════════════════════════
 const MS_CHARS=[
@@ -20996,7 +20818,6 @@ const GAME_HINTS={
   yttGame:'Yesterday = the day before today. Tomorrow = the day after today!',
   shareFair:'Divide by sharing one at a time — one for this friend, one for that friend...',
   doesntBelong:'Think about what the three things have in common — the odd one does not fit that group!',
-  colourByNum:'Find the number on the picture, then find that colour in the key above!',
   mirrorMe:'A mirror flips things — what is on the left goes to the right side!',
   memoryTorch:'Picture the items in your mind — close your eyes and try to see them!',
   default:'Take a deep breath! Look at all the options carefully before you tap. You can do it! 💪'
