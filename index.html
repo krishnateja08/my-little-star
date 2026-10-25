@@ -2966,7 +2966,7 @@ body.bedtime .streak-bar{background:linear-gradient(135deg,#1b2a00,#2a1800);colo
   <div class="mini-grid">
     <div class="mini-tile" style="background:linear-gradient(135deg,#ff6b9d,#a78bfa);" onclick="goToSection('create')">
       <div class="mt-badge" id="ts_create">&#x270F;&#xFE0F;</div>
-      <span class="mt-icon">&#x1F308;</span><div class="mt-name">Imagination Land</div>
+      <span class="mt-icon">&#x1F3A8;</span><div class="mt-name">Create</div>
     </div>
     <div class="mini-tile" style="background:linear-gradient(135deg,#ffb830,#ff6b9d);" onclick="goToSection('hearts')">
       <div class="mt-badge" id="ts_hearts">&#x1F49B;</div>
@@ -4582,7 +4582,13 @@ const GAMES = window.GAMES = [
   {id:'numMatch',  week:1, emoji:'🔢', title:'Number Match Game',      desc:'Match the number to the right group of objects!',    cat:'maths'},
   {id:'wordBuild', week:2, emoji:'🔤', title:'Build a Word!',           desc:'Tap the letters in the right order to spell the word!',cat:'letters'},
   {id:'countGame', week:1, emoji:'🍎', title:'How Many? Count it!',     desc:'Count the objects and pick the right number!',       cat:'maths'},
-  {id:'colourMix',   week:2, emoji:'🎨', title:'Colour Mixing Lab',        desc:'Mix two colours and discover what new colour you make!',         cat:'creative'},
+  {id:'ilCreature', week:1, emoji:'🦄', title:'Create a Creature!',   desc:'Mix heads, wings & tails — make your own magical creature!',   cat:'creative'},
+{id:'ilWorld',    week:1, emoji:'🏰', title:'Build My World!',      desc:'Drag castles, trees & rainbows to build a fantasy world!',    cat:'creative'},
+{id:'ilStory',    week:1, emoji:'📖', title:'Story Maker!',         desc:'Pick a hero, a place and an adventure — get your own story!', cat:'creative'},
+{id:'ilPotion',   week:1, emoji:'🧪', title:'Magic Potion Lab!',    desc:'Mix magic ingredients and see what funny potion you make!',   cat:'creative'},
+{id:'ilGarden',   week:1, emoji:'🌷', title:'Feeling Garden!',      desc:'Say how you feel today and grow a magical garden!',           cat:'creative'},
+{id:'ilDraw',     week:1, emoji:'🖍️', title:'Draw & Sticker Fun!',  desc:'Crayons, sparkles, magic stickers and stamps!',               cat:'creative'},
+{id:'colourMix',   week:2, emoji:'🎨', title:'Colour Mixing Lab',        desc:'Mix two colours and discover what new colour you make!',         cat:'creative'},
   {id:'drawEmoji',   week:1, emoji:'✏️', title:'Draw the Emoji!',          desc:'Follow the steps to draw a cute emoji face step by step!',        cat:'creative'},
   {id:'buildScene',  week:1, emoji:'🖼️', title:'Build a Scene!',           desc:'Pick a background and add stickers to make your own picture!',    cat:'creative'},
   {id:'makeMusic',   week:1, emoji:'🎵', title:'Make Music!',               desc:'Tap the coloured keys to play a melody — make up your own song!', cat:'creative'},
@@ -7274,6 +7280,7 @@ function renderGame(g){
     puzzleJigsaw:buildPuzzleJigsaw,animalFamily:buildAnimalFamily,whatDoINeed:buildWhatDoINeed,sortFood:buildSortFood,doesntBelong:buildDoesntBelong,finishPicture:buildFinishPicture,completeSet:buildCompleteSet,oddOneOut:buildOddOneOut,spotDiff:buildSpotDiff,bigSmall:buildBigSmall,fillGap:buildFillGap,simpleSums:buildSimpleSums,sortNums:buildSortNums,shareFair:buildShareFair,moreOrLess:buildMoreOrLess,make10:buildMake10,takeAway:buildTakeAway,longShort:buildLongShort,halfWhole:buildHalfWhole,oddEven:buildOddEven,numBonds:buildNumBonds,shapeSides:buildShapeSides,shapeReal:buildShapeReal,shapeColour:buildShapeColour,finishPatt:buildFinishPatt,listenTap:buildListenTap,pairMatch:buildPairMatch,tapOrder:buildTapOrder,sameOrDiff:buildSameOrDiff,quickCount:buildQuickCount,copyColours:buildCopyColours,memoryTorch:buildMemoryTorch,whatChanged:buildWhatChanged,bigToSmall:buildBigToSmall,mirrorMe:buildMirrorMe,behindDoor:buildBehindDoor,rememberTap:buildRememberTap};
   // Error boundary
   try{
+    if(typeof IL_GAME_IDS!=='undefined'&&IL_GAME_IDS[g.id]){ilInjectStyle();ilOpen(IL_GAME_IDS[g.id]);return;}
     (fns[g.id]||buildCountGame)();
   } catch(err){
     console.error('Game error:',err);
@@ -9213,7 +9220,8 @@ function markDone(){
 // ══════════════════════════════════════════════════════════════════
 //  🌈 IMAGINATION LAND — Creative Studio for a 6-year-old
 //  Six open-ended activities · no scores · no timers · no wrong answers
-//  Entry point: renderCreativeZone()  (called by fetchNext when tab==='create')
+//  Lives in  Fun Games ▸ Creative  (GAMES ids ilCreature, ilWorld, ilStory, ilPotion, ilGarden, ilDraw)
+//  The Create tab keeps the original drawing studio (renderCreativeZone → czRenderDrawStudio)
 // ══════════════════════════════════════════════════════════════════
 const IL_KEY='c_il_creations';
 const IL_GARDEN_KEY='c_il_garden';
@@ -9249,7 +9257,8 @@ function ilSet(html){
   ilFitScenes();
 }
 function ilTop(title,back){
-  return `<div class="il-top"><button class="il-back" onclick="${back||'renderCreativeZone()'}" aria-label="Back">⬅</button><div class="il-title">${title}</div></div>`;
+  const gift=(ilInGames()&&title.indexOf('Collection')<0)?`<button class="il-back" style="margin-left:auto" onclick="ilOpen('collection')" aria-label="My Magic Collection" title="My Magic Collection">🎁</button>`:'';
+  return `<div class="il-top"><button class="il-back" onclick="${back||'ilBack()'}" aria-label="Back">⬅</button><div class="il-title">${title}</div>${gift}</div>`;
 }
 function ilCreations(){return ilLoad(IL_KEY,[]);}
 function ilAddCreation(c){
@@ -9262,15 +9271,15 @@ function ilAddCreation(c){
   ilStore(IL_KEY,list);
   return c;
 }
-// Log in today's "done" list (so the home screen shows a ✅) — gives NO stars/points
-function ilLogDone(title,emoji){
+// Marks the current Fun-Games game as played today (shows ✅ Done in the list). Gives NO stars / points.
+function ilLogDone(){
   try{
-    if(typeof done==='undefined')return;
-    if(done.some(d=>d.tab==='create'&&d.title===title))return;
-    done.push({title,emoji,stars:0,tab:'create'});
+    if(!ilInGames()||typeof current==='undefined'||!current||!IL_GAME_IDS[current.id])return;
+    if(done.some(d=>d.tab==='games'&&d.title===current.title))return;
+    done.push({title:current.title,emoji:current.emoji,stars:0,tab:'games'});
+    if(typeof allUsed!=='undefined'&&!allUsed.includes(current.title)){allUsed.push(current.title);localStorage.setItem('c_allused',JSON.stringify(allUsed));}
     localStorage.setItem('cd_'+todayKey(),JSON.stringify(done));
-    if(typeof updateHomepage==='function')updateHomepage();
-    if(typeof renderTabBadges==='function')renderTabBadges();
+    ['renderStarPath','renderGoals','renderTabBadges','updateHomepage'].forEach(f=>{try{if(typeof window[f]==='function')window[f]();}catch(e){}});
   }catch(e){}
 }
 function ilMagicName(){
@@ -9415,7 +9424,7 @@ body.bedtime .il-cel-msg{color:#ff9ec4}
   document.head.appendChild(s);
   if(!window._ilResizeBound){
     window._ilResizeBound=true;
-    window.addEventListener('resize',()=>{if(typeof tab!=='undefined'&&tab==='create')ilFitScenes();});
+    window.addEventListener('resize',()=>{if(typeof tab!=='undefined'&&(tab==='create'||tab==='games'))ilFitScenes();});
   }
 }
 // scenes size their emoji with --w (the scene's pixel width)
@@ -9461,7 +9470,7 @@ function ilCelebrate(o){
     <div class="il-cel-msg">${praise}</div>
     <div class="il-cel-sub">${ilPick(IL_UNIQUE)}${o.saved===false?'':' It is saved in your Magic Collection 🎁'}</div>
     <button class="il-btn go" onclick="ilCelDone('again')">${o.againLabel||'✨ Make another!'}</button>
-    <button class="il-btn alt" onclick="ilCelDone('hub')">🌈 Imagination Land</button>
+    ${ilInGames()?`<button class="il-btn alt" onclick="ilCelDone('hub')">🎮 Back to games</button>`:''}
     <button class="il-link" onclick="ilCelDone('stay')">Keep looking at it</button>
   </div>`;
   ov._o=o;
@@ -9473,41 +9482,26 @@ function ilCelDone(kind){
   const ov=document.getElementById('ilCel');const o=ov&&ov._o;
   if(ov)ov.remove();
   ilSfx('tap');
-  if(kind==='hub'){renderCreativeZone();return;}
+  if(kind==='hub'){ilBack();return;}
   if(kind==='again'&&o&&o.again){ilOpen(o.again);}
 }
 
-/* ── hub ──────────────────────────────────────────────────────── */
-const IL_ACTS=[
-  {id:'creature',emoji:'🦄',title:'Create a Creature',desc:'Mix heads, wings & tails!',g:'linear-gradient(135deg,#ff6b9d,#a78bfa)'},
-  {id:'world',emoji:'🏰',title:'Build My World',desc:'Drag castles, trees & rainbows!',g:'linear-gradient(135deg,#3b9be0,#35c4b8)'},
-  {id:'story',emoji:'📖',title:'Story Maker',desc:'Make your very own story!',g:'linear-gradient(135deg,#ff9f1c,#ff6b6b)'},
-  {id:'potion',emoji:'🧪',title:'Magic Potion Lab',desc:'Mix magic & see what happens!',g:'linear-gradient(135deg,#7c3aed,#06b6d4)'},
-  {id:'garden',emoji:'🎭',title:'Feeling Garden',desc:'Grow flowers from feelings!',g:'linear-gradient(135deg,#2f9e6f,#7bd88f)'},
-  {id:'draw',emoji:'🎨',title:'Draw & Sticker Fun',desc:'Crayons, sparkles & stamps!',g:'linear-gradient(135deg,#ff7a59,#ff5fa2)'}
-];
-const IL_HUB_LINES=[
-  'What will you imagine today? ✨','There are no wrong ideas here — only YOUR ideas! 💛','Pick anything you like and make it yours! 🌈',
-  'Everything you make here is one-of-a-kind! 🦄','Ready to make something magical? 🪄'
-];
-function renderCreativeZone(){
-  ilInjectStyle();
-  ilLeaveDraw();
+/* ── Fun-Games plumbing ───────────────────────────────────────── */
+const IL_GAME_IDS={ilCreature:'creature',ilWorld:'world',ilStory:'story',ilPotion:'potion',ilGarden:'garden',ilDraw:'draw'};
+function ilInGames(){return typeof tab!=='undefined'&&tab==='games';}
+// Create tab = the original drawing studio (now with crayons, sparkles, magic stickers & stamps)
+function renderCreativeZone(){ilInjectStyle();czRenderDrawStudio();}
+function ilBack(){
+  if(ilInGames())ilGameExit();
+  else{ilLeaveDraw();renderCreativeZone();}
+}
+function ilGameExit(){
+  ilSfx('tap');
+  ilLeaveDraw();window._czKeepImg=null;
   const qf=document.getElementById('qcFab');if(qf)qf.style.display='none';
-  const n=ilCreations().length+((typeof gallery!=='undefined'&&gallery.length)?gallery.length:0);
-  ilSet(`
-    <div class="il-banner">
-      <span class="fl" style="left:6%;top:12%">🦋</span><span class="fl" style="right:7%;top:10%;animation-delay:.7s">⭐</span>
-      <span class="fl" style="left:12%;bottom:8%;animation-delay:1.2s">🌸</span><span class="fl" style="right:12%;bottom:10%;animation-delay:1.8s">✨</span>
-      <h2>🌈 Imagination Land</h2>
-      <p>${ilPick(IL_HUB_LINES)}</p>
-    </div>
-    <div class="il-hub">
-      ${IL_ACTS.map((a,i)=>`<button class="il-card" style="background:${a.g};animation-delay:${i*.07}s" onclick="ilOpen('${a.id}')">
-        <span class="ic" style="animation-delay:${i*.3}s">${a.emoji}</span><span class="nm">${a.title}</span><span class="ds">${a.desc}</span></button>`).join('')}
-      <button class="il-card wide" style="background:linear-gradient(135deg,#ffb830,#ff8c69)" onclick="ilOpen('collection')">
-        <span class="ic">🎁</span><span><span class="nm" style="display:block">My Magic Collection</span><span class="ds">${n?'Look at everything you have made!':'Everything you make will live here!'}</span></span></button>
-    </div>`);
+  try{localStorage.removeItem('c_current');}catch(e){}
+  current=null;currentlyPlaying=false;busy=false;
+  fetchNext();   // back to the "Pick your Games game" list
 }
 function ilOpen(id){
   ilInjectStyle();ilSfx('tap');
@@ -10198,7 +10192,7 @@ function ilCollection(){
   });
   ilSet(`${ilTop('🎁 My Magic Collection')}
     ${cards?`<div class="il-hint il-center" style="margin-bottom:12px">Look at all the special things YOU made! 🌟</div><div class="il-grid">${cards}</div>`
-      :`<div class="il-panel il-center"><div style="font-size:4rem">🎁</div><div style="font-size:1.2rem;font-weight:800;margin:6px 0">Your collection is waiting!</div><div class="il-hint">Everything you make in Imagination Land will live here.</div><div class="il-row" style="margin-top:12px"><button class="il-btn go" onclick="renderCreativeZone()">🌈 Go and make something!</button></div></div>`}`);
+      :`<div class="il-panel il-center"><div style="font-size:4rem">🎁</div><div style="font-size:1.2rem;font-weight:800;margin:6px 0">Your collection is waiting!</div><div class="il-hint">Everything you make in Imagination Land will live here.</div><div class="il-row" style="margin-top:12px"><button class="il-btn go" onclick="ilBack()">🎮 Go and make something!</button></div></div>`}`);
 }
 function ilView(id){
   const c=ilCreations().find(x=>x.id===id);if(!c)return;
@@ -10459,8 +10453,8 @@ function czRenderDrawStudio(){
       <div style="flex:1;display:flex;flex-direction:column;min-width:0;position:relative">
         <!-- Canvas action buttons row (top of canvas) -->
         <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;padding:6px 10px 4px;flex-shrink:0;background:transparent">
-          <button onclick="renderCreativeZone()" title="Back to Imagination Land"
-            style="margin-right:auto;display:flex;align-items:center;gap:4px;padding:8px 14px;min-height:40px;border:none;border-radius:20px;background:linear-gradient(135deg,#ff6b9d,#a78bfa);cursor:pointer;box-shadow:0 3px 10px rgba(167,139,250,.45);font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:900;color:#fff">🌈 Back</button>
+          ${ilInGames()?`<button onclick="ilBack()" title="Back to games"
+            style="margin-right:auto;display:flex;align-items:center;gap:4px;padding:8px 14px;min-height:40px;border:none;border-radius:20px;background:linear-gradient(135deg,#ff6b9d,#a78bfa);cursor:pointer;box-shadow:0 3px 10px rgba(167,139,250,.45);font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:900;color:#fff">⬅ Back</button>`:''}
           <button onclick="czDeselectSticker()" id="czDeselectBtn" title="Back to Draw"
             style="display:${drawSticker?'flex':'none'};align-items:center;gap:4px;padding:6px 12px;border:none;border-radius:20px;
                    background:linear-gradient(135deg,#a78bfa,#7c3aed);cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(124,58,237,.35);
@@ -13079,7 +13073,7 @@ const SECTION_META={
   learning:{name:'Learning Time',   sub:'Maths, ABC, Science & more',       icon:'📚',bn:'bn_learning'},
   games:   {name:'Fun Games',       sub:'Letters, shapes, maths & brain teasers',icon:'🎮',bn:'bn_games'},
   evening: {name:'Evening Wind Down',sub:'Calm time & getting ready for sleep',icon:'🌿',bn:'bn_evening'},
-  create:  {name:'Imagination Land',sub:'Create, imagine & make it yours!', icon:'🌈',bn:'bn_create'},
+  create:  {name:'Create & Draw',   sub:'Art, music, stickers & more',      icon:'🎨',bn:'bn_create'},
   stories: {name:'Story Time',      sub:'Read amazing adventure stories',    icon:'📖',bn:'bn_stories'},
   body:    {name:'Body Explorer',   sub:'Learn one body part today — one a day!', icon:'🫀',bn:'bn_body'},
   hearts:  {name:'Hearts & Feelings',sub:'Understand your emotions',         icon:'❤️',bn:'bn_hearts'},
@@ -14241,8 +14235,7 @@ function toggleQuickCreate(){
 function startQuickCreate(prompt){
   qcOpen=false;
   document.getElementById('qcPopup').classList.remove('show');
-  switchTab('create');
-  ilOpen('draw');
+  if(!ilInGames()&&tab!=='create')switchTab('create');
   setTimeout(()=>mascotSay(prompt,4000),600);
 }
 // Close popup when clicking elsewhere
@@ -16004,10 +15997,13 @@ function deleteGalleryItem(idx){
 function editGalleryItem(idx){
   if(!gallery[idx])return;
   const imgData=gallery[idx].data;
-  // Open the drawing studio (Imagination Land → Draw & Sticker Fun), then load the picture
-  if(tab!=='create')switchTab('create');
-  ilOpen('draw');
-  setTimeout(()=>loadImageIntoCanvas(imgData),700);
+  // Switch to create tab if not already there
+  if(tab!=='create'){
+    switchTab('create');
+    setTimeout(()=>loadImageIntoCanvas(imgData),600);
+  } else {
+    loadImageIntoCanvas(imgData);
+  }
   showToast('✏️ Drawing loaded — edit away!');
   mascotSay('Edit your drawing! 🎨');
 }
