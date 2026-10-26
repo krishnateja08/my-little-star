@@ -4610,7 +4610,13 @@ const GAMES = window.GAMES = [
   {id:'whichNext',   week:1,emoji:'🧩',title:'Which Comes Next?',        desc:'A, B, C... what letter comes after?',                cat:'letters'},
   {id:'vowelCon',    week:2,emoji:'🌟',title:'Vowel or Consonant?',      desc:'Is this letter a vowel or a consonant?',             cat:'letters'},
   {id:'daysOrder',   week:1,emoji:'📅',title:'Days of the Week!',       desc:'Put the days in the right order!',                   cat:'time'},
-  {id:'clockGame',   week:2,emoji:'🕐',title:'What Time Is It?',        desc:'Look at the clock and pick the right time!',         cat:'time'},
+  {id:'tmMeet',      week:1,emoji:'🦉',title:'Meet the Clock',         desc:'Learn how clocks work',              cat:'time'},
+{id:'tmOclock',    week:1,emoji:'🕒',title:'O’Clock Adventure',      desc:'Learn 1 o’clock to 12 o’clock',      cat:'time'},
+{id:'tmDay',       week:1,emoji:'🍳',title:'Time in My Day',         desc:'Breakfast, school and bedtime',      cat:'time'},
+{id:'tmBuild',     week:1,emoji:'🎮',title:'Build a Clock',          desc:'Move the hands yourself',            cat:'time'},
+{id:'tmAmPm',      week:1,emoji:'🌙',title:'Morning or Night?',      desc:'Learn AM and PM',                    cat:'time'},
+{id:'tmHalf',      week:1,emoji:'⏳',title:'Half-Past Adventure',    desc:'Learn 30-minute times',              cat:'time'},
+{id:'tmChallenge', week:1,emoji:'🏆',title:'Time Challenge',         desc:'Play after learning',                cat:'time'},
   {id:'monthsOrder', week:2,emoji:'📆',title:'Months of the Year!',     desc:'Learn all 12 months and what order they go in!',     cat:'time'},
   {id:'amPmGame',    week:1,emoji:'🌅',title:'AM or PM?',               desc:'Is this activity in the morning or afternoon?',      cat:'time'},
   {id:'seasonsGame', week:2,emoji:'🌸',title:'Seasons Match!',          desc:'Match the clues to the right season!',               cat:'time'},
@@ -7271,7 +7277,7 @@ function renderGame(g){
   const fns={numMatch:buildNumMatch,wordBuild:buildWordBuild,countGame:buildCountGame,
     colourMix:buildColourMix,drawEmoji:buildDrawEmoji,buildScene:buildBuildScene,makeMusic:buildMakeMusic,storyStarter:buildStoryStarter,emotionFaces:buildEmotionFaces,rainbowOrder:buildRainbowOrder,makePattern:buildMakePattern,miniStory:buildMiniStory,shapeTap:buildShapeTap,memoryFlip:buildMemoryFlip,
     findLetter:buildFindLetter,animalSound:buildAnimalSound,phonicsMatch:buildPhonicsMatch,abcOrder:buildAbcOrder,letterPic:buildLetterPic,upperLower:buildUpperLower,firstLetter:buildFirstLetter,singAbc:buildSingAbc,spotLetter:buildSpotLetter,whichNext:buildWhichNext,vowelCon:buildVowelCon,
-    daysOrder:buildDaysOrder,clockGame:buildClockGame,monthsOrder:buildMonthsOrder,amPmGame:buildAmPmGame,seasonsGame:buildSeasonsGame,yttGame:buildYttGame,simonSays:buildSimonSays,
+    daysOrder:buildDaysOrder,monthsOrder:buildMonthsOrder,amPmGame:buildAmPmGame,seasonsGame:buildSeasonsGame,yttGame:buildYttGame,simonSays:buildSimonSays,
     whatsMissing:buildWhatsMissing,colourPattern:buildColourPattern,numberMemory:buildNumberMemory,
     coinCount:buildCoinCount,fairTrade:buildFairTrade,myShop:buildMyShop,lemonadeStand:buildLemonadeStand,changeMaker:buildChangeMaker,
     shadowMatch:buildShadowMatch,dotCard:buildDotCard,oppSnap:buildOppSnap,colourWordMatch:buildColourWordMatch,
@@ -7279,6 +7285,7 @@ function renderGame(g){
   // Error boundary
   try{
     if(typeof IL_GAME_IDS!=='undefined'&&IL_GAME_IDS[g.id]){ilInjectStyle();ilOpen(IL_GAME_IDS[g.id]);return;}
+    if(typeof TM_IDS!=='undefined'&&TM_IDS[g.id]){tmStart(g.id);return;}
     (fns[g.id]||buildCountGame)();
   } catch(err){
     console.error('Game error:',err);
@@ -14853,78 +14860,504 @@ function checkDayAnswer(el,chosen,answer){
   setTimeout(nextDayRound,1500);
 }
 
-// ══════════════════════════════════════
-//  CLOCK READING GAME
-// ══════════════════════════════════════
-let clkScore=0,clkRound=0;
-function buildClockGame(){clkScore=0;clkRound=0;nextClockRound();}
-function nextClockRound(){
-  const totalRounds=diffLevel===1?4:5;
-  clkRound++;
-  if(clkRound>totalRounds){endGame(clkScore,totalRounds,'clockGame');return;}
+// ══════════════════════════════════════════════════════════════════
+//  🦉 OLLIE THE TIME OWL — learn to tell the time (7 gentle lessons)
+//  Fun Games ▸ Time.   Explain → Observe → Explore → Practice → Celebrate
+//  No scores · no timers · Ollie never says "wrong"
+// ══════════════════════════════════════════════════════════════════
+const TM_ORDER=['tmMeet','tmOclock','tmDay','tmBuild','tmAmPm','tmHalf','tmChallenge'];
+const TM_IDS={tmMeet:1,tmOclock:2,tmDay:3,tmBuild:4,tmAmPm:5,tmHalf:6,tmChallenge:7};
+const TM_PROG_KEY='c_tm_prog';
+const TM={id:'',steps:[],i:0,ha:0,ma:0,sel:'hour',snapH:30,snapM:30,lockH:false,lockM:false,drag:null,attempts:0,hint:0,
+  target:null,mo:null,onRelease:null,onNum:null,last:'',anim:null,doneStep:false,fns:[],cfns:[],q:0,qs:[],title:''};
 
-  // Generate a random hour, and maybe half-past for higher difficulty
-  const hour=Math.floor(Math.random()*12)+1;
-  const isHalf=diffLevel>=2&&Math.random()>.5;
-  const minute=isHalf?30:0;
-  const timeStr=isHalf?`Half past ${hour}`:`${hour} o'clock`;
+/* ── small helpers ─────────────────────────────────────────────── */
+function tmProg(){try{return JSON.parse(localStorage.getItem(TM_PROG_KEY)||'{}')||{};}catch(e){return {};}}
+function tmSaveProg(id){const p=tmProg();p[id]=1;try{localStorage.setItem(TM_PROG_KEY,JSON.stringify(p));}catch(e){}}
+function tmGateOK(){const p=tmProg();return TM_ORDER.slice(0,6).every(id=>p[id]);}
+function tmLabel(h,m){return m===30?'half past '+h:h+' o’clock';}
+function tmNum(a){const n=Math.round((((a%360)+360)%360)/30)%12;return n===0?12:n;}
+function tmDiff(a,b){const d=Math.abs((((a-b)%360)+360)%360);return d>180?360-d:d;}
+function tmPt(a,len){const r=a*Math.PI/180;return [100+Math.sin(r)*len,100-Math.cos(r)*len];}
+function tmClean(t){return String(t).replace(/[^\w\s.,!?'’:;-]/g,'').replace(/\s+/g,' ').trim();}
+function tmRand(n){return 1+Math.floor(Math.random()*n);}
+function tmShuffle(a){return a.slice().sort(()=>Math.random()-.5);}
+function tmEl(id){return document.getElementById(id);}
 
-  // Draw clock SVG
-  const hourAngle=(hour%12)*30+(minute*.5)-90;
-  const minuteAngle=minute*6-90;
-  const hx=50+Math.cos(hourAngle*Math.PI/180)*18;
-  const hy=50+Math.sin(hourAngle*Math.PI/180)*18;
-  const mx=50+Math.cos(minuteAngle*Math.PI/180)*26;
-  const my=50+Math.sin(minuteAngle*Math.PI/180)*26;
-  let nums='';
-  for(let i=1;i<=12;i++){
-    const a=(i*30-90)*Math.PI/180;
-    nums+=`<text x="${50+Math.cos(a)*35}" y="${50+Math.sin(a)*35+4}" text-anchor="middle" font-size="8" font-weight="700" fill="var(--text)">${i}</text>`;
+/* ── styles ───────────────────────────────────────────────────── */
+function tmInjectStyle(){
+  if(tmEl('tmStyle'))return;
+  const s=document.createElement('style');s.id='tmStyle';
+  s.textContent=`
+@keyframes tmFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes tmHop{0%{transform:scale(1)}35%{transform:scale(1.22) rotate(-8deg)}70%{transform:scale(.95) rotate(5deg)}100%{transform:scale(1)}}
+@keyframes tmIn{0%{transform:scale(.92);opacity:.2}100%{transform:scale(1);opacity:1}}
+@keyframes tmPulseR{0%,100%{r:15;opacity:.95}50%{r:21;opacity:.35}}
+@keyframes tmHl{0%,100%{stroke-width:7}50%{stroke-width:13}}
+@keyframes tmPop{0%{transform:scale(0)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+.tm-root{max-width:560px;margin:0 auto;padding:6px 12px 90px;font-family:'Baloo 2','Nunito',sans-serif;color:var(--text);-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+.tm-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.tm-back{width:50px;height:50px;border:none;border-radius:16px;background:var(--cardbg);box-shadow:0 3px 12px var(--shadow);font-size:1.4rem;cursor:pointer;color:var(--text);flex-shrink:0}
+.tm-title{font-size:1.2rem;font-weight:800;line-height:1.1;flex:1}
+.tm-dots{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;max-width:130px;font-size:.8rem;color:var(--text3)}
+.tm-dots i{width:10px;height:10px;border-radius:50%;background:var(--border);display:inline-block}
+.tm-dots i.on{background:linear-gradient(135deg,#ffb830,#ff6b9d)}
+.tm-stars{font-size:1.15rem;letter-spacing:2px}
+.tm-ollie{display:flex;align-items:flex-end;gap:10px;margin:6px 0 10px}
+.tm-owl{font-size:3.6rem;line-height:1;cursor:pointer;animation:tmFloat 3s ease-in-out infinite;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25));flex-shrink:0}
+.tm-owl.hop{animation:tmHop .5s,tmFloat 3s ease-in-out .5s infinite}
+.tm-bubble{position:relative;flex:1;background:#fff8e6;color:#4a3320;border-radius:22px 22px 22px 6px;padding:12px 16px;font-size:1.18rem;font-weight:800;line-height:1.35;box-shadow:0 5px 16px rgba(0,0,0,.16);border:3px solid #ffd27a;min-height:62px;display:flex;align-items:center}
+.tm-bubble.in{animation:tmIn .3s}
+.tm-stage{background:var(--cardbg);border-radius:26px;padding:12px;box-shadow:0 6px 22px var(--shadow);text-align:center}
+.tm-clock{width:min(78vw,300px);height:auto;display:block;margin:0 auto;touch-action:none;filter:drop-shadow(0 6px 10px rgba(0,0,0,.2))}
+.tm-num{cursor:pointer}
+.tm-hsel{display:flex;gap:8px;justify-content:center;margin:8px 0 2px;flex-wrap:wrap}
+.tm-hsel button{border:3px solid transparent;border-radius:16px;padding:8px 14px;min-height:46px;font-family:inherit;font-size:.95rem;font-weight:800;background:var(--inputbg);color:var(--text);cursor:pointer}
+.tm-hsel button.on.h{border-color:#ff6b9d;background:rgba(255,107,157,.18)}
+.tm-hsel button.on.m{border-color:#4fa3e0;background:rgba(79,163,224,.18)}
+.tm-pulse{fill:none;stroke:#ffb830;stroke-width:5;animation:tmPulseR 1.2s infinite;pointer-events:none}
+.tm-hl{animation:tmHl 1s infinite}
+.tm-time{font-size:1.9rem;font-weight:800;margin:8px 0 2px;min-height:44px;color:var(--text)}
+.tm-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px;margin-top:10px}
+.tm-card{border:3px solid transparent;border-radius:20px;padding:10px 6px;background:var(--inputbg);color:var(--text);font-family:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:96px;transition:transform .12s}
+.tm-card:active{transform:scale(.93)}
+.tm-card .e{font-size:2.3rem;line-height:1.1}.tm-card .n{font-size:.95rem;font-weight:800;line-height:1.1}.tm-card .s{font-size:.82rem;font-weight:700;color:var(--text3)}
+.tm-card.on{border-color:#ffb830;background:rgba(255,184,48,.2);transform:scale(1.05)}
+.tm-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:10px}
+.tm-opt{border:3px solid transparent;border-radius:20px;padding:14px 8px;min-height:68px;background:var(--inputbg);color:var(--text);font-family:inherit;font-size:1.25rem;font-weight:800;cursor:pointer;transition:transform .12s}
+.tm-opt:active{transform:scale(.94)}
+.tm-opt.ok{border-color:#56cf81;background:rgba(86,207,129,.25)}
+.tm-opt.try{border-color:#ffb830;background:rgba(255,184,48,.18)}
+.tm-scene{font-size:4.4rem;line-height:1.1;margin:6px 0;animation:tmPop .4s both}
+.tm-badge{display:inline-block;margin-top:8px;padding:10px 18px;border-radius:50px;background:linear-gradient(135deg,#ffb830,#ff6b9d);color:#fff;font-size:1.25rem;font-weight:800;animation:tmPop .5s both;box-shadow:0 6px 18px rgba(255,107,157,.45)}
+.tm-fin .big{font-size:4.6rem;animation:tmHop 1s infinite;line-height:1.1}.tm-fin .t{font-size:1.3rem;font-weight:800;margin-top:4px;line-height:1.25}
+.tm-btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.tm-btn{flex:1 1 150px;border:none;border-radius:22px;min-height:60px;padding:12px 16px;font-family:inherit;font-size:1.15rem;font-weight:800;color:#fff;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.2);transition:transform .12s}
+.tm-btn:active{transform:scale(.94)}
+.tm-btn.go{background:linear-gradient(135deg,#ff6b9d,#a78bfa)}
+.tm-btn.alt{background:linear-gradient(135deg,#4fa3e0,#4ecdc4)}
+.tm-btn.soft{background:var(--inputbg);color:var(--text2);box-shadow:0 3px 10px var(--shadow2)}
+.tm-link{background:none;border:none;color:var(--text3);font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;padding:10px;text-decoration:underline;width:100%}
+`;
+  document.head.appendChild(s);
+}
+
+/* ── the interactive clock ────────────────────────────────────── */
+function tmClockHTML(){
+  let nums='',ticks='';
+  for(let n=1;n<=12;n++){
+    const a=(n*30-90)*Math.PI/180,x=(100+Math.cos(a)*76).toFixed(1),y=(100+Math.sin(a)*76).toFixed(1);
+    nums+=`<g class="tm-num" data-n="${n}"><circle cx="${x}" cy="${y}" r="15" fill="transparent"/><text x="${x}" y="${(+y+7).toFixed(1)}" text-anchor="middle" font-size="21" font-weight="800" fill="#4a3320" pointer-events="none">${n}</text></g>`;
   }
-  const clockSvg=`<svg viewBox="0 0 100 100" style="width:140px;height:140px;display:block;margin:10px auto">
-    <circle cx="50" cy="50" r="44" fill="var(--inputbg)" stroke="var(--purple)" stroke-width="3"/>
-    <circle cx="50" cy="50" r="40" fill="none" stroke="var(--border)" stroke-width="1"/>
-    ${nums}
-    <line x1="50" y1="50" x2="${hx}" y2="${hy}" stroke="var(--pink)" stroke-width="4" stroke-linecap="round"/>
-    <line x1="50" y1="50" x2="${mx}" y2="${my}" stroke="var(--blue)" stroke-width="2.5" stroke-linecap="round"/>
-    <circle cx="50" cy="50" r="3" fill="var(--purple)"/>
-  </svg>`;
-
-  // Generate wrong options
-  const wrongOpts=[];
-  while(wrongOpts.length<2){
-    const wh=Math.floor(Math.random()*12)+1;
-    const wHalf=diffLevel>=2&&Math.random()>.5;
-    const wStr=wHalf?`Half past ${wh}`:`${wh} o'clock`;
-    if(wStr!==timeStr&&!wrongOpts.includes(wStr))wrongOpts.push(wStr);
+  for(let t=0;t<60;t++){
+    const a=(t*6-90)*Math.PI/180,r1=t%5?91:88,r2=95;
+    ticks+=`<line x1="${(100+Math.cos(a)*r1).toFixed(1)}" y1="${(100+Math.sin(a)*r1).toFixed(1)}" x2="${(100+Math.cos(a)*r2).toFixed(1)}" y2="${(100+Math.sin(a)*r2).toFixed(1)}" stroke="#c9b9a0" stroke-width="${t%5?1:2.2}" stroke-linecap="round"/>`;
   }
-  const opts=[timeStr,...wrongOpts].sort(()=>Math.random()-.5);
+  return `<svg id="tmClock" class="tm-clock" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <defs><radialGradient id="tmFace" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#fffef8"/><stop offset="1" stop-color="#ffefc9"/></radialGradient></defs>
+    <circle cx="100" cy="100" r="98" fill="url(#tmFace)" stroke="#a78bfa" stroke-width="5"/>
+    ${ticks}${nums}<g id="tmGlow"></g>
+    <line id="tmHH" x1="100" y1="100" x2="100" y2="58" stroke="#ff6b9d" stroke-width="9" stroke-linecap="round"/>
+    <line id="tmMH" x1="100" y1="100" x2="100" y2="46" stroke="#4fa3e0" stroke-width="6" stroke-linecap="round"/>
+    <circle id="tmHT" data-hand="hour" cx="100" cy="58" r="12" fill="#ff6b9d" fill-opacity=".45" stroke="#ff6b9d" stroke-width="2.5" style="cursor:grab"/>
+    <circle id="tmMT" data-hand="min" cx="100" cy="46" r="12" fill="#4fa3e0" fill-opacity=".45" stroke="#4fa3e0" stroke-width="2.5" style="cursor:grab"/>
+    <circle cx="100" cy="100" r="6.5" fill="#7c3aed"/></svg>`;
+}
+function tmUpdateHands(){
+  const hh=tmEl('tmHH');if(!hh)return;
+  const h=tmPt(TM.ha,42),m=tmPt(TM.ma,54);
+  hh.setAttribute('x2',h[0]);hh.setAttribute('y2',h[1]);
+  tmEl('tmMH').setAttribute('x2',m[0]);tmEl('tmMH').setAttribute('y2',m[1]);
+  tmEl('tmHT').setAttribute('cx',h[0]);tmEl('tmHT').setAttribute('cy',h[1]);
+  tmEl('tmMT').setAttribute('cx',m[0]);tmEl('tmMT').setAttribute('cy',m[1]);
+}
+function tmClockSet(h,m){TM.ha=(((h%12)*30+m*0.5)%360);TM.ma=(m*6)%360;tmUpdateHands();}
+function tmShow(v){const w=tmEl('tmClockWrap');if(w)w.style.display=v?'block':'none';}
+function tmPulse(hand){
+  ['tmHH','tmHT','tmMH','tmMT'].forEach(id=>{const e=tmEl(id);if(e)e.classList.remove('tm-hl');});
+  if(hand==='hour'){tmEl('tmHH').classList.add('tm-hl');}
+  if(hand==='min'){tmEl('tmMH').classList.add('tm-hl');}
+}
+function tmGlowAt(hand,angle){const g=tmEl('tmGlow');if(!g)return;const p=tmPt(angle,hand==='hour'?42:54);g.innerHTML=`<circle cx="${p[0]}" cy="${p[1]}" r="17" class="tm-pulse"/>`;}
+function tmGlowClear(){const g=tmEl('tmGlow');if(g)g.innerHTML='';}
+function tmSelect(hand){
+  TM.sel=hand;
+  const a=tmEl('tmSelH'),b=tmEl('tmSelM');
+  if(a)a.className=hand==='hour'?'on h':'';
+  if(b)b.className=hand==='min'?'on m':'';
+}
+function tmAnimate(hand,to,done){
+  if(TM.anim)cancelAnimationFrame(TM.anim);
+  const from=hand==='hour'?TM.ha:TM.ma,d=((((to-from)%360)+540)%360)-180,t0=performance.now(),dur=380;
+  const step=now=>{
+    const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,3);
+    const a=k<1?((from+d*e)%360+360)%360:((to%360)+360)%360;
+    if(hand==='hour')TM.ha=a;else TM.ma=a;
+    tmUpdateHands();
+    if(k<1)TM.anim=requestAnimationFrame(step);else{TM.anim=null;if(done)done();}
+  };
+  TM.anim=requestAnimationFrame(step);
+}
+function tmSetAngle(hand,a){
+  const step=hand==='hour'?TM.snapH:TM.snapM;
+  if(step)a=(Math.round(a/step)*step)%360;
+  if(hand==='hour')TM.ha=(a+360)%360;else TM.ma=(a+360)%360;
+  tmUpdateHands();
+}
+function tmLockedNudge(){tmSay('That hand is resting now. Try the other one! 😊');}
+function tmReleased(){TM.attempts++;if(TM.onRelease)TM.onRelease();}
+function tmTapNumber(n){
+  if(TM.onNum){TM.onNum(n);return;}
+  const hand=TM.sel;
+  if((hand==='hour'&&TM.lockH)||(hand==='min'&&TM.lockM)){tmLockedNudge();return;}
+  tmAnimate(hand,(n%12)*30,()=>tmReleased());
+}
+function tmBindClock(){
+  const svg=tmEl('tmClock');if(!svg)return;
+  const ang=ev=>{const r=svg.getBoundingClientRect();const dx=ev.clientX-(r.left+r.width/2),dy=ev.clientY-(r.top+r.height/2);return (Math.atan2(dx,-dy)*180/Math.PI+360)%360;};
+  svg.addEventListener('pointerdown',ev=>{
+    const hand=ev.target.getAttribute&&ev.target.getAttribute('data-hand');
+    const num=ev.target.closest&&ev.target.closest('.tm-num');
+    if(hand){
+      if((hand==='hour'&&TM.lockH)||(hand==='min'&&TM.lockM)){tmLockedNudge();return;}
+      if(TM.anim){cancelAnimationFrame(TM.anim);TM.anim=null;}
+      TM.drag=hand;tmSelect(hand);
+      try{svg.setPointerCapture(ev.pointerId);}catch(e){}
+      ev.preventDefault();return;
+    }
+    if(num){tmTapNumber(+num.dataset.n);return;}
+  });
+  svg.addEventListener('pointermove',ev=>{if(TM.drag)tmSetAngle(TM.drag,ang(ev));});
+  const end=()=>{if(TM.drag){TM.drag=null;tmReleased();}};
+  svg.addEventListener('pointerup',end);svg.addEventListener('pointercancel',end);
+}
 
-  document.getElementById('area').innerHTML=`
-    <div class="game-panel">
-      <div class="game-title">🕐 What Time Is It?</div>
-      <div class="game-inst">Round ${clkRound}/${totalRounds} · Score: ${clkScore} ⭐</div>
-      <div style="text-align:center;font-size:.85rem;color:var(--text3);margin-bottom:4px">Look at the clock! 🔍</div>
-      ${clockSvg}
-      <div style="text-align:center;font-size:.72rem;color:var(--text5);margin-bottom:10px">
-        <span style="color:var(--pink)">●</span> Short = Hour &nbsp; <span style="color:var(--blue)">●</span> Long = Minutes
+/* ── Ollie + screen furniture ─────────────────────────────────── */
+function tmSay(text){
+  TM.last=text;
+  const b=tmEl('tmBubble');if(b){b.textContent=text;b.classList.remove('in');void b.offsetWidth;b.classList.add('in');}
+  const o=tmEl('tmOwl');if(o){o.classList.remove('hop');void o.offsetWidth;o.classList.add('hop');}
+  try{if(typeof speakText==='function')speakText(tmClean(text));}catch(e){}
+}
+function tmRepeat(){try{if(typeof speakText==='function')speakText(tmClean(TM.last));}catch(e){}}
+function tmSfx(k){try{if(k==='ok'&&typeof playCorrect==='function')playCorrect();else if(k==='star'&&typeof playStar==='function')playStar();else if(typeof playClick==='function')playClick();}catch(e){}}
+function tmBtns(list){
+  TM.fns=list.map(b=>b.fn);
+  const el=tmEl('tmBtns');if(!el)return;
+  el.innerHTML=list.map((b,i)=>`<button class="tm-btn ${b.cls||''}" onclick="TM.fns[${i}]()">${b.t}</button>`).join('');
+}
+function tmExtras(html){const e=tmEl('tmExtras');if(e)e.innerHTML=html||'';}
+function tmTimeText(t){const e=tmEl('tmTime');if(e)e.textContent=t;}
+function tmCards(list,onTap){
+  TM.cfns=list.map(c=>()=>onTap(c));
+  tmExtras(`<div class="tm-time" id="tmTime"></div><div class="tm-cards">${list.map((c,i)=>`<button class="tm-card" onclick="tmCardTap(${i})"><span class="e">${c.e}</span><span class="n">${c.n}</span>${c.sub?`<span class="s">${c.sub}</span>`:''}</button>`).join('')}</div>`);
+}
+function tmCardTap(i){tmSfx('tap');TM.cfns[i]();document.querySelectorAll('.tm-card').forEach((b,j)=>b.classList.toggle('on',j===i));}
+function tmChoices(opts,onPick,keep){
+  TM.cfns=opts.map((o,i)=>()=>onPick(o,i));
+  const html=`<div class="tm-opts">${opts.map((o,i)=>`<button class="tm-opt" onclick="tmChoiceTap(${i})">${o.t}</button>`).join('')}</div>`;
+  const e=tmEl('tmExtras');if(e)e.innerHTML=(keep||'')+html;
+}
+function tmChoiceTap(i){
+  const btns=document.querySelectorAll('.tm-opt');
+  if(btns[i].dataset.used)return;
+  tmSfx('tap');TM.cfns[i]();
+}
+function tmDots(){
+  const d=tmEl('tmDots');if(!d)return;
+  if(TM.id==='tmChallenge'){
+    d.innerHTML='<span class="tm-stars">'+TM.qs.map((q,i)=>i<TM.q||q.done?'⭐':'☆').join('')+'</span>';
+    return;
+  }
+  d.innerHTML=TM.steps.map((_,i)=>`<i class="${i<=TM.i?'on':''}"></i>`).join('');
+}
+function tmSkeleton(title){
+  return `<div class="tm-root">
+    <div class="tm-top"><button class="tm-back" onclick="ilGameExit()" aria-label="Back to games">⬅</button><div class="tm-title">${title}</div><div class="tm-dots" id="tmDots"></div></div>
+    <div class="tm-ollie"><div class="tm-owl" id="tmOwl" onclick="tmRepeat()" title="Tap to hear Ollie again">🦉</div><div class="tm-bubble in" id="tmBubble"></div></div>
+    <div class="tm-stage">
+      <div id="tmClockWrap">${tmClockHTML()}
+        <div class="tm-hsel" id="tmHsel"><button id="tmSelH" onclick="tmSelect('hour')">🩷 Little hand</button><button id="tmSelM" onclick="tmSelect('min')">💙 Long hand</button></div>
       </div>
-      <div class="count-opts">${opts.map(o=>
-        `<div class="copt" style="font-size:1rem" onclick="checkClockAnswer(this,'${o.replace(/'/g,"\\'")}','${timeStr.replace(/'/g,"\\'")}')">${o}</div>`
-      ).join('')}</div>
-      <div class="game-feedback" id="gfb"></div>
-    </div>`;
-  speakText('What time does the clock show?');
+      <div id="tmExtras"></div>
+    </div>
+    <div class="tm-btns" id="tmBtns"></div>
+  </div>`;
 }
-function checkClockAnswer(el,chosen,answer){
-  document.querySelectorAll('.copt').forEach(c=>c.onclick=null);
-  if(chosen===answer){el.classList.add('correct');clkScore++;playCorrect();adaptDifficulty(true);
-    document.getElementById('gfb').textContent='✅ Correct! It is '+answer+'!';mascotPraise();}
-  else{el.classList.add('wrong');playWrong();adaptDifficulty(false);
-    document.querySelectorAll('.copt').forEach(c=>{if(c.textContent===answer)c.classList.add('correct');});
-    document.getElementById('gfb').textContent='❌ The answer is '+answer+'!';mascotHint();}
-  setTimeout(nextClockRound,1500);
+
+/* ── lesson engine ────────────────────────────────────────────── */
+function tmStart(id){
+  tmInjectStyle();
+  const L=TM_LESSONS[id];if(!L)return;
+  TM.id=id;TM.title=L.title;TM.i=0;TM.q=0;TM.qs=[];
+  TM.steps=typeof L.steps==='function'?L.steps():L.steps;
+  const a=tmEl('area');if(!a)return;
+  a.innerHTML=tmSkeleton(L.title);
+  tmBindClock();
+  try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){}
+  tmGo(0);
 }
+function tmGo(i){
+  if(TM.anim){cancelAnimationFrame(TM.anim);TM.anim=null;}
+  TM.i=i;TM.attempts=0;TM.hint=0;TM.target=null;TM.mo=null;TM.doneStep=false;TM.onRelease=null;TM.onNum=null;TM.drag=null;
+  TM.snapH=30;TM.snapM=30;TM.lockH=false;TM.lockM=false;
+  tmGlowClear();tmPulse(null);tmExtras('');tmBtns([]);tmShow(true);tmSelect('hour');
+  tmDots();
+  const hs=tmEl('tmHsel');if(hs)hs.style.display='';
+  TM.steps[i]();
+  const hs2=tmEl('tmHsel');if(hs2&&TM.lockH&&TM.lockM)hs2.style.display='none';
+}
+function tmNext(){tmSfx('tap');tmGo(TM.i+1);}
+function tmNextBtn(label){tmBtns([{t:label||'Next ➜',cls:'go',fn:tmNext}]);}
+function tmLogDone(){
+  try{
+    if(typeof current==='undefined'||!current||!TM_IDS[current.id])return;
+    if(done.some(d=>d.tab==='games'&&d.title===current.title))return;
+    done.push({title:current.title,emoji:current.emoji,stars:0,tab:'games'});
+    if(typeof allUsed!=='undefined'&&!allUsed.includes(current.title)){allUsed.push(current.title);localStorage.setItem('c_allused',JSON.stringify(allUsed));}
+    localStorage.setItem('cd_'+todayKey(),JSON.stringify(done));
+    ['renderStarPath','renderGoals','renderTabBadges','updateHomepage'].forEach(f=>{try{if(typeof window[f]==='function')window[f]();}catch(e){}});
+  }catch(e){}
+}
+function tmGoLesson(id){
+  const g=GAMES.find(x=>x.id===id);if(!g)return;
+  current=null;currentlyPlaying=false;busy=false;
+  fetchNext(g);
+}
+function tmFinish(msg,emoji){
+  tmSaveProg(TM.id);tmLogDone();
+  tmShow(false);tmGlowClear();
+  tmExtras(`<div class="tm-fin"><div class="big">${emoji||'🎉'}</div><div class="t">${msg}</div></div>`);
+  tmSay(msg);tmSfx('ok');
+  try{if(typeof burst==='function')burst();}catch(e){}
+  const idx=TM_ORDER.indexOf(TM.id),nx=TM_ORDER[idx+1];
+  const list=[];
+  if(nx){const g=GAMES.find(x=>x.id===nx);list.push({t:'▶ Next: '+(g?g.title.replace(/!$/,''):'lesson'),cls:'go',fn:()=>tmGoLesson(nx)});}
+  list.push({t:'🎮 Back to games',cls:'alt',fn:()=>ilGameExit()});
+  tmBtns(list);
+  const d=tmEl('tmDots');if(d&&TM.id!=='tmChallenge')d.innerHTML=TM.steps.map(()=>'<i class="on"></i>').join('');
+}
+
+/* ── practice: "make this time" with gentle hints ─────────────── */
+function tmMinOk(t){return tmDiff(TM.ma,t.m===30?180:0)<15;}
+function tmHourOk(t){return t.m===30?tmDiff(TM.ha,(t.h%12)*30+15)<8:tmDiff(TM.ha,(t.h%12)*30)<15;}
+function tmMatches(t){return tmMinOk(t)&&tmHourOk(t);}
+function tmMake(t,o){
+  o=o||{};TM.target=t;TM.mo=o;TM.doneStep=false;
+  TM.snapH=t.m===30?15:30;TM.snapM=30;
+  let sh=o.startH||((t.h+3+Math.floor(Math.random()*5))%12||12);
+  if(sh===t.h)sh=((t.h+4)%12)||12;
+  tmClockSet(sh,t.m===30?0:30);
+  tmSelect('min');
+  tmSay(o.intro||('Can you make '+tmLabel(t.h,t.m)+'?'));
+  if(o.guide)tmGlowAt('min',t.m===30?180:0);
+  tmBtns([{t:'💡 Help me',cls:'soft',fn:tmNextHint}]);
+  TM.onRelease=()=>{
+    if(TM.doneStep)return;
+    if(tmMatches(t))tmMadeIt();
+    else if(TM.attempts%3===0)tmNextHint();
+  };
+}
+function tmMadeIt(together){
+  const t=TM.target,o=TM.mo||{};if(!t||TM.doneStep)return;
+  TM.doneStep=true;tmGlowClear();tmSfx('ok');
+  const label=tmLabel(t.h,t.m);
+  tmSay(together?('We did it together! That is '+label+'! 🎉'):(o.ok||tmPickOk(label)));
+  tmBtns([{t:o.nextLabel||'Next ➜',cls:'go',fn:()=>{if(o.next)o.next();else tmNext();}}]);
+  if(o.onMade)o.onMade();
+}
+function tmPickOk(label){return ilPick(['You did it! 🌟','Wonderful! You made '+label+'! 🎉','Fantastic! ✨ That is '+label+'!']);}
+function tmNextHint(){
+  const t=TM.target;if(!t||TM.doneStep)return;
+  if(tmMatches(t)){tmMadeIt();return;}
+  TM.hint++;
+  if(TM.hint>=3){tmTogether();return;}
+  const minOk=tmMinOk(t);
+  if(!minOk){
+    tmSay('Great try! First move the long hand to '+(t.m===30?6:12)+'.');
+    tmGlowAt('min',t.m===30?180:0);tmSelect('min');
+  }else{
+    tmSay(t.m===30?('Now put the little hand between '+t.h+' and '+((t.h%12)+1)+'.'):('Now let’s move the little hand to '+t.h+'.'));
+    tmGlowAt('hour',(t.h%12)*30+(t.m===30?15:0));tmSelect('hour');
+  }
+}
+function tmTogether(){
+  const t=TM.target;tmSay('Let’s do it together! Watch me.');tmGlowClear();
+  tmAnimate('min',t.m===30?180:0,()=>tmAnimate('hour',(t.h%12)*30+(t.m===30?15:0),()=>{if(!TM.doneStep)tmMadeIt(true);}));
+}
+function tmDescribe(hand){
+  const hn=tmNum(TM.ha),mn=tmNum(TM.ma);
+  const extra=(TM.attempts%3===0)?' You’re exploring the clock!':'';
+  if(hand==='hour')return ilPick(['Look! The little hand is near '+hn+'.','The little hand is pointing near '+hn+'.'])+extra;
+  return (mn===12?'Now the long hand is pointing to 12.':'The long hand is pointing to '+mn+'.')+extra;
+}
+
+/* ═══ the 7 lessons ═══════════════════════════════════════════════ */
+const TM_LESSONS={
+/* LEVEL 1 — Meet the Clock (no questions, no scoring) */
+tmMeet:{title:'🦉 Meet the Clock',steps:[
+  ()=>{tmClockSet(12,0);tmSay('Hello! I am Ollie the Time Owl. This is a clock! 🦉');tmNextBtn();},
+  ()=>{tmClockSet(3,0);tmPulse('hour');TM.lockH=TM.lockM=true;tmSay('The short hand tells the hour.');tmNextBtn();},
+  ()=>{tmClockSet(3,0);tmPulse('min');TM.lockH=TM.lockM=true;tmSay('The long hand helps us tell minutes.');tmNextBtn();},
+  ()=>{tmClockSet(3,0);TM.lockH=TM.lockM=true;tmSay('Look! The little hand is near 3. The long hand is pointing to 12.');tmNextBtn();},
+  ()=>{TM.snapH=0;TM.snapM=0;tmClockSet(3,0);tmSay('Now you try! Drag the round dots to move the hands.');
+       TM.onRelease=()=>tmSay(tmDescribe(TM.sel));tmBtns([{t:'I’m ready ➜',cls:'go',fn:tmNext}]);},
+  ()=>tmFinish('You explored the clock! You are a Clock Explorer! 🎉','🦉')
+]},
+/* LEVEL 2 — O'clock times */
+tmOclock:{title:'🕒 O’Clock Adventure',steps:()=>[
+  ()=>{tmClockSet(2,0);tmPulse('min');TM.lockH=TM.lockM=true;tmSay('When the long hand points to 12, we say o’clock.');tmNextBtn();},
+  ()=>{tmClockSet(2,0);TM.lockH=TM.lockM=true;tmSay('This is 2 o’clock.');tmExtras('<div class="tm-time" id="tmTime">2 o’clock</div>');tmNextBtn();},
+  ()=>{tmClockSet(5,0);TM.lockH=TM.lockM=true;tmSay('This is 5 o’clock.');tmExtras('<div class="tm-time" id="tmTime">5 o’clock</div>');tmNextBtn();},
+  ()=>{tmClockSet(9,0);TM.lockH=TM.lockM=true;tmSay('This is 9 o’clock.');tmExtras('<div class="tm-time" id="tmTime">9 o’clock</div>');tmNextBtn();},
+  ()=>{ // explore: tap any number
+    tmClockSet(1,0);TM.lockM=true;tmSelect('hour');
+    tmExtras('<div class="tm-time" id="tmTime">1 o’clock</div>');
+    tmSay('Your turn to explore! Tap any number, or move the little hand.');
+    TM.onNum=n=>{tmAnimate('hour',(n%12)*30,()=>{tmTimeText(n+' o’clock');tmSay('This is '+n+' o’clock.');});};
+    TM.onRelease=()=>{const n=tmNum(TM.ha);tmTimeText(n+' o’clock');tmSay('This is '+n+' o’clock.');};
+    tmBtns([{t:'I’m ready ➜',cls:'go',fn:tmNext}]);},
+  ()=>tmMake({h:4,m:0},{intro:'Let’s make 4 o’clock together! First, move the long hand to 12.',guide:true,ok:'Wonderful! You made 4 o’clock! 🎉'}),
+  ()=>tmMake({h:8,m:0},{intro:'Now you try! Can you make 8 o’clock?'}),
+  ()=>tmFinish('Wonderful! You know o’clock times! 🌟','🕒')
+]},
+/* LEVEL 3 — Time in my day (real-life, one gentle reflection) */
+tmDay:{title:'🍳 Time in My Day',steps:[
+  ()=>{tmClockSet(8,0);TM.lockH=TM.lockM=true;tmSay('Time is part of our day! Let’s see Ollie’s day.');tmNextBtn();},
+  ()=>{
+    tmClockSet(12,0);TM.lockH=TM.lockM=true;
+    tmSay('Tap a picture to see the time.');
+    const L=[{e:'🍳',n:'Breakfast',h:8,say:'Many children eat breakfast around 8 o’clock.'},
+             {e:'🏫',n:'School',h:9,say:'School often starts around 9 o’clock.'},
+             {e:'🍎',n:'Lunch',h:12,say:'Lunch time might be around 12 o’clock.'},
+             {e:'🎨',n:'Play time',h:4,say:'Play time might happen at 4 o’clock.'},
+             {e:'🌙',n:'Bedtime',h:8,say:'Many children go to sleep around 8 o’clock at night.'}];
+    tmCards(L,c=>{tmAnimate('hour',(c.h%12)*30,()=>{});tmTimeText(c.h+' o’clock');tmSay(c.say);});
+    tmNextBtn('I saw them all ➜');},
+  ()=>{
+    tmClockSet(4,0);TM.lockH=TM.lockM=true;
+    tmSay('When do you like to play?');
+    tmChoices([{t:'☀️ In the morning',h:10},{t:'🍎 After lunch',h:1},{t:'🌅 In the afternoon',h:4},{t:'🌙 In the evening',h:6}],o=>{
+      tmAnimate('hour',(o.h%12)*30,()=>{});tmSay('That sounds so fun! Play time at '+o.h+' o’clock. I like to play too! 🎈');
+      document.querySelectorAll('.tm-opt').forEach(b=>b.classList.remove('ok'));
+      tmNextBtn();});},
+  ()=>tmFinish('You know when things happen in your day! 🌟','🌈')
+]},
+/* LEVEL 4 — Build a clock (stories, guided) */
+tmBuild:{title:'🎮 Build a Clock',steps:()=>{
+  const pool=[
+    {s:'Ollie wants breakfast at 8 o’clock. Can you help Ollie find 8 o’clock?',h:8},
+    {s:'School starts at 9 o’clock. Can you make 9 o’clock?',h:9},
+    {s:'Ollie reads a book at 3 o’clock. Can you make 3 o’clock?',h:3},
+    {s:'Play time is at 4 o’clock. Can you make 4 o’clock?',h:4},
+    {s:'Ollie goes to bed at 7 o’clock. Can you make 7 o’clock?',h:7},
+    {s:'Lunch is at 12 o’clock. Can you make 12 o’clock?',h:12},
+    {s:'Can you make 6 o’clock?',h:6}];
+  const pick=tmShuffle(pool).slice(0,4);
+  return [
+    ()=>{tmSnapFree();tmClockSet(12,0);tmSay('Now YOU build the clock! I will help you.');tmNextBtn();},
+    ...pick.map(p=>()=>tmMake({h:p.h,m:0},{intro:p.s,ok:'You did it! 🌟'})),
+    ()=>tmFinish('You built the clock all by yourself! ⭐','🎮')
+  ];}},
+/* LEVEL 6 (card 5) — Morning or Night */
+tmAmPm:{title:'🌙 Morning or Night?',steps:()=>{
+  const q=(txt,ans,okMsg,tryMsg,scene)=>()=>{
+    tmShow(false);
+    tmSay(txt);
+    tmChoices([{t:'☀️ AM',v:'AM'},{t:'🌙 PM',v:'PM'}],(o,i)=>{
+      document.querySelectorAll('.tm-opt').forEach(b=>b.dataset.used='1');
+      const btns=document.querySelectorAll('.tm-opt');
+      if(o.v===ans){btns[i].classList.add('ok');tmSfx('ok');tmSay(okMsg);}
+      else{btns[i].classList.add('try');btns[ans==='AM'?0:1].classList.add('ok');tmSay(tryMsg);}
+      tmNextBtn();},'<div class="tm-scene">'+scene+'</div>');
+  };
+  return [
+    ()=>{tmShow(false);tmExtras('<div class="tm-scene">☀️ 🌙</div>');tmSay('Let’s learn about morning and night!');tmNextBtn();},
+    ()=>{tmShow(false);tmExtras('<div class="tm-scene">☀️🍳</div>');tmSay('Breakfast happens in the morning. Morning is called AM.');tmNextBtn();},
+    ()=>{tmShow(false);tmExtras('<div class="tm-scene">🌙😴</div>');tmSay('Bedtime happens at night. Night is called PM.');tmNextBtn();},
+    ()=>{tmShow(false);tmSay('Tap a picture to see if it is AM or PM.');
+      tmCards([{e:'🍳',n:'Breakfast',ap:'AM',say:'Breakfast happens in the morning. Morning is AM! ☀️'},
+               {e:'🏫',n:'School starts',ap:'AM',say:'School starts in the morning. Morning is AM! ☀️'},
+               {e:'🌙',n:'Bedtime',ap:'PM',say:'Bedtime happens at night. Night is PM! 🌙'},
+               {e:'⭐',n:'Looking at stars',ap:'PM',say:'We see the stars at night. Night is PM! 🌙'}],
+        c=>{tmTimeText(c.ap==='AM'?'☀️ AM':'🌙 PM');tmSay(c.say);});tmNextBtn('I’m ready ➜');},
+    q('Is bedtime AM or PM?','PM','Fantastic! Bedtime is at night, so it is PM! 🌙','Great try! Let’s look together. Bedtime is at night, so it is PM! 🌙','🛏️'),
+    q('Is breakfast AM or PM?','AM','Excellent work! Breakfast is in the morning, so it is AM! ☀️','Nice try! Let’s look together. Breakfast is in the morning, so it is AM! ☀️','🍳'),
+    q('Is looking at the stars AM or PM?','PM','You’re becoming a Time Wizard! ✨ Stars come out at night, so it is PM!','Great try! Let’s look together. Stars come out at night, so it is PM! 🌙','⭐'),
+    ()=>tmFinish('You know morning and night! AM is morning, PM is night! 🌟','🌙')
+  ];}},
+/* LEVEL 5 (card 6) — Half past */
+tmHalf:{title:'⏳ Half-Past Adventure',steps:()=>[
+  ()=>{tmClockSet(3,30);tmPulse('min');TM.lockH=TM.lockM=true;tmSay('When the long hand points to 6, we say half past.');tmNextBtn();},
+  ()=>{tmClockSet(3,30);TM.lockH=TM.lockM=true;tmSay('This is half past 3. The little hand is between 3 and 4.');tmExtras('<div class="tm-time" id="tmTime">half past 3</div>');tmNextBtn();},
+  ()=>{tmClockSet(5,30);TM.lockH=TM.lockM=true;tmSay('This is half past 5.');tmExtras('<div class="tm-time" id="tmTime">half past 5</div>');tmNextBtn();},
+  ()=>{ // explore
+    tmClockSet(1,30);TM.lockM=true;TM.snapH=15;tmSelect('hour');
+    tmExtras('<div class="tm-time" id="tmTime">half past 1</div>');
+    tmSay('Your turn to explore! Tap a number. The long hand stays on 6.');
+    TM.onNum=n=>{tmAnimate('hour',(n%12)*30+15,()=>{tmTimeText('half past '+n);tmSay('This is half past '+n+'.');});};
+    TM.onRelease=()=>{
+      const r=((TM.ha%30)+30)%30;
+      if(Math.abs(r-15)<1){const n=Math.floor(TM.ha/30)||12;tmTimeText('half past '+n);tmSay('This is half past '+n+'.');}
+      else{const n=tmNum(TM.ha);tmTimeText('');tmSay('The little hand is on '+n+'. Try halfway between two numbers!');}};
+    tmBtns([{t:'I’m ready ➜',cls:'go',fn:tmNext}]);},
+  ()=>tmMake({h:2,m:30},{intro:'Let’s try! Can you make half past 2?',ok:'Wonderful! You made half past 2! 🎉'}),
+  ()=>tmMake({h:8,m:30},{intro:'One more! Can you make half past 8?'}),
+  ()=>tmFinish('You know half past! Amazing! 🌟','⏳')
+]},
+/* LEVEL 7 — Time Explorer Challenge (one question at a time, only after the lessons) */
+tmChallenge:{title:'🏆 Time Challenge',steps:()=>{
+  const types=['read','make','read','make','make','read'],mins=[0,0,30,30,0,30],used=new Set();
+  TM.qs=types.map((ty,i)=>{let h;do{h=tmRand(12);}while(used.has(h));used.add(h);return {ty,h,m:mins[i],done:false};});
+  const steps=[()=>tmChGate()];
+  TM.qs.forEach((q,i)=>steps.push(()=>tmChQuestion(i)));
+  steps.push(()=>tmFinish('You finished the challenge! You are a Clock Champion! 🏆','🏆'));
+  return steps;}}
+};
+function tmSnapFree(){TM.snapH=0;TM.snapM=0;}
+
+/* ── challenge helpers ────────────────────────────────────────── */
+function tmChGate(){
+  tmShow(false);
+  if(tmGateOK()){
+    tmExtras('<div class="tm-scene">🏆</div>');
+    tmSay('Ready for the Time Explorer Challenge? I will ask one question at a time!');
+    tmNextBtn('Let’s go! ➜');return;
+  }
+  const p=tmProg(),nx=TM_ORDER.slice(0,6).find(id=>!p[id]),g=GAMES.find(x=>x.id===nx);
+  tmExtras('<div class="tm-scene">🦉📚</div>');
+  tmSay('Let’s learn a little first! Then we can play the challenge together.');
+  tmBtns([{t:'▶ '+(g?g.title.replace(/!$/,''):'Next lesson'),cls:'go',fn:()=>tmGoLesson(nx)},
+          {t:'I’m ready! Start anyway',cls:'soft',fn:tmNext}]);
+}
+const TM_BADGES={1:'⭐ Star Explorer',3:'⭐ Time Wizard',5:'⭐ Clock Champion'};
+function tmChSolved(i){
+  TM.qs[i].done=true;TM.q=i+1;tmDots();
+  const b=TM_BADGES[i];
+  if(b){tmExtras((tmEl('tmExtras')?tmEl('tmExtras').innerHTML:'')+'<div class="tm-badge">'+b+'!</div>');try{if(typeof burst==='function')burst();}catch(e){}}
+  tmNextBtn(i<5?'Next question ➜':'Finish ➜');
+}
+function tmChQuestion(i){
+  const q=TM.qs[i];TM.q=i;tmDots();
+  if(q.ty==='make'){
+    tmMake({h:q.h,m:q.m},{intro:'Can you make '+tmLabel(q.h,q.m)+'?',onMade:()=>{TM.qs[i].done=true;TM.q=i+1;tmDots();
+      const b=TM_BADGES[i];if(b){tmExtras('<div class="tm-badge">'+b+'!</div>');try{burst();}catch(e){}}},
+      nextLabel:i<5?'Next question ➜':'Finish ➜'});
+    return;
+  }
+  tmClockSet(q.h,q.m);TM.lockH=TM.lockM=true;
+  const correct=tmLabel(q.h,q.m),opts=[correct];
+  while(opts.length<3){const l=tmLabel(tmRand(12),q.m);if(!opts.includes(l))opts.push(l);}
+  tmSay('What time is shown on the clock?');
+  tmChoices(tmShuffle(opts).map(t=>({t})),(o,idx)=>{
+    document.querySelectorAll('.tm-opt').forEach(b=>b.dataset.used='1');
+    const btns=document.querySelectorAll('.tm-opt');
+    if(o.t===correct){btns[idx].classList.add('ok');tmSfx('ok');tmSay(ilPick(['Fantastic! It is '+correct+'! ✨','Excellent work! '+ilCap(correct)+'! 🌟','You’re becoming a Time Wizard! ✨']));}
+    else{btns[idx].classList.add('try');document.querySelectorAll('.tm-opt').forEach(b=>{if(b.textContent===correct)b.classList.add('ok');});
+      tmSay('Great try! Let’s look together. The little hand is near '+q.h+' and the long hand is on '+(q.m===30?6:12)+', so it is '+correct+'!');}
+    tmChSolved(i);});
+}
+
 
 // ══════════════════════════════════════
 //  MONTHS OF THE YEAR GAME
@@ -20804,7 +21237,6 @@ function bodyRestart(){
 const GAME_HINTS={
   numMatch:'Look at the number on the left. Count the emojis on the right — find the group with the same amount!',
   countGame:'Count each object one by one by pointing at them. Touch and count!',
-  clockGame:'The SHORT pink hand points to the hour. The LONG blue hand points to the minutes!',
   daysOrder:'Remember: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday!',
   monthsOrder:'The months go: Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec!',
   abcOrder:'Sing the ABC song in your head — A, B, C, D, E, F, G...',
